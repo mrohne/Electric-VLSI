@@ -154,7 +154,7 @@ public class EvalABCL {
         private Cell cellToDisplay;
 
         public RunABCLScriptJob(String script) {
-            super("ABCL script: " + script, User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
+            super("ABCL script: " + script, User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGE);
             this.script = script;
             cellToDisplay = null;
         }
@@ -208,7 +208,7 @@ public class EvalABCL {
 
 		protected SetVarJob(CellId cellId, int nodeId, Variable.Key key, Object newVal, TextDescriptor td)
 		{
-			super("Add Variable", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
+			super("Add Variable", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGE);
 			this.cellId = cellId;
 			this.nodeId = nodeId;
 			this.key = key;
