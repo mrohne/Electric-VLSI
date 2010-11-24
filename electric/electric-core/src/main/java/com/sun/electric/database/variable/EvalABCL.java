@@ -81,7 +81,7 @@ public class EvalABCL {
         }
         try {
             abclEngine = abclFactory.getScriptEngine();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             abclEngine = null;
         }
         abclInited = true;
@@ -96,13 +96,13 @@ public class EvalABCL {
 		try {
             initABCL();
 			abclEngine.eval(code);
-		} catch (Exception e) {
+		} catch (Throwable e) {
             e.printStackTrace();
             Throwable ourCause = e.getCause();
             if (ourCause != null) {
                 System.out.println("ABCL: " + ourCause);
             } else {
-                System.out.println("ABCL error");
+                System.out.println("ABCL:" + e);
             }
         }
     }
@@ -126,13 +126,13 @@ public class EvalABCL {
             InputStreamReader is = new InputStreamReader(urlCon.getInputStream());
             initABCL();
 			abclEngine.eval(is);
-        } catch (Exception e) {
+        } catch (Throwable e) {
 			e.printStackTrace();
 			Throwable ourCause = e.getCause();
 			if (ourCause != null) {
 				System.out.println("ABCL: " + ourCause);
 			} else {
-				System.out.println("ABCL error");
+				System.out.println("ABCL: " + e);
 			}
 		}
     }
@@ -154,7 +154,7 @@ public class EvalABCL {
         private Cell cellToDisplay;
 
         public RunABCLScriptJob(String script) {
-            super("ABCL script: " + script, User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGE);
+            super("ABCL script: " + script, User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGES);
             this.script = script;
             cellToDisplay = null;
         }
@@ -208,7 +208,7 @@ public class EvalABCL {
 
 		protected SetVarJob(CellId cellId, int nodeId, Variable.Key key, Object newVal, TextDescriptor td)
 		{
-			super("Add Variable", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGE);
+			super("Add Variable", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGES);
 			this.cellId = cellId;
 			this.nodeId = nodeId;
 			this.key = key;
