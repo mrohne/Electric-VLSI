@@ -726,6 +726,11 @@ public class DXF extends Input<Object>
 				ignoreEntity();
 				continue;
 			}
+			if (text.equals("DIMENSION"))
+			{
+				ignoreEntity();
+				continue;
+			}
 			if (text.equals("3DFACE"))
 			{
 				if (read3DFaceEntity()) return true;
