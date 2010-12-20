@@ -33,8 +33,11 @@ import com.sun.electric.database.id.CellId;
 import com.sun.electric.database.prototype.NodeProto;
 import com.sun.electric.database.text.TextUtils;
 import com.sun.electric.database.topology.NodeInst;
+import com.sun.electric.database.topology.ArcInst;
+import com.sun.electric.database.topology.PortInst;
 import com.sun.electric.database.variable.TextDescriptor;
 import com.sun.electric.database.variable.Variable;
+import com.sun.electric.technology.ArcProto;
 import com.sun.electric.technology.Layer;
 import com.sun.electric.technology.PrimitiveNode;
 import com.sun.electric.technology.Technology;
@@ -52,6 +55,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -88,9 +92,9 @@ public class DXF extends Input<Object>
 	private int                 lastGroupID;
 	private String              lastText;
 	private boolean             lastPairValid;
-	private int                 ignoredPoints, ignoredAttributeDefs, ignoredAttributes;
-	private int                 readPolyLines, readLines, readCircles, readSolids,
-								read3DFaces, readArcs, readInserts, readTexts;
+	private int                 ignoredAttributeDefs, ignoredAttributes;
+	private int                 readPolyLines, readPoints, readLines, readCircles, readSolids;
+	private int                 read3DFaces, readArcs, readInserts, readDimensions, readTexts;
 	private DXFLayer            firstLayer;
 	private ForwardRef          firstForwardRef;
 	private Cell                mainCell;
@@ -218,9 +222,9 @@ public class DXF extends Input<Object>
 		boolean err = false;
 		firstLayer = null;
 		firstForwardRef = null;
-		ignoredPoints = ignoredAttributes = ignoredAttributeDefs = 0;
-		readPolyLines = readLines = readCircles = readSolids = 0;
-		read3DFaces = readArcs = readInserts = readTexts = 0;
+		ignoredAttributes = ignoredAttributeDefs = 0;
+		readPolyLines = readPoints = readLines = readCircles = readSolids = 0;
+		read3DFaces = readArcs = readInserts = readDimensions = readTexts = 0;
 		inputMode = 0;
 		for(;;)
 		{
@@ -315,7 +319,6 @@ public class DXF extends Input<Object>
                 Orientation orient = Orientation.fromAngle(fr.rot*10);
 				NodeInst ni = NodeInst.makeInstance(found, ep, new Point2D.Double(fr.x, fr.y), bounds.getWidth(), bounds.getHeight(), fr.parent, orient, null);
 				if (ni == null) return true;
-//				ni.setExpanded(true);
 			}
 		}
 
@@ -335,9 +338,9 @@ public class DXF extends Input<Object>
 			lib.newVar(DXF_HEADER_TEXT_KEY, headerTexts, ep);
 		}
 
-		if (readPolyLines > 0 || readLines > 0 || readCircles > 0 ||
+		if (readPolyLines > 0 || readLines > 0 || readPoints > 0 || readCircles > 0 ||
 			readSolids > 0 || read3DFaces > 0 || readArcs > 0 ||
-			readTexts > 0 || readInserts > 0)
+			readTexts > 0 || readInserts > 0 || readDimensions > 0)
 		{
 			String warning = "Read";
 			boolean first = true;
@@ -350,6 +353,11 @@ public class DXF extends Input<Object>
 			{
 				if (first) warning += ",";	first = false;
 				warning += " " + readLines + " lines";
+			}
+			if (readPoints > 0)
+			{
+				if (first) warning += ",";	first = false;
+				warning += " " + readPoints + " points";
 			}
 			if (readCircles > 0)
 			{
@@ -381,18 +389,18 @@ public class DXF extends Input<Object>
 				if (first) warning += ",";	first = false;
 				warning += " " + readInserts + " inserts";
 			}
+			if (readDimensions > 0)
+			{
+				if (first) warning += ",";	first = false;
+				warning += " " + readDimensions + " dimensions";
+			}
 			System.out.println(warning);
 		}
 
-		if (ignoredPoints > 0 || ignoredAttributes > 0 || ignoredAttributeDefs > 0)
+		if (ignoredAttributes > 0 || ignoredAttributeDefs > 0)
 		{
 			String warning = "Ignored";
 			boolean first = true;
-			if (ignoredPoints > 0)
-			{
-				if (first) warning += ",";	first = false;
-				warning += " " + ignoredPoints + " points";
-			}
 			if (ignoredAttributes > 0)
 			{
 				if (first) warning += ",";	first = false;
@@ -697,8 +705,7 @@ public class DXF extends Input<Object>
 			}
 			if (text.equals("POINT"))
 			{
-				ignoreEntity();
-				ignoredPoints++;
+				if (readPointEntity()) return true;
 				continue;
 			}
 			if (text.equals("POLYLINE"))
@@ -728,7 +735,7 @@ public class DXF extends Input<Object>
 			}
 			if (text.equals("DIMENSION"))
 			{
-				ignoreEntity();
+				if (readDimensionEntity(lib)) return true;
 				continue;
 			}
 			if (text.equals("3DFACE"))
@@ -914,10 +921,85 @@ public class DXF extends Input<Object>
                 Orientation orient = Orientation.fromAngle(rot*10);
 				NodeInst ni = NodeInst.makeInstance(found, ep, new Point2D.Double(x, y), sX, sY, curCell, orient, null);
 				if (ni == null) return true;
-//				ni.setExpanded(true);
 			}
 		}
 		readInserts++;
+		return false;
+	}
+
+	private boolean readDimensionEntity(Library lib)
+		throws IOException
+	{
+		int rot = 0;
+		String name = null;
+		double x = 0, y = 0;
+		double xSca = 1, ySca = 1;
+		for(;;)
+		{
+			if (getNextPair()) return true;
+			switch (groupID)
+			{
+				case 8:  /* ignore layer */               break;
+				case 10: /* ignore data */                break;
+				case 20: /* ignore data */                break;
+				case 30: /* ignore Z */                   break;
+				case 50: /* ignore data */                break;
+			    case 41: /* ignore data */                break;
+				case 42: /* ignore data */                break;
+				case 70: /* ignore data */                break;
+				case 71: /* ignore data */                break;
+				case 44: /* ignore X spacing */           break;
+				case 45: /* ignore Y spacing */           break;
+				case 2:  name = text;                     break;
+			}
+			if (groupID == 0)
+			{
+				pushPair(groupID, text);
+				break;
+			}
+		}
+
+		String pt = makeBlockName(name);
+		if (pt != null)
+		{
+			// have to search by hand because of weird prototype names
+			Cell found = null;
+			for(Iterator<Cell> it = lib.getCells(); it.hasNext(); )
+			{
+				Cell np = it.next();
+				if (np.getName().equals(pt)) { found = np;   break; }
+			}
+			if (found == null)
+			{
+				ForwardRef fr = new ForwardRef();
+				fr.refName = pt;
+				fr.parent = curCell;
+				fr.x = x;		fr.y = y;
+				fr.rot = rot;
+				fr.xSca = xSca;	fr.ySca = ySca;
+				fr.nextForwardRef = firstForwardRef;
+				firstForwardRef = fr;
+				return false;
+			}
+
+			if (localPrefs.flattenHierarchy)
+			{
+				if (extractInsert(found, x, y, xSca, ySca, rot, curCell)) return true;
+			} else
+			{
+				if (xSca != 1.0 || ySca != 1.0)
+				{
+					found = getScaledCell(found, xSca, ySca);
+					if (found == null) return true;
+				}
+				double sX = found.getDefWidth();
+				double sY = found.getDefHeight();
+                Orientation orient = Orientation.fromAngle(rot*10);
+				NodeInst ni = NodeInst.makeInstance(found, new Point2D.Double(x, y), sX, sY, curCell, orient, null);
+				if (ni == null) return true;
+			}
+		}
+		readDimensions++;
 		return false;
 	}
 
@@ -962,6 +1044,36 @@ public class DXF extends Input<Object>
 		ni.setTrace(points);
 		ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 		readLines++;
+		return false;
+	}
+
+	private boolean readPointEntity()
+		throws IOException
+	{
+		DXFLayer layer = null;
+		double x1 = 0, y1 = 0;
+		for(;;)
+		{
+			if (getNextPair()) return true;
+			switch (groupID)
+			{
+				case 8:  layer = getLayer(text);     break;
+				case 10: x1 = scaleString(text);     break;
+				case 20: y1 = scaleString(text);     break;
+				case 30: /* ignore Z */              break;
+			}
+			if (groupID == 0)
+			{
+				pushPair(groupID, text);
+				break;
+			}
+		}
+		if (!isAcceptableLayer(layer)) return false;
+		NodeProto np = Artwork.tech().pinNode;
+		NodeInst ni = NodeInst.makeInstance(np, new Point2D.Double(x1, y1), 0.0, 0.0, curCell);
+		if (ni == null) return true;
+		ni.newVar(DXF_LAYER_KEY, layer.layerName);
+		readPoints++;
 		return false;
 	}
 
@@ -1158,47 +1270,26 @@ public class DXF extends Input<Object>
 					Point2D [] points = new Point2D[2];
 					points[0] = new Point2D.Double(x1, y1);
 					points[1] = new Point2D.Double(x2, y2);
-					ni.setTrace(points);
+					ni.setTrace(points, ep);
 					ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 				}
 			} else
 			{
 				// no bulges: do simple polygon
-				double lX = 0, hX = 0;
-				double lY = 0, hY = 0;
+				NodeProto np = Artwork.tech().pinNode;
+				ArcProto ap =  Artwork.tech().dashedArc;
+				NodeInst nt, nh = null;
 				for(int i=0; i<count; i++)
 				{
 					PolyPoint pp = polyPoints.get(i);
-					if (i == 0)
-					{
-						lX = hX = pp.x;
-						lY = hY = pp.y;
-					} else
-					{
-						if (pp.x < lX) lX = pp.x;
-						if (pp.x > hX) hX = pp.x;
-						if (pp.y < lY) lY = pp.y;
-						if (pp.y > hY) hY = pp.y;
-					}
+					nt = nh;
+					nh = NodeInst.makeInstance(np, new Point2D.Double(pp.x, pp.y), 0.0, 0.0, curCell);
+					nh.newVar(DXF_LAYER_KEY, layer.layerName);
+					if (nt == null) continue;
+					if (nh == null) continue;
+					ArcInst ai = ArcInst.makeInstance(ap, nh.getOnlyPortInst(), nt.getOnlyPortInst());
+					ai.newVar(DXF_LAYER_KEY, layer.layerName);
 				}
-				double cX = (lX + hX) / 2;
-				double cY = (lY + hY) / 2;
-				NodeProto np = Artwork.tech().closedPolygonNode;
-				if (!closed)
-				{
-					if (lineType == 0) np = Artwork.tech().openedPolygonNode; else
-						np = Artwork.tech().openedDashedPolygonNode;
-				}
-				NodeInst ni = NodeInst.makeInstance(np, ep, new Point2D.Double(cX, cY), hX-lX, hY-lY, curCell);
-				if (ni == null) return true;
-				Point2D [] points = new Point2D[count];
-				for(int i=0; i<count; i++)
-				{
-					PolyPoint pp = polyPoints.get(i);
-					points[i] = new Point2D.Double(pp.x, pp.y);
-				}
-				ni.setTrace(points);
-				ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 			}
 		}
 		readPolyLines++;
@@ -1260,7 +1351,7 @@ public class DXF extends Input<Object>
 		points[1] = new Point2D.Double(x2, y2);
 		points[2] = new Point2D.Double(x3, y3);
 		points[3] = new Point2D.Double(x4, y4);
-		ni.setTrace(points);
+		ni.setTrace(points, ep);
 		ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 		readSolids++;
 		return false;
@@ -1271,9 +1362,9 @@ public class DXF extends Input<Object>
 	{
 		DXFLayer layer = null;
 		String msg = null;
-		double x = 0, y = 0;
-		double height = 0, xAlign = 0;
-		boolean gotXA = false;
+		double x = 0, y = 0, height = 0, rot = 0;
+		Double xAlign = null, yAlign = null;
+		int hAlign = 0, vAlign = 0;
 		for(;;)
 		{
 			if (getNextPair()) return true;
@@ -1282,8 +1373,12 @@ public class DXF extends Input<Object>
 				case 8:  layer = getLayer(text);                       break;
 				case 10: x = scaleString(text);                        break;
 				case 20: y = scaleString(text);                        break;
+				case 11: xAlign = scaleString(text);                   break;
+				case 21: yAlign = scaleString(text);                   break;
 				case 40: height = scaleString(text);                   break;
-				case 11: xAlign = scaleString(text);   gotXA = true;   break;
+				case 50: rot = TextUtils.atoi(text);                   break;
+				case 72: hAlign = TextUtils.atoi(text);                break;
+				case 73: vAlign = TextUtils.atoi(text);                break;
 				case 1:  msg = text;                                   break;
 			}
 			if (groupID == 0)
@@ -1292,29 +1387,16 @@ public class DXF extends Input<Object>
 				break;
 			}
 		}
-		double lX = x, hX = x;
-		double lY = y, hY = y;
-		if (gotXA)
-		{
-			lX = Math.min(x, xAlign);
-			hX = lX + Math.abs(xAlign-x) * 2;
-			lY = y;
-			hY = y + height;
-		} else
-		{
-			if (msg != null)
-			{
-				double h = msg.length();
-				lX = x;	hX = x + height * h;
-				lY = y;	hY = y + height;
-			}
-		}
+		double lX = xAlign != null ? xAlign : x;
+		double lY = yAlign != null ? yAlign : y;
+		double hX = lX;
+		double hY = lY;
 		if (!isAcceptableLayer(layer)) return false;
 		if (msg != null)
 		{
 			NodeInst ni = NodeInst.makeInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double((lX+hX)/2, (lY+hY)/2), hX-lX, hY-lY, curCell);
 			if (ni == null) return true;
-            TextDescriptor td = ep.getNodeTextDescriptor().withPos(TextDescriptor.Position.BOXED).withAbsSize(TextDescriptor.Size.TXTMAXPOINTS);
+            TextDescriptor td = makeTextDescriptor(hAlign, vAlign, rot, height);
             ni.newVar(Artwork.ART_MESSAGE, msg, td);
 			ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 			readTexts++;
@@ -1372,7 +1454,7 @@ public class DXF extends Input<Object>
 		points[1] = new Point2D.Double(x2, y2);
 		points[2] = new Point2D.Double(x3, y3);
 		points[3] = new Point2D.Double(x4, y4);
-		ni.setTrace(points);
+		ni.setTrace(points, ep);
 		ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 		read3DFaces++;
 		return false;
@@ -1405,37 +1487,29 @@ public class DXF extends Input<Object>
 	private boolean extractInsert(Cell onp, double x, double y, double xSca, double ySca, int rot, Cell np)
 	{
 		// rotate "rot*10" about point [(onp->lowx+onp->highx)/2+x, (onp->lowy+onp->highy)/2+y]
-        Orientation orient = Orientation.fromAngle(rot*10);
-        FixpTransform trans = orient.pureRotate();
-		double m00 = trans.getScaleX();
-		double m01 = trans.getShearX();
-		double m11 = trans.getScaleY();
-		double m10 = trans.getShearY();
-		Rectangle2D bounds = onp.getBounds();
-		double m02 = bounds.getCenterX() + x;
-		double m12 = bounds.getCenterY() + y;
-		trans.setTransform(m00, m10, m01, m11, m02, m12);
-		Point2D pt = new Point2D.Double(-m02, -m12);
-		trans.transform(pt, pt);
-		trans.setTransform(m00, m10, m01, m11, pt.getX(), pt.getY());
+		Orientation orient = Orientation.fromAngle(rot*10);
+        FixpTransform trans = new FixpTransform();
+		trans.concatenate(FixpTransform.getTranslateInstance(x, y));
+		trans.concatenate(FixpTransform.getScaleInstance(xSca, ySca));
+		trans.concatenate(Orientation.fromAngle(rot*10).pureRotate());
 
+		// map from onp to np
+		// System.out.println("Extracting cell instance: "+onp);
+		Map<NodeInst,NodeInst> nodeMap = new HashMap<NodeInst,NodeInst>();
 		for(Iterator<NodeInst> it = onp.getNodes(); it.hasNext(); )
 		{
 			NodeInst ni = it.next();
-			if (ni.isCellInstance())
-			{
-				System.out.println("Cannot insert block '" + onp + "'...it has inserts in it");
-				return true;
-			}
-			if (Generic.isCellCenter(ni)) continue;
+			if (ni.isCellInstance()) continue;
+			if (ni.getProto() == Generic.tech().cellCenterNode) continue;
 			double sX = ni.getXSize() * xSca;
 			double sY = ni.getYSize() * ySca;
-			double cX = x + ni.getAnchorCenterX() * xSca;
-			double cY = y + ni.getAnchorCenterY() * ySca;
+			double cX = ni.getAnchorCenterX();
+			double cY = ni.getAnchorCenterY();
 			Point2D tPt = new Point2D.Double(cX, cY);
 			trans.transform(tPt, tPt);
-			NodeInst nNi = NodeInst.makeInstance(ni.getProto(), ep, tPt, sX, sY, np, orient.concatenate(ni.getOrient()), null);
-			if (nNi == null) return true;
+			NodeInst nNi = NodeInst.makeInstance(ni.getProto(), tPt, sX, sY, np, orient.concatenate(ni.getOrient()), null);
+			if (nNi == null) continue;
+			nodeMap.put(ni, nNi);
 			if (ni.getProto() == Artwork.tech().closedPolygonNode || ni.getProto() == Artwork.tech().filledPolygonNode ||
 				ni.getProto() == Artwork.tech().openedPolygonNode || ni.getProto() == Artwork.tech().openedDashedPolygonNode)
 			{
@@ -1450,7 +1524,7 @@ public class DXF extends Input<Object>
 						if (oldTrace[i] != null)
 							newTrace[i] = new Point2D.Double(cX + oldTrace[i].getX() * xSca, cY + oldTrace[i].getY() * ySca);
 					}
-					nNi.setTrace(newTrace);
+					nNi.setTrace(newTrace, ep);
 				}
 			} else if (ni.getProto() == Generic.tech().invisiblePinNode)
 			{
@@ -1473,6 +1547,23 @@ public class DXF extends Input<Object>
 			var = ni.getVar(Artwork.ART_COLOR);
 			if (var != null) nNi.newVar(Artwork.ART_COLOR, var.getObject(), ep);
 		}
+		// System.out.println("Number of nodes: "+nodeMap.size());
+
+		Map<ArcInst,ArcInst> arcMap = new HashMap<ArcInst,ArcInst>();
+		for(Iterator<ArcInst> it = onp.getArcs(); it.hasNext(); )
+		{
+			ArcInst ai = it.next();
+			PortInst p1 = ai.getHeadPortInst();
+			NodeInst nN1 = nodeMap.get(p1.getNodeInst());
+			PortInst nP1 = nN1.findPortInstFromProto(p1.getPortProto());
+			PortInst p2 = ai.getTailPortInst();
+			NodeInst nN2 = nodeMap.get(p2.getNodeInst());
+			PortInst nP2 = nN2.findPortInstFromProto(p2.getPortProto());
+			ArcProto nAp = ai.getProto();
+			ArcInst nAi = ArcInst.makeInstance(nAp, nP1, nP2);
+			arcMap.put(ai, nAi);
+		}
+		// System.out.println("Number of arcs: "+arcMap.size());
 		return false;
 	}
 
@@ -1521,7 +1612,7 @@ public class DXF extends Input<Object>
 						if (oldTrace[i] != null)
 							newTrace[i] = new Point2D.Double(oldTrace[i].getX() * xSca, oldTrace[i].getY() * ySca);
 					}
-					nNi.setTrace(newTrace);
+					nNi.setTrace(newTrace, ep);
 				}
 			} else if (ni.getProto() == Generic.tech().invisiblePinNode)
 			{
@@ -1593,6 +1684,73 @@ public class DXF extends Input<Object>
 		}
 	}
 
+	/**
+	 * Method to compute a text orientation
+	 */
+	private TextDescriptor makeTextDescriptor(int hAlign, int vAlign, double angle, double size) {
+		TextDescriptor dsc = TextDescriptor.getNodeTextDescriptor();
+		// Extract position
+		TextDescriptor.Position pos = TextDescriptor.Position.CENT;
+		switch (vAlign) {
+		case 0:
+			switch (hAlign) {
+			case 0:	pos = TextDescriptor.Position.RIGHT;
+				break;
+			case 1:	pos = TextDescriptor.Position.CENT;
+				break;
+			case 2:	pos = TextDescriptor.Position.LEFT;
+				break;
+			case 3:	pos = TextDescriptor.Position.BOXED;
+				break;
+			case 4:	pos = TextDescriptor.Position.BOXED;
+				break;
+			case 5:	pos = TextDescriptor.Position.BOXED;
+				break;
+			}
+			break;
+		case 1:
+			switch (hAlign) {
+			case 0:	pos = TextDescriptor.Position.DOWNRIGHT;
+				break;
+			case 1:	pos = TextDescriptor.Position.DOWN;
+				break;
+			case 2:	pos = TextDescriptor.Position.DOWNLEFT;
+				break;
+			}
+			break;
+		case 2:
+			switch (hAlign) {
+			case 0:	pos = TextDescriptor.Position.RIGHT;
+				break;
+			case 1:	pos = TextDescriptor.Position.CENT;
+				break;
+			case 2:	pos = TextDescriptor.Position.LEFT;
+				break;
+			}
+			break;
+		case 3:
+			switch (hAlign) {
+			case 0:	pos = TextDescriptor.Position.UPRIGHT;
+				break;
+			case 1:	pos = TextDescriptor.Position.UP;
+				break;
+			case 2:	pos = TextDescriptor.Position.UPLEFT;
+				break;
+			}
+			break;
+		}
+		dsc = dsc.withPos(pos);
+		// Extract position
+		TextDescriptor.Rotation rot = TextDescriptor.Rotation.ROT0;
+		if (angle == 90.0) rot = TextDescriptor.Rotation.ROT90;
+		if (angle == 180.0) rot = TextDescriptor.Rotation.ROT180; 
+		if (angle == 270.0) rot = TextDescriptor.Rotation.ROT270;
+		dsc = dsc.withRotation(rot);
+		// Extract size
+		dsc = dsc.withAbsSize(10);
+		if (size != 0) dsc = dsc.withRelSize(size);
+		return dsc;
+	}
 	/**
 	 * Method to convert a block name "name" into a valid Electric cell name (converts
 	 * bad characters).
