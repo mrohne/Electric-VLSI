@@ -88,34 +88,6 @@ public class EvalABCL {
     }
 
     /**
-     * Method to run the ABCL interpreter on a given line of text.
-     * Uses reflection to invoke the ABCL interpreter (if it exists).
-     * @param code the code to run.
-     */
-    public static void execABCL(String code) {
-		try {
-            initABCL();
-			abclEngine.eval(code);
-		} catch (Throwable e) {
-            e.printStackTrace();
-            Throwable ourCause = e.getCause();
-            if (ourCause != null) {
-                System.out.println("ABCL: " + ourCause);
-            } else {
-                System.out.println("ABCL:" + e);
-            }
-        }
-    }
-
-    /**
-     * Method to execute a script file in a Job.
-     * @param fileName the script file name.
-     */
-    public static void runScript(String fileName) {
-        (new EvalABCL.RunABCLScriptJob(fileName)).startJob();
-    }
-
-    /**
      * Method to execute a script file without starting a new Job.
      * @param fileName the script file name.
      */
@@ -135,6 +107,14 @@ public class EvalABCL {
 				System.out.println("ABCL: " + e);
 			}
 		}
+    }
+
+    /**
+     * Method to execute a script file in a Job.
+     * @param fileName the script file name.
+     */
+    public static void runScript(String fileName) {
+        (new EvalABCL.RunABCLScriptJob(fileName)).startJob();
     }
 
     /**
@@ -179,50 +159,4 @@ public class EvalABCL {
             }
         }
     }
-
-    /**
-	 * Method to set a variable on a NodeInst in a new Job.
-	 * It is necessary to use IDs because ABCL makes copies of objects,
-	 * so the ABCL copy of the NodeInst is "not linked".
-	 * @param cellId the ID of the Cell in which to set a variable.
-	 * @param nodeId the ID of the NodeInst (in the Cell) on which to set a variable.
-	 * @param key the Variable key.
-	 * @param newVal the new value of the Variable.
-	 * @param td the Textdescriptor.
-	 */
-	public static void setVarInJob(CellId cellId, int nodeId, Variable.Key key, Object newVal, TextDescriptor td)
-	{
-		new SetVarJob(cellId, nodeId, key, newVal, td);
-	}
-
-	/**
-	 * Class for setting a variable in a new Job.
-	 */
-	private static class SetVarJob extends Job
-	{
-		private CellId cellId;
-		private int nodeId;
-		private Variable.Key key;
-		private Object newVal;
-		private TextDescriptor td;
-
-		protected SetVarJob(CellId cellId, int nodeId, Variable.Key key, Object newVal, TextDescriptor td)
-		{
-			super("Add Variable", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGES);
-			this.cellId = cellId;
-			this.nodeId = nodeId;
-			this.key = key;
-			this.newVal = newVal;
-			this.td = td;
-			startJob();
-		}
-
-		public boolean doIt() throws JobException
-		{
-			Cell c = Cell.inCurrentThread(cellId);
-			NodeInst ni = c.getNodeById(nodeId);
-			ni.newVar(key, newVal, td);
-			return true;
-		}
-	}
 }
