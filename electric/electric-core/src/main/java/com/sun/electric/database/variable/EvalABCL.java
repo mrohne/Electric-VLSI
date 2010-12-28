@@ -33,6 +33,7 @@ import com.sun.electric.util.TextUtils;
 
 import java.util.List;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -51,6 +52,7 @@ public class EvalABCL {
     private static ScriptEngine abclEngine;
 
     public static boolean hasABCL() {
+		// find the ABCL class
 		if (!abclChecked) {
             abclChecked = true;
 
@@ -81,10 +83,10 @@ public class EvalABCL {
         }
         try {
             abclEngine = abclFactory.getScriptEngine();
+			abclInited = true;
         } catch (Throwable e) {
             abclEngine = null;
         }
-        abclInited = true;
     }
 
     /**
@@ -92,12 +94,13 @@ public class EvalABCL {
      * @param fileName the script file name.
      */
     public static void runScriptNoJob(String fileName) {
-        URL url = TextUtils.makeURLToFile(fileName);
+		initABCL();
         try {
-            URLConnection urlCon = url.openConnection();
-            InputStreamReader is = new InputStreamReader(urlCon.getInputStream());
-            initABCL();
-			abclEngine.eval(is);
+			URL url = TextUtils.makeURLToFile(fileName);
+            URLConnection con = url.openConnection();
+            InputStream str = con.getInputStream();
+			InputStreamReader rdr = new InputStreamReader(str);
+			abclEngine.eval(rdr);
         } catch (Throwable e) {
 			e.printStackTrace();
 			Throwable ourCause = e.getCause();
