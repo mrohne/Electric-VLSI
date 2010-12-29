@@ -95,6 +95,7 @@ import com.sun.electric.tool.io.output.Spice;
 import com.sun.electric.tool.io.output.Verilog;
 import com.sun.electric.tool.lang.EvalJavaBsh;
 import com.sun.electric.tool.lang.EvalJython;
+import com.sun.electric.tool.lang.EvalABCL;
 import com.sun.electric.tool.logicaleffort.LENetlister;
 import com.sun.electric.tool.logicaleffort.LETool;
 import com.sun.electric.tool.ncc.AllSchemNamesToLay;
@@ -180,18 +181,23 @@ public class ToolMenu {
 		/****************************** THE TOOLS MENU ******************************/
 
 		// mnemonic keys available: A CDEFGHI KLMNOPQR TUVWXYZ
-		languageMenu = new EMenu("Lang_uages",
-			new EMenuItem("Run Java _Bean Shell Script...") {
-				public void run() { javaBshScriptCommand(); }
-			},
-			EvalJython.hasJython() ? new EMenuItem("Run _Jython Script...") {
-				public void run() { jythonScriptCommand(); }
-			} : null,
-			new EMenuItem("Manage _Scripts...") {
-				public void run() { new LanguageScripts(); }
-			},
-			SEPARATOR);
-	
+		languageMenu = new EMenu("Lang_uages", new EMenuItem("Run Java _Bean Shell Script...") {
+			public void run() {
+				javaBshScriptCommand();
+			}
+		}, EvalJython.hasJython() ? new EMenuItem("Run _Jython Script...") {
+			public void run() {
+				jythonScriptCommand();
+			}
+		}, EvalABCL.hasABCL() ? new EMenuItem("Run _ABCL Script...") {
+			public void run() {
+				abclScriptCommand();
+			}
+		} : null, new EMenuItem("Manage _Scripts...") {
+			public void run() {
+				new LanguageScripts();
+			}
+		}, SEPARATOR);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() { setDynamicLanguageMenu(); }
 		});
