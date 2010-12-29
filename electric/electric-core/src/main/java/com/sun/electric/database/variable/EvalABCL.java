@@ -32,6 +32,7 @@ import com.sun.electric.tool.user.User;
 import com.sun.electric.util.TextUtils;
 
 import java.util.List;
+import java.io.Reader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,72 +44,127 @@ import java.net.URLConnection;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngine;
+import javax.script.CompiledScript;
+import javax.script.Compilable;
 
 public class EvalABCL {
 
     private static boolean abclChecked = false;
-    private static boolean abclInited = false;
     private static ScriptEngineFactory abclFactory;
-    private static ScriptEngine abclEngine;
 
     public static boolean hasABCL() {
 		// find the ABCL class
 		if (!abclChecked) {
             abclChecked = true;
-
-            // find the ABCL class
 			ScriptEngineManager mgr = new ScriptEngineManager();
-            // find the ABCL class
-			List<ScriptEngineFactory> scriptFactories =  mgr.getEngineFactories();
-			for (ScriptEngineFactory factory: scriptFactories) {
+			System.out.println("Scanning scriptFactories");
+			for (ScriptEngineFactory factory: mgr.getEngineFactories()) {
 				System.out.println("getEngineName(): "+factory.getEngineName());
 				if (factory.getEngineName().equals("ABCL Script") &&
 					factory.getEngineVersion().equals("0.1")) {
 					abclFactory = factory;
-					break;
 				}
-			} 			
+			}
+			System.out.println("Found abclFactory: "+abclFactory);
         }
-
         // if already initialized, return state
         return abclFactory != null;
     }
 
-    private static void initABCL() {
-        if (!hasABCL()) {
-            return;
-        }
-        if (abclInited) {
-            return;
-        }
-        try {
-            abclEngine = abclFactory.getScriptEngine();
-			abclInited = true;
-        } catch (Throwable e) {
-            abclEngine = null;
-        }
+    /**
+     * Method to compile a script file
+     * @param script the script URL
+     */
+    public static CompiledScript compileScript(URL url) throws Exception {
+		URLConnection conn = url.openConnection();
+		InputStream stream = conn.getInputStream();
+		InputStreamReader reader = new InputStreamReader(stream);
+		return compileScript(reader);
+    }
+
+    /**
+     * Method to compile a script file
+     * @param script the script reader
+     */
+    public static CompiledScript compileScript(Reader reader) throws Exception {
+		try {
+			return ((Compilable)abclFactory.getScriptEngine()).compile(reader);
+		} catch (Exception e) {
+			Throwable c = e.getCause();
+			System.out.println("ABCL: " + c != null ? c : e);
+			e.printStackTrace();
+			throw e;
+		}
+    }
+
+    /**
+     * Method to compile a script file
+     * @param script the script string
+     */
+    public static CompiledScript compileScript(String string)  throws Exception {
+		try {
+			return ((Compilable)abclFactory.getScriptEngine()).compile(string);
+		} catch (Exception e) {
+			Throwable c = e.getCause();
+			System.out.println("ABCL: " + c != null ? c : e);
+			e.printStackTrace();
+			throw e;
+		}
     }
 
     /**
      * Method to execute a script file without starting a new Job.
-     * @param fileName the script file name.
+     * @param url the script file name.
      */
-    public static void runScriptNoJob(String fileName) {
-		initABCL();
-        try {
-			URL url = TextUtils.makeURLToFile(fileName);
-            URLConnection con = url.openConnection();
-            InputStream str = con.getInputStream();
-			InputStreamReader rdr = new InputStreamReader(str);
-			abclEngine.eval(rdr);
-        } catch (Throwable e) {
+    public static Object evalScript(URL url) throws Exception {
+		URLConnection conn = url.openConnection();
+		InputStream stream = conn.getInputStream();
+		InputStreamReader reader = new InputStreamReader(stream);
+		return evalScript(reader);
+    }
+
+    /**
+     * Method to execute a script file without starting a new Job.
+     * @param script the script reader
+     */
+    public static Object evalScript(Reader reader) throws Exception {
+		try {
+			return abclFactory.getScriptEngine().eval(reader);
+		} catch (Exception e) {
+			Throwable c = e.getCause();
+			System.out.println("ABCL: " + c != null ? c : e);
 			e.printStackTrace();
-			Throwable ourCause = e.getCause();
-			if (ourCause != null) {
-				System.out.println("ABCL: " + ourCause);
-			} else {
-				System.out.println("ABCL: " + e);
-			}
+			throw e;
+		}
+	}
+
+    /**
+     * Method to execute a script file without starting a new Job.
+     * @param script the script string
+     */
+    public static Object evalScript(String string) throws Exception {
+		try {
+			return abclFactory.getScriptEngine().eval(string);
+		} catch (Exception e) {
+			Throwable c = e.getCause();
+			System.out.println("ABCL: " + c != null ? c : e);
+			e.printStackTrace();
+			throw e;
+		}
+    }
+
+    /**
+     * Method to execute a script file without starting a new Job.
+     * @param script the compiled script
+     */
+    public static Object evalScript(CompiledScript script) throws Exception {
+        try {
+			return script.eval();
+        } catch (Exception e) {
+			Throwable c = e.getCause();
+			System.out.println("ABCL: " + c != null ? c : e);
+			e.printStackTrace();
+			throw e;
 		}
     }
 
@@ -116,8 +172,8 @@ public class EvalABCL {
      * Method to execute a script file in a Job.
      * @param fileName the script file name.
      */
-    public static void runScript(String fileName) {
-        (new EvalABCL.RunABCLScriptJob(fileName)).startJob();
+    public static void runScript(URL url) {
+        (new URLJob(url)).startJob();
     }
 
     /**
@@ -126,31 +182,21 @@ public class EvalABCL {
      */
     public static void displayCell(Cell cell) {
         Job curJob = Job.getRunningJob();
-        if (curJob instanceof RunABCLScriptJob) {
-            ((RunABCLScriptJob) curJob).displayCell(cell);
+        if (curJob instanceof ScriptJob) {
+            ((ScriptJob) curJob).displayCell(cell);
         }
     }
 
-    private static class RunABCLScriptJob extends Job {
+    private static abstract class ScriptJob extends Job {
 
-        private String script;
         private Cell cellToDisplay;
 
-        public RunABCLScriptJob(String script) {
-            super("ABCL script: " + script, User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGES);
-            this.script = script;
-            cellToDisplay = null;
-        }
-
-        public boolean doIt() throws JobException {
-            runScriptNoJob(script);
-            return true;
+        public ScriptJob(String name) {
+            super(name, User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGES);
+            cellToDisplay = Job.getUserInterface().needCurrentCell();
         }
 
         private void displayCell(Cell cell) {
-            if (cellToDisplay != null) {
-                return;
-            }
             cellToDisplay = cell;
             fieldVariableChanged("cellToDisplay");
         }
@@ -160,6 +206,22 @@ public class EvalABCL {
             if (cellToDisplay != null) {
                 Job.getUserInterface().displayCell(cellToDisplay);
             }
+        }
+    }
+
+    private static class URLJob extends ScriptJob {
+		private URL url;
+        public URLJob(URL url) {
+            super("ABCL script: " + url.toString());
+            this.url = url;
+        }
+        public boolean doIt() throws JobException {
+			try {
+				evalScript(url);
+			} catch (Exception e) {
+				throw new JobException(e);
+			}
+			return true;
         }
     }
 }
