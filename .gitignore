@@ -1,0 +1,10 @@
+.svn/
+target/
+TAGS
+prj.el
+*.class
+*.jar
+*.rej
+*.orig
+*~
+#*#
