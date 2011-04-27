@@ -21,11 +21,12 @@
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, Mass 02111-1307, USA.
  */
-package com.sun.electric.database.variable;
+package com.sun.electric.tool.lang;
 
 import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.id.CellId;
 import com.sun.electric.database.topology.NodeInst;
+import com.sun.electric.tool.Tool;
 import com.sun.electric.tool.Job;
 import com.sun.electric.tool.JobException;
 import com.sun.electric.tool.user.User;
@@ -44,6 +45,7 @@ import java.net.URLConnection;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import javax.script.CompiledScript;
 import javax.script.Compilable;
 
@@ -71,115 +73,22 @@ public class EvalABCL {
         return abclFactory != null;
     }
 
-    /**
-     * Method to compile a script file
-     * @param script the script URL
-     */
-    public static CompiledScript compileScript(URL url) throws Exception {
-		URLConnection conn = url.openConnection();
-		InputStream stream = conn.getInputStream();
-		InputStreamReader reader = new InputStreamReader(stream);
-		return compileScript(reader);
-    }
-
-    /**
-     * Method to compile a script file
-     * @param script the script reader
-     */
-    public static CompiledScript compileScript(Reader reader) throws Exception {
+    public static boolean runScriptNoJob(String string) {
 		try {
-			return ((Compilable)abclFactory.getScriptEngine()).compile(reader);
-		} catch (Exception e) {
+			return abclFactory.getScriptEngine().eval(string) != null;
+		} catch (ScriptException e) {
 			Throwable c = e.getCause();
 			System.out.println("ABCL: " + c != null ? c : e);
 			e.printStackTrace();
-			throw e;
+			return false;
 		}
+			
     }
 
-    /**
-     * Method to compile a script file
-     * @param script the script string
-     */
-    public static CompiledScript compileScript(String string)  throws Exception {
-		try {
-			return ((Compilable)abclFactory.getScriptEngine()).compile(string);
-		} catch (Exception e) {
-			Throwable c = e.getCause();
-			System.out.println("ABCL: " + c != null ? c : e);
-			e.printStackTrace();
-			throw e;
-		}
-    }
-
-    /**
-     * Method to execute a script file without starting a new Job.
-     * @param url the script file name.
-     */
-    public static Object evalScript(URL url) throws Exception {
-		URLConnection conn = url.openConnection();
-		InputStream stream = conn.getInputStream();
-		InputStreamReader reader = new InputStreamReader(stream);
-		return evalScript(reader);
-    }
-
-    /**
-     * Method to execute a script file without starting a new Job.
-     * @param script the script reader
-     */
-    public static Object evalScript(Reader reader) throws Exception {
-		try {
-			return abclFactory.getScriptEngine().eval(reader);
-		} catch (Exception e) {
-			Throwable c = e.getCause();
-			System.out.println("ABCL: " + c != null ? c : e);
-			e.printStackTrace();
-			throw e;
-		}
+    public static void runScript(String string, Job.Type jobType, Job.Priority jobPriority) {
+		(new ScriptJob(string, jobType, jobPriority)).startJob();
 	}
 
-    /**
-     * Method to execute a script file without starting a new Job.
-     * @param script the script string
-     */
-    public static Object evalScript(String string) throws Exception {
-		try {
-			return abclFactory.getScriptEngine().eval(string);
-		} catch (Exception e) {
-			Throwable c = e.getCause();
-			System.out.println("ABCL: " + c != null ? c : e);
-			e.printStackTrace();
-			throw e;
-		}
-    }
-
-    /**
-     * Method to execute a script file without starting a new Job.
-     * @param script the compiled script
-     */
-    public static Object evalScript(CompiledScript script) throws Exception {
-        try {
-			return script.eval();
-        } catch (Exception e) {
-			Throwable c = e.getCause();
-			System.out.println("ABCL: " + c != null ? c : e);
-			e.printStackTrace();
-			throw e;
-		}
-    }
-
-    /**
-     * Method to execute a script file in a Job.
-     * @param fileName the script file name.
-     */
-    public static void runScript(URL url) {
-        (new URLJob(url)).startJob();
-    }
-
-    /**
-     * Display specified Cell after termination of currently running script
-     * @param cell the Cell to display.
-     */
     public static void displayCell(Cell cell) {
         Job curJob = Job.getRunningJob();
         if (curJob instanceof ScriptJob) {
@@ -187,41 +96,30 @@ public class EvalABCL {
         }
     }
 
-    private static abstract class ScriptJob extends Job {
+    private static class ScriptJob extends Job {
+		private String string;
+        private Cell cell;
 
-        private Cell cellToDisplay;
-
-        public ScriptJob(String name) {
-            super(name, User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.VISCHANGES);
-            cellToDisplay = Job.getUserInterface().needCurrentCell();
+		public ScriptJob(String string, Job.Type jobType, Job.Priority jobPriority) {
+			super("ABCL script", User.getUserTool(), jobType, null, null, jobPriority);
+			this.string = string;
+            this.cell = null;
+			System.out.println("EvalABCL.ScriptJob(\""+string+"\", "+jobType+", "+jobPriority+")");
         }
+
+        public boolean doIt() {
+			return runScriptNoJob(string);
+		}
 
         private void displayCell(Cell cell) {
-            cellToDisplay = cell;
-            fieldVariableChanged("cellToDisplay");
+            this.cell = cell;
+            fieldVariableChanged("cell");
         }
 
-        @Override
         public void terminateOK() {
-            if (cellToDisplay != null) {
-                Job.getUserInterface().displayCell(cellToDisplay);
+            if (cell != null) {
+                Job.getUserInterface().displayCell(cell);
             }
-        }
-    }
-
-    private static class URLJob extends ScriptJob {
-		private URL url;
-        public URLJob(URL url) {
-            super("ABCL script: " + url.toString());
-            this.url = url;
-        }
-        public boolean doIt() throws JobException {
-			try {
-				evalScript(url);
-			} catch (Exception e) {
-				throw new JobException(e);
-			}
-			return true;
         }
     }
 }
