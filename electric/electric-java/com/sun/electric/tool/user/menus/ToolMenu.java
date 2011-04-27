@@ -2397,6 +2397,9 @@ public class ToolMenu {
 			} else if (type == FileType.JYTHON) {
 				System.out.println("Executing commands in Python Script: " + fileName);
 				EvalJython.runScript(fileName);
+			} else if (type == FileType.ABCL) {
+				System.out.println("Executing commands in ABCL Script: " + fileName);
+				EvalABCL.runScript(fileName);
 			}
 		}
 	}
