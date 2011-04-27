@@ -189,6 +189,9 @@ public class ToolMenu {
 			EvalJython.hasJython() ? new EMenuItem("Run _Jython Script...") {
 				public void run() { jythonScriptCommand(); }
 			} : null,
+			EvalABCL.hasABCL() ? new EMenuItem("Run _ABCL Script...") {
+			public void run() {abclScriptCommand();	}
+			} : null, 		 
 			new EMenuItem("Manage _Scripts...") {
 				public void run() { new LanguageScripts(); }
 			},
@@ -2330,6 +2333,20 @@ public class ToolMenu {
 			EvalJython.runScript(fileName);
 		}
 	}
+
+    /**
+     * Method to invoke ABCL on a script file.
+     * Prompts for the file and executes it.
+     */
+    private static void abclScriptCommand()
+    {
+    	if (!EvalABCL.hasABCL()) {
+    		System.out.println("ABCL is not installed");
+    		return;
+    	}
+        String fileName = OpenFile.chooseInputFile(FileType.ABCL, null);
+		EvalABCL.runScriptNoJob("(LOAD #p\""+fileName+"\")");
+    }
 
 	/**
 	 * Method to change the Languages menu to include preassigned scripts.
