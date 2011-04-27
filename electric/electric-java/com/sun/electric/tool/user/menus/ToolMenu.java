@@ -2367,9 +2367,14 @@ public class ToolMenu {
 				FileType type = FileType.JAVA;
 				if (menuName.toLowerCase().endsWith(".bsh")) {
 					menuName = menuName.substring(0, menuName.length() - 4);
+					type = FileType.JAVA;
 				} else if (menuName.toLowerCase().endsWith(".py") || menuName.toLowerCase().endsWith(".jy")) {
 					menuName = menuName.substring(0, menuName.length() - 3);
 					type = FileType.JYTHON;
+				}
+				else if (menuName.toLowerCase().endsWith(".lisp") || menuName.toLowerCase().endsWith(".abcl")) {
+					menuName = menuName.substring(0, menuName.length() - 5);
+					type = FileType.ABCL;
 				}
 				if (script.mnemonic != 0)
 					menuName = "_" + script.mnemonic + ": " + menuName;
