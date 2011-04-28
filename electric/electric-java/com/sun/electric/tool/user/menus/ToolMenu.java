@@ -2408,7 +2408,7 @@ public class ToolMenu {
 				EvalJython.runScript(fileName);
 			} else if (type == FileType.ABCL) {
 				System.out.println("Executing commands in ABCL Script: " + fileName);
-				EvalABCL.runScript(fileName);
+	        	EvalABCL.runScriptNoJob("(LOAD #p\""+fileName+"\")");
 			}
 		}
 	}
