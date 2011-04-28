@@ -93,7 +93,7 @@ public class DXF extends Input<Object>
 	private String              lastText;
 	private boolean             lastPairValid;
 	private int                 ignoredAttributeDefs, ignoredAttributes;
-	private int                 readPolyLines, readPoints, readLines, readCircles, readSolids;
+	private int                 readLwPolyLines, readPolyLines, readPoints, readLines, readCircles, readSolids;
 	private int                 read3DFaces, readArcs, readInserts, readDimensions, readTexts;
 	private DXFLayer            firstLayer;
 	private ForwardRef          firstForwardRef;
@@ -223,7 +223,7 @@ public class DXF extends Input<Object>
 		firstLayer = null;
 		firstForwardRef = null;
 		ignoredAttributes = ignoredAttributeDefs = 0;
-		readPolyLines = readPoints = readLines = readCircles = readSolids = 0;
+		readLwPolyLines = readPolyLines = readPoints = readLines = readCircles = readSolids = 0;
 		read3DFaces = readArcs = readInserts = readDimensions = readTexts = 0;
 		inputMode = 0;
 		for(;;)
@@ -338,12 +338,17 @@ public class DXF extends Input<Object>
 			lib.newVar(DXF_HEADER_TEXT_KEY, headerTexts, ep);
 		}
 
-		if (readPolyLines > 0 || readLines > 0 || readPoints > 0 || readCircles > 0 ||
+		if (readLwPolyLines > 0 || readPolyLines > 0 || readLines > 0 || readPoints > 0 || readCircles > 0 ||
 			readSolids > 0 || read3DFaces > 0 || readArcs > 0 ||
 			readTexts > 0 || readInserts > 0 || readDimensions > 0)
 		{
 			String warning = "Read";
 			boolean first = true;
+			if (readLwPolyLines > 0)
+			{
+				if (first) warning += ",";	first = false;
+				warning += " " + readLwPolyLines + " lwpolylines";
+			}
 			if (readPolyLines > 0)
 			{
 				if (first) warning += ",";	first = false;
@@ -706,6 +711,11 @@ public class DXF extends Input<Object>
 			if (text.equals("POINT"))
 			{
 				if (readPointEntity()) return true;
+				continue;
+			}
+			if (text.equals("LWPOLYLINE"))
+			{
+				if (readLwPolyLineEntity()) return true;
 				continue;
 			}
 			if (text.equals("POLYLINE"))
@@ -1077,12 +1087,80 @@ public class DXF extends Input<Object>
 		return false;
 	}
 
+	private boolean readLwPolyLineEntity()
+		throws IOException
+	{
+		boolean closed = false;
+		DXFLayer layer = null;
+		double width = 0.0;
+		List<PolyPoint> polyPoints = new ArrayList<PolyPoint>();
+		PolyPoint curPP = null;
+		boolean hasBulgeInfo = false;
+		for(;;)
+		{
+			if (getNextPair()) return true;
+			if (groupID == 8)
+			{
+				layer = getLayer(text);
+				continue;
+			}
+
+			if (groupID == 10)
+			{
+				curPP = new PolyPoint();
+				curPP.bulge = 0;
+				polyPoints.add(curPP);
+				if (curPP != null) curPP.x = scaleString(text);
+				continue;
+			}
+			if (groupID == 20)
+			{
+				if (curPP != null) curPP.y = scaleString(text);
+				continue;
+			}
+			if (groupID == 30)
+			{
+				if (curPP != null) curPP.z = scaleString(text);
+				continue;
+			}
+			if (groupID == 42)
+			{
+				if (curPP != null)
+				{
+					curPP.bulge = TextUtils.atof(text);
+					if (curPP.bulge != 0) hasBulgeInfo = true;
+				}
+				continue;
+			}
+			if (groupID == 43)
+			{
+				width = scaleString(text);
+				continue;
+			}
+			if (groupID == 70)
+			{
+				int i = TextUtils.atoi(text);
+				if ((i&1) != 0) closed = true;
+				continue;
+			}
+
+			if (groupID == 0)
+			{
+				pushPair(groupID, text);
+				break;
+			}
+		}
+		
+		readLwPolyLines++;
+		return drawPolyLine(polyPoints, layer, width, closed, hasBulgeInfo);
+	}
+
 	private boolean readPolyLineEntity()
 		throws IOException
 	{
 		boolean closed = false;
 		DXFLayer layer = null;
-		int lineType = 0;
+		double width = 0.0;
 		boolean inEnd = false;
 		List<PolyPoint> polyPoints = new ArrayList<PolyPoint>();
 		PolyPoint curPP = null;
@@ -1148,152 +1226,9 @@ public class DXF extends Input<Object>
 				continue;
 			}
 		}
-
-		int count = polyPoints.size();
-		if (isAcceptableLayer(layer) && count >= 3)
-		{
-			// see if there is bulge information
-			if (hasBulgeInfo)
-			{
-				// handle bulges
-				int start = 1;
-				if (closed) start = 0;
-				for(int i=start; i<count; i++)
-				{
-					int last = i - 1;
-					if (i == 0) last = count-1;
-					PolyPoint pp = polyPoints.get(i);
-					PolyPoint lastPp = polyPoints.get(last);
-					double x1 = lastPp.x;   double y1 = lastPp.y;
-					double x2 = pp.x;       double y2 = pp.y;
-					if (lastPp.bulge != 0.0)
-					{
-						// special case the semicircle bulges
-						if (Math.abs(lastPp.bulge) == 1.0)
-						{
-							double cX = (x1 + x2) / 2;
-							double cY = (y1 + y2) / 2;
-							if ((y1 == cY && x1 == cX) || (y2 == cY && x2 == cX))
-							{
-								System.out.println("Domain error in polyline bulge computation");
-								continue;
-							}
-							double sA = Math.atan2(y1-cY, x1-cX);
-							double eA = Math.atan2(y2-cY, x2-cX);
-							if (lastPp.bulge < 0.0)
-							{
-								double r2 = sA;   sA = eA;   eA = r2;
-							}
-							if (sA < 0.0) sA += 2.0 * Math.PI;
-							sA = sA * 1800.0 / Math.PI;
-							int iAngle = (int)sA;
-							double rad = new Point2D.Double(cX, cY).distance(new Point2D.Double(x1, y1));
-                            Orientation orient = Orientation.fromAngle(iAngle);
-							NodeInst ni = NodeInst.makeInstance(Artwork.tech().circleNode, ep, new Point2D.Double(cX, cY), rad*2, rad*2, curCell, orient, null);
-							if (ni == null) return true;
-							double startOffset = sA;
-							startOffset -= iAngle;
-							ni.setArcDegrees(startOffset * Math.PI / 1800.0, Math.PI, ep);
-							ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
-							continue;
-						}
-
-						// compute half distance between the points
-						double x01 = x1;   double y01 = y1;
-						double x02 = x2;   double y02 = y2;
-						double dx = x02 - x01;   double dy = y02 - y01;
-						double dist = Math.hypot(dx, dy);
-
-						// compute radius of arc (bulge is tangent of 1/4 of included arc angle)
-						double incAngle = Math.atan(lastPp.bulge) * 4.0;
-						double arcRad = Math.abs((dist / 2.0) / Math.sin(incAngle / 2.0));
-						double rad = arcRad;
-
-						// prepare to compute the two circle centers
-						double r2 = arcRad*arcRad;
-						double delta_1 = -dist / 2.0;
-						double delta_12 = delta_1 * delta_1;
-						double delta_2 = Math.sqrt(r2 - delta_12);
-
-						// pick one center, according to bulge sign
-						double bulgeSign = lastPp.bulge;
-						if (Math.abs(bulgeSign) > 1.0) bulgeSign = -bulgeSign;
-						double xcf = 0, ycf = 0;
-						if (bulgeSign > 0.0)
-						{
-							xcf = x02 + ((delta_1 * (x02-x01)) + (delta_2 * (y01-y02))) / dist;
-							ycf = y02 + ((delta_1 * (y02-y01)) + (delta_2 * (x02-x01))) / dist;
-						} else
-						{
-							xcf = x02 + ((delta_1 * (x02-x01)) + (delta_2 * (y02-y01))) / dist;
-							ycf = y02 + ((delta_1 * (y02-y01)) + (delta_2 * (x01-x02))) / dist;
-						}
-						x1 = xcf;   y1 = ycf;
-
-						// compute angles to the arc endpoints
-						if ((y01 == ycf && x01 == xcf) || (y02 == ycf && x02 == xcf))
-						{
-							System.out.println("Domain error in polyline computation");
-							continue;
-						}
-						double sA = Math.atan2(y01-ycf, x01-xcf);
-						double eA = Math.atan2(y02-ycf, x02-xcf);
-						if (lastPp.bulge < 0.0)
-						{
-							r2 = sA;   sA = eA;   eA = r2;
-						}
-						if (sA < 0.0) sA += 2.0 * Math.PI;
-						if (eA < 0.0) eA += 2.0 * Math.PI;
-						sA = sA * 1800.0 / Math.PI;
-						eA = eA * 1800.0 / Math.PI;
-
-						// create the arc node
-						int iAngle = (int)sA;
-                        Orientation orient = Orientation.fromAngle(iAngle);
-						NodeInst ni = NodeInst.makeInstance(Artwork.tech().circleNode, ep, new Point2D.Double(x1, y1), rad*2, rad*2, curCell, orient, null);
-						if (ni == null) return true;
-						if (sA > eA) eA += 3600.0;
-						double startOffset = sA;
-						startOffset -= iAngle;
-						ni.setArcDegrees(startOffset * Math.PI / 1800.0, (eA-sA) * Math.PI / 1800.0, ep);
-						ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
-						continue;
-					}
-
-					// this segment has no bulge
-					double cX = (x1 + x2) / 2;
-					double cY = (y1 + y2) / 2;
-					NodeProto np = Artwork.tech().openedDashedPolygonNode;
-					if (lineType == 0) np = Artwork.tech().openedPolygonNode;
-					NodeInst ni = NodeInst.makeInstance(np, ep, new Point2D.Double(cX, cY), Math.abs(x1 - x2), Math.abs(y1 - y2), curCell);
-					if (ni == null) return true;
-					Point2D [] points = new Point2D[2];
-					points[0] = new Point2D.Double(x1, y1);
-					points[1] = new Point2D.Double(x2, y2);
-					ni.setTrace(points, ep);
-					ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
-				}
-			} else
-			{
-				// no bulges: do simple polygon
-				NodeProto np = Artwork.tech().pinNode;
-				ArcProto ap =  Artwork.tech().dashedArc;
-				NodeInst nt, nh = null;
-				for(int i=0; i<count; i++)
-				{
-					PolyPoint pp = polyPoints.get(i);
-					nt = nh;
-					nh = NodeInst.makeInstance(np, new Point2D.Double(pp.x, pp.y), 0.0, 0.0, curCell);
-					nh.newVar(DXF_LAYER_KEY, layer.layerName);
-					if (nt == null) continue;
-					if (nh == null) continue;
-					ArcInst ai = ArcInst.makeInstance(ap, nh.getOnlyPortInst(), nt.getOnlyPortInst());
-					ai.newVar(DXF_LAYER_KEY, layer.layerName);
-				}
-			}
-		}
+		
 		readPolyLines++;
-		return false;
+		return drawPolyLine(polyPoints, layer, width, closed, hasBulgeInfo);
 	}
 
 	private boolean readSolidEntity()
@@ -1684,6 +1619,159 @@ public class DXF extends Input<Object>
 		}
 	}
 
+	private boolean drawPolyLine(List<PolyPoint> polyPoints, DXFLayer layer, double width, boolean closed, boolean hasBulgeInfo)
+		throws IOException
+	{
+		int count = polyPoints.size();
+		if (isAcceptableLayer(layer) && count >= 3)
+		{
+			// see if there is bulge information
+			if (hasBulgeInfo)
+			{
+				// handle bulges
+				int start = 1;
+				if (closed) start = 0;
+				for(int i=start; i<count; i++)
+				{
+					int last = i - 1;
+					if (i == 0) last = count-1;
+					PolyPoint pp = polyPoints.get(i);
+					PolyPoint lastPp = polyPoints.get(last);
+					double x1 = lastPp.x;   double y1 = lastPp.y;
+					double x2 = pp.x;       double y2 = pp.y;
+					if (lastPp.bulge != 0.0)
+					{
+						// special case the semicircle bulges
+						if (Math.abs(lastPp.bulge) == 1.0)
+						{
+							double cX = (x1 + x2) / 2;
+							double cY = (y1 + y2) / 2;
+							if ((y1 == cY && x1 == cX) || (y2 == cY && x2 == cX))
+							{
+								System.out.println("Domain error in polyline bulge computation");
+								continue;
+							}
+							double sA = Math.atan2(y1-cY, x1-cX);
+							double eA = Math.atan2(y2-cY, x2-cX);
+							if (lastPp.bulge < 0.0)
+							{
+								double r2 = sA;   sA = eA;   eA = r2;
+							}
+							if (sA < 0.0) sA += 2.0 * Math.PI;
+							sA = sA * 1800.0 / Math.PI;
+							int iAngle = (int)sA;
+							double rad = new Point2D.Double(cX, cY).distance(new Point2D.Double(x1, y1));
+                            Orientation orient = Orientation.fromAngle(iAngle);
+							NodeInst ni = NodeInst.makeInstance(Artwork.tech().circleNode, new Point2D.Double(cX, cY), rad*2, rad*2, curCell, orient, null);
+							if (ni == null) return true;
+							double startOffset = sA;
+							startOffset -= iAngle;
+							ni.setArcDegrees(startOffset * Math.PI / 1800.0, Math.PI);
+							ni.newVar(DXF_LAYER_KEY, layer.layerName);
+							continue;
+						}
+
+						// compute half distance between the points
+						double x01 = x1;   double y01 = y1;
+						double x02 = x2;   double y02 = y2;
+						double dx = x02 - x01;   double dy = y02 - y01;
+						double dist = Math.hypot(dx, dy);
+
+						// compute radius of arc (bulge is tangent of 1/4 of included arc angle)
+						double incAngle = Math.atan(lastPp.bulge) * 4.0;
+						double arcRad = Math.abs((dist / 2.0) / Math.sin(incAngle / 2.0));
+						double rad = arcRad;
+
+						// prepare to compute the two circle centers
+						double r2 = arcRad*arcRad;
+						double delta_1 = -dist / 2.0;
+						double delta_12 = delta_1 * delta_1;
+						double delta_2 = Math.sqrt(r2 - delta_12);
+
+						// pick one center, according to bulge sign
+						double bulgeSign = lastPp.bulge;
+						if (Math.abs(bulgeSign) > 1.0) bulgeSign = -bulgeSign;
+						double xcf = 0, ycf = 0;
+						if (bulgeSign > 0.0)
+						{
+							xcf = x02 + ((delta_1 * (x02-x01)) + (delta_2 * (y01-y02))) / dist;
+							ycf = y02 + ((delta_1 * (y02-y01)) + (delta_2 * (x02-x01))) / dist;
+						} else
+						{
+							xcf = x02 + ((delta_1 * (x02-x01)) + (delta_2 * (y02-y01))) / dist;
+							ycf = y02 + ((delta_1 * (y02-y01)) + (delta_2 * (x01-x02))) / dist;
+						}
+						x1 = xcf;   y1 = ycf;
+
+						// compute angles to the arc endpoints
+						if ((y01 == ycf && x01 == xcf) || (y02 == ycf && x02 == xcf))
+						{
+							System.out.println("Domain error in polyline computation");
+							continue;
+						}
+						double sA = Math.atan2(y01-ycf, x01-xcf);
+						double eA = Math.atan2(y02-ycf, x02-xcf);
+						if (lastPp.bulge < 0.0)
+						{
+							r2 = sA;   sA = eA;   eA = r2;
+						}
+						if (sA < 0.0) sA += 2.0 * Math.PI;
+						if (eA < 0.0) eA += 2.0 * Math.PI;
+						sA = sA * 1800.0 / Math.PI;
+						eA = eA * 1800.0 / Math.PI;
+
+						// create the arc node
+						int iAngle = (int)sA;
+                        Orientation orient = Orientation.fromAngle(iAngle);
+						NodeInst ni = NodeInst.makeInstance(Artwork.tech().circleNode, new Point2D.Double(x1, y1), rad*2, rad*2, curCell, orient, null);
+						if (ni == null) return true;
+						if (sA > eA) eA += 3600.0;
+						double startOffset = sA;
+						startOffset -= iAngle;
+						ni.setArcDegrees(startOffset * Math.PI / 1800.0, (eA-sA) * Math.PI / 1800.0);
+						ni.newVar(DXF_LAYER_KEY, layer.layerName);
+						continue;
+					}
+
+					// this segment has no bulge
+					double cX = (x1 + x2) / 2;
+					double cY = (y1 + y2) / 2;
+					NodeProto np = Artwork.tech().openedPolygonNode;
+					NodeInst ni = NodeInst.makeInstance(np, new Point2D.Double(cX, cY), Math.abs(x1 - x2), Math.abs(y1 - y2), curCell);
+					if (ni == null) return true;
+					Point2D [] points = new Point2D[2];
+					points[0] = new Point2D.Double(x1, y1);
+					points[1] = new Point2D.Double(x2, y2);
+					ni.setTrace(points);
+					ni.newVar(DXF_LAYER_KEY, layer.layerName);
+				}
+			} else
+			{
+				// no bulges: do simple polygon
+				NodeProto np = Artwork.tech().pinNode;
+				ArcProto ap =  Artwork.tech().solidArc;
+				NodeInst n0 = null, nt = null, nh = null;
+				for(int i=0; i<count; i++)
+				{
+					PolyPoint pp = polyPoints.get(i);
+					nt = nh;
+					nh = NodeInst.makeInstance(np, new Point2D.Double(pp.x, pp.y), 0.0, 0.0, curCell);
+					nh.newVar(DXF_LAYER_KEY, layer.layerName);
+					if (n0 == null) n0 = nh;
+					if (nt == null) continue;
+					if (nh == null) continue;
+					ArcInst ai = ArcInst.makeInstanceBase(ap, width, nh.getOnlyPortInst(), nt.getOnlyPortInst());
+					ai.newVar(DXF_LAYER_KEY, layer.layerName);
+				}
+				if (closed && n0 != null && nt != null) {
+					ArcInst ai = ArcInst.makeInstanceBase(ap, width, n0.getOnlyPortInst(), nh.getOnlyPortInst());
+					ai.newVar(DXF_LAYER_KEY, layer.layerName);
+				}
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Method to compute a text orientation
 	 */
@@ -1747,8 +1835,9 @@ public class DXF extends Input<Object>
 		if (angle == 270.0) rot = TextDescriptor.Rotation.ROT270;
 		dsc = dsc.withRotation(rot);
 		// Extract size
-		dsc = dsc.withAbsSize(10);
-		if (size != 0) dsc = dsc.withRelSize(size);
+		if (size < 0.75) size = 0.75;
+		if (size > 127.75) size = 127.75;
+		dsc = dsc.withRelSize(size);
 		return dsc;
 	}
 	/**
