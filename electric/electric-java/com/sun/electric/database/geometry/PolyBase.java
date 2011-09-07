@@ -2360,7 +2360,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
                         System.out.println("Bad happen");
                     }
                 }
-                sons.add(t);
+                addSonLowLevel(t);
             }
             return true;
         }
