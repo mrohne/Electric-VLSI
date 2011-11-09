@@ -1140,6 +1140,7 @@ public class Technology implements Comparable<Technology>, Serializable {
         setTechDesc(t.description);
         setFactoryScale(t.scaleValue, t.scaleRelevant);
         setFactoryResolution(t.resolutionValue);
+		setFactoryAngleStep(t.angleStepValue);
         setFactoryParasitics(t.minResistance, t.minCapacitance);
         setFactoryLESettings(t.leGateCapacitance, t.leWireRatio, t.leDiffAlpha);
         if (!t.transparentLayers.isEmpty()) {
