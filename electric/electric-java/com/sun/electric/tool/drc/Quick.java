@@ -598,6 +598,21 @@ public class Quick
 	}
 
     /**
+     * Check ArcInst for angular step
+     * @param ai
+     * @param cell
+     * @param geom
+     * @return true if an error was found.
+     */
+    private boolean checkAngleStep(ArcInst ai)
+	{
+        int minAllowedAngleStep = (int)(10*reportInfo.minAllowedAngleStep);
+        if (minAllowedAngleStep == 0) return false;
+		int arcAngle = ai.getAngle();
+        return ((arcAngle % minAllowedAngleStep) != 0);
+	}
+
+    /**
      * Check Poly for CIF Resolution Errors
      * @param poly
      * @param cell
@@ -833,6 +848,7 @@ public class Quick
         Point2D from = ai.getHeadLocation();
         Point2D to = ai.getTailLocation();
 
+	if (checkAngleStep(ai)) 
         if (!DBMath.areEquals(from.getX(), to.getX()) && !DBMath.areEquals(from.getY(), to.getY()))
         {
             DRC.createDRCErrorLogger(reportInfo, DRC.DRCErrorType.CROOKEDERROR, null, ai.getParent(),
