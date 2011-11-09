@@ -117,8 +117,9 @@ public class Info
     /** Spice template (node cell) */                           static final int NODESPICETEMPLATE = 61;
 	/** Elib width offset (arc cell) */                         static final int ARCWIDTHOFFSET    = 62;
 	/** Factory min resolution (info tech) */                   static final int TECHRESOLUTION    = 63;
-	/** SPICE edge capacitance (layer cell) */					static final int LAYERINDAREAFAC   = 64;
-	/** SPICE edge capacitance (layer cell) */					static final int LAYERINDLENFAC    = 65;
+	/** Factory min angle step (info tech) */                   static final int TECHANGLESTEP     = 64;
+	/** SPICE edge capacitance (layer cell) */					static final int LAYERINDAREAFAC   = 65;
+	/** SPICE edge capacitance (layer cell) */					static final int LAYERINDLENFAC    = 66;
 
 
     /** key of Variable holding layer information. */	public static final Variable.Key LAYER_KEY = Variable.newKey("EDTEC_layer");
