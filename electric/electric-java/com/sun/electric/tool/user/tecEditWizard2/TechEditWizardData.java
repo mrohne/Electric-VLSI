@@ -58,6 +58,7 @@ public class TechEditWizardData
 	private int num_metal_layers;
 	private int stepsize;   // value in nm
     private double resolution; // technology resolution for delta values (not in real scale)
+    private double angleStep; // technology angleStep
     private boolean pSubstrateProcess = false; // to control if process is a pwell or psubstrate process or not. If true, Tech Creation Wizard will not create pwell layers
     private boolean horizontalFlag = true; // to control if transistor gates are aligned horizontally. True by default . If transistors are horizontal -> M1 is horizontal?
     // 0=Basic is only with metal info, 0=Standard is with info for mocmos, 1=Complex with extra elements like resistors
@@ -484,6 +485,9 @@ public class TechEditWizardData
 
     double getResolution() { return resolution; }
 	void setResolution(double n) { resolution = n; }
+
+    double getAngleStep() { return angleStep; }
+	void setAngleStep(double n) { angleStep = n; }
 
     int getNumMetalLayers() { return num_metal_layers; }
 	void setNumMetalLayers(int n)
@@ -2180,6 +2184,7 @@ public class TechEditWizardData
         t.scaleValue = getStepSize();
         t.scaleRelevant = true;
         t.resolutionValue = getResolution();
+        t.angleStepValue = getAngleStep();
 //        t.scaleRelevant = isScaleRelevant();
         t.defaultFoundry = "NONE";
         t.minResistance = 1.0;
