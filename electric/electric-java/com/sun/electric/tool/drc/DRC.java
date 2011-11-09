@@ -978,6 +978,7 @@ public class DRC extends Listener
             worstInteractionDistance = getWorstSpacingDistance(tech, -1);
             // minimim resolution different from zero if flag is on otherwise stays at zero (default)
             minAllowedResolution = dp.getResolution(tech);
+			minAllowedAngleStep = dp.getAngleStep(tech);
             ignoreCenterCuts = dp.ignoreCenterCuts;
             inMemory = dp.storeDatesInMemory;
 
@@ -2204,6 +2205,7 @@ public class DRC extends Listener
         private static final String KEY_ERROR_CHECK_LEVEL = "ErrorCheckLevel";
         private static final String KEY_MIN_AREA_ALGORITHM = "MinAreaAlgorithm";
         private static final String KEY_RESOLUTION = "ResolutionValueFor";
+        private static final String KEY_ANGLESTEP = "AngleStepValueFor";
         private static final String KEY_OVERRIDES = "DRCOverridesFor";
 
         /** Whether DRC should DRC should be done incrementally. The default is "false". */
@@ -2274,6 +2276,10 @@ public class DRC extends Listener
                 ECoord resolution = ECoord.fromLambdaRoundSizeGrid(lambdaResolution);
                 resolutions.put(tech, resolution);
 
+                String keyAngleStep = getKey(KEY_ANGLESTEP, tech.getId());
+                double angleStep = techPrefs.getDouble(keyAngleStep, tech.getFactoryAngleStep()); //tech.getFactoryScaledResolution());
+                angleSteps.put(tech, Double.valueOf(angleStep));
+
                 String keyOverrides = getKey(KEY_OVERRIDES, tech.getId());
                 String override = drcPrefs.get(keyOverrides, "");
                 overrides.put(tech, override);
@@ -2316,6 +2322,17 @@ public class DRC extends Listener
                     techPrefs.putDouble(keyResolution, resolution.getLambda());
             }
 
+            for (Map.Entry<Technology,Double> e: angleSteps.entrySet()) {
+                Technology tech = e.getKey();
+                String keyAngleStep = getKey(KEY_ANGLESTEP, tech.getId());
+                double factoryAngleStep = tech.getFactoryAngleStep();
+                double angleStep = e.getValue().doubleValue();
+                if (removeDefaults && angleStep == factoryAngleStep)
+                    techPrefs.remove(keyAngleStep);
+                else
+                    techPrefs.putDouble(keyAngleStep, angleStep);
+            }
+
             for (Map.Entry<Technology,String> e: overrides.entrySet()) {
                 Technology tech = e.getKey();
                 String keyOverrides = getKey(KEY_OVERRIDES, tech.getId());
@@ -2350,6 +2367,28 @@ public class DRC extends Listener
         public ECoord getResolution(Technology tech)
         {
             return resolutions.get(tech);
+        }
+
+        /**
+         * Method to set the technology angle step.
+         * This is the minimum size unit that can be represented.
+         * @param tech Technology
+         * @param angleStep new angle step.
+         */
+        public void setAngleStep(Technology tech, double angleStep)
+        {
+            angleSteps.put(tech, Double.valueOf(angleStep));
+        }
+
+        /**
+         * Method to retrieve the angle step associated to specified.
+         * This is the minimum angle step that can be represented.
+         * @param tech specified technolgy
+         * @return the technology's angle step.
+         */
+        public int getAngleStep(Technology tech)
+        {
+            return angleSteps.get(tech).intValue();
         }
 
         /**

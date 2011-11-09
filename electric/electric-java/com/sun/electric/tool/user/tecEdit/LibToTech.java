@@ -509,6 +509,9 @@ public class LibToTech
                 case Info.TECHRESOLUTION:
 					gi.resolution = TextUtils.atof(str);
 					break;
+                case Info.TECHANGLESTEP:
+					gi.angleStep = TextUtils.atof(str);
+					break;
                 case Info.TECHFOUNDRY:
 					gi.defaultFoundry = str;
 					break;
@@ -2532,6 +2535,7 @@ public class LibToTech
 		t.scaleValue = gi.scale;
 		t.scaleRelevant = gi.scaleRelevant;
 		t.resolutionValue = gi.resolution;
+		t.angleStepValue = gi.angleStep;
 		t.defaultFoundry = gi.defaultFoundry;
 		t.minResistance = gi.minRes;
 		t.minCapacitance = gi.minCap;
