@@ -958,6 +958,7 @@ public class DRC extends Listener
         /** DRC preferences */                                      DRCPreferences dp;
         /** error type search */				                    DRCCheckMode errorTypeSearch;
         /** minimum output grid resolution */				        ECoord minAllowedResolution;
+        /** minimum angle step */				                    double minAllowedAngleStep;
         /** true to ignore center cuts in large contacts. */		boolean ignoreCenterCuts;
         /** maximum area to examine (the worst spacing rule). */	double worstInteractionDistance;
         /** time stamp for numbering networks. */					int checkTimeStamp;
@@ -2255,6 +2256,7 @@ public class DRC extends Listener
         public boolean isMultiThreaded;
 
         public Map<Technology,ECoord> resolutions = new HashMap<Technology,ECoord>();
+        public Map<Technology,Double> angleSteps = new HashMap<Technology,Double>();
         public Map<Technology,String> overrides = new HashMap<Technology,String>();
 
         public DRCPreferences(boolean factory)
