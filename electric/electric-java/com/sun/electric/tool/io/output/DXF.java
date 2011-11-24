@@ -126,7 +126,8 @@ public class DXF extends Output
 		Variable varheadertext = cell.getLibrary().getVar(DXF_HEADER_TEXT_KEY);
 		Variable varheaderid = cell.getLibrary().getVar(DXF_HEADER_ID_KEY);
 		Layer defLay = Artwork.tech().findLayer("Graphics");
-		defaultDXFLayerName = defLay.getDXFLayer();
+		defaultDXFLayerName = defLay.getName();
+		if (defLay.getDXFLayer() != null && defLay.getDXFLayer().length() != 0) defaultDXFLayerName = defLay.getDXFLayer();
 		if (varheadertext != null && varheaderid != null)
 		{
 			int len = Math.min(varheadertext.getLength(), varheaderid.getLength());
@@ -186,6 +187,7 @@ public class DXF extends Output
 		printWriter.print("  0\nTABLE\n");
 		printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
 		printWriter.print("  2\nLAYER\n");
+		writeDXFLayer(cell, Artwork.tech().findLayer("Graphics"));
 		for (Iterator<Layer> it = cell.getTechnology().getLayers(); it.hasNext(); )
 			writeDXFLayer(cell, it.next());
 		printWriter.print("  0\nENDTAB\n");
@@ -256,13 +258,14 @@ public class DXF extends Output
 			ArcInst ai = it.next();			
 			PortInst p0 = ai.getHeadPortInst();
 			PortInst p1 = ai.getTailPortInst();
+			String layerName = defaultDXFLayerName;
 			// write line
-			writeDXFLine(cell, p0.getCenter(), p1.getCenter(), defaultDXFLayerName);
+			writeDXFLine(cell, p0.getCenter(), p1.getCenter(), layerName);
 			// write variables
 			Poly[] texts = ai.getDisplayableVariables(ai.getBounds(), null, false, false);
 			for(int i=0; i<texts.length; i++) {
 				Poly poly = texts[i];
-				writeDXFText(cell, poly, defaultDXFLayerName);
+				writeDXFText(cell, poly, layerName);
 			}
 			// write geometry
 			Poly [] polys = ai.getProto().getTechnology().getShapeOfArc(ai);
@@ -273,9 +276,8 @@ public class DXF extends Output
 					errorLogger.logError("Null poly.getLayer()", poly, cell, dxfEntityHandle);
 					continue;
 				}
-				String layerName = defaultDXFLayerName;
-				if (layer.getDXFLayer() != null && layer.getDXFLayer().length() != 0)
-					layerName = layer.getDXFLayer();
+				layerName = layer.getName();
+				if (layer.getDXFLayer() != null && layer.getDXFLayer().length() != 0) layerName = layer.getDXFLayer();
 				writeDXFPoly(cell, poly, layerName);
 			}
 		}
@@ -290,7 +292,7 @@ public class DXF extends Output
 			if (ni.isCellInstance()) {
 				Cell subCell = (Cell)np;
 				printWriter.print("  0\nINSERT\n");
-				printWriter.print("  8\n" + defaultDXFLayerName + "\n");
+				printWriter.print("  8\n" + layerName + "\n");
 				printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
 				printWriter.print("  2\n" + getDXFCellName(subCell) + "\n");
 				Rectangle2D cellBounds = subCell.getBounds();
@@ -307,7 +309,7 @@ public class DXF extends Output
 			Poly[] texts = ni.getDisplayableVariables(ni.getBounds(), null, false, false);
 			for(int i=0; i<texts.length; i++) {
 				Poly poly = texts[i];
-				writeDXFText(cell, poly, defaultDXFLayerName);
+				writeDXFText(cell, poly, layerName);
 			}
 			// write geometry
 			Poly [] polys = ni.getProto().getTechnology().getShapeOfNode(ni);
@@ -318,6 +320,7 @@ public class DXF extends Output
 					errorLogger.logError("Null poly.getLayer()", poly, cell, dxfEntityHandle);
 					continue;
 				}
+				layerName = layer.getName();
 				if (layer.getDXFLayer() != null && layer.getDXFLayer().length() != 0) layerName = layer.getDXFLayer();
 				poly.transform(trans);
 				writeDXFPoly(cell, poly, layerName);
@@ -327,6 +330,8 @@ public class DXF extends Output
 	}
 
 	private void writeDXFLayer (Cell cell, Layer layer) {
+		String layerName = layer.getName();
+		if (layer.getDXFLayer() != null && layer.getDXFLayer().length() != 0) layerName = layer.getDXFLayer();
 		// traverse the standard palette
 		int red = layer.getGraphics().getColor().getRed();
 		int green = layer.getGraphics().getColor().getGreen();
@@ -335,7 +340,7 @@ public class DXF extends Output
 		int hsbcol = (int)(10+10*Math.floor(24*hsb[0])+1*Math.floor(5*(1.0-hsb[1])+5*(1.0-hsb[2])));
 		int rgbcol = (red<<16|green<<8|blue<<0);
 		printWriter.print("  0\nLAYER\n");
-		printWriter.print("  2\n" + layer.getDXFLayer() + "\n");
+		printWriter.print("  2\n" + layerName + "\n");
 		printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
 		printWriter.print(" 62\n" + hsbcol + "\n");
 		printWriter.print("420\n" + rgbcol + "\n");
@@ -378,14 +383,14 @@ public class DXF extends Output
 		}
 		// switch on vertical alignment
 		switch (poly.getStyle()) {
-		case TEXTBOX:
-		case TEXTCENT:
-			printWriter.print(" 73\n0\n"); break;
 		case TEXTBOT:
 		case TEXTBOTLEFT:
 		case TEXTBOTRIGHT:
+			printWriter.print(" 73\n0\n"); break;
+		case TEXTBOX:
 			printWriter.print(" 73\n1\n"); break;
 		case TEXTLEFT:
+		case TEXTCENT:
 		case TEXTRIGHT:
 			printWriter.print(" 73\n2\n"); break;
 		case TEXTTOP:
@@ -455,8 +460,8 @@ public class DXF extends Output
 				double x0 = TextUtils.convertDistance(points[0].getX(), localPrefs.tech, dxfDispUnit);
 				double y0 = TextUtils.convertDistance(points[0].getY(), localPrefs.tech, dxfDispUnit);
 				double r0 = TextUtils.convertDistance(points[0].distance(points[1]), localPrefs.tech, dxfDispUnit);
-				double a0 = DBMath.figureAngle(points[0], points[2])/10;
-				double a1 = DBMath.figureAngle(points[0], points[1])/10;
+				double a0 = GenMath.figureAngle(points[0], points[2])/10;
+				double a1 = GenMath.figureAngle(points[0], points[1])/10;
 				printWriter.print("  0\nARC\n");
 				printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
 				printWriter.print("  8\n" + layer + "\n");
@@ -473,86 +478,60 @@ public class DXF extends Output
 				for (int i = 0; i < points.length; i += 2) {
 					printWriter.print("  0\nLINE\n");
 					printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
-					Point2D pt = new Point2D.Double(points[0].getX() + xC, points[0].getY() + yC);
-					trans.transform(pt, pt);
-					double x = TextUtils.convertDistance(pt.getX(), localPrefs.tech, dxfDispUnit);
-					double y = TextUtils.convertDistance(pt.getY(), localPrefs.tech, dxfDispUnit);
-					printWriter.print(" 10\n" + formatDoubleJavaVersion(x) + "\n");
-					printWriter.print(" 20\n" + formatDoubleJavaVersion(y) + "\n");
-					printWriter.print(" 30\n0\n");
-					pt = new Point2D.Double(points[1].getX() + xC, points[1].getY() + yC);
-					trans.transform(pt, pt);
-					x = TextUtils.convertDistance(pt.getX(), localPrefs.tech, dxfDispUnit);
-					y = TextUtils.convertDistance(pt.getY(), localPrefs.tech, dxfDispUnit);
-					printWriter.print(" 11\n" + formatDoubleJavaVersion(x) + "\n");
-					printWriter.print(" 21\n" + formatDoubleJavaVersion(y) + "\n");
-					printWriter.print(" 31\n0\n");
-				} else
-				{
-					// should write a polyline here
-					for(int i=0; i<len-1; i++)
-					{
-						// line
-						if (points[i] == null || points[i+1] == null) continue;
-						printWriter.print("  0\nLINE\n");
-						printWriter.print("  8\n" + layerName + "\n");
-						printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
-						Point2D pt = new Point2D.Double(points[i].getX() + xC, points[i].getY() + yC);
-						trans.transform(pt, pt);
-						double x = TextUtils.convertDistance(pt.getX(), localPrefs.tech, dxfDispUnit);
-						double y = TextUtils.convertDistance(pt.getY(), localPrefs.tech, dxfDispUnit);
-						printWriter.print(" 10\n" + formatDoubleJavaVersion(x) + "\n");
-						printWriter.print(" 20\n" + formatDoubleJavaVersion(y) + "\n");
-						printWriter.print(" 30\n0\n");
-						pt = new Point2D.Double(points[i+1].getX() + xC, points[i+1].getY() + yC);
-						trans.transform(pt, pt);
-						x = TextUtils.convertDistance(pt.getX(), localPrefs.tech, dxfDispUnit);
-						y = TextUtils.convertDistance(pt.getY(), localPrefs.tech, dxfDispUnit);
-						printWriter.print(" 11\n" + formatDoubleJavaVersion(x) + "\n");
-						printWriter.print(" 21\n" + formatDoubleJavaVersion(y) + "\n");
-						printWriter.print(" 31\n0\n");
-					}
-					if (np == Artwork.tech().closedPolygonNode)
-					{
-						printWriter.print("  0\nLINE\n");
-						printWriter.print("  8\n" + layerName + "\n");
-						printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
-						Point2D pt = new Point2D.Double(points[len-1].getX() + xC, points[len-1].getY() + yC);
-						trans.transform(pt, pt);
-						double x = TextUtils.convertDistance(pt.getX(), localPrefs.tech, dxfDispUnit);
-						double y = TextUtils.convertDistance(pt.getY(), localPrefs.tech, dxfDispUnit);
-						printWriter.print(" 10\n" + formatDoubleJavaVersion(x) + "\n");
-						printWriter.print(" 20\n" + formatDoubleJavaVersion(y) + "\n");
-						printWriter.print(" 30\n0\n");
-						pt = new Point2D.Double(points[0].getX() + xC, points[0].getY() + yC);
-						trans.transform(pt, pt);
-						x = TextUtils.convertDistance(pt.getX(), localPrefs.tech, dxfDispUnit);
-						y = TextUtils.convertDistance(pt.getY(), localPrefs.tech, dxfDispUnit);
-						printWriter.print(" 11\n" + formatDoubleJavaVersion(x) + "\n");
-						printWriter.print(" 21\n" + formatDoubleJavaVersion(y) + "\n");
-						printWriter.print(" 31\n0\n");
+					printWriter.print("  8\n" + layer + "\n");
+					for (int j = 0; j < 2; j++) {
+						double xj = TextUtils.convertDistance(points[i+j].getX(), localPrefs.tech, dxfDispUnit);
+						double yj = TextUtils.convertDistance(points[i+j].getY(), localPrefs.tech, dxfDispUnit);
+						printWriter.print(" 1"+j+"\n" + TextUtils.formatDouble(xj) + "\n");
+						printWriter.print(" 2"+j+"\n" + TextUtils.formatDouble(yj) + "\n");
 					}
 				}
 			}
-
-			// write all other nodes
-			Poly [] polys = ni.getProto().getTechnology().getShapeOfNode(ni);
-			FixpTransform trans = ni.rotateOut();
-			for(int i=0; i<polys.length; i++)
-			{
-				Poly poly = polys[i];
-				poly.transform(trans);
-				if (poly.getStyle() == Poly.Type.FILLED)
-				{
-					printWriter.print("  0\nSOLID\n");
-					printWriter.print("  8\n" + layerName + "\n");
-					Point2D [] points = poly.getPoints();
-					for(int j=0; j<points.length; j++)
-					{
-						printWriter.print(" 1" + j + "\n" + formatDoubleJavaVersion(points[j].getX()) + "\n");
-						printWriter.print(" 2" + j + "\n" + formatDoubleJavaVersion(points[j].getY()) + "\n");
-						printWriter.print(" 3" + j + "\n0\n");
-					}
+			else errorLogger.logError("Malformed LINE", poly, cell, dxfEntityHandle);
+			break;
+		case FILLED:
+		case CLOSED:
+		case CROSSED:
+			if (points.length == 4) {
+				printWriter.print("  0\nSOLID\n");
+				printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
+				printWriter.print("  8\n" + layer + "\n");
+				double x0 = TextUtils.convertDistance(points[0].getX(), localPrefs.tech, dxfDispUnit);
+				double y0 = TextUtils.convertDistance(points[0].getY(), localPrefs.tech, dxfDispUnit);
+				double x1 = TextUtils.convertDistance(points[1].getX(), localPrefs.tech, dxfDispUnit);
+				double y1 = TextUtils.convertDistance(points[1].getY(), localPrefs.tech, dxfDispUnit);
+				double x2 = TextUtils.convertDistance(points[2].getX(), localPrefs.tech, dxfDispUnit);
+				double y2 = TextUtils.convertDistance(points[2].getY(), localPrefs.tech, dxfDispUnit);
+				double x3 = TextUtils.convertDistance(points[3].getX(), localPrefs.tech, dxfDispUnit);
+				double y3 = TextUtils.convertDistance(points[3].getY(), localPrefs.tech, dxfDispUnit);
+				printWriter.print(" 10"+"\n" + TextUtils.formatDouble(x0) + "\n");
+				printWriter.print(" 20"+"\n" + TextUtils.formatDouble(y0) + "\n");
+				printWriter.print(" 11"+"\n" + TextUtils.formatDouble(x1) + "\n");
+				printWriter.print(" 21"+"\n" + TextUtils.formatDouble(y1) + "\n");
+				printWriter.print(" 12"+"\n" + TextUtils.formatDouble(x3) + "\n");
+				printWriter.print(" 22"+"\n" + TextUtils.formatDouble(y3) + "\n");
+				printWriter.print(" 13"+"\n" + TextUtils.formatDouble(x2) + "\n");
+				printWriter.print(" 23"+"\n" + TextUtils.formatDouble(y3) + "\n");
+			}
+			else errorLogger.logError("Malformed SOLID", poly, cell, dxfEntityHandle);
+			break;
+		case OPENED:
+		case OPENEDT1:
+		case OPENEDT2:
+		case OPENEDT3:
+			if (points.length >= 2) {
+				printWriter.print("  0\nPOLYLINE\n");
+				printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
+				printWriter.print("  8\n" + layer + "\n");
+				printWriter.print(" 70\n0\n");
+				for(int j=0; j<points.length; j++) {
+					printWriter.print("  0\nVERTEX\n");
+					printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
+					double x = TextUtils.convertDistance(points[j].getX(), localPrefs.tech, dxfDispUnit);
+					double y = TextUtils.convertDistance(points[j].getY(), localPrefs.tech, dxfDispUnit);
+					printWriter.print(" 10" + "\n" + TextUtils.formatDouble(x) + "\n");
+					printWriter.print(" 20" + "\n" + TextUtils.formatDouble(y) + "\n");
+					printWriter.print(" 30\n0\n");
 				}
 				printWriter.print("  0\nSEQEND\n");
 			}
