@@ -509,6 +509,9 @@ public class LibToTech
                 case Info.TECHRESOLUTION:
 					gi.resolution = TextUtils.atof(str);
 					break;
+                case Info.TECHANGLESTEP:
+					gi.angleStep = TextUtils.atof(str);
+					break;
                 case Info.TECHFOUNDRY:
 					gi.defaultFoundry = str;
 					break;
@@ -2532,6 +2535,7 @@ public class LibToTech
 		t.scaleValue = gi.scale;
 		t.scaleRelevant = gi.scaleRelevant;
 		t.resolutionValue = gi.resolution;
+		t.angleStepValue = gi.angleStep;
 		t.defaultFoundry = gi.defaultFoundry;
 		t.minResistance = gi.minRes;
 		t.minCapacitance = gi.minCap;
@@ -2735,7 +2739,7 @@ public class LibToTech
             hy = Long.MIN_VALUE;
             for (int i = 0; i < nodeLayers.size(); i++) {
                 Xml.NodeLayer nl = nodeLayers.get(i);
-                long x, y;
+                long x, y, r;
                 if (nl.representation == Technology.NodeLayer.BOX || nl.representation == Technology.NodeLayer.MULTICUTBOX) {
                     x = DBMath.lambdaToGrid(nl.lx.value);
                     lx = Math.min(lx, x);
