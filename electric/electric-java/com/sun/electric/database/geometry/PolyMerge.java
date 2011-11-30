@@ -517,4 +517,21 @@ public class PolyMerge extends GeometryHandler implements Serializable
     {
         return PolyBase.getPointsInArea(area, layer, simple, true);
 	}
+
+    public Collection<PolyBase.PolyBaseTree> getTreeObjects(Object layer)
+    {
+		return getMergedTrees((Layer)layer);
+    }
+
+    public List<PolyBase.PolyBaseTree> getMergedTrees(Layer layer)
+	{
+		Area area = (Area)layers.get(layer);
+		if (area == null) return null;
+		return getAreaTrees(area, layer);
+	}
+
+    public static List<PolyBase.PolyBaseTree> getAreaTrees(Area area, Layer layer)
+    {
+        return PolyBase.getPolyTrees(area, layer);
+	}
 }
