@@ -23,14 +23,18 @@
  */
 package com.sun.electric.tool.lang;
 
-import com.sun.electric.database.hierarchy.Cell;
-import com.sun.electric.database.id.CellId;
-import com.sun.electric.database.topology.NodeInst;
+import com.sun.electric.util.TextUtils;
 import com.sun.electric.tool.Tool;
 import com.sun.electric.tool.Job;
 import com.sun.electric.tool.JobException;
 import com.sun.electric.tool.user.User;
-import com.sun.electric.util.TextUtils;
+import com.sun.electric.database.id.CellId;
+import com.sun.electric.database.variable.VarContext;
+import com.sun.electric.database.variable.Variable;
+import com.sun.electric.database.topology.NodeInst;
+import com.sun.electric.database.hierarchy.Cell;
+import com.sun.electric.database.hierarchy.Nodable;
+import com.sun.electric.database.hierarchy.HierarchyEnumerator;
 
 import java.util.List;
 import java.io.Reader;
@@ -48,6 +52,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.CompiledScript;
 import javax.script.Compilable;
+import javax.script.Invocable;
 
 public class EvalABCL {
 
@@ -122,4 +127,72 @@ public class EvalABCL {
             }
         }
     }
+
+	public static void enumerateCell(Cell cell, Object enter, Object exit, Object visit, Object info) {
+		VarContext context = VarContext.globalContext;
+		Visitor visitor = new Visitor(enter, exit, visit, info);
+		HierarchyEnumerator.enumerateCell(cell, context, visitor);
+	}
+
+	public static class CellInfo extends HierarchyEnumerator.CellInfo {
+		public Object info;
+		public CellInfo(Object info) {
+			this.info = info;
+		}
+	}
+
+	public static class Visitor extends HierarchyEnumerator.Visitor {
+		public Visitor(Object enterCell, Object exitCell, Object visitNodeInst, Object newCellInfo) {
+			this.scriptEngine = (Invocable) abclFactory.getScriptEngine();
+			this.enterCell = enterCell;
+			this.exitCell = exitCell;
+			this.visitNodeInst = visitNodeInst;
+			this.newCellInfo = newCellInfo;
+		}
+		private Invocable scriptEngine;
+		private Object enterCell;
+		private Object exitCell;
+		private Object visitNodeInst; 
+		private Object newCellInfo;
+		
+		public boolean enterCell(HierarchyEnumerator.CellInfo info) {
+			try {
+				return scriptEngine.invokeFunction("FUNCALL", enterCell, (Object) info) != null;
+			}
+			catch (Exception e) {
+				System.out.println("enterCell: " + info);
+				System.out.println("exception: " + e);
+				return true;
+			}		
+		}
+		public void exitCell(HierarchyEnumerator.CellInfo info) {
+			try {
+				scriptEngine.invokeFunction("FUNCALL", exitCell, (Object) info);
+			}
+			catch (Exception e) {
+				System.out.println("exitCell: " + info);
+				System.out.println("exception: " + e);
+			}		
+		}
+		public boolean visitNodeInst(Nodable node, HierarchyEnumerator.CellInfo info) {
+			try {
+				return scriptEngine.invokeFunction("FUNCALL", visitNodeInst, (Object) node, (Object) info) != null;
+			}
+			catch (Exception e) {
+				System.out.println("visitNodeInst: " + info);
+				System.out.println("exception: " + e);
+				return true;
+			}			
+		}
+		public CellInfo newCellInfo() {
+			try {
+				return new CellInfo(scriptEngine.invokeFunction("FUNCALL", newCellInfo));
+			}
+			catch (Exception e) {
+				System.out.println("newCellInfo:");
+				System.out.println("exception: " + e);
+				return new CellInfo(null);
+			}
+		}
+	}
 }
