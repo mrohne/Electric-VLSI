@@ -1286,7 +1286,7 @@ public class DXF extends Input<Object>
 		points[1] = new Point2D.Double(x2, y2);
 		points[2] = new Point2D.Double(x3, y3);
 		points[3] = new Point2D.Double(x4, y4);
-		ni.setTrace(points, ep);
+		ni.setTrace(points);
 		ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 		readSolids++;
 		return false;
@@ -1389,7 +1389,7 @@ public class DXF extends Input<Object>
 		points[1] = new Point2D.Double(x2, y2);
 		points[2] = new Point2D.Double(x3, y3);
 		points[3] = new Point2D.Double(x4, y4);
-		ni.setTrace(points, ep);
+		ni.setTrace(points);
 		ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 		read3DFaces++;
 		return false;
@@ -1459,7 +1459,7 @@ public class DXF extends Input<Object>
 						if (oldTrace[i] != null)
 							newTrace[i] = new Point2D.Double(cX + oldTrace[i].getX() * xSca, cY + oldTrace[i].getY() * ySca);
 					}
-					nNi.setTrace(newTrace, ep);
+					nNi.setTrace(newTrace);
 				}
 			} else if (ni.getProto() == Generic.tech().invisiblePinNode)
 			{
@@ -1547,7 +1547,7 @@ public class DXF extends Input<Object>
 						if (oldTrace[i] != null)
 							newTrace[i] = new Point2D.Double(oldTrace[i].getX() * xSca, oldTrace[i].getY() * ySca);
 					}
-					nNi.setTrace(newTrace, ep);
+					nNi.setTrace(newTrace);
 				}
 			} else if (ni.getProto() == Generic.tech().invisiblePinNode)
 			{
