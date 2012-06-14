@@ -1666,7 +1666,7 @@ public class DXF extends Input<Object>
 							if (ni == null) return true;
 							double startOffset = sA;
 							startOffset -= iAngle;
-							ni.setArcDegrees(startOffset * Math.PI / 1800.0, Math.PI);
+							ni.setArcDegrees(startOffset * Math.PI / 1800.0, Math.PI, ep);
 							ni.newVar(DXF_LAYER_KEY, layer.layerName);
 							continue;
 						}
@@ -1728,7 +1728,7 @@ public class DXF extends Input<Object>
 						if (sA > eA) eA += 3600.0;
 						double startOffset = sA;
 						startOffset -= iAngle;
-						ni.setArcDegrees(startOffset * Math.PI / 1800.0, (eA-sA) * Math.PI / 1800.0);
+						ni.setArcDegrees(startOffset * Math.PI / 1800.0, (eA-sA) * Math.PI / 1800.0, ep);
 						ni.newVar(DXF_LAYER_KEY, layer.layerName);
 						continue;
 					}
@@ -1776,7 +1776,7 @@ public class DXF extends Input<Object>
 	 * Method to compute a text orientation
 	 */
 	private TextDescriptor makeTextDescriptor(int hAlign, int vAlign, double angle, double size) {
-		TextDescriptor dsc = TextDescriptor.getNodeTextDescriptor();
+		TextDescriptor dsc = ep.getNodeTextDescriptor();
 		// Extract position
 		TextDescriptor.Position pos = TextDescriptor.Position.CENT;
 		switch (vAlign) {
