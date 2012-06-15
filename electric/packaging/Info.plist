@@ -52,7 +52,7 @@
 			<string>true</string>
 		</dict>
 		<key>VMOptions</key>
-		<string>-Xms16m -Xmx1200m -Dcom.apple.mrj.application.apple.menu.about.name=Electric</string>
+		<string>-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Xms64m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=1024m -Dcom.apple.mrj.application.apple.menu.about.name=Electric</string>
 	</dict>
 </dict>
 </plist>
