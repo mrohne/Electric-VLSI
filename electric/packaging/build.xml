@@ -260,6 +260,11 @@
 		</unjar>
 	</target>
 
+	<target name="copyBshJAR" description="Copy Jar files for Apple stubs and Bean Shell">
+		<unjar dest="${antBuild}" src="${beanshell}">
+			<patternset> <include name="bsh/"/> </patternset>
+		</unjar>
+	</target>
 	<target name="copyJythonJAR" description="Copy Jar file for Jythyon">
 		<unjar dest="${antBuild}" src="${jython}" />
 	</target>
@@ -294,7 +299,6 @@
 	</target>
 
 	<target name="createBuildDirectory" description="Create temporary build directory">
-		<delete dir="${antBuild}" />
 		<mkdir dir="${antBuild}"/>
 	</target>
 	
