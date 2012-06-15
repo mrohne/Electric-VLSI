@@ -144,6 +144,7 @@
 		<!-- the location of various JAR files -->
 		<property name="beanshell"          value="${packaging}/bsh-2.0b4.jar" />
 		<property name="jython"             value="${packaging}/jython.jar" />
+		<property name="abcl"               value="${packaging}/abcl.jar" />
 		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions-1.4.jar" />
 		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.7.jar" />
 		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.7.jar" />
@@ -177,8 +178,12 @@
 
 	<target name="compilePublic" description="Compile the public part of Electric">
 		<!-- deprecation flag: deprecation="true" -->
+<<<<<<< HEAD
 		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m"
 		       encoding="UTF-8" source="1.8" target="1.8">
+=======
+		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m" source="1.7" target="1.7">
+>>>>>>> More fixes to ant mac-app
 			<classpath>
 				<pathelement location="${slf4j-api}" />
 				<pathelement location="${slf4j-jdk}" />
@@ -216,13 +221,18 @@
 	</target>
 
 	<target name="compilePrivate" description="Compile the private part of Electric">
+<<<<<<< HEAD
 	  <javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricPrivateLoc}" fork="true" memoryMaximumSize="1024m"
 		 encoding="UTF-8" source="1.8" target="1.8">
+=======
+		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricPrivateLoc}" fork="true" memoryMaximumSize="1024m" source="1.7" target="1.7">
+>>>>>>> More fixes to ant mac-app
 			<classpath>
 				<pathelement location="${slf4j-api}" />
 				<pathelement location="${slf4j-jdk}" />
 				<pathelement location="${beanshell}" />
 				<pathelement location="${jython}" />
+				<pathelement location="${abcl}" />
 				<pathelement location="${AppleJava}" />
 				<pathelement location="${junit}" />
 				<pathelement location="${j3dcore}" />
@@ -265,14 +275,20 @@
 			<patternset> <include name="bsh/"/> </patternset>
 		</unjar>
 	</target>
+
 	<target name="copyJythonJAR" description="Copy Jar file for Jythyon">
 		<unjar dest="${antBuild}" src="${jython}" />
+	</target>
+
+	<target name="copyABCLJAR" description="Copy Jar file for ABCL">
+		<unjar dest="${antBuild}" src="${abcl}" />
 	</target>
 
 	<target name="incrementalJARs" unless="buildDirExists" description="Add JAR files only if incremental build is 'new'">
 		<antcall target="copyPublicJARs" />
 		<antcall target="copyPrivateJARs" />
 		<antcall target="copyJythonJAR" />
+		<antcall target="copyABCLJAR" />
 	</target>
 
 	<target name="copyGNUParts" description="Copy GNU license files">
@@ -306,12 +322,22 @@
 		<delete dir="${antBuild}" />
 	</target>
 
-	<target name="mac-app" depends="jarForGNUSource" description="Build Macintosh Application">
-		<!--java jar="electric.jar" fork="true" outputproperty="version">
-			<arg value="-v" />
-			<jvmarg value="-Xmx1000m" />
-		</java-->
-		<property name="releasedir" value="Release${version}" />
+	<target name="ensureBuildDirectory" unless="buildDirExists" description="Create temporary build directory">
+		<mkdir dir="${antBuild}"/>
+		<antcall target="copyPublicJARs" />
+		<antcall target="copyGNUParts" />
+		<antcall target="copyBshJAR" />
+		<antcall target="copyJythonJAR" />
+		<antcall target="copyABCLJAR" />
+	</target>
+	
+	<target name="mac-app" depends="initialize" description="Build Macintosh Application">
+	        <property name="jarname" value="electric-${version}.jar" />
+	        <antcall target="ensureBuildDirectory" />
+		<antcall target="compilePublic" />
+		<antcall target="createJARFile" />
+
+		<property name="releasedir" value="${packaging}/Release${version}" />
 		<property name="appdir" value="${releasedir}/Electric.app" />
 		<mkdir dir="${releasedir}" />
 		<mkdir dir="${appdir}" />
@@ -325,21 +351,18 @@
 		<replace file="${appdir}/Contents/Info.plist" token="@VERSION" value="${version}" />
 		<copy file="${packaging}/PkgInfo" todir="${appdir}/Contents" />
 		<copy file="${packaging}/electric.icns" todir="${appdir}/Contents/Resources" />
-		<copy file="${packaging}/electric-${version}.jar" todir="${appdir}/Contents/Resources/Java" />
-		<!--exec executable="/Developer/Tools/SetFile">
-			<arg value="-a" />
-			<arg value="B" />
-			<arg value="${appdir}" />
-		</exec-->
-		<exec executable="/usr/bin/SetFile">
+		<copy file="${packaging}/${jarname}" tofile="${appdir}/Contents/Resources/Java/electric.jar" />
+		<exec executable="/Developer/Tools/SetFile">
 			<arg value="-a" />
 			<arg value="B" />
 			<arg value="${appdir}" />
 		</exec>
+		<!--
 		<exec executable="${packaging}/mkdmg.sh">
 			<arg value="Electric${version}" />
 			<arg value="${releasedir}" />
 		</exec>
+		-->
 	</target>
 
 	<target name="clean" depends="initialize" description="Clean all build products">
@@ -347,10 +370,8 @@
 		<delete quiet="false">
 			<fileset dir=".">
 				<include name="electric*.jar" />
-				<include name="Electric*.img" />
 			</fileset>
 		</delete>
-		<delete dir="Release${version}" />
 	</target>
 
 </project>
