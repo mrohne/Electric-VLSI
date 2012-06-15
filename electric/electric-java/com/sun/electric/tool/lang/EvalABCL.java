@@ -29,6 +29,7 @@ import com.sun.electric.tool.Job;
 import com.sun.electric.tool.JobException;
 import com.sun.electric.tool.user.User;
 import com.sun.electric.database.id.CellId;
+import com.sun.electric.database.network.Netlist;
 import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.database.variable.Variable;
 import com.sun.electric.database.topology.NodeInst;
@@ -78,20 +79,25 @@ public class EvalABCL {
         return abclFactory != null;
     }
 
+	public static class Bypass extends Error {
+		public Bypass(Throwable e) {
+			super(e);
+		}
+	}
+
     public static boolean runScriptNoJob(String string) {
 		try {
 			return abclFactory.getScriptEngine().eval(string) != null;
-		} catch (ScriptException e) {
-			Throwable c = e.getCause();
-			System.out.println("ABCL: " + c != null ? c : e);
-			e.printStackTrace();
-			return false;
+		} catch (Throwable e) {
+			System.out.println("runScriptNoJob: " + e);
+			throw new Bypass(e);
 		}
 			
     }
 
     public static void runScript(String string, Job.Type jobType, Job.Priority jobPriority) {
-		(new ScriptJob(string, jobType, jobPriority)).startJob();
+		ScriptJob job = new ScriptJob(string, jobType, jobPriority);
+		job.startJob();
 	}
 
     public static void displayCell(Cell cell) {
@@ -128,71 +134,92 @@ public class EvalABCL {
         }
     }
 
-	public static void enumerateCell(Cell cell, Object enter, Object exit, Object visit, Object info) {
-		VarContext context = VarContext.globalContext;
-		Visitor visitor = new Visitor(enter, exit, visit, info);
-		HierarchyEnumerator.enumerateCell(cell, context, visitor);
+	public static void enumerate(Cell cell, Object enter, Object exit, Object visit) throws Throwable {
+		try {
+			VarContext context = VarContext.globalContext;
+			Visitor visitor = new Visitor(enter, exit, visit);
+			HierarchyEnumerator.enumerateCell(cell, context, visitor);
+		}
+		catch (Bypass e) {
+			System.out.println("enumerate: " + e);
+			throw e.getCause();
+		}
+	}
+
+	public static void enumerate(Netlist netlist, Object enter, Object exit, Object visit) throws Throwable {
+		try {
+			VarContext context = VarContext.globalContext;
+			Visitor visitor = new Visitor(enter, exit, visit);
+			HierarchyEnumerator.enumerateCell(netlist, context, visitor);
+		}
+		catch (Bypass e) {
+			System.out.println("enumerate: " + e);
+			throw e.getCause();
+		}
 	}
 
 	public static class CellInfo extends HierarchyEnumerator.CellInfo {
 		public Object info;
-		public CellInfo(Object info) {
+		public CellInfo() {
+			this.info = null;
+		}
+		public Object getInfo() {
+			return this.info;
+		}
+		public void setInfo(Object info) {
 			this.info = info;
 		}
 	}
 
 	public static class Visitor extends HierarchyEnumerator.Visitor {
-		public Visitor(Object enterCell, Object exitCell, Object visitNodeInst, Object newCellInfo) {
-			this.scriptEngine = (Invocable) abclFactory.getScriptEngine();
-			this.enterCell = enterCell;
-			this.exitCell = exitCell;
-			this.visitNodeInst = visitNodeInst;
-			this.newCellInfo = newCellInfo;
+		public Visitor(Object enter, Object exit, Object visit) throws ScriptException {
+			engine = abclFactory.getScriptEngine();
+			dunno = engine.eval("CL:NIL");
+			this.enter = enter;
+			this.exit = exit;
+			this.visit = visit;
 		}
-		private Invocable scriptEngine;
-		private Object enterCell;
-		private Object exitCell;
-		private Object visitNodeInst; 
-		private Object newCellInfo;
+		private ScriptEngine engine;
+		private Object dunno;
+		private Object enter;
+		private Object exit;
+		private Object visit; 
 		
 		public boolean enterCell(HierarchyEnumerator.CellInfo info) {
 			try {
-				return scriptEngine.invokeFunction("FUNCALL", enterCell, (Object) info) != null;
+				if (enter == null) return true;
+				Object retval = ((Invocable) engine).invokeFunction("CL:FUNCALL", enter, (Object) info);
+				return !retval.equals(dunno);
 			}
-			catch (Exception e) {
-				System.out.println("enterCell: " + info);
-				System.out.println("exception: " + e);
-				return true;
+			catch (Throwable e) {
+				System.out.println("enterCell: " + e);
+				throw new Bypass(e);
 			}		
 		}
 		public void exitCell(HierarchyEnumerator.CellInfo info) {
 			try {
-				scriptEngine.invokeFunction("FUNCALL", exitCell, (Object) info);
+				if (exit == null) return;
+				Object retval = ((Invocable) engine).invokeFunction("CL:FUNCALL", exit, (Object) info);
+				return;
 			}
-			catch (Exception e) {
-				System.out.println("exitCell: " + info);
-				System.out.println("exception: " + e);
+			catch (Throwable e) {
+				System.out.println("exitCell: " + e);
+				throw new Bypass(e);
 			}		
 		}
 		public boolean visitNodeInst(Nodable node, HierarchyEnumerator.CellInfo info) {
 			try {
-				return scriptEngine.invokeFunction("FUNCALL", visitNodeInst, (Object) node, (Object) info) != null;
+				if (visit == null) return true;
+				Object retval = ((Invocable) engine).invokeFunction("CL:FUNCALL", visit, (Object) node, (Object) info);
+				return !retval.equals(dunno);
 			}
-			catch (Exception e) {
-				System.out.println("visitNodeInst: " + info);
-				System.out.println("exception: " + e);
-				return true;
+			catch (Throwable e) {
+				System.out.println("visitNodeInst: " + e);
+				throw new Bypass(e);
 			}			
 		}
-		public CellInfo newCellInfo() {
-			try {
-				return new CellInfo(scriptEngine.invokeFunction("FUNCALL", newCellInfo));
-			}
-			catch (Exception e) {
-				System.out.println("newCellInfo:");
-				System.out.println("exception: " + e);
-				return new CellInfo(null);
-			}
+		public HierarchyEnumerator.CellInfo newCellInfo() {
+			return new CellInfo();
 		}
 	}
 }
