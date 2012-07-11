@@ -145,6 +145,7 @@
 		<property name="beanshell"          value="${packaging}/bsh-2.0b4.jar" />
 		<property name="jython"             value="${packaging}/jython.jar" />
 		<property name="abcl"               value="${packaging}/abcl.jar" />
+		<property name="abcl-contrib"       value="${packaging}/abcl-contrib.jar" />
 		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions-1.4.jar" />
 		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.7.jar" />
 		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.7.jar" />
@@ -233,6 +234,7 @@
 				<pathelement location="${beanshell}" />
 				<pathelement location="${jython}" />
 				<pathelement location="${abcl}" />
+				<pathelement location="${abcl-contrib}" />
 				<pathelement location="${AppleJava}" />
 				<pathelement location="${junit}" />
 				<pathelement location="${j3dcore}" />
@@ -282,6 +284,7 @@
 
 	<target name="copyABCLJAR" description="Copy Jar file for ABCL">
 		<unjar dest="${antBuild}" src="${abcl}" />
+		<unjar dest="${antBuild}" src="${abcl-contrib}" />
 	</target>
 
 	<target name="incrementalJARs" unless="buildDirExists" description="Add JAR files only if incremental build is 'new'">
