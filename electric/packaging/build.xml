@@ -355,7 +355,7 @@
 		<copy file="${packaging}/PkgInfo" todir="${appdir}/Contents" />
 		<copy file="${packaging}/electric.icns" todir="${appdir}/Contents/Resources" />
 		<copy file="${packaging}/${jarname}" tofile="${appdir}/Contents/Resources/Java/electric.jar" />
-		<exec executable="/Developer/Tools/SetFile">
+		<exec executable="SetFile">
 			<arg value="-a" />
 			<arg value="B" />
 			<arg value="${appdir}" />
