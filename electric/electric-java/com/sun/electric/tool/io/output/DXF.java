@@ -500,18 +500,34 @@ public class DXF extends Output
 				double y0 = TextUtils.convertDistance(points[0].getY(), localPrefs.tech, dxfDispUnit);
 				double x1 = TextUtils.convertDistance(points[1].getX(), localPrefs.tech, dxfDispUnit);
 				double y1 = TextUtils.convertDistance(points[1].getY(), localPrefs.tech, dxfDispUnit);
-				double x2 = TextUtils.convertDistance(points[2].getX(), localPrefs.tech, dxfDispUnit);
-				double y2 = TextUtils.convertDistance(points[2].getY(), localPrefs.tech, dxfDispUnit);
-				double x3 = TextUtils.convertDistance(points[3].getX(), localPrefs.tech, dxfDispUnit);
-				double y3 = TextUtils.convertDistance(points[3].getY(), localPrefs.tech, dxfDispUnit);
+				double x2 = TextUtils.convertDistance(points[3].getX(), localPrefs.tech, dxfDispUnit);
+				double y2 = TextUtils.convertDistance(points[3].getY(), localPrefs.tech, dxfDispUnit);
+				double x3 = TextUtils.convertDistance(points[2].getX(), localPrefs.tech, dxfDispUnit);
+				double y3 = TextUtils.convertDistance(points[2].getY(), localPrefs.tech, dxfDispUnit);
 				printWriter.print(" 10"+"\n" + TextUtils.formatDouble(x0) + "\n");
 				printWriter.print(" 20"+"\n" + TextUtils.formatDouble(y0) + "\n");
 				printWriter.print(" 11"+"\n" + TextUtils.formatDouble(x1) + "\n");
 				printWriter.print(" 21"+"\n" + TextUtils.formatDouble(y1) + "\n");
-				printWriter.print(" 12"+"\n" + TextUtils.formatDouble(x3) + "\n");
-				printWriter.print(" 22"+"\n" + TextUtils.formatDouble(y3) + "\n");
-				printWriter.print(" 13"+"\n" + TextUtils.formatDouble(x2) + "\n");
+				printWriter.print(" 12"+"\n" + TextUtils.formatDouble(x2) + "\n");
+				printWriter.print(" 22"+"\n" + TextUtils.formatDouble(y2) + "\n");
+				printWriter.print(" 13"+"\n" + TextUtils.formatDouble(x3) + "\n");
 				printWriter.print(" 23"+"\n" + TextUtils.formatDouble(y3) + "\n");
+			}
+			else if (points.length >= 2) {
+				printWriter.print("  0\nPOLYLINE\n");
+				printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
+				printWriter.print("  8\n" + layer + "\n");
+				printWriter.print(" 70\n0\n");
+				for(int j=0; j<points.length; j++) {
+					printWriter.print("  0\nVERTEX\n");
+					printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
+					double x = TextUtils.convertDistance(points[j].getX(), localPrefs.tech, dxfDispUnit);
+					double y = TextUtils.convertDistance(points[j].getY(), localPrefs.tech, dxfDispUnit);
+					printWriter.print(" 10" + "\n" + TextUtils.formatDouble(x) + "\n");
+					printWriter.print(" 20" + "\n" + TextUtils.formatDouble(y) + "\n");
+					printWriter.print(" 30\n0\n");
+				}
+				printWriter.print("  0\nSEQEND\n");
 			}
 			else errorLogger.logError("Malformed SOLID", poly, cell, dxfEntityHandle);
 			break;
