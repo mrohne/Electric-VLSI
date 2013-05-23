@@ -142,7 +142,7 @@ public class DXF extends Input<Object>
 			if (in.openTextInput(fileURL)) return null;
 
             // Librarys before loading
-            HashSet oldLibs = new HashSet();
+            HashSet<Library> oldLibs = new HashSet<Library>();
             for (Iterator<Library> it = Library.getLibraries(); it.hasNext(); )
                 oldLibs.add(it.next());
             oldLibs.remove(lib);
@@ -1005,7 +1005,7 @@ public class DXF extends Input<Object>
 				double sX = found.getDefWidth();
 				double sY = found.getDefHeight();
                 Orientation orient = Orientation.fromAngle(rot*10);
-				NodeInst ni = NodeInst.makeInstance(found, new Point2D.Double(x, y), sX, sY, curCell, orient, null);
+				NodeInst ni = NodeInst.makeInstance(found, ep, new Point2D.Double(x, y), sX, sY, curCell, orient, null);
 				if (ni == null) return true;
 			}
 		}
@@ -1080,9 +1080,9 @@ public class DXF extends Input<Object>
 		}
 		if (!isAcceptableLayer(layer)) return false;
 		NodeProto np = Artwork.tech().pinNode;
-		NodeInst ni = NodeInst.makeInstance(np, new Point2D.Double(x1, y1), 0.0, 0.0, curCell);
+		NodeInst ni = NodeInst.makeInstance(np, ep, new Point2D.Double(x1, y1), 0.0, 0.0, curCell);
 		if (ni == null) return true;
-		ni.newVar(DXF_LAYER_KEY, layer.layerName);
+		ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 		readPoints++;
 		return false;
 	}
@@ -1442,7 +1442,7 @@ public class DXF extends Input<Object>
 			double cY = ni.getAnchorCenterY();
 			Point2D tPt = new Point2D.Double(cX, cY);
 			trans.transform(tPt, tPt);
-			NodeInst nNi = NodeInst.makeInstance(ni.getProto(), tPt, sX, sY, np, orient.concatenate(ni.getOrient()), null);
+			NodeInst nNi = NodeInst.makeInstance(ni.getProto(), ep, tPt, sX, sY, np, orient.concatenate(ni.getOrient()), null);
 			if (nNi == null) continue;
 			nodeMap.put(ni, nNi);
 			if (ni.getProto() == Artwork.tech().closedPolygonNode || ni.getProto() == Artwork.tech().filledPolygonNode ||
@@ -1495,7 +1495,7 @@ public class DXF extends Input<Object>
 			NodeInst nN2 = nodeMap.get(p2.getNodeInst());
 			PortInst nP2 = nN2.findPortInstFromProto(p2.getPortProto());
 			ArcProto nAp = ai.getProto();
-			ArcInst nAi = ArcInst.makeInstance(nAp, nP1, nP2);
+			ArcInst nAi = ArcInst.makeInstance(nAp, ep, nP1, nP2);
 			arcMap.put(ai, nAi);
 		}
 		// System.out.println("Number of arcs: "+arcMap.size());
@@ -1662,12 +1662,12 @@ public class DXF extends Input<Object>
 							int iAngle = (int)sA;
 							double rad = new Point2D.Double(cX, cY).distance(new Point2D.Double(x1, y1));
                             Orientation orient = Orientation.fromAngle(iAngle);
-							NodeInst ni = NodeInst.makeInstance(Artwork.tech().circleNode, new Point2D.Double(cX, cY), rad*2, rad*2, curCell, orient, null);
+							NodeInst ni = NodeInst.makeInstance(Artwork.tech().circleNode, ep, new Point2D.Double(cX, cY), rad*2, rad*2, curCell, orient, null);
 							if (ni == null) return true;
 							double startOffset = sA;
 							startOffset -= iAngle;
 							ni.setArcDegrees(startOffset * Math.PI / 1800.0, Math.PI, ep);
-							ni.newVar(DXF_LAYER_KEY, layer.layerName);
+							ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 							continue;
 						}
 
@@ -1723,13 +1723,13 @@ public class DXF extends Input<Object>
 						// create the arc node
 						int iAngle = (int)sA;
                         Orientation orient = Orientation.fromAngle(iAngle);
-						NodeInst ni = NodeInst.makeInstance(Artwork.tech().circleNode, new Point2D.Double(x1, y1), rad*2, rad*2, curCell, orient, null);
+						NodeInst ni = NodeInst.makeInstance(Artwork.tech().circleNode, ep, new Point2D.Double(x1, y1), rad*2, rad*2, curCell, orient, null);
 						if (ni == null) return true;
 						if (sA > eA) eA += 3600.0;
 						double startOffset = sA;
 						startOffset -= iAngle;
 						ni.setArcDegrees(startOffset * Math.PI / 1800.0, (eA-sA) * Math.PI / 1800.0, ep);
-						ni.newVar(DXF_LAYER_KEY, layer.layerName);
+						ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 						continue;
 					}
 
@@ -1737,13 +1737,13 @@ public class DXF extends Input<Object>
 					double cX = (x1 + x2) / 2;
 					double cY = (y1 + y2) / 2;
 					NodeProto np = Artwork.tech().openedPolygonNode;
-					NodeInst ni = NodeInst.makeInstance(np, new Point2D.Double(cX, cY), Math.abs(x1 - x2), Math.abs(y1 - y2), curCell);
+					NodeInst ni = NodeInst.makeInstance(np, ep, new Point2D.Double(cX, cY), Math.abs(x1 - x2), Math.abs(y1 - y2), curCell);
 					if (ni == null) return true;
 					Point2D [] points = new Point2D[2];
 					points[0] = new Point2D.Double(x1, y1);
 					points[1] = new Point2D.Double(x2, y2);
 					ni.setTrace(points);
-					ni.newVar(DXF_LAYER_KEY, layer.layerName);
+					ni.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 				}
 			} else
 			{
@@ -1755,17 +1755,17 @@ public class DXF extends Input<Object>
 				{
 					PolyPoint pp = polyPoints.get(i);
 					nt = nh;
-					nh = NodeInst.makeInstance(np, new Point2D.Double(pp.x, pp.y), 0.0, 0.0, curCell);
-					nh.newVar(DXF_LAYER_KEY, layer.layerName);
+					nh = NodeInst.makeInstance(np, ep, new Point2D.Double(pp.x, pp.y), 0.0, 0.0, curCell);
+					nh.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 					if (n0 == null) n0 = nh;
 					if (nt == null) continue;
 					if (nh == null) continue;
-					ArcInst ai = ArcInst.makeInstanceBase(ap, width, nh.getOnlyPortInst(), nt.getOnlyPortInst());
-					ai.newVar(DXF_LAYER_KEY, layer.layerName);
+					ArcInst ai = ArcInst.makeInstanceBase(ap, ep, width, nh.getOnlyPortInst(), nt.getOnlyPortInst());
+					ai.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 				}
 				if (closed && n0 != null && nt != null) {
-					ArcInst ai = ArcInst.makeInstanceBase(ap, width, n0.getOnlyPortInst(), nh.getOnlyPortInst());
-					ai.newVar(DXF_LAYER_KEY, layer.layerName);
+					ArcInst ai = ArcInst.makeInstanceBase(ap, ep, width, n0.getOnlyPortInst(), nh.getOnlyPortInst());
+					ai.newVar(DXF_LAYER_KEY, layer.layerName, ep);
 				}
 			}
 		}
