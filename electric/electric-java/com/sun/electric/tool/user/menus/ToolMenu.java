@@ -2341,7 +2341,7 @@ public class ToolMenu {
     		System.out.println("ABCL is not installed");
     		return;
     	}
-        String fileName = OpenFile.chooseInputFile(FileType.ABCL, null);
+        String fileName = OpenFile.chooseInputFile(FileType.ABCL, null, null);
 		EvalABCL.runScriptNoJob("(LOAD #p\""+fileName+"\")");
     }
 
