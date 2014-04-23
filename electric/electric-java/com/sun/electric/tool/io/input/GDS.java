@@ -38,6 +38,7 @@ import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.hierarchy.EDatabase;
 import com.sun.electric.database.hierarchy.Export;
 import com.sun.electric.database.hierarchy.Library;
+import com.sun.electric.database.hierarchy.View;
 import com.sun.electric.database.id.CellId;
 import com.sun.electric.database.id.ExportId;
 import com.sun.electric.database.id.PortProtoId;
@@ -46,8 +47,11 @@ import com.sun.electric.database.prototype.PortCharacteristic;
 import com.sun.electric.database.prototype.PortProto;
 import com.sun.electric.database.text.Name;
 import com.sun.electric.database.text.TextUtils;
+import com.sun.electric.database.text.CellName;
 import com.sun.electric.database.topology.Geometric;
 import com.sun.electric.database.topology.NodeInst;
+import com.sun.electric.database.topology.ArcInst;
+import com.sun.electric.database.topology.PortInst;
 import com.sun.electric.database.variable.ElectricObject;
 import com.sun.electric.database.variable.MutableTextDescriptor;
 import com.sun.electric.database.variable.TextDescriptor;
@@ -65,6 +69,7 @@ import com.sun.electric.tool.io.FileType;
 import com.sun.electric.tool.io.GDSReader;
 import com.sun.electric.tool.io.GDSReader.GSymbol;
 import com.sun.electric.tool.io.IOTool;
+import com.sun.electric.tool.io.input.CellArrayBuilder;
 import com.sun.electric.tool.ncc.basic.NccCellAnnotations;
 import com.sun.electric.tool.user.dialogs.OpenFile;
 import com.sun.electric.tool.user.ui.LayerVisibility;
@@ -84,6 +89,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -511,7 +517,7 @@ public class GDS extends Input<Object>
             allBuilders.put(cell.getId(), this);
         }
 
-		private void makeInstance(NodeProto proto, Point2D loc, Orientation orient, double wid, double hei,
+        private void makeInstance(NodeProto proto, Point2D loc, Orientation orient, double scale, double wid, double hei,
 			EPoint[] points, UnknownLayerMessage ulm)
 		{
 			if (proto == null) return;
@@ -528,7 +534,7 @@ public class GDS extends Input<Object>
 			}
 
 			String name = (ulm != null) ? ulm.nodeName: null;
-			MakeInstance mi = new MakeInstance(this, proto, loc, orient, wid, hei, points, null, Name.findName(name), false);
+			MakeInstance mi = new MakeInstance(this, proto, loc, orient, scale, wid, hei, points, null, Name.findName(name), false);
 			insts.add(mi);
 			if (ulm != null)
 			{
@@ -538,7 +544,7 @@ public class GDS extends Input<Object>
 			}
         }
 
-		private void makeInstanceArray(NodeProto proto, int nCols, int nRows, Orientation orient,
+		private void makeInstanceArray(NodeProto proto, int nCols, int nRows, Orientation orient, double scale,
 			Point2D startLoc, Point2D rowOffset, Point2D colOffset)
 		{
 			if (localPrefs.skeletonize)
@@ -573,9 +579,8 @@ public class GDS extends Input<Object>
 	    		}
 	    		return;
 			}
-            MakeInstanceArray mia =
-                new MakeInstanceArray(proto, nCols, nRows, orient, new Point2D.Double(startLoc.getX(), startLoc.getY()),
-                                      rowOffset, colOffset, localPrefs);
+            MakeInstanceArray mia = new MakeInstanceArray(proto, nCols, nRows, orient, scale,
+            	new Point2D.Double(startLoc.getX(), startLoc.getY()), rowOffset, colOffset, localPrefs);
             instArrays.add(mia);
         }
 
@@ -597,7 +602,7 @@ public class GDS extends Input<Object>
 					doSkeleton(proto, loc, orient, wid, hei, null);
 	    			if (!topLevel) return;
 				}
-				lastExportInstance = new MakeInstance(this, proto, loc, orient, wid, hei, null, exportName, null, false);
+				lastExportInstance = new MakeInstance(this, proto, loc, orient, 1.0, wid, hei, null, exportName, null, false);
 		        insts.add(lastExportInstance);
 				if (ulm != null)
 				{
@@ -618,7 +623,7 @@ public class GDS extends Input<Object>
     			return;
 			}
 
-			MakeInstance mi = new MakeInstance(this, proto, loc, Orientation.IDENT, 0, 0, null, text, null, true);
+			MakeInstance mi = new MakeInstance(this, proto, loc, Orientation.IDENT, 1.0, 0, 0, null, text, null, true);
 			insts.add(mi);
 			if (ulm != null)
 			{
@@ -659,25 +664,6 @@ public class GDS extends Input<Object>
                 }
 			}
 
-            makeInstances();
-            
-            if (localPrefs.skeletonize)
-            {
-	        	// add essential bounds nodes in top cell
-	        	PrimitiveNode corner = Generic.tech().essentialBoundsNode;
-	        	double width = corner.getDefWidth(ep);
-	        	double height = corner.getDefHeight(ep);
-	        	NodeInst.makeInstance(corner, ep, new Point2D.Double(skeletonHX, skeletonHY), width, height, cell, Orientation.IDENT, null);
-	        	NodeInst.makeInstance(corner, ep, new Point2D.Double(skeletonLX, skeletonHY), width, height, cell, Orientation.R, null);
-	        	NodeInst.makeInstance(corner, ep, new Point2D.Double(skeletonLX, skeletonLY), width, height, cell, Orientation.RR, null);
-	        	NodeInst.makeInstance(corner, ep, new Point2D.Double(skeletonHX, skeletonLY), width, height, cell, Orientation.RRR, null);
-            }
-
-			assert builtCells.contains(this.cell.getId());
-        }
-
-        private void makeInstances()
-        {
 			boolean countOff = false;
 			if (SHOWPROGRESS)
 			{
@@ -700,7 +686,7 @@ public class GDS extends Input<Object>
 					System.out.println("        Made " + count + " instances");
 
 				// make the instance
-                mi.instantiate(this, exportUnify, null);
+                mi.instantiate(this, cell, exportUnify, null);
 			}
             createNodes();
 
@@ -799,7 +785,7 @@ public class GDS extends Input<Object>
                 }
 
                 // make the instance
-                mi.instantiate(this, exportUnify, null);
+                mi.instantiate(this, cell, exportUnify, null);
 			}
 
 			for(UnknownLayerMessage ulm : allErrorInsts.keySet())
@@ -830,7 +816,7 @@ public class GDS extends Input<Object>
 					System.out.println("        Made " + count + " instances");
 
 				// make the instance array
-                mia.instantiate(this, massiveMerge);
+                mia.instantiate(this, cell, massiveMerge);
 			}
 			List<NodeProto> mergeNodeSet = new ArrayList<NodeProto>();
 			for(NodeProto np : massiveMerge.keySet()) mergeNodeSet.add(np);
@@ -1224,17 +1210,18 @@ public class GDS extends Input<Object>
     	private NodeProto proto;
     	private int nCols, nRows;
     	private Orientation orient;
+		private double scale;
     	private Point2D startLoc, rowOffset, colOffset;
     	private GDSPreferences localPrefs;
-//        private GDS gds;
 
-    	private MakeInstanceArray(NodeProto proto, int nCols, int nRows, Orientation orient, Point2D startLoc,
+    	private MakeInstanceArray(NodeProto proto, int nCols, int nRows, Orientation orient, double scale, Point2D startLoc,
     		Point2D rowOffset, Point2D colOffset, GDSPreferences localPrefs)
     	{
     		this.proto = proto;
     		this.nCols = nCols;
     		this.nRows = nRows;
     		this.orient = orient;
+    		this.scale = scale;
     		this.startLoc = startLoc;
     		this.rowOffset = rowOffset;
     		this.colOffset = colOffset;
@@ -1245,9 +1232,10 @@ public class GDS extends Input<Object>
          * Method to instantiate an array of cell instances.
          * @param parent the Cell in which to create the geometry.
          */
-        private void instantiate(CellBuilder cb, Map<NodeProto,List<EPoint>> massiveMerge)
+        private void instantiate(CellBuilder cb, Cell parent, Map<NodeProto,List<EPoint>> massiveMerge)
         {
-            Cell parent = cb.cell;
+            assert parent.isLinked();
+			if (proto instanceof Cell) proto = scaleCell((Cell)proto, scale);
         	int arraySimplification = localPrefs.arraySimplification;
             NodeInst subNi = null;
             Cell subCell = (Cell)proto;
@@ -1403,7 +1391,8 @@ public class GDS extends Input<Object>
 		private NodeProto proto;
 		private final Point2D loc;
 		private final Orientation orient;
-        private double wid, hei;
+		private final double scale;
+        private final double wid, hei;
         private final EPoint[] points; // trace
         private String exportOrTextName; // export
         private boolean isVariableText; // for annotation text
@@ -1412,12 +1401,13 @@ public class GDS extends Input<Object>
         private PortCharacteristic pc;
         private ImmutableNodeInst n;
 
-        private MakeInstance(CellBuilder cb, NodeProto proto, Point2D loc, Orientation orient, double wid, double hei, EPoint[] points,
+        private MakeInstance(CellBuilder cb, NodeProto proto, Point2D loc, Orientation orient, double scale, double wid, double hei, EPoint[] points,
         	String exportOrTextName, Name nodeName, boolean isVar)
 		{
 			this.proto = proto;
 			this.loc = loc;
             this.orient = orient;
+            this.scale = scale;
             this.wid = DBMath.round(wid);
             this.hei = DBMath.round(hei);
             this.points = points;
@@ -1483,10 +1473,10 @@ public class GDS extends Input<Object>
          * @param saveHere a list of ImmutableNodeInst to save this instance in.
          * @return true if the export had to be renamed.
          */
-        private void instantiate(CellBuilder cb, Map<String,String> exportUnify, List<ImmutableNodeInst> saveHere)
+        private void instantiate(CellBuilder cb, Cell parent, Map<String,String> exportUnify, List<ImmutableNodeInst> saveHere)
         {
-            Cell parent = cb.cell;
             assert parent.isLinked();
+			if (proto instanceof Cell) proto = scaleCell((Cell)proto, scale);
             // search for spare nodeId
             int nodeId = cb.nodeId++;
             assert nodeName != null;
@@ -1808,11 +1798,11 @@ public class GDS extends Input<Object>
     					}
 
     					// store the trace information
-                        theCell.makeInstance(pnp, ctr, Orientation.IDENT, box.getWidth(), box.getHeight(), points, null);
+                        theCell.makeInstance(pnp, ctr, Orientation.IDENT, 1.0, box.getWidth(), box.getHeight(), points, null);
     				} else
     				{
     					Point2D ctr = EPoint.fromLambda(box.getCenterX(), box.getCenterY());
-                        theCell.makeInstance(pnp, ctr, Orientation.IDENT, box.getWidth(), box.getHeight(), null, null);
+                        theCell.makeInstance(pnp, ctr, Orientation.IDENT, 1.0, box.getWidth(), box.getHeight(), null, null);
     				}
     			}
     		}
@@ -1833,7 +1823,7 @@ public class GDS extends Input<Object>
 		if (gdsRead.getTokenType() != GDSReader.GDS_IDENT) gdsRead.handleError("Structure name is missing");
 
 		// look for this nodeproto
-		String name = gdsRead.getStringValue();
+		String name = scaleName(gdsRead.getStringValue(), 1.0);
 		if (localPrefs.dumpReadable)
 		{
 			printWriter.println();
@@ -1944,16 +1934,18 @@ public class GDS extends Input<Object>
 		gdsRead.getToken();
 
 		// get this nodeproto
-		getPrototype(gdsRead.getStringValue());
+		Cell np = getPrototype(gdsRead.getStringValue());
 		gdsRead.getToken();
 		int angle = 0;
 		boolean trans = false;
+		double scale = 1.0;
 		if (gdsRead.getTokenType() == GDSReader.GDS_STRANS)
 		{
 			ReadOrientation ro = new ReadOrientation();
 			ro.doIt();
 			angle = ro.angle;
 			trans = ro.trans;
+			scale = ro.scale;
 		}
 		int nCols = 0, nRows = 0;
 		if (gdsRead.getTokenType() == GDSReader.GDS_COLROW)
@@ -1996,7 +1988,7 @@ public class GDS extends Input<Object>
 				(theVertices[2].getY() - theVertices[0].getY()) / nRows);
 		}
 
-		theCell.makeInstanceArray(theNodeProto, nCols, nRows, Orientation.fromJava(angle, mX, mY),
+		theCell.makeInstanceArray(np, nCols, nRows, Orientation.fromJava(angle, mX, mY), scale,
 			theVertices[0], rowInterval, colInterval);
 		if (localPrefs.dumpReadable) printWriter.println("-- Array Reference: " + nCols + "x" + nRows + " of " + theNodeProto.describe(false));
 	}
@@ -2047,16 +2039,18 @@ public class GDS extends Input<Object>
 		if (gdsRead.getTokenType() != GDSReader.GDS_SNAME) gdsRead.handleError("Structure reference name is missing");
 
 		gdsRead.getToken();
-		getPrototype(gdsRead.getStringValue());
+		Cell np = getPrototype(gdsRead.getStringValue());
 		gdsRead.getToken();
 		int angle = 0;
 		boolean trans = false;
+		double scale = 1.0;
 		if (gdsRead.getTokenType() == GDSReader.GDS_STRANS)
 		{
 			ReadOrientation ro = new ReadOrientation();
 			ro.doIt();
 			angle = ro.angle;
 			trans = ro.trans;
+			scale = ro.scale;
 		}
 		if (gdsRead.getTokenType() != GDSReader.GDS_XY) gdsRead.handleError("Structure reference has no translation value");
 		gdsRead.getToken();
@@ -2075,7 +2069,7 @@ public class GDS extends Input<Object>
 			mY = true;
 			angle = (angle + 900) % 3600;
 		}
-		theCell.makeInstance(theNodeProto, loc, Orientation.fromJava(angle, false, mY), 0, 0, null, null);
+		theCell.makeInstance(np, loc, Orientation.fromJava(angle, false, mY), scale, 0, 0, null, null);
 		if (localPrefs.dumpReadable) printWriter.println("-- Instance of " + theNodeProto.noLibDescribe() +
         	" at (" + TextUtils.formatDistance(loc.getX()) + "," + TextUtils.formatDistance(loc.getY()) + ")");
 	}
@@ -2164,7 +2158,7 @@ public class GDS extends Input<Object>
 				}
 			} else
 			{
-                theCell.makeInstance(layerNodeProto, ctr, Orientation.IDENT, sX, sY, null, currentUnknownLayerMessage);
+                theCell.makeInstance(layerNodeProto, ctr, Orientation.IDENT, 1.0, sX, sY, null, currentUnknownLayerMessage);
 			}
 			return;
 		}
@@ -2205,7 +2199,7 @@ public class GDS extends Input<Object>
 
 				// now create the node
                 theCell.makeInstance(layerNodeProto, EPoint.fromLambda((lx+hx)/2, (ly+hy)/2),
-                	Orientation.IDENT, hx-lx, hy-ly, points, currentUnknownLayerMessage);
+									 Orientation.IDENT, 1.0, hx-lx, hy-ly, points, currentUnknownLayerMessage);
 			}
 			return;
 		}
@@ -2335,8 +2329,9 @@ public class GDS extends Input<Object>
 					Rectangle2D polyBox = poly.getBox();
 					if (polyBox != null)
 					{
-                        theCell.makeInstance(layerNodeProto, EPoint.fromLambda(polyBox.getCenterX(),
-                        	polyBox.getCenterY()), Orientation.IDENT, polyBox.getWidth(), polyBox.getHeight(), null, currentUnknownLayerMessage);
+                        theCell.makeInstance(layerNodeProto,
+											 EPoint.fromLambda(polyBox.getCenterX(), polyBox.getCenterY()),
+											 Orientation.IDENT, 1.0, polyBox.getWidth(), polyBox.getHeight(), null, currentUnknownLayerMessage);
 					} else
 					{
 						polyBox = poly.getBounds2D();
@@ -2352,7 +2347,7 @@ public class GDS extends Input<Object>
 						}
 
 						// store the trace information
-                        theCell.makeInstance(layerNodeProto, EPoint.fromLambda(cx, cy), Orientation.IDENT,
+                        theCell.makeInstance(layerNodeProto, EPoint.fromLambda(cx, cy), Orientation.IDENT, 1.0,
                         	polyBox.getWidth(), polyBox.getHeight(), points, currentUnknownLayerMessage);
 					}
 				}
@@ -2410,7 +2405,7 @@ public class GDS extends Input<Object>
 		if (!localPrefs.mergeBoxes)
 		{
             theCell.makeInstance(layerNodeProto, new Point2D.Double(theVertices[0].getX(), theVertices[0].getY()),
-            	Orientation.IDENT, 0, 0, null, currentUnknownLayerMessage);
+								 Orientation.IDENT, 1.0, 0, 0, null, currentUnknownLayerMessage);
 		}
 		if (localPrefs.dumpReadable) printWriter.println("-- Node on " + (layerIsPin ? "pin " : "") + "layer " + curLayerNum + "/" + curLayerType +
         	" (" + layerNodeProto.describe(false) + ") at (" + TextUtils.formatDistance(theVertices[0].getX()) + "," + TextUtils.formatDistance(theVertices[0].getY()) + ")");
@@ -2814,10 +2809,11 @@ public class GDS extends Input<Object>
 		gdsRead.getToken();
 	}
 
-	private void getPrototype(String name)
+	private Cell getPrototype(String name)
 		throws Exception
 	{
 		// scan for this prototype
+		name = scaleName(name, 1.0);
 		if (localPrefs.skeletonize) name += "{lay.sk}"; else
 			name += "{lay}";
 		Cell np = findCell(name);
@@ -2832,8 +2828,88 @@ public class GDS extends Input<Object>
 		}
 
 		// set the reference node prototype
-		theNodeProto = np;
+		return np;
 	}
+   
+	private DecimalFormat scaleFormat = new DecimalFormat("#.###");
+	private String scaleName(String name, double scale)
+	{
+		// name for scaled cell
+		String full = (scale == 1.0) ? name : name  + "$" + scaleFormat.format(scale);
+		View view = localPrefs.skeletonize ? View.LAYOUTSKEL : View.LAYOUT;
+		int version = 0;
+		return CellName.newName(full, view, version).toString();
+	}
+    private Cell scaleCell(Cell orig, double scale)
+    {
+		// don't scale to unity
+		if (scale == 1.0) return orig;
+		// construct name for scaled cell
+		String name = scaleName(orig.getName(), scale);
+		// search for scaled cell
+		Cell cell = findCell(name);
+		if (cell != null) return cell;         
+		// create new cell
+		System.out.println("Creating scaled cell: " + name);
+		cell = Cell.newInstance(theLibrary, name);
+		if (cell == null) return cell;
+		// copy nodes
+		Map<NodeInst,NodeInst> nodeMap = new HashMap<NodeInst,NodeInst>();
+		for(Iterator<NodeInst> it = orig.getNodes(); it.hasNext(); ) {
+			NodeInst oi = it.next();
+			NodeProto proto = oi.getProto();
+			if (proto instanceof Cell) proto = scaleCell((Cell)proto, scale);
+			double px = oi.getAnchorCenterX();
+			double py = oi.getAnchorCenterY();
+			double wd = oi.getXSize();
+			double ht = oi.getYSize();
+			Orientation or = oi.getOrient();
+			String nn = oi.getName();
+			NodeInst ni = NodeInst.makeInstance(proto, ep, EPoint.fromLambda(px*scale, py*scale), wd*scale, ht*scale, cell, or, nn);
+			EPoint [] oldTrace = oi.getTrace();
+			if (oldTrace != null) {
+				int len = oldTrace.length;
+				EPoint [] newTrace = new EPoint[len];
+				for(int i=0; i<len; i++) {
+					if (oldTrace[i] != null) {
+						double qx = oldTrace[i].getLambdaX();
+						double qy = oldTrace[i].getLambdaY();
+						newTrace[i] = EPoint.fromLambda((px+qx)*scale, (py+qy)*scale);
+					}
+				}
+				ni.setTrace(newTrace);
+			}
+			nodeMap.put(oi, ni);
+		}
+		// copy arcs
+		for(Iterator<ArcInst> it = orig.getArcs(); it.hasNext(); ) {
+			ArcInst oi = it.next();
+			ArcProto proto = oi.getProto();
+			double wd = oi.getLambdaBaseWidth();
+			PortInst np[] = new PortInst[2];
+			for (int i = 0; i < 2; i++) {
+				PortInst op = oi.getConnection(i).getPortInst();
+				NodeInst on = op.getNodeInst();
+				NodeInst nn = nodeMap.get(on);
+				int nx = op.getPortIndex();
+				np[i] = nn.getPortInst(nx);
+			}
+			ArcInst.makeInstanceBase(proto, ep, wd*scale, np[0], np[1]);
+		}
+		// copy exports
+		for(Iterator<Export> it = orig.getExports(); it.hasNext(); ) {
+			Export oe = it.next();
+			PortInst op = oe.getOriginalPort();
+			NodeInst on = op.getNodeInst();
+			NodeInst nn = nodeMap.get(on);
+			int nx = op.getPortIndex();
+			PortInst np = nn.getPortInst(nx);
+			String ns = oe.getName();
+			PortCharacteristic nc = oe.getCharacteristic();
+			Export.newInstance(cell, np, ns, ep, nc);
+		}
+		return cell;
+    }
 
 	private void readGenerations()
 		throws Exception
