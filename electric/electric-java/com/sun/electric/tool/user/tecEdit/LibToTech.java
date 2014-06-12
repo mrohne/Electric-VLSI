@@ -1211,12 +1211,16 @@ public class LibToTech
 			NodeInfo.PortDetails port1 = nIn.nodePortDetails[dif1Port];
 			NodeInfo.PortDetails port2 = nIn.nodePortDetails[pol2Port];
 			NodeInfo.PortDetails port3 = nIn.nodePortDetails[dif2Port];
+			nIn.nodePortDetails[pol1Port] = nIn.nodePortDetails[0];
+			nIn.nodePortDetails[dif1Port] = nIn.nodePortDetails[1];
+			nIn.nodePortDetails[pol2Port] = nIn.nodePortDetails[2];
+			nIn.nodePortDetails[dif2Port] = nIn.nodePortDetails[3];
 			nIn.nodePortDetails[pol1Port=0] = port0;
 			nIn.nodePortDetails[dif1Port=1] = port1;
 			nIn.nodePortDetails[pol2Port=2] = port2;
 			nIn.nodePortDetails[dif2Port=3] = port3;
-			for(int j=0; j<extras.size(); j++)
-				nIn.nodePortDetails[j+4] = extras.get(j);
+			for(int j=4; j<extras.size(); j++)
+				nIn.nodePortDetails[j] = extras.get(j);
 
 			// make sure implant layers are not connected to ports
 			for(int k=0; k<nIn.nodeLayers.length; k++)
