@@ -122,7 +122,7 @@ public abstract class TechFactory {
         } catch (ClassNotFoundException e) {
             TextUtils.recordMissingTechnology("Extra");
         } catch (Exception e) {
-            System.out.println("ERROR while loading technology " + this.techName + ": " + ((e != null) ? e.getMessage() : "Assertion"));
+            System.out.println("ERROR while loading technology " + this.techName + ": " + e + " says " + ((e != null) ? e.getMessage() : "Assertion"));
             if (Job.getDebug())
             	ActivityLogger.logException(e);
         }
