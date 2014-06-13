@@ -134,7 +134,7 @@ public class GDS extends Input<Object>
     public static final boolean INSTANTIATE_ARRAYS_VIA_BISECTION = true;
 
 	// data declarations
-	private static final int MAXPOINTS     = 4096;
+	private static final int MAXPOINTS     =  1048576;
 	private static final int MINFONTWIDTH  =  130;
 	private static final int MINFONTHEIGHT =  190;
 
@@ -325,8 +325,7 @@ public class GDS extends Input<Object>
         } catch (IllegalArgumentException e)
         {
             System.out.println("ERROR reading GDS file: " + e.getMessage());
-            if (Job.getDebug())
-                e.printStackTrace();
+			e.printStackTrace(System.out);
             return null;
         }
 		catch (GDSReader.GDSException e)
@@ -339,9 +338,8 @@ public class GDS extends Input<Object>
         }
 	    catch (Exception e)
 		{
-            System.out.println("ERROR reading GDS file: check input file, " + e.getMessage());
-            if (Job.getDebug())
-                e.printStackTrace();
+            System.out.println("ERROR reading GDS file: check input file: " + e.getMessage());
+			e.printStackTrace(System.out);
             return null;
         }
 
