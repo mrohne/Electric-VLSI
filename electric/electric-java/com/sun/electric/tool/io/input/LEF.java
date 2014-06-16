@@ -838,6 +838,7 @@ public class LEF extends LEFDEF
 				key.equalsIgnoreCase("ANTENNASIZE") || key.equalsIgnoreCase("ANTENNADIFFAREA") ||
 				key.equalsIgnoreCase("ANTENNAMODEL") || key.equalsIgnoreCase("ANTENNAGATEAREA") ||
 				key.equalsIgnoreCase("ANTENNAPARTIALCUTAREA") || key.equalsIgnoreCase("ANTENNAMAXAREACAR") ||
+				key.equalsIgnoreCase("ANTENNAPARTIALMETALSIDEAREA") ||
 				key.equalsIgnoreCase("ANTENNAMAXCUTCAR") || key.equalsIgnoreCase("PROPERTY"))
 			{
 				if (ignoreToSemicolon(key, cell)) return true;
