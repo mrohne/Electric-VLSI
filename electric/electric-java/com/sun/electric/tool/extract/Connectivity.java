@@ -1827,7 +1827,14 @@ public class Connectivity
 					// do the polys touch?
 					if (oPoly.contains(pt))
 					{
-						PortInst touchingPi = findPortInstClosestToPoly(ni, (PrimitivePort)oPoly.getPort(), pt);
+						PrimitivePort pp = (PrimitivePort)oPoly.getPort();
+						if (pp == null)
+						{
+							addErrorLog(newCell, "Can't find primitive port for "+ni+" and "+oPoly,
+									EPoint.fromLambda(pt.getX(), pt.getY()));
+							continue;
+						}
+						PortInst touchingPi = findPortInstClosestToPoly(ni, pp, pt);
 						if (touchingPi == null)
 						{
 							addErrorLog(newCell, "Can't find port for "+ni+" and "+oPoly.getPort(),
