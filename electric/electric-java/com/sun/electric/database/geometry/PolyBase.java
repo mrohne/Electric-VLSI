@@ -384,33 +384,39 @@ public class PolyBase implements Shape, PolyNodeMerge {
         bitRectangle = 0;
         if (points.length == 4) {
             // only closed polygons and text can be boxes
-            if (style != Poly.Type.FILLED && style != Poly.Type.CLOSED && style != Poly.Type.TEXTBOX && style != Poly.Type.CROSSED) {
+            if (style != Poly.Type.FILLED && style != Poly.Type.CLOSED
+				&& style != Poly.Type.TEXTBOX && style != Poly.Type.CROSSED) {
                 return null;
             }
-        } else if (points.length == 5) {
+			// make sure the polygon is rectangular and orthogonal
+			if (points[0].getFixpX() == points[1].getFixpX() && points[2].getFixpX() == points[3].getFixpX()
+                && points[0].getFixpY() == points[3].getFixpY() && points[1].getFixpY() == points[2].getFixpY()) {
+				bitRectangle = 1;
+				return getBounds2D();
+			}
+			if (points[0].getFixpX() == points[3].getFixpX() && points[1].getFixpX() == points[2].getFixpX()
+                && points[0].getFixpY() == points[1].getFixpY() && points[2].getFixpY() == points[3].getFixpY()) {
+				bitRectangle = 1;
+            return getBounds2D();
+        }
+        } else if (points.length >= 5) {
+			// only polygons can be boxes
             if (style != Poly.Type.FILLED && style != Poly.Type.CLOSED
                     && style != Poly.Type.OPENED && style != Poly.Type.OPENEDT1
                     && style != Poly.Type.OPENEDT2 && style != Poly.Type.OPENEDT3) {
                 return null;
             }
-            if (points[0].getFixpX() != points[4].getFixpX() || points[0].getFixpY() != points[4].getFixpY()) {
-                return null;
-            }
-        } else {
+			// check if computed area is equal to bounding box
+			double testArea = GenMath.getArea(getBounds2D());
+			double realArea = GenMath.getAreaOfPoints(points);
+			if (DBMath.areEquals(testArea, realArea)) {
+				bitRectangle = 1;
+				return getBounds2D();
+			}
+		} else {
             return null;
         }
 
-        // make sure the polygon is rectangular and orthogonal
-        if (points[0].getFixpX() == points[1].getFixpX() && points[2].getFixpX() == points[3].getFixpX()
-                && points[0].getFixpY() == points[3].getFixpY() && points[1].getFixpY() == points[2].getFixpY()) {
-            bitRectangle = 1;
-            return getBounds2D();
-        }
-        if (points[0].getFixpX() == points[3].getFixpX() && points[1].getFixpX() == points[2].getFixpX()
-                && points[0].getFixpY() == points[1].getFixpY() && points[2].getFixpY() == points[3].getFixpY()) {
-            bitRectangle = 1;
-            return getBounds2D();
-        }
         return null;
     }
 
@@ -2220,6 +2226,8 @@ public class PolyBase implements Shape, PolyNodeMerge {
         double[] coords = new double[6];
         List<Point> pointList = new ArrayList<Point>();
         Point lastMoveTo = null;
+        Point prevLineTo = null;
+        Point lastLineTo = null;
         List<PolyBase> toDelete = new ArrayList<PolyBase>();
         List<PolyBase> polyList = new ArrayList<PolyBase>();
 
@@ -2231,28 +2239,17 @@ public class PolyBase implements Shape, PolyNodeMerge {
                     pointList.add(lastMoveTo);
                 }
                 PolyBase poly = new PolyBase(pointList.toArray(new Point[pointList.size()]));
-//                Point2D[] points = new Point2D[pointList.size()];
-//                int i = 0;
-//                for (Point2D p : pointList) {
-//                    points[i++] = p;
-//                }
-//                PolyBase poly = new PolyBase(points);
                 poly.setLayer(layer);
                 poly.setStyle(Poly.Type.FILLED);
                 lastMoveTo = null;
+				prevLineTo = null;
+				lastLineTo = null;
                 toDelete.clear();
                 if (!simple && !isSingular) {
                     for (PolyBase pn : polyList) {
                         if (pn.contains(pointList.get(0))
                                 || poly.contains(pn.getPoints()[0])) {
                             poly = new PolyBase(pn.getPoints().clone()); // poly is lost ??
-//                            points = pn.getPoints();
-//                            for (i = 0; i < points.length; i++) {
-//                                pointList.add(points[i]);
-//                            }
-//                            Point2D[] newPoints = new Point2D[pointList.size()];
-//                            System.arraycopy(pointList.toArray(), 0, newPoints, 0, pointList.size());
-//                            poly = new PolyBase(newPoints);
                             toDelete.add(pn);
                         }
                     }
@@ -2262,17 +2259,38 @@ public class PolyBase implements Shape, PolyNodeMerge {
                 }
                 polyList.removeAll(toDelete);
                 pointList.clear();
-            } else if (type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_LINETO) {
+            } else if (type == PathIterator.SEG_MOVETO) {
                 Point pt = fromLambda(coords[0], coords[1]);
                 pointList.add(pt);
-                if (type == PathIterator.SEG_MOVETO) {
-                    lastMoveTo = pt;
-                }
+				lastMoveTo = pt;
+				prevLineTo = null;
+				lastLineTo = pt;
+            } else if (type == PathIterator.SEG_LINETO) {
+                Point pt = fromLambda(coords[0], coords[1]);
+				if (isColinear(prevLineTo, lastLineTo, pt)) {
+					System.out.println("PolyBase.getPointsInArea: simplified colinear segments "+prevLineTo+lastLineTo+pt);
+					pointList.remove(lastLineTo);
+					pointList.add(pt);
+					lastLineTo = pt;
+				}
+				else {
+					pointList.add(pt);
+					prevLineTo = lastLineTo;
+					lastLineTo = pt;
+				}
             }
             pIt.next();
         }
         return polyList;
     }
+	public static boolean isColinear(Point p0, Point p1, Point p2) {
+		if (p0 == null || p1 == null || p2 == null) return false;
+		double area =
+			(p0.getFixpX()-p1.getFixpX())*(p0.getFixpY()-p2.getFixpY())-
+			(p0.getFixpY()-p1.getFixpY())*(p0.getFixpX()-p2.getFixpX());
+		return DBMath.areEquals(area, 0);
+	}
+		
 
     // Creating a tree for finding the loops
     public static interface PolyBaseTree {
