@@ -4848,7 +4848,7 @@ public class Connectivity
 //                polyList = new ArrayList<PolyBase>(originalMerge.getObjects(layer, false, false));
 //            }
 
-            if (usePureLayerNodes | implants) ap = null;
+            if (usePureLayerNodes || implants) ap = null;
             for(PolyBase poly : polyList)
 			{
 				// special case: a rectangle on a routable layer: make it an arc
