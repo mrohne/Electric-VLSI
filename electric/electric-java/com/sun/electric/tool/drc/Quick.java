@@ -4693,8 +4693,15 @@ public class Quick
             if (isTransistor)
             {
                 Poly [] list = tech.getShapeOfNode(ni, false, true, activeLayers);
-                if (!pNp.getFunction().isCNTransistor() && !pNp.getFunction().isBipolar()) assert(list.length == 1);
-                activePoly = list[0];
+                if (list.length <= 1) {
+					System.out.println("No activePoly " + ni + ": " + list.length);
+				}
+                else if (!pNp.getFunction().isCNTransistor() && !pNp.getFunction().isBipolar() && list.length != 1) {
+					System.out.println("Unexpected transistor shape " + ni + ": " + list.length);
+				}
+				else {
+					activePoly = list[0];
+				}
             }
             // Don't get electric layers in case of transistors otherwise it is hard to detect ports
             Poly [] nodeInstPolyList = tech.getShapeOfNode(ni, true, true, null);
@@ -4851,8 +4858,15 @@ public class Quick
             {
                 Poly [] list = tech.getShapeOfNode(ni, false, true, activeLayers);
                 boolean isCBTransistor = pNp.getFunction().isCNTransistor();
-                if (!isCBTransistor) assert(list.length == 1);
-                activePoly = list[0];
+                if (list.length <= 1) {
+					System.out.println("No activePoly " + ni + ": " + list.length);
+				}
+                else if (!pNp.getFunction().isCNTransistor() && !pNp.getFunction().isBipolar() && list.length != 1) {
+					System.out.println("Unexpected transistor shape " + ni + ": " + list.length);
+				}
+				else {
+					activePoly = list[0];
+				}
             }
             // Don't get electric layers in case of transistors otherwise it is hard to detect ports
             Poly [] nodeInstPolyList = tech.getShapeOfNode(ni, true, true, null);
