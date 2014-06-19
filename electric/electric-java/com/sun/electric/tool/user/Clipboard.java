@@ -1522,7 +1522,7 @@ public class Clipboard //implements ClipboardOwner
 
 			// get starting point from current mouse location
 			Point2D mouse = ClickZoomWireListener.theOne.getLastMouse();
-			Point2D mouseDB = wnd.screenToDatabase((int)mouse.getX(), (int)mouse.getY());
+			Point2D mouseDB = wnd.screenToDatabase((long)mouse.getX(), (long)mouse.getY());
 			if (dup)
 			{
 				pasteBounds.setRect(pasteBounds.getMinX()+mouseDB.getX()-pasteBounds.getCenterX(),
