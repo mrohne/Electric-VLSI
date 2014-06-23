@@ -141,8 +141,8 @@ public class ZoomAndPanListener implements WindowFrame.ElectricEventListener
 		{
 			EditWindow wnd = (EditWindow)evt.getSource();
              if (wnd == null) return;
-             Point2D start = wnd.screenToDatabase((int)wnd.getStartDrag().getX(), (int)wnd.getStartDrag().getY());
-             Point2D end = wnd.screenToDatabase((int)wnd.getEndDrag().getX(), (int)wnd.getEndDrag().getY());
+             Point2D start = wnd.screenToDatabase((long)wnd.getStartDrag().getX(), (long)wnd.getStartDrag().getY());
+             Point2D end = wnd.screenToDatabase((long)wnd.getEndDrag().getX(), (long)wnd.getEndDrag().getY());
              double minSelX = Math.min(start.getX(), end.getX());
              double maxSelX = Math.max(start.getX(), end.getX());
              double minSelY = Math.min(start.getY(), end.getY());
