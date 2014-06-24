@@ -25,6 +25,7 @@ package com.sun.electric.tool.io.output;
 
 import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.hierarchy.Export;
+import com.sun.electric.database.hierarchy.HierarchyEnumerator;
 import com.sun.electric.database.hierarchy.Nodable;
 import com.sun.electric.database.network.Global;
 import com.sun.electric.database.network.Netlist;
@@ -170,10 +171,19 @@ public class GenerateVHDL extends Topology
 	protected void done() {}
 
 	/**
+	 * Set of cells 
+	 */
+	private Set<Cell> entitiesWritten = new HashSet<Cell>();
+
+	/**
 	 * Method to write one level of hierarchy.
 	 */
 	protected void writeCellTopology(Cell cell, String cellName, CellNetInfo cni, VarContext context, Topology.MyCellInfo info)
 	{
+		// Check if cell is already written out
+		if (entitiesWritten.contains(cell)) return;
+		else entitiesWritten.add(cell);
+
 		// write the header
 		writeWidthLimited("\n");
 		setContinuationString(COMMENTCONTINUATIONSTRING);
@@ -182,9 +192,10 @@ public class GenerateVHDL extends Topology
 		Netlist nl = cni.getNetList();
 
 		// write the entity section
-		String properCellName = getSafeCellName(cell.getName());
-		writeWidthLimited("entity " + addString(properCellName, null) + " is port(" + addPortList(cni) + ");\n");
-		writeWidthLimited("  end " + addString(properCellName, null)  + ";\n");
+		String properCellName = getSafeCellName(cell.describe(false));
+		writeWidthLimited("entity " + addString(properCellName, null) + " is\n");
+		if (cni.getCellSignals().hasNext()) writeWidthLimited("  port(" + addPortList(cni) + ");\n");
+		writeWidthLimited("end " + addString(properCellName, null)  + ";\n");
 
 		// write the "architecture" line
 		writeWidthLimited("\n");
@@ -254,12 +265,14 @@ public class GenerateVHDL extends Topology
 					System.out.println("ERROR: no subcell information for: " + parameterizedName);
 					continue;
 				}
-				writeWidthLimited("  component " + addString(pt, null) + " port(" + addPortList(subCni) + ");\n");
+				writeWidthLimited("  component " + addString(pt, null) + "\n");
+				if (subCni.getCellSignals().hasNext()) writeWidthLimited("    port(" + addPortList(subCni) + ");\n");
 			} else
 			{
-				writeWidthLimited("  component " + addString(pt, null) + " port(" + addPortListPrim(no, special) + ");\n");
+			    writeWidthLimited("  component " + addString(pt, null) + "\n");
+			    if (no.getProto().getNumPorts() > 0) writeWidthLimited("    port(" + addPortListPrim(no, special) + ");\n");
 			}
-			writeWidthLimited("    end component;\n");
+			writeWidthLimited("  end component;\n");
 		}
 
 		// write prototype for multi-input NAND, NOR, and XNOR
@@ -274,7 +287,7 @@ public class GenerateVHDL extends Topology
 				writeWidthLimited("a" + j);
 			}
 			writeWidthLimited(": in BIT; y: out BIT);\n");
-			writeWidthLimited("    end component;\n");
+			writeWidthLimited("  end component;\n");
 		}
 		for(Integer i : multiInputNOR)
 		{
@@ -287,7 +300,7 @@ public class GenerateVHDL extends Topology
 				writeWidthLimited("a" + j);
 			}
 			writeWidthLimited(": in BIT; y: out BIT);\n");
-			writeWidthLimited("    end component;\n");
+			writeWidthLimited("  end component;\n");
 		}
 		for(Integer i : multiInputNXOR)
 		{
@@ -300,7 +313,7 @@ public class GenerateVHDL extends Topology
 				writeWidthLimited("a" + j);
 			}
 			writeWidthLimited(": in BIT; y: out BIT);\n");
-			writeWidthLimited("    end component;\n");
+			writeWidthLimited("  end component;\n");
 		}
 
 		// write inverter prototype if applicable
@@ -309,7 +322,7 @@ public class GenerateVHDL extends Topology
 		{
 			cellNamesWritten.add("inverter");
 			writeWidthLimited("  component inverter port(a: in BIT; y: out BIT);\n");
-			writeWidthLimited("    end component;\n");
+			writeWidthLimited("  end component;\n");
 		}
 
 		// write internal signals that were used
@@ -531,10 +544,7 @@ public class GenerateVHDL extends Topology
 				PortProto pp = it.next();
 
 				// ignore the bias port of 4-port transistors
-				if (np == Schematics.tech().transistor4Node)
-				{
-					if (pp.getName().equals("b")) continue;
-				}
+				if (np == Schematics.tech().transistor4Node && pp.getName().equals("b")) continue;
 
 				// ignore the bias port of layout transistors
 				if (np.getFunction().isTransistor() && isBiasPort((PrimitivePort)pp)) continue;
@@ -712,6 +722,9 @@ public class GenerateVHDL extends Topology
 					// ignore ports not named "a" or "y"
 					if (!portName.equals("a") && !portName.equals("y")) continue;
 				}
+
+				// ignore the bias port of 4-port transistors
+				if (pnp == Schematics.tech().transistor4Node && pp.getName().equals("b")) continue;
 
 				// ignore the bias port of layout transistors
 				if (pnp.getFunction().isTransistor() && isBiasPort(pp)) continue;
@@ -896,9 +909,9 @@ public class GenerateVHDL extends Topology
 				special = BLOCKMOSTRAN;
 			} else if (k.isNTypeTransistor())
 			{
-				primName = "nMOStran";
+				primName = "NMOStran";
 				Variable var = no.getVar(SimulationTool.WEAK_NODE_KEY);
-				if (var != null) primName = "nMOStranWeak";
+				if (var != null) primName = "NMOStranWeak";
 				special = BLOCKMOSTRAN;
 			} else if (k.isPTypeTransistor())
 			{
@@ -1246,4 +1259,52 @@ public class GenerateVHDL extends Topology
 		}
 		return sb.toString();
 	}
+
+    //------------------HierarchyEnumerator.Visitor Implementation----------------------
+    public class CellInfo extends Topology.MyCellInfo
+    {
+    }
+
+    public class Visitor extends Topology.Visitor
+    {
+        public Visitor(GenerateVHDL outGeom)
+        {
+			super(outGeom);
+        }
+
+		@Override
+		public boolean visitNodeInst(Nodable no, HierarchyEnumerator.CellInfo info)
+		{
+			// System.out.println("GenerateVHDL.Visitor.visitNodeInst: checking nodable " + no + " with proto " + no.getProto());
+			return super.visitNodeInst(no, info);
+		}
+		
+		@Override
+		public boolean enterCell(HierarchyEnumerator.CellInfo info)
+		{
+			// System.out.println("GenerateVHDL.Visitor.enterCell for " + info.getCell());
+			return super.enterCell(info);
+		}
+		
+		@Override
+		public void exitCell(HierarchyEnumerator.CellInfo info)
+		{
+			// System.out.println("GenerateVHDL.Visitor.exitCell for " + info.getCell());
+			super.exitCell(info);
+		}
+		
+		@Override
+		public HierarchyEnumerator.CellInfo newCellInfo()
+		{
+			return new CellInfo();
+		}
+    }
+
+    @Override
+    public boolean writeCell(Cell cell, VarContext context)
+    {
+	writeCell(cell, context, new Visitor(this));
+	return false;
+    }
+
 }
