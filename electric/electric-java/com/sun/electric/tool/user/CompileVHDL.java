@@ -1351,6 +1351,8 @@ public class CompileVHDL
 	private VInterface parseInterface()
 		throws ParseException
 	{
+		VInterface interfacef = new VInterface();
+
 		getNextToken();
 
 		// check for entity IDENTIFIER
@@ -1372,40 +1374,34 @@ public class CompileVHDL
 
 		// check for keyword PORT
 		getNextToken();
-		if (!isKeySame(nextToken, KEY_PORT))
-		{
-			reportErrorMsg(nextToken, "Expecting keyword PORT");
+		if (isKeySame(nextToken, KEY_PORT)) {
+			// check for opening bracket of FORMAL_PORT_LIST
+			getNextToken();
+			if (nextToken.token != TOKEN_LEFTBRACKET) {
+				reportErrorMsg(nextToken, "Expecting a left bracket");
+			}
+			
+			// gather FORMAL_PORT_LIST
+			getNextToken();
+			FPortList ports = parseFormalPortList();
+			if (ports == null) {
+				reportErrorMsg(nextToken, "Interface without ports");
+			}
+			
+			// check for closing bracket of FORMAL_PORT_LIST
+			if (nextToken.token != TOKEN_RIGHTBRACKET) {
+				reportErrorMsg(nextToken, "Expecting a right bracket");
+			}
+			
+			getNextToken();
+			// check for SEMICOLON
+			if (nextToken.token != TOKEN_SEMICOLON) {
+				reportErrorMsg(nextToken, "Expecting a semicolon");
+			}
+			interfacef.ports = ports;
+			getNextToken();
 		}
-
-		// check for opening bracket of FORMAL_PORT_LIST
-		getNextToken();
-		if (nextToken.token != TOKEN_LEFTBRACKET)
-		{
-			reportErrorMsg(nextToken, "Expecting a left bracket");
-		}
-
-		// gather FORMAL_PORT_LIST
-		getNextToken();
-		FPortList ports = parseFormalPortList();
-		if (ports == null)
-		{
-			reportErrorMsg(nextToken, "Interface must have ports");
-		}
-
-		// check for closing bracket of FORMAL_PORT_LIST
-		if (nextToken.token != TOKEN_RIGHTBRACKET)
-		{
-			reportErrorMsg(nextToken, "Expecting a right bracket");
-		}
-
-		getNextToken();
-		// check for SEMICOLON
-		if (nextToken.token != TOKEN_SEMICOLON)
-		{
-			reportErrorMsg(nextToken, "Expecting a semicolon");
-		}
-		else getNextToken();
-
+		
 		// check for keyword END
 		if (!isKeySame(nextToken, KEY_END))
 		{
@@ -1431,9 +1427,7 @@ public class CompileVHDL
 		nextToken = nextToken.next;
 
 		// allocate an entity parse tree
-		VInterface interfacef = new VInterface();
 		interfacef.name = name;
-		interfacef.ports = ports;
 		interfacef.interfacef = null;
 		return interfacef;
 	}
@@ -1840,7 +1834,7 @@ public class CompileVHDL
 	private VInstance parseInstance()
 		throws ParseException
 	{
-		VInstance inst = null;
+		VInstance inst = new VInstance();
 
 		// check for identifier
 		if (nextToken.token != TOKEN_IDENTIFIER)
@@ -1866,40 +1860,36 @@ public class CompileVHDL
 		SimpleName entity = parseSimpleName();
 
 		// Require PORT MAP
-		if (isKeySame(nextToken, KEY_PORT))
+		if (isKeySame(nextToken, KEY_PORT))  {
+
 			getNextToken();
-		else reportErrorMsg(nextToken, "Expecting keyword PORT");
-
-		if (isKeySame(nextToken, KEY_MAP))
+			if (isKeySame(nextToken, KEY_MAP))
+				getNextToken();
+			else reportErrorMsg(nextToken, "Expecting keyword MAP");
+			
+			// should be at left bracket
+			if (nextToken.token != TOKEN_LEFTBRACKET) {
+				reportErrorMsg(nextToken, "Expecting a left bracket");
+			}
 			getNextToken();
-		else reportErrorMsg(nextToken, "Expecting keyword MAP");
+			APortList ports = parseActualPortList();
 
-		// should be at left bracket
-		if (nextToken.token != TOKEN_LEFTBRACKET)
-		{
-			reportErrorMsg(nextToken, "Expecting a left bracket");
+			// should be at right bracket
+			if (nextToken.token != TOKEN_RIGHTBRACKET) {
+				reportErrorMsg(nextToken, "Expecting a right bracket");
+			}
+			getNextToken();
+			
+			// should be at semicolon
+			if (nextToken.token != TOKEN_SEMICOLON) {
+				reportErrorMsg(nextToken, "Expecting a semicolon");
+			}
+			inst.ports = ports;
+			getNextToken();
 		}
-		getNextToken();
-		APortList ports = parseActualPortList();
 
-		// should be at right bracket
-		if (nextToken.token != TOKEN_RIGHTBRACKET)
-		{
-			reportErrorMsg(nextToken, "Expecting a right bracket");
-		}
-		getNextToken();
-
-		// should be at semicolon
-		if (nextToken.token != TOKEN_SEMICOLON)
-		{
-			reportErrorMsg(nextToken, "Expecting a semicolon");
-		}
-		getNextToken();
-
-		inst = new VInstance();
 		inst.name = name;
 		inst.entity = entity;
-		inst.ports = ports;
 		return inst;
 	}
 
@@ -2599,7 +2589,7 @@ public class CompileVHDL
 	private VComponent parseComponent()
 		throws ParseException
 	{
-		VComponent compo =  null;
+		VComponent compo = new VComponent();
 		getNextToken();
 
 		// should be component identifier
@@ -2614,33 +2604,31 @@ public class CompileVHDL
 		getNextToken();
 
 		// Need keyword PORT
-		if (!isKeySame(nextToken,KEY_PORT))
-			reportErrorMsg(nextToken, "Expecting keyword PORT");
-		else getNextToken();
+		if (isKeySame(nextToken,KEY_PORT)) {
+			getNextToken();
 
-		// should be left bracket, start of port list
-		if (nextToken.token != TOKEN_LEFTBRACKET)
-		{
-			reportErrorMsg(nextToken, "Expecting a left bracket");
+			// should be left bracket, start of port list
+			if (nextToken.token != TOKEN_LEFTBRACKET) {
+				reportErrorMsg(nextToken, "Expecting a left bracket");
+			}
+			getNextToken();
+
+			// go through port list
+			FPortList ports = parseFormalPortList();
+			compo.ports = ports;
+		
+			// should be pointing to RIGHTBRACKET
+			if (nextToken.token != TOKEN_RIGHTBRACKET) {
+				reportErrorMsg(nextToken, "Expecting a right bracket");
+			}
+			getNextToken();
+
+			// should be at semicolon
+			if (nextToken.token != TOKEN_SEMICOLON)	{
+				reportErrorMsg(nextToken, "Expecting a semicolon");
+			}
+			getNextToken();
 		}
-		getNextToken();
-
-		// go through port list
-		FPortList ports = parseFormalPortList();
-
-		// should be pointing to RIGHTBRACKET
-		if (nextToken.token != TOKEN_RIGHTBRACKET)
-		{
-			reportErrorMsg(nextToken, "Expecting a right bracket");
-		}
-		getNextToken();
-
-		// should be at semicolon
-		if (nextToken.token != TOKEN_SEMICOLON)
-		{
-			reportErrorMsg(nextToken, "Expecting a semicolon");
-		}
-		getNextToken();
 
 		// Need "END COMPONENT"
 		if (!isKeySame(nextToken, KEY_END))
@@ -2657,9 +2645,7 @@ public class CompileVHDL
 			reportErrorMsg(nextToken, "Expecting a semicolon");
 		}
 		getNextToken();
-		compo = new VComponent();
 		compo.name = entity;
-		compo.ports = ports;
 		return compo;
 	}
 
