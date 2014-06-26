@@ -2165,8 +2165,8 @@ public class GDS extends Input<Object>
 		{
 			if (localPrefs.mergeBoxes)
 			{
-				NodeLayer [] layers = layerNodeProto.getNodeLayers();
 				if (layerNodeProto != null) {
+					NodeLayer [] layers = layerNodeProto.getNodeLayers();
                     Poly.Point[] points = new Poly.Point[theVertices.length];
                     for (int i = 0; i < theVertices.length; i++) {
                         points[i] = Poly.from(theVertices[i]);
