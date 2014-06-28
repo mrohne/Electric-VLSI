@@ -63,6 +63,7 @@ import java.util.prefs.Preferences;
 public class GenerateVHDL extends Topology
 {
 	/** special codes during VHDL generation */
+	/** unknown block */			private static final int BLOCKUNKNOWN = -1;
 	/** ordinary block */			private static final int BLOCKNORMAL   = 0;
 	/** a MOS transistor */			private static final int BLOCKMOSTRAN  = 1;
 	/** a buffer */					private static final int BLOCKBUFFER   = 2;
@@ -173,7 +174,7 @@ public class GenerateVHDL extends Topology
 	/**
 	 * Set of cells 
 	 */
-	private Set<Cell> entitiesWritten = new HashSet<Cell>();
+	private Set<String> entitiesWritten = new HashSet<String>();
 
 	/**
 	 * Method to write one level of hierarchy.
@@ -181,8 +182,8 @@ public class GenerateVHDL extends Topology
 	protected void writeCellTopology(Cell cell, String cellName, CellNetInfo cni, VarContext context, Topology.MyCellInfo info)
 	{
 		// Check if cell is already written out
-		if (entitiesWritten.contains(cell)) return;
-		else entitiesWritten.add(cell);
+		if (entitiesWritten.contains(cellName)) return;
+		else entitiesWritten.add(cellName);
 
 		// write the header
 		writeWidthLimited("\n");
@@ -192,7 +193,7 @@ public class GenerateVHDL extends Topology
 		Netlist nl = cni.getNetList();
 
 		// write the entity section
-		String properCellName = getSafeCellName(cell.describe(false));
+		String properCellName = getSafeCellName(cellName);
 		writeWidthLimited("entity " + addString(properCellName, null) + " is\n");
 		if (cni.getCellSignals().hasNext()) writeWidthLimited("  port(" + addPortList(cni) + ");\n");
 		writeWidthLimited("end " + addString(properCellName, null)  + ";\n");
@@ -222,10 +223,23 @@ public class GenerateVHDL extends Topology
 		for(Iterator<Nodable> it = nl.getNodables(); it.hasNext(); )
 		{
 			Nodable no = it.next();
-			AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, vp);
-			String pt = ap.getPrimName();
+
+			// ignore component with no ports
+			if (no.getProto().getNumPorts() == 0) continue;
+
+			int special = BLOCKUNKNOWN;
+			String pt = no.getProto().getName();
+			if (no.isCellInstance()) {
+				special = BLOCKNORMAL;
+				pt = parameterizedName(no, context);
+			}
+			else {
+				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, vp);
+				special = ap.getSpecial();
+				pt = ap.getPrimName();
+			}
+			if (special == -1) continue;
 			if (pt == null) continue;
-			int special = ap.getSpecial();
 
 			// write only once per prototype
 			if (special == BLOCKINVERTER)
@@ -249,9 +263,6 @@ public class GenerateVHDL extends Topology
 				continue;
 			}
 
-			// ignore component with no ports
-			if (no.getProto().getNumPorts() == 0) continue;
-
 			pt = getSafeCellName(pt);
 			if (cellNamesWritten.contains(pt)) continue;
 			cellNamesWritten.add(pt);
@@ -272,7 +283,7 @@ public class GenerateVHDL extends Topology
 			    writeWidthLimited("  component " + addString(pt, null) + "\n");
 			    if (no.getProto().getNumPorts() > 0) writeWidthLimited("    port(" + addPortListPrim(no, special) + ");\n");
 			}
-			writeWidthLimited("  end component;\n");
+			writeWidthLimited("    end component;\n");
 		}
 
 		// write prototype for multi-input NAND, NOR, and XNOR
@@ -287,7 +298,7 @@ public class GenerateVHDL extends Topology
 				writeWidthLimited("a" + j);
 			}
 			writeWidthLimited(": in BIT; y: out BIT);\n");
-			writeWidthLimited("  end component;\n");
+			writeWidthLimited("    end component;\n");
 		}
 		for(Integer i : multiInputNOR)
 		{
@@ -300,7 +311,7 @@ public class GenerateVHDL extends Topology
 				writeWidthLimited("a" + j);
 			}
 			writeWidthLimited(": in BIT; y: out BIT);\n");
-			writeWidthLimited("  end component;\n");
+			writeWidthLimited("    end component;\n");
 		}
 		for(Integer i : multiInputNXOR)
 		{
@@ -313,7 +324,7 @@ public class GenerateVHDL extends Topology
 				writeWidthLimited("a" + j);
 			}
 			writeWidthLimited(": in BIT; y: out BIT);\n");
-			writeWidthLimited("  end component;\n");
+			writeWidthLimited("    end component;\n");
 		}
 
 		// write inverter prototype if applicable
@@ -322,7 +333,7 @@ public class GenerateVHDL extends Topology
 		{
 			cellNamesWritten.add("inverter");
 			writeWidthLimited("  component inverter port(a: in BIT; y: out BIT);\n");
-			writeWidthLimited("  end component;\n");
+			writeWidthLimited("    end component;\n");
 		}
 
 		// write internal signals that were used
@@ -359,15 +370,19 @@ public class GenerateVHDL extends Topology
 			// ignore component with no ports
 			if (no.getProto().getNumPorts() == 0) continue;
 
-			int special = BLOCKNORMAL;
+			int special = BLOCKUNKNOWN;
 			String pt = no.getProto().getName();
-			if (!no.isCellInstance())
-			{
-				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, vp);
-				pt = ap.getPrimName();
-				if (pt == null) continue;
-				special = ap.getSpecial();
+			if (no.isCellInstance()) {
+				special = BLOCKNORMAL;
+				pt = parameterizedName(no, context);
 			}
+			else {
+				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, vp);
+				special = ap.getSpecial();
+				pt = ap.getPrimName();
+			}
+			if (special == BLOCKUNKNOWN) continue;
+			if (pt == null) continue;
 
 			String instname = getSafeCellName(no.getName());
 			writeWidthLimited("  " + addString(instname, null));
@@ -859,8 +874,8 @@ public class GenerateVHDL extends Topology
 	 */
 	private static class AnalyzePrimitive
 	{
-		private String primName;
-		private int special;
+		private String primName = null;
+		private int special = BLOCKUNKNOWN;
 
 		/**
 		 * Method to get the name of this analyzed primitive node.
@@ -909,15 +924,15 @@ public class GenerateVHDL extends Topology
 				special = BLOCKMOSTRAN;
 			} else if (k.isNTypeTransistor())
 			{
-				primName = "NMOStran";
+				primName = "nMOStran";
 				Variable var = no.getVar(SimulationTool.WEAK_NODE_KEY);
-				if (var != null) primName = "NMOStranWeak";
+				if (var != null) primName = "nMOStranWeak";
 				special = BLOCKMOSTRAN;
 			} else if (k.isPTypeTransistor())
 			{
-				primName = "PMOStran";
+				primName = "pMOStran";
 				Variable var = no.getVar(SimulationTool.WEAK_NODE_KEY);
-				if (var != null) primName = "PMOStranWeak";
+				if (var != null) primName = "pMOStranWeak";
 				special = BLOCKMOSTRAN;
 			} else if (k == PrimitiveNode.Function.TRANPN || k == PrimitiveNode.Function.TRA4NPN)
 			{
@@ -1276,6 +1291,7 @@ public class GenerateVHDL extends Topology
 		public boolean visitNodeInst(Nodable no, HierarchyEnumerator.CellInfo info)
 		{
 			// System.out.println("GenerateVHDL.Visitor.visitNodeInst: checking nodable " + no + " with proto " + no.getProto());
+			if (no.getProto().getNumPorts() == 0) return false;
 			return super.visitNodeInst(no, info);
 		}
 		
