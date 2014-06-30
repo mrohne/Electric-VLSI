@@ -117,7 +117,7 @@ public class TechnologyTab extends PreferencePanel
 		});
 		schemPrimModel.clear();
 		schemPrimMap = new HashMap<PrimitiveNode,String>();
-        GenerateVHDL.VHDLPreferences vp = new GenerateVHDL.VHDLPreferences(false);
+        GenerateVHDL.VHDLPrefPackage vp = new GenerateVHDL.VHDLPrefPackage(false);
 		for(Iterator<PrimitiveNode> it = Schematics.tech().getNodes(); it.hasNext(); )
 		{
 			PrimitiveNode np = it.next();
@@ -184,7 +184,7 @@ public class TechnologyTab extends PreferencePanel
 		}
 
 		// user preferences: VHDL
-        GenerateVHDL.VHDLPreferences vp = new GenerateVHDL.VHDLPreferences(false);
+        GenerateVHDL.VHDLPrefPackage vp = new GenerateVHDL.VHDLPrefPackage(false);
 		for(int i=0; i<schemPrimModel.size(); i++)
 		{
 			String str = (String)schemPrimModel.get(i);
@@ -305,7 +305,7 @@ public class TechnologyTab extends PreferencePanel
 		// user preferences
 		if (User.isFactoryRotateLayoutTransistors() != User.isRotateLayoutTransistors())
 			User.setRotateLayoutTransistors(User.isFactoryRotateLayoutTransistors());
-        putPrefs(new GenerateVHDL.VHDLPreferences(true));
+        putPrefs(new GenerateVHDL.VHDLPrefPackage(true));
 
         // project preferences: Defaults
 		setString(schematicTechnologySetting, (String)schematicTechnologySetting.getFactoryValue());
