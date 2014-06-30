@@ -81,14 +81,13 @@ public class GenerateVHDL extends Topology
 	private static final String NORMALCONTINUATIONSTRING = "    ";
 	private static final String COMMENTCONTINUATIONSTRING = "-- ";
 
-    private final VHDLPreferences vp;
-
-    public static class VHDLPreferences extends PrefPackage {
+    private final VHDLPrefPackage pp;
+    public static class VHDLPrefPackage extends PrefPackage {
         private static final String KEY_VHDL = "SchematicVHDLStringFor";
 
         public Map<PrimitiveNode,String> vhdlNames = new HashMap<PrimitiveNode,String>();
 
-        public VHDLPreferences(boolean factory)
+        public VHDLPrefPackage(boolean factory)
         {
             super(factory);
 
@@ -127,8 +126,27 @@ public class GenerateVHDL extends Topology
         }
     }
 
+    private final VHDLPreferences vp;
+	public static class VHDLPreferences extends OutputPreferences
+    {
+        public VHDLPreferences(boolean factory) { super(factory); }
+
+        public Output doOutput(Cell cell, VarContext context, String filePath)
+        {
+    		GenerateVHDL out = new GenerateVHDL(this);
+            if (out.openTextOutputStream(filePath)) return out.finishWrite();
+            out.filePath = filePath;
+    		if (out.writeCell(cell, context)) return out.finishWrite();
+    		if (out.closeTextOutputStream()) return out.finishWrite();
+    		System.out.println(filePath + " written");
+            return out.finishWrite();
+        }
+    }
+
+
     private GenerateVHDL(VHDLPreferences vp) {
         this.vp = vp;
+        this.pp = new VHDLPrefPackage(false);
     }
 
 	/**
@@ -234,7 +252,7 @@ public class GenerateVHDL extends Topology
 				pt = parameterizedName(no, context);
 			}
 			else {
-				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, vp);
+				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, pp);
 				special = ap.getSpecial();
 				pt = ap.getPrimName();
 			}
@@ -377,7 +395,7 @@ public class GenerateVHDL extends Topology
 				pt = parameterizedName(no, context);
 			}
 			else {
-				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, vp);
+				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, pp);
 				special = ap.getSpecial();
 				pt = ap.getPrimName();
 			}
@@ -908,7 +926,7 @@ public class GenerateVHDL extends Topology
 		 * @param negatedHeads map of arcs with negated head ends.
 		 * @param negatedTails map of arcs with negated tail ends.
 		 */
-		private AnalyzePrimitive(Nodable no, Map<ArcInst,Integer> negatedHeads, Map<ArcInst,Integer> negatedTails, VHDLPreferences vp)
+		private AnalyzePrimitive(Nodable no, Map<ArcInst,Integer> negatedHeads, Map<ArcInst,Integer> negatedTails, VHDLPrefPackage vp)
 		{
 			// cell instances are easy
 			special = BLOCKNORMAL;
@@ -1154,9 +1172,9 @@ public class GenerateVHDL extends Topology
 	/****************************** SUBCLASSED METHODS FOR THE TOPOLOGY ANALYZER ******************************/
 
 	/**
-	 * Method to adjust a cell name to be safe for Verilog output.
+	 * Method to adjust a cell name to be safe for VHDL output.
 	 * @param name the cell name.
-	 * @return the name, adjusted for Verilog output.
+	 * @return the name, adjusted for VHDL output.
 	 */
 	protected String getSafeCellName(String name)
 	{
