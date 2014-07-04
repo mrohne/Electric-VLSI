@@ -2166,18 +2166,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
             point.setLocation(DBMath.round(point.getX()), DBMath.round(point.getY()));
         }
     }
-    /**
-     * Method to retrieve all loops that are part of this PolyBase,
-     * sorted by area.
-     * @return the List of loops.
-     */
-//    public List<PolyBase> getSortedLoops()
-//    {
-//        Collection<PolyBase> set = getPointsInArea(new Area(this), layer, true, false, null);
-//        List<PolyBase> list = new ArrayList<PolyBase>(set);
-//        Collections.sort(list, AREA_COMPARATOR);
-//        return (list);
-//    }
+
     /**
      * Class to compare PolyBase objects
      */
@@ -2333,6 +2322,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
                 stack.push(poly);
             } else {
                 PolyBase top = stack.pop();
+<<<<<<< Updated upstream
                 Point[] points = new Point[top.getPoints().length + poly.getPoints().length + 2];
                 System.arraycopy(top.getPoints(), 0, points, 0, top.getPoints().length);
                 // Adding the first point at the end to close the first loop
@@ -2342,6 +2332,14 @@ public class PolyBase implements Shape, PolyNodeMerge {
                 PolyBase p = new PolyBase(points);
                 p.setLayer(poly.getLayerOrPseudoLayer()); // they are supposed to belong to the same layer
                 stack.push(p);
+=======
+				Layer layer = top.getLayer();
+				Area area = new Area(top);
+				Area loop = new Area(poly);
+				area.subtract(loop);
+				PolyBase sub = getPointsFromArea(area, layer);
+                stack.push(sub);
+>>>>>>> Stashed changes
             }
             if (sons != null) {
                 for (PolyBaseTree t : sons) {
@@ -2422,6 +2420,41 @@ public class PolyBase implements Shape, PolyNodeMerge {
         return roots;
     }
 
+    // Get Points
+    public static PolyBase getPointsFromArea(Area area, Layer layer) {
+		Point point = null;
+        double[] coords = new double[6];
+		Stack<Point> pointStart = new Stack<Point>();
+        List<Point> pointList = new ArrayList<Point>();
+		PathIterator pIt = area.getPathIterator(null);
+        while (!pIt.isDone()) {
+			switch (pIt.currentSegment(coords)) {
+			case PathIterator.SEG_CLOSE:
+				while (!pointStart.empty()) pointList.add(pointStart.pop());
+				break;
+			case PathIterator.SEG_MOVETO:
+				point = fromLambda(coords[0], coords[1]);
+				pointList.add(point);
+				pointStart.push(point);
+				break;
+			case PathIterator.SEG_LINETO:
+				point = fromLambda(coords[0], coords[1]);
+				pointList.add(point);
+				break;
+			default:
+				System.out.println("PolyBase.getPointsFromArea(" + area + ", " + layer + "): unknown PathIterator type " + pIt.currentSegment(coords));
+				point = fromLambda(coords[0], coords[1]);
+				pointList.add(point);
+			}
+			pIt.next();
+		}
+		while (!pointStart.empty()) pointList.add(pointStart.pop());
+		PolyBase poly = new PolyBase(pointList.toArray(new Point[pointList.size()]));
+		poly.setLayer(layer);
+		poly.setStyle(Poly.Type.FILLED);
+        return poly;
+    }
+
     // Get Loops
     public static List<PolyBase> getLoopsFromArea(Area area, Layer layer) {
         if (area == null) {
@@ -2432,7 +2465,8 @@ public class PolyBase implements Shape, PolyNodeMerge {
         List<Point> pointList = new ArrayList<Point>();
         List<PolyBase> list = new ArrayList<PolyBase>();
 
-        for (PathIterator pIt = area.getPathIterator(null); !pIt.isDone();) {
+		PathIterator pIt = area.getPathIterator(null);		
+        while (!pIt.isDone()) {
             int type = pIt.currentSegment(coords);
             if (type == PathIterator.SEG_CLOSE) {
                 // ignore zero-size polygons
@@ -2450,9 +2484,6 @@ public class PolyBase implements Shape, PolyNodeMerge {
                 }
                 if (hasArea) {
                     PolyBase poly = new PolyBase(pointList.toArray(new Point[pointList.size()]));
-//                    Point2D[] points = new Point2D[pointList.size()];
-//                    System.arraycopy(pointList.toArray(), 0, points, 0, pointList.size());
-//                    PolyBase poly = new PolyBase(points);
                     poly.setLayer(layer);
                     poly.setStyle(Poly.Type.FILLED);
                     list.add(poly);
