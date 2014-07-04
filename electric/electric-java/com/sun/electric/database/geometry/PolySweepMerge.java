@@ -750,7 +750,8 @@ public class PolySweepMerge extends GeometryHandler
             if (sons.isEmpty())  // it should be only 1!!
             {
                 List<PolyBase> l = PolyBase.getLoopsFromArea(area, null);
-                assert(l.size() == 1); // by design
+                if (l.size() != 1)
+					System.out.println("PolySweepMerge.getSimplePolygons(" + list + "): unexpected length " + l.size());
                 list.addAll(l);
             }
             else
