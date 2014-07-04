@@ -2322,24 +2322,12 @@ public class PolyBase implements Shape, PolyNodeMerge {
                 stack.push(poly);
             } else {
                 PolyBase top = stack.pop();
-<<<<<<< Updated upstream
-                Point[] points = new Point[top.getPoints().length + poly.getPoints().length + 2];
-                System.arraycopy(top.getPoints(), 0, points, 0, top.getPoints().length);
-                // Adding the first point at the end to close the first loop
-                points[top.getPoints().length] = (Point) top.getPoints()[0].clone();
-                System.arraycopy(poly.getPoints(), 0, points, top.getPoints().length + 1, poly.getPoints().length);
-                points[points.length - 1] = (Point) poly.getPoints()[0].clone();
-                PolyBase p = new PolyBase(points);
-                p.setLayer(poly.getLayerOrPseudoLayer()); // they are supposed to belong to the same layer
-                stack.push(p);
-=======
 				Layer layer = top.getLayer();
 				Area area = new Area(top);
 				Area loop = new Area(poly);
 				area.subtract(loop);
 				PolyBase sub = getPointsFromArea(area, layer);
                 stack.push(sub);
->>>>>>> Stashed changes
             }
             if (sons != null) {
                 for (PolyBaseTree t : sons) {
