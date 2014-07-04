@@ -123,6 +123,7 @@ public class Connectivity
 	/** true to debug centerline determination */				private static final boolean DEBUGCENTERLINES = false;
 	/** true to debug object creation */						private static final boolean DEBUGSTEPS = false;
 	/** true to debug contact extraction */						private static final boolean DEBUGCONTACTS = false;
+	/** true to debug nodes creation */						    private static final boolean DEBUGNODES = true;
 	/** amount to scale values before merging */				private static final double SCALEFACTOR = DBMath.GRID;
 
 	/** the current technology for extraction */				private Technology tech;
@@ -4843,11 +4844,6 @@ public class Connectivity
 			List<PolyBase> polyList = getMergePolys(merge, layer, numIgnored);
 
             boolean implants = layer.getFunction().isSubstrate() || layer.getFunction().isImplant();
-//            if (implants) {
-//                // just dump back in original layer, as it doesn't connect to anything anyway
-//                polyList = new ArrayList<PolyBase>(originalMerge.getObjects(layer, false, false));
-//            }
-
             if (usePureLayerNodes || implants) ap = null;
             for(PolyBase poly : polyList)
 			{
@@ -5278,8 +5274,9 @@ public class Connectivity
 					}
 				}
 			}
-			if (pType > nType) layer = realPActiveLayer; else
-				layer = realNActiveLayer;
+			if (pType > nType) layer = realPActiveLayer;
+			else layer = realNActiveLayer;
+			if (layer == null) layer = poly.getLayer();
 			if (layer.getPureLayerNode() == null) layer = poly.getLayer();
 		}
 
@@ -5600,6 +5597,7 @@ public class Connectivity
 		} else
 		{
 			// now remove the generated layers from the Merge
+			if (DEBUGNODES)	System.out.println("FITTED NODE "+ni+" AT ("+ni.getAnchorCenterX()+", "+ni.getAnchorCenterY()+") WIDTH "+ni.getXSize()+" HEIGHT "+ni.getYSize());
 			FixpTransform trans = ni.rotateOut();
 			Poly [] polys = tech.getShapeOfNode(ni);
 			for(int i=0; i<polys.length; i++)
