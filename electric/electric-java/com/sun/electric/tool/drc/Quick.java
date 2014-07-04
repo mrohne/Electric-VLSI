@@ -4693,7 +4693,7 @@ public class Quick
             if (isTransistor)
             {
                 Poly [] list = tech.getShapeOfNode(ni, false, true, activeLayers);
-                if (list.length <= 1) {
+                if (list.length < 1) {
 					System.out.println("No activePoly " + ni + ": " + list.length);
 				}
                 else if (!pNp.getFunction().isCNTransistor() && !pNp.getFunction().isBipolar() && list.length != 1) {
@@ -4858,7 +4858,7 @@ public class Quick
             {
                 Poly [] list = tech.getShapeOfNode(ni, false, true, activeLayers);
                 boolean isCBTransistor = pNp.getFunction().isCNTransistor();
-                if (list.length <= 1) {
+                if (list.length < 1) {
 					System.out.println("No activePoly " + ni + ": " + list.length);
 				}
                 else if (!pNp.getFunction().isCNTransistor() && !pNp.getFunction().isBipolar() && list.length != 1) {
