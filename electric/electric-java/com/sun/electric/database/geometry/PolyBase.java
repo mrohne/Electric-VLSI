@@ -2329,6 +2329,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				PolyBase sub = getPointsFromArea(area, layer);
                 stack.push(sub);
             }
+            level++;
             if (sons != null) {
                 for (PolyBaseTree t : sons) {
                     ((PolyBaseTreeImpl) t).getLoops(level, stack);
