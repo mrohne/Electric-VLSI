@@ -3051,7 +3051,6 @@ name=null;
 					List<Network> nets = connected.get(hare);
 					if (nets == null) return hare;
 					Network next = nets.get(0);
-					if (next == turtle) System.out.println("Auto-router detected loop: " + hare);
 					if (next == turtle) return hare;
 					hare = next;
 				}
