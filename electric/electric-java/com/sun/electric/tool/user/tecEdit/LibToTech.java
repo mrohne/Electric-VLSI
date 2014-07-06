@@ -1342,9 +1342,9 @@ public class LibToTech
 					nIn.nodePortDetails[pol1Port].values[1].getX().getAdder().getLambda());
 
 				// setup electrical layers for diffusion
-				diff1.values[0] = diff1.values[0].withX(new EdgeH(0,0));
+				diff1.values[0] = diff1.values[0].withY(new EdgeV(0,0));
 				diff1.rWidth = 0;
-				diff2.values[1] = diff2.values[0].withY(new EdgeV(0,0));
+				diff2.values[1] = diff2.values[1].withY(new EdgeV(0,0));
 				diff2.lWidth = 0;
 			} else
 			{
@@ -1375,9 +1375,9 @@ public class LibToTech
 					nIn.nodePortDetails[pol1Port].values[1].getY().getAdder().getLambda());
 
 				// setup electrical layers for diffusion
-                diff1.values[0] = diff1.values[0].withX(new EdgeH(0, 0));
+				diff1.values[0] = diff1.values[0].withY(new EdgeV(0,0));
 				diff1.rWidth = 0;
-                diff2.values[1] = diff2.values[1].withX(new EdgeH(0, 0));
+				diff2.values[1] = diff2.values[1].withY(new EdgeV(0,0));
 				diff2.lWidth = 0;
 			}
 		}
