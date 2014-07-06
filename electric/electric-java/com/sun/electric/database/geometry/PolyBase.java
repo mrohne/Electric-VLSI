@@ -59,7 +59,7 @@ import java.util.Stack;
  * The Poly also contains a Layer and some connectivity information.
  */
 public class PolyBase implements Shape, PolyNodeMerge {
-
+	private static final boolean REPORTCOLINEAR = false;
     private static final boolean ALLOWTINYPOLYGONS = false;
     /** the style (outline, text, lines, etc.) */
     private Poly.Type style;
@@ -246,6 +246,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
      * Method to help initialize this Poly.
      */
     private void initialize(Point[] points) {
+		for (Point2D p : points) assert(p != null);
         this.style = Poly.Type.CLOSED;
         this.points = points;
         this.layer = null;
@@ -264,7 +265,10 @@ public class PolyBase implements Shape, PolyNodeMerge {
             buf.append(layer.getName() + ": ");
         }
         for (Point2D p : points) {
-            buf.append("(" + p.getX() + ", " + p.getY() + "), ");
+			if (p != null) 
+				buf.append("(" + p.getX() + ", " + p.getY() + "), ");
+			else
+				buf.append("(" + p + "), ");
         }
         if (style != null) {
             buf.append(style.toString());
@@ -382,6 +386,13 @@ public class PolyBase implements Shape, PolyNodeMerge {
         }
 
         bitRectangle = 0;
+		for (int i = 0; i < points.length; i++) {
+			if (points[i] == null) {
+				System.out.println("PolyBase.getBox() " + this + " has a null point at " + i);
+				return null;
+			}
+		}
+					
         if (points.length == 4) {
             // only closed polygons and text can be boxes
             if (style != Poly.Type.FILLED && style != Poly.Type.CLOSED
@@ -2257,7 +2268,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
             } else if (type == PathIterator.SEG_LINETO) {
                 Point pt = fromLambda(coords[0], coords[1]);
 				if (isColinear(prevLineTo, lastLineTo, pt)) {
-					System.out.println("PolyBase.getPointsInArea: simplified colinear segments "+prevLineTo+lastLineTo+pt);
+					if (REPORTCOLINEAR) System.out.println("PolyBase.getPointsInArea: simplified colinear segments "+prevLineTo+lastLineTo+pt);
 					pointList.remove(lastLineTo);
 					pointList.add(pt);
 					lastLineTo = pt;
