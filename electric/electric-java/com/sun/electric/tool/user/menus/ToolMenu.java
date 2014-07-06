@@ -2938,6 +2938,10 @@ public class ToolMenu {
 		if (fileName == null)
 			return;
 		Technology tech = Technology.getCurrent();
+		if (tech.getXmlTech() == null) {
+			System.out.println("Cannot import DRC Deck for technology " + tech.getTechName());
+			return;
+		}
 		DRCTemplate.DRCXMLParser parser = DRCTemplate.importDRCDeck(TextUtils.makeURLToFile(fileName),
 				tech.getXmlTech(), true);
 		String message = "Deck file '" + fileName + "' loaded ";
