@@ -134,7 +134,7 @@ public class GDS extends Input<Object>
     public static final boolean INSTANTIATE_ARRAYS_VIA_BISECTION = true;
 
 	// data declarations
-	private static final int MAXPOINTS     =  1048576;
+	private static final int MAXPOINTS     =  2048;
 	private static final int MINFONTWIDTH  =  130;
 	private static final int MINFONTHEIGHT =  190;
 
@@ -2167,8 +2167,8 @@ public class GDS extends Input<Object>
 			{
 				if (layerNodeProto != null) {
 					NodeLayer [] layers = layerNodeProto.getNodeLayers();
-                    Poly.Point[] points = new Poly.Point[theVertices.length];
-                    for (int i = 0; i < theVertices.length; i++) {
+                    Poly.Point[] points = new Poly.Point[numVertices-1];
+                    for (int i = 0; i < numVertices-1; i++) {
                         points[i] = Poly.from(theVertices[i]);
                     }
 					merge.addPolygon(layers[0].getLayer(), new Poly(points));
