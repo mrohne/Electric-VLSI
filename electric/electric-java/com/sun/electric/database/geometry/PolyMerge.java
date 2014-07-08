@@ -290,12 +290,12 @@ public class PolyMerge extends GeometryHandler implements Serializable
 	 */
 	public void insetLayer(Layer source, Layer dest, double amount)
 	{
-		Area sourceArea = (Area)layers.get(source);
-		if (sourceArea == null) layers.remove(dest); else
+		Area area = (Area)layers.get(source);
+		if (area == null) layers.remove(dest); else
 		{
-			layers.put(dest, sourceArea.clone());
+			layers.put(dest, area.clone());
 			if (amount == 0) return;
-			List<PolyBase> orig = getAreaPoints(sourceArea, source, true);
+			List<PolyBase> orig = PolyBase.getPointsInArea(area, source, true, true);
 			for(PolyBase poly : orig)
 			{
 				PolyBase.Point [] points = poly.getPoints();
@@ -464,7 +464,7 @@ public class PolyMerge extends GeometryHandler implements Serializable
 
 	private double getAreaOfArea(Area area)
 	{
-		List<PolyBase> pointList = getAreaPoints(area, null, true);
+		List<PolyBase> pointList = PolyBase.getPointsInArea(area, null, true, true);
 		double totalArea = 0;
 		for(PolyBase p : pointList)
 		{
@@ -486,11 +486,12 @@ public class PolyMerge extends GeometryHandler implements Serializable
 		return area.contains(pt);
 	}
 
-	public Collection<PolyBase> getObjects(Object layer, boolean modified, boolean simple)
+	public Collection<PolyBase> getObjects(Object key, boolean modified, boolean simple)
 	{
 		// Since simple is used, correct detection of loops must be guaranteed
 		// outside.
-		return getMergedPoints((Layer)layer, simple);
+		Layer layer = (Layer) key;
+		return getMergedPoints(layer, simple);
 	}
 
     /**
@@ -503,35 +504,15 @@ public class PolyMerge extends GeometryHandler implements Serializable
 	{
 		Area area = (Area)layers.get(layer);
 		if (area == null) return null;
-		return getAreaPoints(area, layer, simple);
-	}
-
-	/**
-	 * Method to return a list of polygons in this merge for a given layer.
-	 * @param area the Area object that describes the merge.
-	 * @param layer the desired Layer.
-	 * @param simple true for simple polygons, false to allow complex ones.
-	 * @return a List of PolyBase objects that describes the layer in the merge.
-	 */
-    public static List<PolyBase> getAreaPoints(Area area, Layer layer, boolean simple)
-    {
         return PolyBase.getPointsInArea(area, layer, simple, true);
 	}
 
-    public Collection<PolyBase.PolyBaseTree> getTreeObjects(Object layer)
+    public Collection<PolyBase.PolyBaseTree> getTreeObjects(Object key)
     {
-		return getMergedTrees((Layer)layer);
-    }
-
-    public List<PolyBase.PolyBaseTree> getMergedTrees(Layer layer)
-	{
+		Layer layer = (Layer) key;
 		Area area = (Area)layers.get(layer);
 		if (area == null) return null;
-		return getAreaTrees(area, layer);
-	}
-
-    public static List<PolyBase.PolyBaseTree> getAreaTrees(Area area, Layer layer)
-    {
         return PolyBase.getPolyTrees(area, layer);
 	}
+
 }
