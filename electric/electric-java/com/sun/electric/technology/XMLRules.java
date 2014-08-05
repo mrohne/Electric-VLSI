@@ -80,7 +80,9 @@ public class XMLRules implements Serializable
       */
     public DRCTemplate getEdgeRule(Layer layer1, Layer layer2)
     {
-        return null;
+		int pIndex = getRuleIndex(layer1.getIndex(), layer2.getIndex());
+		DRCTemplate.DRCRuleType type = DRCTemplate.DRCRuleType.SPACINGE;
+		return getRule(pIndex, type, 0, 0, -1, null, null);
     }
 
     /**
