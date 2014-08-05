@@ -59,6 +59,8 @@ import java.util.Stack;
  * The Poly also contains a Layer and some connectivity information.
  */
 public class PolyBase implements Shape, PolyNodeMerge {
+	private static final boolean DEBUGMERGE = true;
+	private static final boolean DEBUGCOLLINEAR = true;
 	private static final boolean DEBUGMANHATTAN = true;
     private static final boolean ALLOWTINYPOLYGONS = false;
     /** the style (outline, text, lines, etc.) */
@@ -246,14 +248,8 @@ public class PolyBase implements Shape, PolyNodeMerge {
      * Method to help initialize this Poly.
      */
     private void initialize(Point[] points) {
+		int nm = 4;
 		for (Point p : points) assert(p != null);
-		if (DEBUGMANHATTAN) {
-			for (int i = 0, n = points.length; i < n; i++) {
-				Point p1 = points[i];
-				Point p2 = points[(i+1)%n];
-				if (isNonManhattan(p1, p2))	System.out.println("PolyBase.Point.initialize: non-Manhattan segment " + p1 + " " + p2);
-			}
-		}
         this.style = Poly.Type.CLOSED;
         this.points = points;
         this.layer = null;
@@ -2157,21 +2153,25 @@ public class PolyBase implements Shape, PolyNodeMerge {
      * @return List of PolyBase elements.
      */
     public static List<PolyBase> getPointsInArea(Area area, Layer layer, boolean simple, boolean includeLastPoint) {
+		// Get simple loops - sorted by size
         List<PolyBase> loops = getLoopsFromArea(area, layer);
+		// Arrange in tree structures
         List<PolyBaseTree> roots = getTreesFromLoops(loops);
-
-        // get loops from all tree roots.
+        // Get loops from all tree roots.
         List<PolyBase> list = new ArrayList<PolyBase>();
-		for (PolyBaseTree r : roots) {
-			Stack<PolyBase> s = new Stack<PolyBase>();
-			r.getLoops(0, s);
-			list.addAll(s);
+		// An island in a lake on an island in a lake... 
+		for (PolyBaseTree root : roots) {
+			Stack<PolyBaseTree> stack = new Stack<PolyBaseTree>();
+			root.getLoops(0, stack);
+			for (PolyBaseTree tree : stack) {
+				list.add(tree.getPoly());
+			}
 		}
         return list;
     }
 
 	// Extended sanity check for points
-	public static boolean isColinear(Point p0, Point p1, Point p2) {
+	public static boolean isCollinear(Point p0, Point p1, Point p2) {
 		if (p0 == null || p1 == null || p2 == null) return false;
 		double area =
 			(p0.getFixpX()-p1.getFixpX())*(p0.getFixpY()-p2.getFixpY())-
@@ -2185,103 +2185,94 @@ public class PolyBase implements Shape, PolyNodeMerge {
 		return true;
 	}
 
-    // Creating a tree for finding the loops
-    public static interface PolyBaseTree {
-        public Iterable<PolyBaseTree> getSons();
-        public PolyBase getPoly();
-		public boolean add(PolyBaseTree t);
-        public void getLoops(int level, Stack<PolyBase> stack);
+	// Make a hole in area
+	public static Point[] subtractPoints(Point[] loop, Point[] hoop) {
+		// Both must be non-degenerate
+		assert(loop.length >= 3);
+		assert(hoop.length >= 3);
+		// Search for point on loop closest to hoop
+		int l0 = 0;
+		int h0 = 0;
+		double d0 = loop[l0].distance(hoop[h0]);
+		for (int l1 = 0; l1 < loop.length; l1++) {
+			double d1 = loop[l1].distance(hoop[h0]);
+			if (DBMath.isLessThan(d1, d0)) {
+				l0 = l1;
+				d0 = d1;
+			}
+		}
+		// Then for point on hoop closest to loop
+		for (int h1 = 0; h1 < hoop.length; h1++) {
+			double d1 = loop[l0].distance(hoop[h1]);
+			if (DBMath.isLessThan(d1, d0)) {
+				h0 = h1;
+				d0 = d1;
+			}
+		}
+		// Traverse loop and hoop in clockwise direction
+		Point[] points = new Point[loop.length + 1 + hoop.length + 1];
+		int p1 = 0;
+		for (int l1 = 0; l1 < loop.length; l1++) points[p1++] = loop[(l0+l1)%loop.length];
+		points[p1++] = loop[l0];
+		for (int h1 = 0; h1 < hoop.length; h1++) points[p1++] = hoop[(h0+h1)%hoop.length];
+		points[p1++] = hoop[h0];
+		return points;
 	}
+				
 
-    public static class PolyBaseTreeImpl implements PolyBaseTree {
-
-        List<PolyBaseTree> sons;
+    // Creating a tree for finding the loops
+    public static class PolyBaseTree {
         PolyBase poly;
+        List<PolyBaseTree> sons;
 
-        public PolyBaseTreeImpl(PolyBase p) {
-            if (p == null) {
-                throw new NullPointerException();
-            }
-            poly = p;
+        public PolyBaseTree(PolyBase poly) {
+            if (poly == null) throw new NullPointerException();
+            this.poly = poly;
+			this.sons = new ArrayList<PolyBaseTree>();
         }
 
-        @Override
         public Iterable<PolyBaseTree> getSons() {
-            if (sons != null) {
-                return sons;
-            }
-            return Collections.emptyList();
+			return sons;
         }
 
-        @Override
         public PolyBase getPoly() {
-            return poly;
+			Layer layer = poly.getLayer();
+			Point[] loop = poly.getPoints();
+			for (PolyBaseTree son : sons) {
+				Point[] hoop = son.poly.getPoints();
+				loop = subtractPoints(loop, hoop);
+			}
+			PolyBase root = new PolyBase(loop);
+			root.setLayer(layer);
+            return root;
         }
-
-		@Override
-        public void getLoops(int level, Stack<PolyBase> stack) {
-            // Starting of a new polygon
+		
+        public void getLoops(int level, List<PolyBaseTree> list) {
             if (level % 2 == 0) {
-                stack.push(poly);
-            } else {
-                PolyBase top = stack.pop();
-				Layer layer = top.getLayer();
-				Area area = new Area(top);
-				Area loop = new Area(poly);
-				area.subtract(loop);
-				PolyBase sub = getPointsFromArea(area, layer);
-                stack.push(sub);
+				// Starting of a new polygon
+                list.add (this);
             }
-            level++;
-            if (sons != null) {
-                for (PolyBaseTree t : sons) {
-                    ((PolyBaseTreeImpl) t).getLoops(level, stack);
-                }
-            }
+			for (PolyBaseTree son : sons) {
+				// Handle next level polygons
+				son.getLoops(level + 1, list);
+			}
         }
 
-        @Override
-        public boolean add(PolyBaseTree tree) {
-			PolyBaseTreeImpl t = (PolyBaseTreeImpl) tree;
-			if (t == null) return false;
-            if (!poly.contains(t.poly.getPoints()[0])) {
-                // Belong to another root
+        boolean addTree(PolyBaseTree tree) {
+            if (!poly.contains(tree.poly.getPoints()[0])) {
                 return false;
             }
-
-            if (sons == null || sons.size() == 0) {
-                double a = poly.getArea();
-                double b = t.poly.getArea();
-                addSonLowLevel(t);
-                if (a < b) {
-                    assert (false);
-                    System.out.println("Should this happen");
-                    PolyBase c = t.poly;
-                    t.poly = poly;
-                    poly = c;
-                }
-            } else {
-                for (PolyBaseTree b : sons) {
-                    PolyBaseTreeImpl bi = (PolyBaseTreeImpl) b;
-                    PolyBase pn = bi.poly;
-                    if (pn.contains(t.poly.getPoints()[0])) {
-                        return (bi.add(t));
-                    } // test very expensive.
-                    else if (Job.getDebug() && t.poly.contains(pn.getPoints()[0])) {
-                        assert (false);
-                        System.out.println("Bad happen");
-                    }
-                }
-                addSonLowLevel(t);
+			for (PolyBaseTree son : sons) {
+				if (son.poly.contains(tree.poly.getPoints()[0])) {
+					return son.addTree(tree);
+				} 
+				else if (tree.poly.contains(son.poly.getPoints()[0])) {
+					assert (false);
+					System.out.println("Bad happen");
+				}
             }
+			sons.add(tree);
             return true;
-        }
-
-        public void addSonLowLevel(PolyBaseTree son) {
-            if (sons == null) {
-                sons = new ArrayList<PolyBaseTree>();
-            }
-            sons.add(son);
         }
     }
 
@@ -2298,16 +2289,16 @@ public class PolyBase implements Shape, PolyNodeMerge {
         // areas are sorted from min to max
         // Build the hierarchy with loops
         for (int i = list.size() - 1; i > -1; i--) {
-            PolyBaseTree t = new PolyBaseTreeImpl(list.get(i));
+            PolyBaseTree tree = new PolyBaseTree(list.get(i));
             // Check all possible roots
             boolean added = false;
-            for (PolyBaseTree r : roots) {
-                if (r.add(t)) {
+            for (PolyBaseTree root : roots) {
+                if (root.addTree(tree)) {
                     added = true;
                     break;
                 }
             }
-            if (!added) roots.add(t);
+            if (!added) roots.add(tree);
         }
         return roots;
     }
@@ -2361,24 +2352,9 @@ public class PolyBase implements Shape, PolyNodeMerge {
         return list;
     }
 
-    // This assumes the algorithm starts with external loop
-    private static List<PolyBase> getPointsFromComplex(Area area, Layer layer) {
-        List<PolyBase> list = getLoopsFromArea(area, layer);
-        List<PolyBaseTree> roots = getTreesFromLoops(list);
-
-        list.clear();
-        // get loops from all tree roots. Even loops start a new poly
-        for (PolyBaseTree r : roots) {
-            int count = 0;
-            Stack<PolyBase> s = new Stack<PolyBase>();
-            ((PolyBaseTreeImpl) r).getLoops(count, s);
-            list.addAll(s);
-        }
-        return list;
-    }
-
     // Get points on a single loop
     public static int getLoopFromPath(PathIterator pIt, List<Point> pLs) {
+		int nm = 4;
 		Point p0 = null;
 		Point p1 = null;
 		Point p2 = null;
@@ -2390,40 +2366,56 @@ public class PolyBase implements Shape, PolyNodeMerge {
 			case PathIterator.SEG_CLOSE:
 				assert(p0 != null);
 				p3 = p0;
-				if (isColinear(p1, p2, p3))	pLs.remove(pLs.size()-1);
-				else p1 = p2;
-				p2 = p3;
+				// pLs.add(p3);
 				pIt.next();
-				assert (pLs.size() > 2);
-				return type;
-			case PathIterator.SEG_MOVETO:
-				assert(p0 == null);
-				p3 = fromLambda(coords[0], coords[1]);
+				if (DEBUGMERGE && p0 == null)
+					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
+				if (DEBUGMERGE && pLs.size() <= 2)
+					System.out.println("PolyBase.getLoopFromPath: degenerate path " + p1 + " " + p2 + " " + p3);
+				if (DEBUGMANHATTAN && isNonManhattan(p2, p3) && nm-- > 0)
+					System.out.println("PolyBase.getLoopFromPath: non-Manhattan segment " + p2 + " " + p3);
+				if (DEBUGCOLLINEAR && isCollinear(p1, p2, p3) && nm-- > 0)
+					System.out.println("PolyBase.getLoopFromPath: collinear points " + p1 + " " + p2 + " " + p3);
 				p1 = p2;
 				p2 = p3;
-				pLs.add(p2);	
+				return type;
+			case PathIterator.SEG_MOVETO:
+				p3 = fromLambda(coords[0], coords[1]);
+				pLs.add(p3);
 				pIt.next();
+				if (DEBUGMERGE && p0 != null)
+					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
+				p1 = p2;
+				p2 = p3;
 				p0 = p3;
 				break;
 			case PathIterator.SEG_LINETO:
-				assert(p0 != null);
 				p3 = fromLambda(coords[0], coords[1]);
-				if (isColinear(p1, p2, p3))	pLs.remove(pLs.size()-1);
-				else p1 = p2;
-				p2 = p3;
-				if (DEBUGMANHATTAN && isNonManhattan(p1, p2))
-					System.out.println("PolyBase.getLoopFromPath: non-Manhattan segment " + p1 + " " + p2);
-				pLs.add(p2);
+				pLs.add(p3);
 				pIt.next();
+				if (DEBUGMERGE && p0 == null)
+					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
+				if (DEBUGMANHATTAN && isNonManhattan(p2, p3) && nm-- > 0)
+					System.out.println("PolyBase.getLoopFromPath: non-Manhattan segment " + p2 + " " + p3);
+				if (DEBUGCOLLINEAR && isCollinear(p1, p2, p3) && nm-- > 0)
+					System.out.println("PolyBase.getLoopFromPath: collinear points " + p1 + " " + p2 + " " + p3);
+				p1 = p2;
+				p2 = p3;
 				break;
 			default:
 				System.out.println("PolyBase.getLoopFromPath(" + pIt + ", " + pLs + "): unknown PathIterator type " + type);
 				p3 = fromLambda(coords[0], coords[1]);
-				if (isColinear(p1, p2, p3))	pLs.remove(pLs.size()-1);
-				else p1 = p2;
-				p2 = p3;
-				pLs.add(p2);
+				pLs.add(p3);
 				pIt.next();
+				if (DEBUGMERGE && p0 == null)
+					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
+				if (DEBUGMANHATTAN && isNonManhattan(p2, p3) && nm-- > 0)
+					System.out.println("PolyBase.getLoopFromPath: non-Manhattan segment " + p2 + " " + p3);
+				if (DEBUGCOLLINEAR && isCollinear(p1, p2, p3) && nm-- > 0)
+					System.out.println("PolyBase.getLoopFromPath: collinear points " + p1 + " " + p2 + " " + p3);
+				p1 = p2;
+				p2 = p3;
+				break;
 			}
         }
 		return -1;
@@ -2432,6 +2424,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
     private class PolyPathIterator implements PathIterator {
 
         int idx = 0;
+		Point pt0 = null;
         AffineTransform trans;
 
         public PolyPathIterator(AffineTransform at) {
@@ -2445,38 +2438,41 @@ public class PolyBase implements Shape, PolyNodeMerge {
 
         @Override
         public boolean isDone() {
-            return idx > points.length;
+			if (idx >= points.length) return true;
+			if (points[idx].equals(pt0)) return idx == points.length - 1;
+			return false;
         }
 
         @Override
         public void next() {
+			if (idx >= points.length) return;
+			if (points[idx].equals(pt0)) pt0 = null;
+			else if (pt0 == null) pt0 = points[idx];
             idx++;
         }
 
         @Override
         public int currentSegment(float[] coords) {
-            if (idx >= points.length) {
-                return SEG_CLOSE;
-            }
+            if (idx >= points.length) return SEG_CLOSE;
+			if (points[idx].equals(pt0)) return SEG_CLOSE;
             coords[0] = (float) points[idx].getX();
             coords[1] = (float) points[idx].getY();
             if (trans != null) {
                 trans.transform(coords, 0, coords, 0, 1);
             }
-            return (idx == 0 ? SEG_MOVETO : SEG_LINETO);
+            return (pt0 == null ? SEG_MOVETO : SEG_LINETO);
         }
 
         @Override
         public int currentSegment(double[] coords) {
-            if (idx >= points.length) {
-                return SEG_CLOSE;
-            }
+            if (idx >= points.length) return SEG_CLOSE;
+			if (points[idx].equals(pt0)) return SEG_CLOSE;
             coords[0] = points[idx].getX();
             coords[1] = points[idx].getY();
             if (trans != null) {
                 trans.transform(coords, 0, coords, 0, 1);
             }
-            return (idx == 0 ? SEG_MOVETO : SEG_LINETO);
+            return (pt0 == null ? SEG_MOVETO : SEG_LINETO);
         }
     }
 
