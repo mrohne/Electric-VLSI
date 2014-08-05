@@ -2167,8 +2167,8 @@ public class GDS extends Input<Object>
 			{
 				if (layerNodeProto != null) {
 					NodeLayer [] layers = layerNodeProto.getNodeLayers();
-                    Poly.Point[] points = new Poly.Point[numVertices-1];
-                    for (int i = 0; i < numVertices-1; i++) {
+                    Poly.Point[] points = new Poly.Point[numVertices];
+                    for (int i = 0; i < numVertices; i++) {
                         points[i] = Poly.from(theVertices[i]);
                     }
 					merge.addPolygon(layers[0].getLayer(), new Poly(points));
@@ -2180,7 +2180,7 @@ public class GDS extends Input<Object>
 				double hx = theVertices[0].getX();
 				double ly = theVertices[0].getY();
 				double hy = theVertices[0].getY();
-				for (int i=1; i<numVertices;i++)
+				for (int i=1; i<numVertices ;i++)
 				{
 					if (lx > theVertices[i].getX()) lx = theVertices[i].getX();
 					if (hx < theVertices[i].getX()) hx = theVertices[i].getX();
