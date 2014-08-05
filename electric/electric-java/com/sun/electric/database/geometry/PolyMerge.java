@@ -375,6 +375,9 @@ public class PolyMerge extends GeometryHandler implements Serializable
 		Area area = (Area)layers.get(layer);
 		if (area == null) return false;
 
+		// first check with poly.getBounds2D
+		if (area.contains(poly.getBounds2D())) return true;
+
 		// create an area that is the new polygon minus the original area
 		Area polyArea = new Area(poly);
 		polyArea.subtract(area);
