@@ -2366,7 +2366,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
 			case PathIterator.SEG_CLOSE:
 				assert(p0 != null);
 				p3 = p0;
-				// pLs.add(p3);
+				if (isCollinear(p1, p2, p3)) pLs.remove(pLs.size() - 1);
 				pIt.next();
 				if (DEBUGMERGE && p0 == null)
 					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
@@ -2391,6 +2391,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				break;
 			case PathIterator.SEG_LINETO:
 				p3 = fromLambda(coords[0], coords[1]);
+				if (isCollinear(p1, p2, p3)) pLs.remove(pLs.size() - 1);
 				pLs.add(p3);
 				pIt.next();
 				if (DEBUGMERGE && p0 == null)
