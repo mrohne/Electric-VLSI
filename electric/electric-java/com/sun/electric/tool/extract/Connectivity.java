@@ -3929,7 +3929,8 @@ public class Connectivity
 		TreeMap<Network,Object> netsThatTouch = new TreeMap<Network,Object>();
 
 		// find nodes that touch
-		Rectangle2D bounds = newPoly.getBounds2D();
+		Rectangle2D bounds = poly.getBounds2D();
+		Layer layer = poly.getLayer();
 		Point2D centerPoint = new Point2D.Double(bounds.getCenterX(), bounds.getCenterY());
 		Netlist nl = newCell.getNetlist();
 		for(Iterator<Geometric> it = newCell.searchIterator(bounds); it.hasNext(); )
@@ -3946,7 +3947,7 @@ public class Connectivity
 				Poly nodePoly = nodePolys[i];
 				if (geometricLayer(nodePoly.getLayer()) != layer) continue;
 				nodePoly.transform(trans);
-				if (polysTouch(nodePoly, newPoly))
+				if (polysTouch(nodePoly, poly))
 				{
 					// node touches the unconnected poly: get network information
 					PrimitivePort pp = (PrimitivePort)nodePoly.getPort();
@@ -3976,7 +3977,7 @@ public class Connectivity
 			{
 				Poly arcPoly = polys[i];
 				if (geometricLayer(arcPoly.getLayer()) != layer) continue;
-				if (polysTouch(arcPoly, newPoly))
+				if (polysTouch(arcPoly, poly))
 				{
 					Network net = nl.getNetwork(ai, 0);
 					if (net != null)
