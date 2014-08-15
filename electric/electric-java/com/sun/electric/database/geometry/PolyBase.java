@@ -60,8 +60,8 @@ import java.util.Stack;
  */
 public class PolyBase implements Shape, PolyNodeMerge {
 	private static final boolean DEBUGMERGE = true;
-	private static final boolean DEBUGCOLLINEAR = true;
-	private static final boolean DEBUGMANHATTAN = true;
+	private static final boolean DEBUGCOLLINEAR = false;
+	private static final boolean DEBUGMANHATTAN = false;
     private static final boolean ALLOWTINYPOLYGONS = false;
     /** the style (outline, text, lines, etc.) */
     private Poly.Type style;
@@ -2171,6 +2171,11 @@ public class PolyBase implements Shape, PolyNodeMerge {
     }
 
 	// Extended sanity check for points
+	public static boolean isCoincident(Point p1, Point p2) {
+		if (p1 == null || p2 == null) return false;
+		return DBMath.areEquals(p1.getFixpX(), p2.getFixpX()) && DBMath.areEquals(p1.getFixpY(), p2.getFixpY());
+			
+	}
 	public static boolean isCollinear(Point p0, Point p1, Point p2) {
 		if (p0 == null || p1 == null || p2 == null) return false;
 		double area =
@@ -2180,8 +2185,8 @@ public class PolyBase implements Shape, PolyNodeMerge {
 	}
 	public static boolean isNonManhattan(Point p0, Point p1) {
 		if (p0 == null || p1 == null) return false;
-		if (DBMath.areEquals(p0.getFixpX()-p1.getFixpX(), 0)) return false;
-		if (DBMath.areEquals(p0.getFixpY()-p1.getFixpY(), 0)) return false;
+		if (DBMath.areEquals(p0.getFixpX(), p1.getFixpX())) return false;
+		if (DBMath.areEquals(p0.getFixpY(), p1.getFixpY())) return false;
 		return true;
 	}
 
@@ -2366,7 +2371,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
 			case PathIterator.SEG_CLOSE:
 				assert(p0 != null);
 				p3 = p0;
-				if (isCollinear(p1, p2, p3)) pLs.remove(pLs.size() - 1);
+				if (isCoincident(p2, p3) || isCollinear(p1, p2, p3)) pLs.remove(pLs.size() - 1);
 				pIt.next();
 				if (DEBUGMERGE && p0 == null)
 					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
@@ -2391,7 +2396,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				break;
 			case PathIterator.SEG_LINETO:
 				p3 = fromLambda(coords[0], coords[1]);
-				if (isCollinear(p1, p2, p3)) pLs.remove(pLs.size() - 1);
+				if (isCoincident(p2, p3) || isCollinear(p1, p2, p3)) pLs.remove(pLs.size() - 1);
 				pLs.add(p3);
 				pIt.next();
 				if (DEBUGMERGE && p0 == null)
