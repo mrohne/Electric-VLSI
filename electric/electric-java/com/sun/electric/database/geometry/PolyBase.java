@@ -392,16 +392,14 @@ public class PolyBase implements Shape, PolyNodeMerge {
                 return null;
             }
 			// make sure the polygon is rectangular and orthogonal
-			if (points[0].getFixpX() == points[1].getFixpX() && points[2].getFixpX() == points[3].getFixpX()
-                && points[0].getFixpY() == points[3].getFixpY() && points[1].getFixpY() == points[2].getFixpY()) {
+			if (isHorizontalBox(points[0], points[1], points[2], points[3])) {
 				bitRectangle = 1;
 				return getBounds2D();
 			}
-			if (points[0].getFixpX() == points[3].getFixpX() && points[1].getFixpX() == points[2].getFixpX()
-                && points[0].getFixpY() == points[1].getFixpY() && points[2].getFixpY() == points[3].getFixpY()) {
+			if (isHorizontalBox(points[0], points[1], points[2], points[3])) {
 				bitRectangle = 1;
-            return getBounds2D();
-        }
+				return getBounds2D();
+			}
         } else if (points.length >= 5) {
 			// only polygons can be boxes
             if (style != Poly.Type.FILLED && style != Poly.Type.CLOSED
@@ -2173,21 +2171,33 @@ public class PolyBase implements Shape, PolyNodeMerge {
 	// Extended sanity check for points
 	public static boolean isCoincident(Point p1, Point p2) {
 		if (p1 == null || p2 == null) return false;
-		return DBMath.areEquals(p1.getFixpX(), p2.getFixpX()) && DBMath.areEquals(p1.getFixpY(), p2.getFixpY());
+		return DBMath.areEquals(p1.getX(), p2.getX()) && DBMath.areEquals(p1.getY(), p2.getY());
 			
 	}
 	public static boolean isCollinear(Point p0, Point p1, Point p2) {
 		if (p0 == null || p1 == null || p2 == null) return false;
 		double area =
-			(p0.getFixpX()-p1.getFixpX())*(p0.getFixpY()-p2.getFixpY())-
-			(p0.getFixpY()-p1.getFixpY())*(p0.getFixpX()-p2.getFixpX());
+			(p0.getX()-p1.getX())*(p0.getY()-p2.getY())-
+			(p0.getY()-p1.getY())*(p0.getX()-p2.getX());
 		return DBMath.areEquals(area, 0);
 	}
 	public static boolean isNonManhattan(Point p0, Point p1) {
 		if (p0 == null || p1 == null) return false;
-		if (DBMath.areEquals(p0.getFixpX(), p1.getFixpX())) return false;
-		if (DBMath.areEquals(p0.getFixpY(), p1.getFixpY())) return false;
+		if (DBMath.areEquals(p0.getX(), p1.getX())) return false;
+		if (DBMath.areEquals(p0.getY(), p1.getY())) return false;
 		return true;
+	}
+	public static boolean isHorizontalBox(Point p0, Point p1, Point p2, Point p3) {
+		if (p0 == null || p1 == null || p2 == null || p3 == null) return false;
+		return
+			DBMath.areEquals(p0.getX(), p1.getX()) && DBMath.areEquals(p2.getX(), p3.getX()) &&
+			DBMath.areEquals(p0.getY(), p3.getY()) && DBMath.areEquals(p1.getY(), p2.getY());
+	}
+	public static boolean isVerticalBox(Point p0, Point p1, Point p2, Point p3) {
+		if (p0 == null || p1 == null || p2 == null || p3 == null) return false;
+		return
+			DBMath.areEquals(p0.getX(), p3.getX()) && DBMath.areEquals(p1.getX(), p2.getX()) &&
+			DBMath.areEquals(p0.getY(), p1.getY()) && DBMath.areEquals(p2.getY(), p3.getY());
 	}
 
 	// Make a hole in area
