@@ -470,7 +470,7 @@ public class PolySweepMerge extends GeometryHandler
         List<PolyBase.Point> pointList = new ArrayList<PolyBase.Point>();
 		PathIterator pIt = area.getPathIterator(null);		
         while (!pIt.isDone()) {
-            int type = PolyBase.getLoopFromPath(pIt, pointList);
+            int type = PolyBase.getPointsFromPath(pIt, pointList);
 			switch (type) {
 			case PathIterator.SEG_CLOSE:
 				for (int i = 0, n = pointList.size(); i < n; i++)
@@ -491,7 +491,7 @@ public class PolySweepMerge extends GeometryHandler
 		List<PolyBase.Point> pointList = new ArrayList<PolyBase.Point>();
 		PathIterator pIt = area.getPathIterator(null);		
         while (!pIt.isDone()) {
-            int type = PolyBase.getLoopFromPath(pIt, pointList);
+            int type = PolyBase.getPointsFromPath(pIt, pointList);
 			switch (type) {
 			case PathIterator.SEG_CLOSE:
 				for (int i = 0, n = pointList.size(); i < n; i++)
