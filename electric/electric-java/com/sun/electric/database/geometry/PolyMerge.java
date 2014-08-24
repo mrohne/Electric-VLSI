@@ -402,6 +402,19 @@ public class PolyMerge extends GeometryHandler implements Serializable
         return polyArea;
     }
 
+    public Area inclusive(Layer layer, PolyBase poly)
+    {
+        // find the area for the given layer
+		Area area = (Area)layers.get(layer);
+		if (area == null) return null;
+
+        // create an area that is the new polygon minus the original area
+		Area polyArea = new Area(poly);
+		polyArea.intersect(area);
+
+        return polyArea;
+    }
+
     /**
 	 * Method to see if an arc fits in this merge with or without end extension.
 	 * @param layer the layer of the arc being examined.
@@ -495,6 +508,16 @@ public class PolyMerge extends GeometryHandler implements Serializable
 		// outside.
 		Layer layer = (Layer) key;
 		return getMergedPoints(layer, simple);
+	}
+
+    /**
+	 * Method to return the basic Area on a given Layer in this Merge.
+	 * @param layer the layer in question.
+	 * @return the list of Polys that describes this Merge.
+	 */
+    public Area getMergedArea(Layer layer)
+	{
+		return (Area)layers.get(layer);
 	}
 
     /**
