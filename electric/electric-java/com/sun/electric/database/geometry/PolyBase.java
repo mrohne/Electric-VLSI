@@ -60,13 +60,16 @@ import java.util.Stack;
  */
 public class PolyBase implements Shape, PolyNodeMerge {
 	private static final boolean DEBUGMERGE = true;
+	private static final boolean DEBUGCOINCIDENT = false;
 	private static final boolean DEBUGCOLLINEAR = false;
-	private static final boolean DEBUGMANHATTAN = false;
+	private static final boolean DEBUGMANHATTAN = true;
+	private static final boolean CHECKMANHATTAN = true;
     private static final boolean ALLOWTINYPOLYGONS = false;
     /** the style (outline, text, lines, etc.) */
     private Poly.Type style;
     /** the points */
     protected Point points[];
+	protected Line2D lines[];
     /** the layer (used for graphics) */
     private Layer layer;
     /** the bounds of the points */
@@ -248,10 +251,10 @@ public class PolyBase implements Shape, PolyNodeMerge {
      * Method to help initialize this Poly.
      */
     private void initialize(Point[] points) {
-		int nm = 4;
 		for (Point p : points) assert(p != null);
         this.style = Poly.Type.CLOSED;
         this.points = points;
+		this.lines = null;
         this.layer = null;
         this.bounds = null;
         this.pp = null;
@@ -301,6 +304,16 @@ public class PolyBase implements Shape, PolyNodeMerge {
     public Point[] getPoints() {
         return points;
     }
+
+	public Line2D[] getLines() {
+		if (lines != null) return lines;
+		List<Line2D> pLs = new ArrayList<Line2D>();
+		PolyPathIterator pIt = getEdgeIterator();
+		while (!pIt.isDone()) getLinesFromEdge(pIt, pLs);
+		lines = pLs.toArray(new Line2D.Double[pLs.size()]);
+		return lines;
+	}
+
 
     /**
      * Method to return the layer associated with this Poly.
@@ -396,7 +409,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				bitRectangle = 1;
 				return getBounds2D();
 			}
-			if (isHorizontalBox(points[0], points[1], points[2], points[3])) {
+			if (isVerticalBox(points[0], points[1], points[2], points[3])) {
 				bitRectangle = 1;
 				return getBounds2D();
 			}
@@ -2252,14 +2265,12 @@ public class PolyBase implements Shape, PolyNodeMerge {
 
         public PolyBase getPoly() {
 			Layer layer = poly.getLayer();
-			Point[] loop = poly.getPoints();
+			Area area = new Area(poly);
 			for (PolyBaseTree son : sons) {
-				Point[] hoop = son.poly.getPoints();
-				loop = subtractPoints(loop, hoop);
+				Area hole = new Area(son.poly);
+				area.subtract(hole);
 			}
-			PolyBase root = new PolyBase(loop);
-			root.setLayer(layer);
-            return root;
+			return getPointsFromArea(area, layer);
         }
 		
         public void getLoops(int level, List<PolyBaseTree> list) {
@@ -2272,18 +2283,21 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				son.getLoops(level + 1, list);
 			}
         }
-
+		
         boolean addTree(PolyBaseTree tree) {
-            if (!poly.contains(tree.poly.getPoints()[0])) {
-                return false;
-            }
+			for (Point p : tree.poly.getPoints())
+				if (!poly.contains(p)) return false;
 			for (PolyBaseTree son : sons) {
 				if (son.poly.contains(tree.poly.getPoints()[0])) {
 					return son.addTree(tree);
 				} 
 				else if (tree.poly.contains(son.poly.getPoints()[0])) {
-					assert (false);
-					System.out.println("Bad happen");
+					System.out.print("PolyBaseTree.addTree: tree");
+					for (Point p : tree.poly.getPoints()) System.out.print(" " + p);
+					System.out.println();
+					System.out.print("PolyBaseTree.addTree: son ");
+					for (Point p : son.poly.getPoints()) System.out.print(" " + p);
+					System.out.println();
 				}
             }
 			sons.add(tree);
@@ -2323,9 +2337,11 @@ public class PolyBase implements Shape, PolyNodeMerge {
         List<Point> pointList = new ArrayList<Point>();
 		PathIterator pIt = area.getPathIterator(null);
         while (!pIt.isDone()) {
-			int type = getLoopFromPath(pIt, pointList);
+			int loop = pointList.size();
+			int type = getPointsFromPath(pIt, pointList);
 			switch (type) {
 			case PathIterator.SEG_CLOSE:
+				if (loop < pointList.size()) pointList.add(pointList.get(loop));
 				break;
 			case PathIterator.SEG_MOVETO:
 			default:
@@ -2345,17 +2361,16 @@ public class PolyBase implements Shape, PolyNodeMerge {
 
 		PathIterator pIt = area.getPathIterator(null);		
         while (!pIt.isDone()) {
-            int type = getLoopFromPath(pIt, pointList);
+            int type = getPointsFromPath(pIt, pointList);
 			switch (type) {
 			case PathIterator.SEG_CLOSE:
 				Point[] points = pointList.toArray(new Point[pointList.size()]);
-                if (ALLOWTINYPOLYGONS || DBMath.isGreaterThan(DBMath.getAreaOfPoints(points), 0)) {
-                    PolyBase poly = new PolyBase(points);
-                    poly.setLayer(layer);
-                    poly.setStyle(Poly.Type.FILLED);
-                    list.add(poly);
-                }
                 pointList.clear();
+                if (!ALLOWTINYPOLYGONS && !DBMath.isGreaterThan(DBMath.getAreaOfPoints(points), 0)) break;
+				PolyBase poly = new PolyBase(points);
+				poly.setLayer(layer);
+				poly.setStyle(Poly.Type.FILLED);
+				list.add(poly);
 				break;
 			case PathIterator.SEG_MOVETO:
 			default:
@@ -2367,80 +2382,126 @@ public class PolyBase implements Shape, PolyNodeMerge {
         return list;
     }
 
-    // Get points on a single loop
-    public static int getLoopFromPath(PathIterator pIt, List<Point> pLs) {
+	// Get lines on a single loop
+    public static int getLinesFromEdge(PolyPathIterator pIt, List<Line2D> pLs) {
 		int nm = 4;
-		Point p0 = null;
-		Point p1 = null;
-		Point p2 = null;
-		Point p3 = null;
-		double [] coords = new double[6];
+		int type = -1;
+		Point [] pt = new Point[4];
+		Point [] coords = new Point[3];
         while (!pIt.isDone()) {
-			int type = pIt.currentSegment(coords);
+			type = pIt.currentSegment(coords);
 			switch (type) {
 			case PathIterator.SEG_CLOSE:
-				assert(p0 != null);
-				p3 = p0;
-				if (isCoincident(p2, p3) || isCollinear(p1, p2, p3)) pLs.remove(pLs.size() - 1);
+				pt[2] = pt[3];
 				pIt.next();
-				if (DEBUGMERGE && p0 == null)
-					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
-				if (DEBUGMERGE && pLs.size() <= 2)
-					System.out.println("PolyBase.getLoopFromPath: degenerate path " + p1 + " " + p2 + " " + p3);
-				if (DEBUGMANHATTAN && isNonManhattan(p2, p3) && nm-- > 0)
-					System.out.println("PolyBase.getLoopFromPath: non-Manhattan segment " + p2 + " " + p3);
-				if (DEBUGCOLLINEAR && isCollinear(p1, p2, p3) && nm-- > 0)
-					System.out.println("PolyBase.getLoopFromPath: collinear points " + p1 + " " + p2 + " " + p3);
-				p1 = p2;
-				p2 = p3;
+				// if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				// else if (isCollinear(pt[0], pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				pLs.add(new Line2D.Double(pt[1], pt[2]));
+				pt[0] = pt[1];
+				pt[1] = pt[2];
 				return type;
 			case PathIterator.SEG_MOVETO:
-				p3 = fromLambda(coords[0], coords[1]);
-				pLs.add(p3);
+				pt[2] = coords[1];
 				pIt.next();
-				if (DEBUGMERGE && p0 != null)
-					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
-				p1 = p2;
-				p2 = p3;
-				p0 = p3;
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				pt[3] = pt[2];
 				break;
 			case PathIterator.SEG_LINETO:
-				p3 = fromLambda(coords[0], coords[1]);
-				if (isCoincident(p2, p3) || isCollinear(p1, p2, p3)) pLs.remove(pLs.size() - 1);
-				pLs.add(p3);
+				pt[2] = coords[1];
 				pIt.next();
-				if (DEBUGMERGE && p0 == null)
-					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
-				if (DEBUGMANHATTAN && isNonManhattan(p2, p3) && nm-- > 0)
-					System.out.println("PolyBase.getLoopFromPath: non-Manhattan segment " + p2 + " " + p3);
-				if (DEBUGCOLLINEAR && isCollinear(p1, p2, p3) && nm-- > 0)
-					System.out.println("PolyBase.getLoopFromPath: collinear points " + p1 + " " + p2 + " " + p3);
-				p1 = p2;
-				p2 = p3;
+				// if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				// else if (isCollinear(pt[0], pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				pLs.add(new Line2D.Double(pt[1], pt[2]));
+				pt[0] = pt[1];
+				pt[1] = pt[2];
 				break;
 			default:
-				System.out.println("PolyBase.getLoopFromPath(" + pIt + ", " + pLs + "): unknown PathIterator type " + type);
-				p3 = fromLambda(coords[0], coords[1]);
-				pLs.add(p3);
+				pt[2] = coords[1];
 				pIt.next();
-				if (DEBUGMERGE && p0 == null)
-					System.out.println("PolyBase.getLoopFromPath: out-of place path segment " + type);
-				if (DEBUGMANHATTAN && isNonManhattan(p2, p3) && nm-- > 0)
-					System.out.println("PolyBase.getLoopFromPath: non-Manhattan segment " + p2 + " " + p3);
-				if (DEBUGCOLLINEAR && isCollinear(p1, p2, p3) && nm-- > 0)
-					System.out.println("PolyBase.getLoopFromPath: collinear points " + p1 + " " + p2 + " " + p3);
-				p1 = p2;
-				p2 = p3;
+				if (DEBUGMERGE) System.out.println("PolyBase.getPointsFromPath(" + pIt + ", " + pLs + "): unknown PathIterator type " + type);
+				pLs.add(new Line2D.Double(pt[1], pt[2]));
+				pt[0] = pt[1];
+				pt[1] = pt[2];
 				break;
 			}
         }
-		return -1;
+		return type;
+    }
+
+    // Get points on a single loop
+    public static int getPointsFromPath(PathIterator pIt, List<Point> pLs) {
+		int nm = 4;
+		int type = -1;
+		Point [] pt = new Point[4];
+		double [] coords = new double[6];
+        while (!pIt.isDone()) {
+			type = pIt.currentSegment(coords);
+			switch (type) {
+			case PathIterator.SEG_CLOSE:
+				pt[2] = pt[3];
+				pIt.next();
+				if (DEBUGMERGE && pt[3] == null)
+					System.out.println("PolyBase.getPointsFromPath: SEG_CLOSE path not open at " + pt[0] + " " + pt[1] + " "+ pt[2]);
+				if (DEBUGMERGE && pLs.size() <= 2)
+					System.out.println("PolyBase.getPointsFromPath: degenerate path " + pt[0] + " " + pt[1] + " " + pt[2]);
+				if (DEBUGCOINCIDENT && isCoincident(pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: coincicent points " + pt[1] + " " + pt[2]);
+				if (DEBUGCOLLINEAR && isCollinear(pt[0], pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: collinear points " + pt[0] + " " + pt[1] + " " + pt[2]);
+				if (DEBUGMANHATTAN && isNonManhattan(pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: non-Manhattan segment " + pt[1] + " " + pt[2]);
+				if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				else if (isCollinear(pt[0], pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				return type;
+			case PathIterator.SEG_MOVETO:
+				pt[2] = fromLambda(coords[0], coords[1]);
+				pIt.next();
+				if (DEBUGMERGE && pt[3] != null)
+					System.out.println("PolyBase.getPointsFromPath: SEG_MOVETO path already open at " + pt[0] + " " + pt[1] + " "+ pt[2]);
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				pt[3] = pt[2];
+				if (pt[1] != null) pLs.add(pt[1]);
+				break;
+			case PathIterator.SEG_LINETO:
+				pt[2] = fromLambda(coords[0], coords[1]);
+				pIt.next();
+				if (DEBUGMERGE && pt[3] == null)
+					System.out.println("PolyBase.getPointsFromPath: SEG_LINETO path not open at " + pt[0] + " " + pt[1] + " "+ pt[2]);
+				if (DEBUGCOINCIDENT && isCoincident(pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: coincicent points " + pt[1] + " " + pt[2]);
+				if (DEBUGCOLLINEAR && isCollinear(pt[0], pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: collinear points " + pt[0] + " " + pt[1] + " " + pt[2]);
+				if (DEBUGMANHATTAN && isNonManhattan(pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: non-Manhattan segment " + pt[1] + " " + pt[2]);
+				if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				else if (isCollinear(pt[0], pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				if (pt[1] != null) pLs.add(pt[1]);
+				break;
+			default:
+				pt[2] = fromLambda(coords[0], coords[1]);
+				pIt.next();
+				if (DEBUGMERGE) System.out.println("PolyBase.getPointsFromPath(" + pIt + ", " + pLs + "): unknown PathIterator type " + type);
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				break;
+			}
+        }
+		return type;
     }
 
     private class PolyPathIterator implements PathIterator {
 
         int idx = 0;
-		Point pt0 = null;
+		int sms = 3;
+		Point prev = null;
+		Point next = null;
+		Point last = null;
         AffineTransform trans;
 
         public PolyPathIterator(AffineTransform at) {
@@ -2454,43 +2515,57 @@ public class PolyBase implements Shape, PolyNodeMerge {
 
         @Override
         public boolean isDone() {
-			if (idx >= points.length) return true;
-			if (points[idx].equals(pt0)) return idx == points.length - 1;
+			Point next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return true;
 			return false;
         }
 
         @Override
         public void next() {
-			if (idx >= points.length) return;
-			if (points[idx].equals(pt0)) pt0 = null;
-			else if (pt0 == null) pt0 = points[idx];
-            idx++;
+			prev = next;
+			next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return;
+			if (last == null) last = next;
+			else if (last.equals(next)) last = null;
+			idx++;
         }
 
         @Override
         public int currentSegment(float[] coords) {
-            if (idx >= points.length) return SEG_CLOSE;
-			if (points[idx].equals(pt0)) return SEG_CLOSE;
-            coords[0] = (float) points[idx].getX();
-            coords[1] = (float) points[idx].getY();
-            if (trans != null) {
-                trans.transform(coords, 0, coords, 0, 1);
-            }
-            return (pt0 == null ? SEG_MOVETO : SEG_LINETO);
+			next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return -1;
+			coords[0] = (float) next.getX();
+			coords[1] = (float) next.getY();
+			if (trans != null) trans.transform(coords, 0, coords, 0, 1);
+			if (last == null) return SEG_MOVETO;
+			else if (last.equals(next)) return SEG_CLOSE;
+			return SEG_LINETO;
         }
 
         @Override
         public int currentSegment(double[] coords) {
-            if (idx >= points.length) return SEG_CLOSE;
-			if (points[idx].equals(pt0)) return SEG_CLOSE;
-            coords[0] = points[idx].getX();
-            coords[1] = points[idx].getY();
-            if (trans != null) {
-                trans.transform(coords, 0, coords, 0, 1);
-            }
-            return (pt0 == null ? SEG_MOVETO : SEG_LINETO);
+			next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return -1;
+			coords[0] = next.getX();
+			coords[1] = next.getY();
+			if (trans != null) trans.transform(coords, 0, coords, 0, 1);
+			if (last == null) return SEG_MOVETO;
+			else if (last.equals(next)) return SEG_CLOSE;
+			return SEG_LINETO;
         }
-    }
+
+		public int currentSegment(Point[] coords) {
+			next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return -1;
+			coords[0] = prev;
+			coords[1] = next;
+			coords[2] = last;
+			if (trans != null) trans.transform(coords, 0, coords, 0, 1);
+			if (last == null) return SEG_MOVETO;
+			if (last.equals(next)) return SEG_CLOSE;
+			return SEG_LINETO;
+		}
+	}
 
     /**
      * Method to return a PathIterator for this Poly after a transformation.
@@ -2501,6 +2576,15 @@ public class PolyBase implements Shape, PolyNodeMerge {
     @Override
     public PathIterator getPathIterator(AffineTransform at) {
         return new PolyPathIterator(at);
+    }
+
+    /**
+     * Method to return an EdgeIterator for this Poly
+     * This method gives direct access to Point [] points
+      * @return the PolyPathIterator.
+     */
+    public PolyPathIterator getEdgeIterator() {
+        return new PolyPathIterator(null);
     }
 
     /**
