@@ -299,6 +299,7 @@ public class GenMath {
      */
     public static double getAreaOfPoints(Point2D[] points) {
         double area = 0.0;
+		if (points.length < 3) return Math.abs(area);
         double x0 = points[0].getX();
         double y0 = points[0].getY();
         double y1 = 0;
