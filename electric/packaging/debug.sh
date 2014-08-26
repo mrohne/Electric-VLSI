@@ -1,0 +1,1 @@
+jdb -launch -sourcepath../electric-java -classpathantBuild -Dapple.laf.useScreenMenuBar=true -Dcom.apple.mrj.application.apple.menu.about.name=Electric -J-Xms64m -J-Xmx2048m -J-Xss64m com.sun.electric.Launcher
