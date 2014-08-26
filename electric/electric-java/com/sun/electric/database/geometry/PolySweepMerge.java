@@ -403,7 +403,7 @@ public class PolySweepMerge extends GeometryHandler
 
         for (Area area : container.areas)
         {
-            list.addAll(PolyBase.getPointsInArea(area, (Layer)layer, simple, false));
+            list.addAll(PolyBase.getPointsInArea(area, (Layer)layer, simple, true));
         }
 
         return list;
