@@ -1650,7 +1650,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
         Area otherArea = new Area(polyOther);
         myArea.intersect(otherArea);
 
-        List<PolyBase> polys = getPointsInArea(myArea, layer, true, false);
+        List<PolyBase> polys = getPointsInArea(myArea, layer, false, true);
         if (polys == null) {
             return null;
         }
