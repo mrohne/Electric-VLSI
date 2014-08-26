@@ -4691,11 +4691,6 @@ public class Connectivity
 			List<PolyBase> polyList = getMergePolys(merge, layer, numIgnored);
 
             boolean implants = layer.getFunction().isSubstrate() || layer.getFunction().isImplant();
-//            if (implants) {
-//                // just dump back in original layer, as it doesn't connect to anything anyway
-//                polyList = new ArrayList<PolyBase>(originalMerge.getObjects(layer, false, false));
-//            }
-
             if (usePureLayerNodes || implants) ap = null;
             for(PolyBase poly : polyList)
 			{
