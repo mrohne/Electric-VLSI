@@ -2183,12 +2183,16 @@ public class PolyBase implements Shape, PolyNodeMerge {
         List<PolyBaseTree> roots = getTreesFromLoops(loops);
         // Get loops from all tree roots.
         List<PolyBase> list = new ArrayList<PolyBase>();
-		// An island in a lake on an island in a lake... 
 		for (PolyBaseTree root : roots) {
-			Stack<PolyBaseTree> stack = new Stack<PolyBaseTree>();
-			root.getLoops(0, stack);
-			for (PolyBaseTree tree : stack) {
-				list.add(tree.getPoly());
+			if (simple) {
+				list.add(root.poly);
+			} else {
+				// An island in a lake on an island in a lake... 
+				Stack<PolyBaseTree> stack = new Stack<PolyBaseTree>();
+				root.getLoops(0, stack);
+				for (PolyBaseTree tree : stack) {
+					list.add(tree.getPoly());
+				}
 			}
 		}
         return list;
