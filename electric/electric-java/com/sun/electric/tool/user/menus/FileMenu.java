@@ -148,7 +148,7 @@ public class FileMenu {
                 new EMenuItem("_CIF (Caltech Intermediate Format)...") { public void run() {
                     importLibraryCommand(FileType.CIF, false, false, true, false); }},
                 new EMenuItem("_GDS II (Stream)...") { public void run() {
-                    importLibraryCommand(FileType.GDS, false, false, true, false); }},
+                    importLibraryCommand(FileType.GDS, false, true, true, false); }},
                 new EMenuItem("_GDS II (Stream) Skeleton...") { public void run() {
                     importLibraryCommand(FileType.GDS, false, false, true, true); }},
                 new EMenuItem("GDS _Map File...") {	public void run() {
