@@ -2157,6 +2157,18 @@ public class PolyBase implements Shape, PolyNodeMerge {
     };
 
     /**
+	 * Static method to get PolyBaseTree roots associated with an Area.
+     * @param area Java2D structure containing the geometrical information
+     * @param layer the Layer to examine.
+     * @return List of PolyBaseTree elements.
+	 */
+    public static List<PolyBaseTree> getPolyTrees(Area area, Layer layer) {
+        List<PolyBase> list = getLoopsFromArea(area, layer);
+        List<PolyBaseTree> roots = getTreesFromLoops(list);
+        return roots;
+    }
+
+    /**
      * Static method to get PolyBase elements associated with an Area.
      * @param area Java2D structure containing the geometrical information
      * @param layer the Layer to examine.
@@ -2274,10 +2286,10 @@ public class PolyBase implements Shape, PolyNodeMerge {
 			return getPointsFromArea(area, layer);
         }
 		
-        public void getLoops(int level, List<PolyBaseTree> list) {
+        public void getLoops(int level, Stack<PolyBaseTree> list) {
             if (level % 2 == 0) {
 				// Starting of a new polygon
-                list.add (this);
+                list.push(this);
             }
 			for (PolyBaseTree son : sons) {
 				// Handle next level polygons
@@ -2304,13 +2316,6 @@ public class PolyBase implements Shape, PolyNodeMerge {
 			sons.add(tree);
             return true;
         }
-    }
-
-    // This assumes the algorithm starts with external loop
-    public static List<PolyBaseTree> getPolyTrees(Area area, Layer layer) {
-        List<PolyBase> list = getLoopsFromArea(area, layer);
-        List<PolyBaseTree> roots = getTreesFromLoops(list);
-        return roots;
     }
 
     // Get trees from loops
@@ -2346,7 +2351,8 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				break;
 			case PathIterator.SEG_MOVETO:
 			default:
-				System.out.println("PolyBase.getPointsFromArea(" + area + ", " + layer + "): unexpected PathIterator type " + type);
+				System.out.println("PolyBase.getPointsFromArea(" + area + ", " + layer + "): " + 
+								   " unexpected PathIterator type " + type);
 			}
 		}
 		PolyBase poly = new PolyBase(pointList.toArray(new Point[pointList.size()]));
@@ -2375,7 +2381,8 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				break;
 			case PathIterator.SEG_MOVETO:
 			default:
-				System.out.println("PolyBase.getLoopsFromArea(" + area + ", " + layer + ",...): unexpected PathIterator type " + type);
+				System.out.println("PolyBase.getLoopsFromArea(" + area + ", " + layer + ",...): " + 
+								   " unexpected PathIterator type " + type);
 			}
         }
 
