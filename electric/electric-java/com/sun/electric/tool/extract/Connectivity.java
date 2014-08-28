@@ -161,6 +161,12 @@ public class Connectivity
 	/** total number of cells extracted when recursing */		private int cellsExtracted;
 	/** Job that is holding the process */						private Job job;
     /** EditingPreferences */                                   private EditingPreferences ep;
+	/** Contacts */   					                        private boolean doVias;
+	/** Transistors */					                        private boolean doTransistors;
+	/** Wires */    					                        private boolean doWires;
+	/** Bridges */					                            private boolean doBridges;
+	/** PureNodes */					                        private boolean doPureNodes;
+	/** Run AutoStitch */					                    private boolean doAutoStitch;
 	/** Grid alignment for edges */								private EDimension alignment;
 
 	/**
@@ -190,6 +196,12 @@ public class Connectivity
 		private double smallestPolygonSize;
 		private int activeHandling;
 		private String expansionPattern;
+		private boolean doVias;
+		private boolean doTransistors;
+		private boolean doWires;
+		private boolean doBridges;
+		private boolean doPureNodes;
+		private boolean doAutoStitch;
 		private boolean gridAlignExtraction;
         private final ECoord scaledResolution;
 		private boolean approximateCuts;
@@ -209,6 +221,12 @@ public class Connectivity
 			smallestPolygonSize = Extract.isIgnoreTinyPolygons() ? Extract.getSmallestPolygonSize() : 0;
 			activeHandling = Extract.getActiveHandling();
 			expansionPattern = Extract.getCellExpandPattern().trim();
+			doVias = Extract.isViasExtraction();
+			doTransistors = Extract.isTransistorsExtraction();
+			doWires = Extract.isWiresExtraction();
+			doBridges = Extract.isBridgesExtraction();
+			doPureNodes = Extract.isPureNodesExtraction();
+			doAutoStitch = Extract.isAutoStitchExtraction();
 			gridAlignExtraction = Extract.isGridAlignExtraction();
             Technology tech = cell.getTechnology();
             scaledResolution = tech.getFactoryResolution();
@@ -248,7 +266,8 @@ public class Connectivity
 			Job.getUserInterface().startProgressDialog("Extracting", null);
 
 			Connectivity c = new Connectivity(cell, this, getEditingPreferences(), errorLogger, smallestPolygonSize, activeHandling,
-				gridAlignExtraction, scaledResolution, approximateCuts, recursive, pats);
+											  doVias, doTransistors, doWires, doBridges, doPureNodes, doAutoStitch,
+											  gridAlignExtraction, scaledResolution, approximateCuts, recursive, pats);
 
 			if (recursive) c.totalCells = c.countExtracted(cell, pats, flattenPcells);
 
@@ -314,8 +333,9 @@ public class Connectivity
      * @param pats a List of cell name patterns that will be flattened.
      */
 	public Connectivity(Cell cell, Job j, EditingPreferences ep, ErrorLogger eLog, double smallestPolygonSize, int activeHandling,
-		boolean gridAlignExtraction, ECoord scaledResolution, boolean approximateCuts, boolean recursive,
-		List<Pattern> pats)
+						boolean doVias, boolean doTransistors, boolean doWires, boolean doBridges, boolean doPureNodes, boolean doAutoStitch,
+						boolean gridAlignExtraction, ECoord scaledResolution, boolean approximateCuts, boolean recursive,
+						List<Pattern> pats)
 	{
 	    this.approximateCuts = approximateCuts;
 		this.recursive = recursive;
@@ -328,6 +348,13 @@ public class Connectivity
 		job = j;
         this.ep = ep;
 
+		this.doVias = doVias;
+		this.doTransistors = doTransistors;
+		this.doWires = doWires;
+		this.doBridges = doBridges;
+		this.doPureNodes = doPureNodes;
+		this.doAutoStitch = doAutoStitch;
+		
         alignment = null;
         if (gridAlignExtraction && scaledResolution.getLambda() > 0)
         	alignment = new EDimension(scaledResolution, scaledResolution);
@@ -599,41 +626,53 @@ public class Connectivity
 		originalMerge.addMerge(merge, new FixpTransform());
 
 		// start by extracting vias
-		initDebugging();
-		if (!startSection(oldCell, "Extracting vias...")) return null; // aborted
-		if (!extractVias(merge, originalMerge, oldCell, newCell, usePureLayerNodes)) return null; // aborted
-		termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Vias");
+		if (doVias) {
+			initDebugging();
+			if (!startSection(oldCell, "Extracting vias...")) return null; // aborted
+			if (!extractVias(merge, originalMerge, oldCell, newCell, usePureLayerNodes)) return null; // aborted
+			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Vias");
+		}
 
 		// now extract transistors
-		initDebugging();
-		if (!startSection(oldCell, "Extracting transistors...")) return null; // aborted
-		extractTransistors(merge, originalMerge, newCell, usePureLayerNodes);
-		termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Transistors");
+		if (doTransistors) {
+			initDebugging();
+			if (!startSection(oldCell, "Extracting transistors...")) return null; // aborted
+			extractTransistors(merge, originalMerge, newCell, usePureLayerNodes);
+			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Transistors");
+		}
 
         if (usePureLayerNodes) {
             // dump back in original routing layers
-            if (!startSection(oldCell, "Adding in original routing layers...")) return null;
-            addInRoutingLayers(oldCell, newCell, merge, originalMerge, usePureLayerNodes);
+			if (doBridges) {
+				if (!startSection(oldCell, "Adding in original routing layers...")) return null;
+				addInRoutingLayers(oldCell, newCell, merge, originalMerge, usePureLayerNodes);
+			}
 
         } else {
             // look for wires and pins
-            initDebugging();
-            if (!startSection(oldCell, "Extracting wires...")) return null; // aborted
-            if (makeWires(merge, originalMerge, newCell, usePureLayerNodes)) return newCell;
-            termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Wires");
+            if (doWires) {
+				initDebugging();
+				if (!startSection(oldCell, "Extracting wires...")) return null; // aborted
+				if (makeWires(merge, originalMerge, newCell, usePureLayerNodes)) return newCell;
+				termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Wires");
+			}
 
             // convert any geometry that connects two networks
-            initDebugging();
-            if (!startSection(oldCell, "Extracting connections...")) return null; // aborted
-            extendGeometry(merge, originalMerge, newCell, false, usePureLayerNodes);
-            termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Bridges");
+			if (doBridges) {
+				initDebugging();
+				if (!startSection(oldCell, "Extracting connections...")) return null; // aborted
+				extendGeometry(merge, originalMerge, newCell, false, usePureLayerNodes);
+				termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Bridges");
+			}
         }
 
         // dump any remaining layers back in as extra pure layer nodes
-        initDebugging();
-        if (!startSection(oldCell, "Extracting leftover geometry...")) return null; // aborted
-        convertAllGeometry(merge, originalMerge, newCell, usePureLayerNodes);
-        termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Pures");
+		if (doPureNodes) {
+			initDebugging();
+			if (!startSection(oldCell, "Extracting leftover geometry...")) return null; // aborted
+			convertAllGeometry(merge, originalMerge, newCell, usePureLayerNodes);
+			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Pures");
+		}
 
         // reexport any that were there before
 		if (!startSection(oldCell, "Adding connecting wires...")) return null; // aborted
@@ -645,8 +684,7 @@ public class Connectivity
         allArcs = new HashSet<ArcInst>();
         for(Iterator<ArcInst> it = newCell.getArcs(); it.hasNext(); )
             allArcs.add(it.next());
-		/**
-		 */
+
         // make sure current arc is not universal arc, otherwise it makes the 
 		// InteractiveRouter (used by AutoStitch) prefer that arc
         if (User.getUserTool().getCurrentArcProto() == Generic.tech().universal_arc) {
@@ -656,12 +694,12 @@ public class Connectivity
         // TODO: originalMerge passed to auto stitcher really needs to include subcell geometry too, in order
         // for the auto-stitcher to know where it can place arcs. However, building and maintaining such a hash map
         // might take up a lot of memory.
-        AutoOptions prefs = new AutoOptions(true);
-		prefs.createExports = true;
-		AutoStitch.runAutoStitch(newCell, null, null, job, originalMerge, null, false, true, 
-								 ep, prefs, !recursive, alignment);
-		/**
-		 */
+        if (doAutoStitch) {
+			AutoOptions prefs = new AutoOptions(true);
+			prefs.createExports = true;
+			AutoStitch.runAutoStitch(newCell, null, null, job, originalMerge, null, false, true, 
+									 ep, prefs, !recursive, alignment);
+		}
 
         // check all the arcs that auto-stitching added, and replace them by universal arcs if they are off-grid
         if (alignment != null)
@@ -696,8 +734,7 @@ public class Connectivity
             }
         }
 
-        if (DEBUGSTEPS)
-		{
+        if (doAutoStitch && DEBUGSTEPS) {
 			initDebugging();
 			for(Iterator<ArcInst> it = newCell.getArcs(); it.hasNext(); )
 			{
