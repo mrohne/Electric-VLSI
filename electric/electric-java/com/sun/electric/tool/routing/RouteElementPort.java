@@ -25,6 +25,8 @@ package com.sun.electric.tool.routing;
 import com.sun.electric.database.EditingPreferences;
 import com.sun.electric.database.geometry.EPoint;
 import com.sun.electric.database.geometry.Poly;
+import com.sun.electric.database.geometry.PolyMerge;
+import com.sun.electric.database.geometry.PolyBase;
 import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.hierarchy.EDatabase;
 import com.sun.electric.database.prototype.NodeProto;
@@ -35,17 +37,21 @@ import com.sun.electric.database.topology.NodeInst;
 import com.sun.electric.database.topology.PortInst;
 import com.sun.electric.database.variable.ElectricObject;
 import com.sun.electric.technology.ArcProto;
+import com.sun.electric.technology.Layer;
 import com.sun.electric.technology.PrimitiveNode;
 import com.sun.electric.technology.SizeOffset;
 import com.sun.electric.tool.user.Highlighter;
+import com.sun.electric.util.math.DBMath;
 import com.sun.electric.util.math.EDimension;
 import com.sun.electric.util.math.Orientation;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Class for defining RouteElements that are ports.
@@ -83,7 +89,58 @@ public class RouteElementPort extends RouteElement {
      * @param ep EditingPreferences with default sizes
      */
     public static RouteElementPort newNode(Cell cell, NodeProto np, PortProto newNodePort, Point2D location,
-                                       double width, double height, Orientation orient, EditingPreferences ep) {
+										   double width, double height, Orientation orient, PolyMerge stayInside, EditingPreferences ep) {
+		double fitWidth = width;
+		double fitHeight = height;
+		if (stayInside != null) {
+        	Set<Layer> allLayers = stayInside.getKeySet();
+			EPoint snap = EPoint.snap(location);
+			NodeInst ni = NodeInst.makeDummyInstance(np, ep, snap, fitWidth, fitHeight, orient);
+			// scale down until convergence
+			while (true) {
+				double delWidth = 0;
+				double delHeight = 0;
+				for (PolyBase poly : ni.getProto().getTechnology().getShapeOfNode(ni)) {
+					Layer layer = poly.getLayer();
+					// if active layer is not present, try any active layer
+					if (layer.getFunction().isDiff() && !allLayers.contains(layer))
+						for(Layer other : allLayers)
+							if (other.getFunction().isDiff()) {layer = other; break;}
+					// check if we're inside
+					if (stayInside.contains(layer, poly)) continue;
+					// compute shrinkage
+					Area incl = stayInside.inclusive(layer, poly);
+					if (incl == null || incl.isEmpty()) {
+						delWidth = fitWidth;
+						delHeight = fitHeight;
+					} else {
+						Rectangle2D outBox = poly.getBounds2D();
+						Rectangle2D newBox = incl.getBounds2D();
+						delWidth = Math.max(delWidth, outBox.getWidth()-newBox.getWidth());
+						delHeight = Math.max(delHeight, outBox.getHeight()-newBox.getHeight());
+					}
+				}
+				// can't shrink more than size
+				delWidth = Math.min(delWidth, fitWidth);
+				delHeight = Math.min(delHeight, fitHeight);
+				// shrink dummy node
+				if (DBMath.areEquals(delWidth, 0) && DBMath.areEquals(delHeight, 0)) break;
+				ni.resize(-delWidth, -delHeight);
+				// update with resulting size
+				if (DBMath.areEquals(fitWidth, ni.getXSize()) && DBMath.areEquals(fitHeight, ni.getYSize())) break;
+				fitWidth = ni.getXSize();
+				fitHeight = ni.getYSize();
+			}
+			// change size
+			if ((fitWidth < width) || (fitHeight < height)) {
+				System.out.println("RouteElementPort.newNode: resizing "+np+" at "+location+
+								   ": ("+width+", "+height+")"+
+								   "->("+fitWidth+", "+fitHeight+")");
+				width = fitWidth;
+				height = fitHeight;
+			}
+		}
+		// create route element
         RouteElementPort e = new RouteElementPort(RouteElement.RouteElementAction.newNode, cell);
         e.np = np;
         e.portProto = newNodePort;
@@ -375,14 +432,15 @@ public class RouteElementPort extends RouteElement {
      * @param ep EditingPreferences with default sizes
      */
     public void setNodeSize(EDimension size, EditingPreferences ep) {
+		double setWidth = size.getWidth();
+		double setHeight = size.getHeight();
         SizeOffset so = np.getProtoSizeOffset();
         double widthoffset = so.getLowXOffset() + so.getHighXOffset();
         double heightoffset = so.getLowYOffset() + so.getHighYOffset();
-
         double defWidth = np.getDefWidth(ep) - widthoffset;       // this is width we see on the screen
         double defHeight = np.getDefHeight(ep) - heightoffset;    // this is height we see on the screen
-        if (size.getWidth() > defWidth) width = size.getWidth(); else width = defWidth;
-        if (size.getHeight() > defHeight) height = size.getHeight(); else height = defHeight;
+		width = Math.max(setWidth, defWidth);
+		height = Math.max(setHeight, defHeight);
     }
 
     /**
