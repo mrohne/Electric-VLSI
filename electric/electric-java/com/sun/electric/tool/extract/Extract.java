@@ -56,6 +56,114 @@ public class Extract extends Tool
 
 	/****************************** OPTIONS ******************************/
 
+	private static Pref cacheVias = Pref.makeBooleanPref("ViasExtraction", Extract.tool.prefs, true);
+	/**
+	 * Method to tell whether the node extractor should extract stitches
+	 * The default is "true".
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static boolean isViasExtraction() { return cacheVias.getBoolean(); }
+	/**
+	 * Method to set whether the node extractor should extract stitches
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static void setViasExtraction(boolean a) { cacheVias.setBoolean(a); }
+	/**
+	 * Method to tell whether the node extractor should extract stitche, by default.
+	 * @param true if the node extractor should extract stitches
+	 */
+	public static boolean isFactoryViasExtraction() { return cacheVias.getBooleanFactoryValue(); }
+
+	private static Pref cacheTransistors = Pref.makeBooleanPref("TransistorsExtraction", Extract.tool.prefs, true);
+	/**
+	 * Method to tell whether the node extractor should extract stitches
+	 * The default is "true".
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static boolean isTransistorsExtraction() { return cacheTransistors.getBoolean(); }
+	/**
+	 * Method to set whether the node extractor should extract stitches
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static void setTransistorsExtraction(boolean a) { cacheTransistors.setBoolean(a); }
+	/**
+	 * Method to tell whether the node extractor should extract stitche, by default.
+	 * @param true if the node extractor should extract stitches
+	 */
+	public static boolean isFactoryTransistorsExtraction() { return cacheTransistors.getBooleanFactoryValue(); }
+
+	private static Pref cacheWires = Pref.makeBooleanPref("WiresExtraction", Extract.tool.prefs, true);
+	/**
+	 * Method to tell whether the node extractor should extract stitches
+	 * The default is "true".
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static boolean isWiresExtraction() { return cacheWires.getBoolean(); }
+	/**
+	 * Method to set whether the node extractor should extract stitches
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static void setWiresExtraction(boolean a) { cacheWires.setBoolean(a); }
+	/**
+	 * Method to tell whether the node extractor should extract stitche, by default.
+	 * @param true if the node extractor should extract stitches
+	 */
+	public static boolean isFactoryWiresExtraction() { return cacheWires.getBooleanFactoryValue(); }
+
+	private static Pref cacheBridges = Pref.makeBooleanPref("BridgesExtraction", Extract.tool.prefs, true);
+	/**
+	 * Method to tell whether the node extractor should extract stitches
+	 * The default is "true".
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static boolean isBridgesExtraction() { return cacheBridges.getBoolean(); }
+	/**
+	 * Method to set whether the node extractor should extract stitches
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static void setBridgesExtraction(boolean a) { cacheBridges.setBoolean(a); }
+	/**
+	 * Method to tell whether the node extractor should extract stitche, by default.
+	 * @param true if the node extractor should extract stitches
+	 */
+	public static boolean isFactoryBridgesExtraction() { return cacheBridges.getBooleanFactoryValue(); }
+
+	private static Pref cachePureNodes = Pref.makeBooleanPref("PureNodesExtraction", Extract.tool.prefs, true);
+	/**
+	 * Method to tell whether the node extractor should extract stitches
+	 * The default is "true".
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static boolean isPureNodesExtraction() { return cachePureNodes.getBoolean(); }
+	/**
+	 * Method to set whether the node extractor should extract stitches
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static void setPureNodesExtraction(boolean a) { cachePureNodes.setBoolean(a); }
+	/**
+	 * Method to tell whether the node extractor should extract stitche, by default.
+	 * @param true if the node extractor should extract stitches
+	 */
+	public static boolean isFactoryPureNodesExtraction() { return cachePureNodes.getBooleanFactoryValue(); }
+
+	private static Pref cacheAutoStitch = Pref.makeBooleanPref("AutoStitchExtraction", Extract.tool.prefs, true);
+	/**
+	 * Method to tell whether the node extractor should extract stitches
+	 * The default is "true".
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static boolean isAutoStitchExtraction() { return cacheAutoStitch.getBoolean(); }
+	/**
+	 * Method to set whether the node extractor should extract stitches
+	 * @return true if the node extractor should extract stitches
+	 */
+	public static void setAutoStitchExtraction(boolean a) { cacheAutoStitch.setBoolean(a); }
+	/**
+	 * Method to tell whether the node extractor should extract stitche, by default.
+	 * @param true if the node extractor should extract stitches
+	 */
+	public static boolean isFactoryAutoStitchExtraction() { return cacheAutoStitch.getBooleanFactoryValue(); }
+
 	private static Pref cacheExactGridAlign = Pref.makeBooleanPref("GridAlignExtraction", Extract.tool.prefs, false);
 	/**
 	 * Method to tell whether the node extractor should grid-align geometry before extraction.
