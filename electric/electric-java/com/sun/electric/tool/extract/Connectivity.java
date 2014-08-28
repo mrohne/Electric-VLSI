@@ -120,12 +120,13 @@ import javax.swing.JLabel;
  */
 public class Connectivity
 {
-	/** true to prevent objects smaller than minimum size */	private static final boolean ENFORCEMINIMUMSIZE = false;
+	/** true to prevent objects smaller than minimum size */	private static final boolean ENFORCEMINIMUMSIZE = true;
 	/** true to debug centerline determination */				private static final boolean DEBUGGEOMETRY = true;
 	/** true to debug centerline determination */				private static final boolean DEBUGCENTERLINES = false;
 	/** true to debug object creation */						private static final boolean DEBUGSTEPS = true;
 	/** true to debug contact extraction */						private static final boolean DEBUGCONTACTS = false;
 	/** true to debug nodes creation */						    private static final boolean DEBUGNODES = false;
+	/** true to debug nodes creation */						    private static final boolean DEBUGWIRES = false;
 	/** amount to scale values before merging */				private static final double SCALEFACTOR = 1;
 
 	/** the current technology for extraction */				private Technology tech;
@@ -1310,6 +1311,10 @@ public class Connectivity
 					PortInst pi1 = locatePortOnCenterline(cl, loc1, layer, ap, true, newCell, originalMerge);
 					PortInst pi2 = locatePortOnCenterline(cl, loc2, layer, ap, false, newCell, originalMerge);
 
+					// don't run dummy wires
+					if (DBMath.areEquals(loc1, loc2)) continue;
+					if (pi1.equals(pi2)) continue;
+
 					// make sure the wire fits
 					MutableBoolean headExtend = new MutableBoolean(true), tailExtend = new MutableBoolean(true);
 
@@ -1615,26 +1620,63 @@ public class Connectivity
 
 		Centerline(double width, Point2D head, Point2D tail)
 		{
+			double length = head.distance(tail);
+			int angle = GenMath.figureAngle(tail, head);
+			if (DEBUGGEOMETRY && !isOnGrid(head, 0.025))
+				System.out.println("***DEBUGGEOMETRY: Non-grid point "+head);			
+			if (DEBUGGEOMETRY && !isOnGrid(tail, 0.025))
+				System.out.println("***DEBUGGEOMETRY: Off-grid point "+tail);			
+			if (DEBUGGEOMETRY && !isValidAngle(angle, 450))
+				System.out.println("***DEBUGGEOMETRY: ***Non-octant angle "+angle);
 			this.width = width;
-			this.start = start;
-			this.startUnscaled = EPoint.fromLambda(start.getX(), start.getY());
-			this.endUnscaled = EPoint.fromLambda(end.getX(), end.getY());
-			this.end = end;
-			startHub = endHub = false;
-			if (start.equals(end)) angle = -1; else
-				angle = GenMath.figureAngle(end, start);
+			this.head = head;
+			this.tail = tail;
+			this.headExt = 0.0;
+			this.tailExt = 0.0;
+			this.headHub = false;
+			this.tailHub = false;
+			this.poly = Poly.makeEndPointPoly(length, width, angle, head, 0.0, tail, 0.0, Poly.Type.FILLED);
 		}
 
-		void setStart(double x, double y)
+		Centerline(double width, Point2D head, Point2D tail, double headExt, double tailExt)
 		{
-			start.setLocation(x, y);
-			startUnscaled = EPoint.fromLambda(x, y);
+			double length = head.distance(tail);
+			int angle = GenMath.figureAngle(tail, head);
+			if (DEBUGGEOMETRY && !isOnGrid(head, 0.025))
+				System.out.println("***DEBUGGEOMETRY: Non-grid point "+head);			
+			if (DEBUGGEOMETRY && !isOnGrid(tail, 0.025))
+				System.out.println("***DEBUGGEOMETRY: Off-grid point "+tail);			
+			if (DEBUGGEOMETRY && !isValidAngle(angle, 450))
+				System.out.println("***DEBUGGEOMETRY: ***Non-octant angle "+angle);
+			this.width = width;
+			this.angle = GenMath.figureAngle(tail, head);
+			this.head = head;
+			this.tail = tail;
+			this.headExt = headExt;
+			this.tailExt = tailExt;
+			this.headHub = false;
+			this.tailHub = false;
+			this.poly = Poly.makeEndPointPoly(length, width, angle, head, 0.0, tail, 0.0, Poly.Type.FILLED);
 		}
 
-		void setEnd(double x, double y)
+		Centerline(double width, int angle, Point2D head, Point2D tail, double headExt, double tailExt, PolyBase poly)
 		{
-			end.setLocation(x, y);
-			endUnscaled = EPoint.fromLambda(x, y);
+			if (DEBUGGEOMETRY && !isOnGrid(head, 0.025)) System.out.println("***DEBUGGEOMETRY: Non-grid point "+head);			
+			if (DEBUGGEOMETRY && !isOnGrid(tail, 0.025)) System.out.println("***DEBUGGEOMETRY: Off-grid point "+tail);			
+			if (DEBUGGEOMETRY && !isValidAngle(angle, 450)) System.out.println("***DEBUGGEOMETRY: ***Non-octant angle "+angle);
+			this.width = width;
+			this.angle = GenMath.figureAngle(tail, head);
+			this.head = head;
+			this.tail = tail;
+			this.headExt = headExt;
+			this.tailExt = tailExt;
+			this.headHub = false;
+			this.tailHub = false;
+			this.poly = poly;
+		}
+		
+		double getLength() {
+			return head.distance(tail);
 		}
 
         Rectangle2D getBounds() {
@@ -1684,12 +1726,14 @@ public class Connectivity
 
         public String toString()
 		{
-			return "CENTERLINE from (" + TextUtils.formatDouble(start.getX()) + "," +
-				TextUtils.formatDouble(start.getY()) + ") to (" +
-				TextUtils.formatDouble(end.getX()) + "," +
-				TextUtils.formatDouble(end.getY()) + ") wid=" +
+			return "CENTERLINE from (" + TextUtils.formatDouble(head.getX()) + "," +
+				TextUtils.formatDouble(head.getY()) + ") to (" +
+				TextUtils.formatDouble(tail.getX()) + "," +
+				TextUtils.formatDouble(tail.getY()) + ") wid=" +
 				TextUtils.formatDouble(width) + ", len=" +
-				TextUtils.formatDouble((start.distance(end)));
+				TextUtils.formatDouble((head.distance(tail))) + ", xh=" +
+				TextUtils.formatDouble(headExt) + ", xt=" +
+				TextUtils.formatDouble(tailExt);
 		}
 	}
 
@@ -1767,7 +1811,7 @@ public class Connectivity
 	 * @return the PortInst on the Centerline.
 	 */
 	private PortInst locatePortOnCenterline(Centerline cl, Point2D loc1, Layer layer,
-											ArcProto ap, boolean startSide, Cell newCell, PolyMerge keepin)
+											ArcProto ap, boolean headSide, Cell newCell, PolyMerge keepin)
 	{
 		PortInst piRet = null;
 		boolean isHub = cl.tailHub;
@@ -1838,42 +1882,10 @@ public class Connectivity
 		{
 			// Need to create pin
 			PrimitiveNode pin = ap.findPinProto();
-			int ang = GenMath.figureAngle(cl.start, cl.end);
-			double xOff = GenMath.cos(ang) * cl.width/2;
-			double yOff = GenMath.sin(ang) * cl.width/2;
-			if (startSide)
-			{
-				if (!isHub && cl.start.distance(cl.end) > cl.width)
-				{
-					if (alignment != null)
-					{
-	                    if (xOff > 0 && (xOff % (alignment.getWidth())) != 0) xOff = 0;
-	                    if (yOff > 0 && (yOff % (alignment.getHeight())) != 0) yOff = 0;
-					}
-                    cl.setStart(cl.start.getX() + xOff, cl.start.getY() + yOff);
-				}
-                double size = pin.getFactoryDefaultBaseDimension().getLambdaWidth();
-                NodeInst ni = wantNodeAt(cl.startUnscaled, pin, size, newCell, keepin);
-				loc1.setLocation(cl.startUnscaled.getX(), cl.startUnscaled.getY());
-				piRet = ni.getOnlyPortInst();
-			} else
-			{
-				if (!isHub && cl.start.distance(cl.end) > cl.width)
-				{
-					if (alignment != null)
-					{
-	                    if (xOff > 0 && (xOff % (alignment.getWidth())) != 0) xOff = 0;
-	                    if (yOff > 0 && (yOff % (alignment.getHeight())) != 0) yOff = 0;
-					}
-					cl.setEnd(cl.end.getX() - xOff, cl.end.getY() - yOff);
-				}
-				double width = cl.width;
-				double length = cl.start.distance(cl.end);
-				if (length < width) width = length;
-				NodeInst ni = wantNodeAt(cl.endUnscaled, pin, width, newCell, keepin);
-				loc1.setLocation(cl.endUnscaled.getX(), cl.endUnscaled.getY());
-				piRet = ni.getOnlyPortInst();
-			}
+			double size = pin.getFactoryDefaultBaseDimension().getLambdaWidth();
+			NodeInst ni = wantNodeAt(headPt, pin, size, newCell, keepin);
+			loc1.setLocation(headPt.getX(), headPt.getY());
+			piRet = ni.getOnlyPortInst();
 		}
 		return piRet;
 	}
@@ -3613,8 +3625,8 @@ public class Connectivity
 			Centerline cl = lines.get(0);
 			double polySize = cl.head.distance(cl.tail);
 			double activeSize = cl.width;
-			double cX = (cl.start.getX() + cl.end.getX()) / 2;
-			double cY = (cl.start.getY() + cl.end.getY()) / 2;
+			double cX = (cl.head.getX() + cl.tail.getX()) / 2;
+			double cY = (cl.head.getY() + cl.tail.getY()) / 2;
 			double sX = polySize + (so.getLowXOffset() + so.getHighXOffset());
 			double sY = activeSize + (so.getLowYOffset() + so.getHighYOffset());
 			realizeNode(transistor, Technology.NodeLayer.MULTICUT_CENTERED, cX, cY, sX, sY,
@@ -3883,8 +3895,8 @@ public class Connectivity
 					if (containsIt != null)
 					{
 						PrimitiveNode np = ap.findPinProto();
-						NodeInst ni = createNode(np, containsIt, np.getDefWidth(ep), np.getDefHeight(ep), 
-												 null, newCell, originalMerge);
+						double size = np.getFactoryDefaultBaseDimension().getLambdaWidth();
+						NodeInst ni = createNode(np, containsIt, size, size, null, newCell, originalMerge);
 						PortInst pi = ni.getOnlyPortInst();
 
 						MutableBoolean headExtend = new MutableBoolean(true), tailExtend = new MutableBoolean(true);
@@ -3959,13 +3971,12 @@ public class Connectivity
 			if (polyBounds.getWidth() > polyBounds.getHeight())
 			{
 				// wider area, make horizontal arcs
-				double endExtension = polyBounds.getHeight() / 2;
-				Point2D pinPt1 = new Point2D.Double((polyBounds.getMaxX() - endExtension),
+				double tailExt = polyBounds.getHeight() / 2;
+				Point2D pinPt1 = new Point2D.Double((polyBounds.getMaxX() - tailExt),
 					polyCtr.getY());
-				Point2D pinPt2 = new Point2D.Double((polyBounds.getMinX() + endExtension),
+				Point2D pinPt2 = new Point2D.Double((polyBounds.getMinX() + tailExt),
 					polyCtr.getY());
 				Point2D objPt = new Point2D.Double(portRect.getCenterX(), polyCtr.getY());
-				double size = Math.min(polyBounds.getWidth(), polyBounds.getHeight());
 				NodeInst ni1 = createNode(np, pinPt1, size, size, null, newCell, originalMerge);
 				NodeInst ni2 = createNode(np, pinPt2, size, size, null, newCell, originalMerge);
 				realizeArc(ap, ni1.getOnlyPortInst(), pi, pinPt1, objPt,
@@ -3975,13 +3986,12 @@ public class Connectivity
 			} else
 			{
 				// taller area, make vertical arcs
-				double endExtension = polyBounds.getWidth() / 2;
+				double tailExt = polyBounds.getWidth() / 2;
 				Point2D pinPt1 = new Point2D.Double(polyCtr.getX(),
-					(polyBounds.getMaxY() - endExtension));
+					(polyBounds.getMaxY() - tailExt));
 				Point2D pinPt2 = new Point2D.Double(polyCtr.getX(),
-					(polyBounds.getMinY() + endExtension));
+					(polyBounds.getMinY() + tailExt));
 				Point2D objPt = new Point2D.Double(polyCtr.getX(), portRect.getCenterY());
-				double size = Math.min(polyBounds.getWidth(), polyBounds.getHeight());
 				NodeInst ni1 = createNode(np, pinPt1, size, size, null, newCell, originalMerge);
 				NodeInst ni2 = createNode(np, pinPt2, size, size, null, newCell, originalMerge);
 				realizeArc(ap, ni1.getOnlyPortInst(), pi, pinPt1, objPt,
@@ -4011,21 +4021,20 @@ public class Connectivity
 			if (polyCtr.getY() > portRect.getCenterY())
 			{
 				// going up to the poly
-				pinPt = new Point2D.Double(polyCtr.getX(), polyBounds.getMaxY() - endExtension);
+				pinPt = new Point2D.Double(polyCtr.getX(), polyBounds.getMaxY() - tailExt);
 				pinPtNormal = new Point2D.Double(polyCtr.getX(),
-					(polyBounds.getMaxY() - endExtension));
+					(polyBounds.getMaxY() - tailExt));
 			} else
 			{
 				// going down to the poly
-				pinPt = new Point2D.Double(polyCtr.getX(), polyBounds.getMinY() + endExtension);
+				pinPt = new Point2D.Double(polyCtr.getX(), polyBounds.getMinY() + tailExt);
 				pinPtNormal = new Point2D.Double(polyCtr.getX(),
-					(polyBounds.getMinY() + endExtension));
+					(polyBounds.getMinY() + tailExt));
 			}
 			MutableBoolean headExtend = new MutableBoolean(endExtend), tailExtend = new MutableBoolean(endExtend);
 			double wid = polyBounds.getWidth();
 			if (originalMerge.arcPolyFits(layer, pinPt, objPt, wid, headExtend, tailExtend))
 			{
-				double size = Math.min(polyBounds.getWidth(), polyBounds.getHeight());
 				NodeInst ni1 = createNode(np, pinPtNormal, size, size, null, newCell, originalMerge);
 				realizeArc(ap, ni1.getOnlyPortInst(), pi, pinPtNormal, objPtNormal, wid,
 					!headExtend.booleanValue(), !tailExtend.booleanValue(), usePureLayerNodes, merge);
@@ -4052,21 +4061,20 @@ public class Connectivity
 			if (polyCtr.getX() > portRect.getCenterX())
 			{
 				// going right to the poly
-				pinPt = new Point2D.Double(polyBounds.getMaxX() - endExtension, polyCtr.getY());
-				pinPtNormal = new Point2D.Double((polyBounds.getMaxX() - endExtension),
+				pinPt = new Point2D.Double(polyBounds.getMaxX() - tailExt, polyCtr.getY());
+				pinPtNormal = new Point2D.Double((polyBounds.getMaxX() - tailExt),
 					polyCtr.getY());
 			} else
 			{
 				// going left to the poly
-				pinPt = new Point2D.Double(polyBounds.getMinX() + endExtension, polyCtr.getY());
-				pinPtNormal = new Point2D.Double((polyBounds.getMinX() + endExtension),
+				pinPt = new Point2D.Double(polyBounds.getMinX() + tailExt, polyCtr.getY());
+				pinPtNormal = new Point2D.Double((polyBounds.getMinX() + tailExt),
 					polyCtr.getY());
 			}
 			MutableBoolean headExtend = new MutableBoolean(endExtend), tailExtend = new MutableBoolean(endExtend);
 			double wid = polyBounds.getHeight();
 			if (originalMerge.arcPolyFits(layer, pinPt, objPt, wid, headExtend, tailExtend))
 			{
-				double size = Math.min(polyBounds.getWidth(), polyBounds.getHeight());
 				NodeInst ni1 = createNode(np, pinPtNormal, size, size, null, newCell, originalMerge);
 				realizeArc(ap, ni1.getOnlyPortInst(), pi, pinPtNormal, objPtNormal,
 					wid, !headExtend.booleanValue(), !tailExtend.booleanValue(), usePureLayerNodes, merge);
@@ -4240,31 +4248,22 @@ public class Connectivity
 					// require minimum width
 					if (cl.width < minWidth) continue;
 
-					// make the polygon to describe the centerline
-					double length = cl.start.distance(cl.end);
-					if (length < DBMath.getEpsilon()) continue;
-					Poly clPoly = Poly.makeEndPointPoly(length, cl.width, cl.angle,
-						cl.start, 0, cl.end, 0, Poly.Type.FILLED);
+					// skip zero-length lines
+					if (DBMath.areEquals(cl.getLength(), 0)) continue;
 
 					// see if this centerline actually covers new area
 					if (!merge.intersects(tempLayer1, cl.poly)) continue;
 
-					// for non-Manhattan centerlines, do extra work to ensure uniqueness
-					boolean isNonManhattan = false;
-					if (cl.startUnscaled.getX() != cl.endUnscaled.getX() &&
-						cl.startUnscaled.getY() != cl.endUnscaled.getY())
-					{
-						boolean duplicate = false;
-						for(Centerline oCl : validCenterlines)
-						{
-							if (cl.startUnscaled.equals(oCl.startUnscaled) && cl.endUnscaled.equals(oCl.endUnscaled))
-							{
-								duplicate = true;   break;
-							}
-							if (cl.startUnscaled.equals(oCl.endUnscaled) && cl.endUnscaled.equals(oCl.startUnscaled))
-							{
-								duplicate = true;   break;
-							}
+					// keep track of non-Manhattan lines
+					boolean isNonManhattan = (cl.head.getX() != cl.tail.getX() && cl.head.getY() != cl.tail.getY());
+
+					// ensure centerlines are unique
+					boolean duplicate = false;
+					for(Centerline ocl : validCenterlines) {
+						if (cl.equals(ocl)) continue;
+						if (cl.head.equals(ocl.head) && cl.tail.equals(ocl.tail) ||
+							cl.head.equals(ocl.tail) && cl.tail.equals(ocl.head)) {
+							duplicate = true; break;
 						}
 					}
 					if (duplicate) continue;
@@ -4332,26 +4331,29 @@ public class Connectivity
 		Centerline [] both = new Centerline[2];
 		for(int i=0; i<validCenterlines.size(); i++) {
 			Centerline cl = validCenterlines.get(i);
-			Poly clPoly = Poly.makeEndPointPoly(cl.start.distance(cl.end), cl.width, cl.angle,
-												cl.start, 0, cl.end, 0, Poly.Type.FILLED);
+			Poly clPoly = Poly.makeEndPointPoly(cl.getLength(), cl.width, cl.angle,
+												cl.head, cl.headExt, cl.tail, cl.tailExt, Poly.Type.FILLED);
 			for(int j=i+1; j<validCenterlines.size(); j++)
 			{
 				Centerline ocl = validCenterlines.get(j);
-				Poly oclPoly = Poly.makeEndPointPoly(ocl.start.distance(ocl.end), ocl.width, ocl.angle,
-													 ocl.start, 0, ocl.end, 0, Poly.Type.FILLED);
+				Poly oclPoly = Poly.makeEndPointPoly(ocl.getLength(), ocl.width, ocl.angle,
+													 ocl.head, ocl.headExt, ocl.tail, ocl.tailExt, Poly.Type.FILLED);
 
 				// check that geometries touch
 				if (!clPoly.intersects(oclPoly)) continue;
 
-				Point2D intersect = GenMath.intersect(cl.start, cl.angle, ocl.start, ocl.angle);
+				// compute and check intersection point
+				Point2D intersect = GenMath.intersect(cl.head, cl.angle, ocl.head, ocl.angle);
 				if (intersect == null) continue;
+				if (!originalMerge.contains(layer, intersect)) continue;
+
+				// add intersection point
 				both[0] = cl;   both[1] = ocl;
-				for(int b=0; b<2; b++)
-				{
-					Point2D newStart = both[b].start, newEnd = both[b].end;
-					double distToStart = newStart.distance(intersect);
-					double distToEnd = newEnd.distance(intersect);
-					double minDistToEnd = Math.min(distToStart, distToEnd);
+				for(int b=0; b<2; b++) {
+					Point2D newHead = both[b].head, newTail = both[b].tail;
+					double distToHead = newHead.distance(intersect);
+					double distToTail = newTail.distance(intersect);
+					double minDistToTail = Math.min(distToHead, distToTail);
 
 					// see if intersection is deeply inside of the segment
 					boolean makeT = insideSegment(newHead, newTail, intersect) && (minDistToTail > both[b].width/2);
@@ -4502,16 +4504,6 @@ public class Connectivity
 		if (keepin == null) return null;
 		// make a list of all parallel wires in the polygon
 		List<Centerline> centerlines = new ArrayList<Centerline>();
-		Point2D [] points = poly.getPoints();
-		if (DEBUGCENTERLINES)
-		{
-			System.out.print("POLYGON ON LAYER "+poly.getLayer().getName()+":");
-			for(int i=0; i<points.length; i++)
-				System.out.print(" "+i+"("+TextUtils.formatDouble(points[i].getX())+","+
-					TextUtils.formatDouble(points[i].getY())+")");
-			System.out.println();
-		}
-
 		// make a list of line segments that are parallel
 		Map<Integer,List<Integer>> linesAtAngle = new TreeMap<Integer,List<Integer>>();
 		// loop over line segments - treat holes properly
@@ -4561,76 +4553,37 @@ public class Connectivity
 					Point2D centerPt = new Point2D.Double((oneSide.getX()+otherSide.getX())/2,
 														  (oneSide.getY()+otherSide.getY())/2);
 
-					// now determine range along that centerline
-					Point2D lastPtCL = GenMath.intersect(lastPt, perpAngle, centerPt, angle);
-					Point2D thisPtCL = GenMath.intersect(thisPt, perpAngle, centerPt, angle);
-					Point2D oLastPtCL = GenMath.intersect(oLastPt, perpAngle, centerPt, angle);
-					Point2D oThisPtCL = GenMath.intersect(oThisPt, perpAngle, centerPt, angle);
+					// determine range along that centerline
+					limits[0] = GenMath.intersect(lastPt, perpAngle, centerPt, angle);
+					limits[1] = GenMath.intersect(thisPt, perpAngle, centerPt, angle);
+					limits[2] = GenMath.intersect(oLastPt, perpAngle, centerPt, angle);
+					limits[3] = GenMath.intersect(oThisPt, perpAngle, centerPt, angle);
 
-					// find the bounding box of the range lines
-					double minX = Math.min(Math.min(lastPtCL.getX(), thisPtCL.getX()), Math.min(oLastPtCL.getX(), oThisPtCL.getX()));
-					double maxX = Math.max(Math.max(lastPtCL.getX(), thisPtCL.getX()), Math.max(oLastPtCL.getX(), oThisPtCL.getX()));
-					double minY = Math.min(Math.min(lastPtCL.getY(), thisPtCL.getY()), Math.min(oLastPtCL.getY(), oThisPtCL.getY()));
-					double maxY = Math.max(Math.max(lastPtCL.getY(), thisPtCL.getY()), Math.max(oLastPtCL.getY(), oThisPtCL.getY()));
+					// find the inner bounding box of the range lines
+					double minX = Math.max(Math.min(limits[0].getX(), limits[1].getX()),
+										   Math.min(limits[2].getX(), limits[3].getX()));
+					double minY = Math.max(Math.min(limits[0].getY(), limits[1].getY()),
+										   Math.min(limits[2].getY(), limits[3].getY()));
+					double maxX = Math.min(Math.max(limits[0].getX(), limits[1].getX()),
+										   Math.max(limits[2].getX(), limits[3].getX()));
+					double maxY = Math.min(Math.max(limits[0].getY(), limits[1].getY()),
+										   Math.max(limits[2].getY(), limits[3].getY()));
+					if (minX > maxX || minY > maxY) continue;
+					mixed[0] = new Point2D.Double(minX, minY);
+					mixed[1] = new Point2D.Double(maxX, minY);
+					maxed[0] = new Point2D.Double(maxX, maxY);
+					maxed[1] = new Point2D.Double(minX, maxY);
 
-					// determine an extreme point along the centerline
-					corners[0].setLocation(minX, minY);
-					corners[1].setLocation(minX, maxY);
-					corners[2].setLocation(maxX, maxY);
-					corners[3].setLocation(maxX, minY);
-					Point2D aCorner = null;
-					for(int k=0; k<4; k++)
-					{
-						if (lastPtCL.equals(corners[k])) aCorner = lastPtCL;
-						if (thisPtCL.equals(corners[k])) aCorner = thisPtCL;
-						if (oLastPtCL.equals(corners[k])) aCorner = oLastPtCL;
-						if (oThisPtCL.equals(corners[k])) aCorner = oThisPtCL;
-					}
-
-					// determine distance from the extreme corner
-					double lastDist = aCorner.distance(lastPtCL);
-					double thisDist = aCorner.distance(thisPtCL);
-					double oLastDist = aCorner.distance(oLastPtCL);
-					double oThisDist = aCorner.distance(oThisPtCL);
-
-					// make sure the ranges overlap
-					if (Math.min(lastDist, thisDist) >= Math.max(oLastDist, oThisDist) ||
-						Math.min(oLastDist, oThisDist) >= Math.max(lastDist, thisDist)) continue;
-					if (DEBUGCENTERLINES)
-						System.out.println("PARALLEL LINES ("+TextUtils.formatDouble(lastPt.getX())+","+TextUtils.formatDouble(lastPt.getY())+
-							") to ("+TextUtils.formatDouble(thisPt.getX())+","+TextUtils.formatDouble(thisPt.getY())+")"+
-							" and ("+TextUtils.formatDouble(oLastPt.getX())+","+TextUtils.formatDouble(oLastPt.getY())+
-							") to ("+TextUtils.formatDouble(oThisPt.getX())+","+TextUtils.formatDouble(oThisPt.getY())+")");
-
-					// find the overlap
-					if (lastDist > thisDist)
-					{
-						double swap = lastDist;    lastDist = thisDist;   thisDist = swap;
-						Point2D swapPt = lastPtCL; lastPtCL = thisPtCL;   thisPtCL = swapPt;
-					}
-					if (oLastDist > oThisDist)
-					{
-						double swap = oLastDist;    oLastDist = oThisDist;   oThisDist = swap;
-						Point2D swapPt = oLastPtCL; oLastPtCL = oThisPtCL;   oThisPtCL = swapPt;
-					}
-					Point2D start, finish, oStart, oFinish;
-					if (lastDist < oLastDist)
-					{
-						start = oLastPtCL;
-						oStart = lastPtCL;
-					} else
-					{
-						start = lastPtCL;
-						oStart = oLastPtCL;
-					}
-					if (thisDist > oThisDist)
-					{
-						finish = oThisPtCL;
-						oFinish = thisPtCL;
-					} else
-					{
-						finish = thisPtCL;
-						oFinish = oThisPtCL;
+					// extract relevant range lines
+					Point2D clHead = null;
+					Point2D clTail = null;
+					for (int m=0; m<2; m++) {
+						for (Point2D limit : limits) {
+							if (limit.equals(mixed[m])) {
+								clHead = mixed[m];
+								clTail = maxed[m];
+							}
+						}
 					}
 
 					if (clHead == null) continue;
@@ -4670,102 +4623,86 @@ public class Connectivity
 					stHole.put(0.0, stTail);
 					stHole.put(stLength, stHead);
 
-					// try all possible spans
-					double width = oneSide.distance(otherSide);
-					for(int p=0; p<4; p++)
-					{
-						double length = possibleStart[p].distance(possibleEnd[p]);
-						Poly clPoly = Poly.makeEndPointPoly(length, width, angle,
-							possibleStart[p], 0, possibleEnd[p], 0, Poly.Type.FILLED);
-						if (originalMerge.contains(poly.getLayer(), clPoly))
-						{
-							// get the centerline points
-							double psX = possibleStart[p].getX();
-							double psY = possibleStart[p].getY();
-							double peX = possibleEnd[p].getX();
-							double peY = possibleEnd[p].getY();
+					// make the inner polygons
+					List<Centerline> newCenterlines = new ArrayList<Centerline>();
+					Point2D clPrev = stTail;
+					Point2D clNext = stTail;
+					for (Point2D clThis : stHole.values()) {
+						// advance through list of holes
+						clPrev = new Point2D.Double(clNext.getX(), clNext.getY());
+						clNext = clThis;
+						if (DBMath.areEquals(clNext, clPrev)) continue;
+						// make inner polygon
+						clLength = clPrev.distance(clPrev);
+						clPoly = Poly.makeEndPointPoly(clLength, clWidth, clAngle, clNext, 0, clPrev, 0, Poly.Type.FILLED);
+						// try extending head and tail
+						Point2D clNextPnt = trimEndPoint(clNext, clWidth, clAngle, keepin);
+						Point2D clPrevPnt = trimEndPoint(clPrev, clWidth, (clAngle+1800)%3600, keepin);
+						double clNextExt = clNextPnt.distance(clNext);
+						double clPrevExt = clPrevPnt.distance(clPrev);
+						clNextExt = clNext.equals(stHead) ? Math.min(clNextExt, clWidth/2) : 0;
+						clPrevExt = clPrev.equals(stTail) ? Math.min(clPrevExt, clWidth/2) : 0;
+						// provisionally add centerline
+						Centerline cl = new Centerline(clWidth, clAngle, clNext, clPrev, clNextExt, clPrevExt, clPoly);
+						newCenterlines.add(cl);
+						// generate orthogonal polygon
+						Point2D orCenter = new Point2D.Double((clNext.getX()+clPrev.getX())/2, (clNext.getY()+clPrev.getY())/2);
+						Point2D orNext = GenMath.intersect(orCenter, perpAngle, thisPt, angle);
+						Point2D orPrev = GenMath.intersect(orCenter, perpAngle, oThisPt, angle);
+						double orWidth = clNext.distance(clPrev);
+						double orLength = orNext.distance(orPrev);
+						int orAngle = GenMath.figureAngle(orPrev, orNext);
+						Poly orPoly = Poly.makeEndPointPoly(orLength, orWidth, orAngle, orNext, 0, orPrev, 0, Poly.Type.FILLED);
+						// try extending head and tail
+						Point2D orNextPnt = trimEndPoint(orNext, orWidth, orAngle, keepin);
+						Point2D orPrevPnt = trimEndPoint(orPrev, orWidth, (orAngle+1800)%3600, keepin);
+						double orNextExt = orNextPnt.distance(orNext);
+						double orPrevExt = orPrevPnt.distance(orPrev);
+						orNextExt = Math.min(orNextExt, orWidth/2);
+						orPrevExt = Math.min(orPrevExt, orWidth/2);
+						// provisionally add centerline
+						Centerline or = new Centerline(orWidth, orAngle, orNext, orPrev, orNextExt, orPrevExt, orPoly);
+						newCenterlines.add(or);
+					}
 
-							// create the centerline
-							Point2D ps = new Point2D.Double(psX, psY);
-							Point2D pe = new Point2D.Double(peX, peY);
-							Centerline newCL = new Centerline(width, ps, pe);
-                            if (newCL.angle >= 0) {
-                                // check for redundant centerlines, favor centerlines that extend to external geometry
-                                boolean comparisonDone = false;
-                                for (int ci=0; ci < centerlines.size(); ci++) {
-                                    Centerline acl = centerlines.get(ci);
-                                    // same bounds
-                                    Rectangle2D aclBounds = acl.getBounds();
-                                    Rectangle2D newCLBounds = newCL.getBounds();
-                                    if (aclBounds != null && newCLBounds != null && aclBounds.equals(newCLBounds))
-                                    {
-                                        // check if they are perpendicular - if not, they are exactly redundant
-                                        Centerline horCL = null, verCL = null;
-                                        if (acl.start.getX() == acl.end.getX()) verCL = acl;
-                                        if (acl.start.getY() == acl.end.getY()) horCL = acl;
-                                        if (newCL.start.getX() == newCL.end.getX()) verCL = newCL;
-                                        if (newCL.start.getY() == newCL.end.getY()) horCL = newCL;
-                                        if (horCL == null || verCL == null) {
-                                            comparisonDone = true;
-                                            break; // not perpendicular
-                                        }
-
-                                        Rectangle2D bounds = acl.getBounds();
-                                        int favorHor = 0, favorVer = 0;
-
-                                        // check horizontal extensions
-                                        Rectangle2D boundsE = new Rectangle2D.Double(bounds.getX(), bounds.getY(),
-                                                bounds.getWidth()+1.0, bounds.getHeight());
-                                        Rectangle2D boundsW = new Rectangle2D.Double(bounds.getX()-1.0, bounds.getY(),
-                                                bounds.getWidth()+1.0, bounds.getHeight());
-                                        if (originalMerge.contains(poly.getLayer(), new PolyBase(boundsE)))
-                                            favorHor++;
-                                        if (originalMerge.contains(poly.getLayer(), new PolyBase(boundsW)))
-                                            favorHor++;
-
-                                        // check vertical extensions
-                                        Rectangle2D boundsN = new Rectangle2D.Double(bounds.getX(), bounds.getY(),
-                                                bounds.getWidth(), bounds.getHeight()+1.0);
-                                        Rectangle2D boundsS = new Rectangle2D.Double(bounds.getX(), bounds.getY()-1.0,
-                                                bounds.getWidth(), bounds.getHeight()+1.0);
-                                        if (originalMerge.contains(poly.getLayer(), new PolyBase(boundsN)))
-                                            favorVer++;
-                                        if (originalMerge.contains(poly.getLayer(), new PolyBase(boundsS)))
-                                            favorVer++;
-
-                                        if (favorHor > favorVer) {
-                                            if (centerlines.contains(verCL)) {
-                                                if (DEBUGCENTERLINES)
-                                                    System.out.println("***REMOVE "+verCL.toString()+" WHICH IS SUBOPTIMAL");
-                                                centerlines.remove(verCL);
-                                            }
-                                            if (!centerlines.contains(horCL)) {
-                                                if (DEBUGCENTERLINES) System.out.println("  MAKE "+newCL.toString());
-                                                centerlines.add(horCL);
-                                            }
-                                            comparisonDone = true;
-                                        }
-                                        if (favorVer > favorHor) {
-                                            if (centerlines.contains(horCL)) {
-                                                if (DEBUGCENTERLINES)
-                                                    System.out.println("***REMOVE "+horCL.toString()+" WHICH IS SUBOPTIMAL");
-                                                centerlines.remove(horCL);
-                                            }
-                                            if (!centerlines.contains(verCL)) {
-                                                if (DEBUGCENTERLINES) System.out.println("  MAKE "+newCL.toString());
-                                                centerlines.add(verCL);
-                                            }
-                                            comparisonDone = true;
-                                        }
-                                        break;
-                                    }
-                                }
-                                if (!comparisonDone) {
-                                    centerlines.add(newCL);
-                                    if (DEBUGCENTERLINES) System.out.println("  MAKE "+newCL.toString());
-                                }
-                            }
-							break;
+					// check the new centerlines
+					for (Centerline cl : newCenterlines) {
+						Rectangle2D clBounds = cl.getBounds();
+						// discard thin lines 
+						if (DEBUGCENTERLINES && cl.width < minWidth) System.out.println("***IGNORE " + cl + " - TOO THIN");
+						if (cl.width < minWidth) continue;
+						if (cl.getLength() < minWidth && DBMath.areEquals(cl.headExt, 0)) continue;
+						if (cl.getLength() < minWidth && DBMath.areEquals(cl.tailExt, 0)) continue;
+						// check for redundant centerlines, favor centerlines that extend to external geometry
+						boolean duplicate = false;
+						for (int ci=0; ci < centerlines.size(); ci++) {
+							Centerline acl = centerlines.get(ci);
+							Rectangle2D aclBounds = acl.getBounds();
+							// check if equal bounds
+							if (aclBounds == null) continue;
+							if (aclBounds.equals(clBounds)) {
+								// check if exactly redundant
+								if (cl.head.equals(acl.head) && cl.tail.equals(acl.tail) ||
+									cl.head.equals(acl.tail) && cl.tail.equals(acl.head)) {
+									duplicate = true;
+									break;
+								}
+								// compare number of extensions
+								if (cl.numExtensions() < acl.numExtensions() || 
+									cl.numExtensions() < 2 && cl.getLength() < acl.getLength()) {
+									if (DEBUGCENTERLINES)
+										System.out.println("***IGNORE "+cl.toString()+" - SUBOPTIMAL");
+									duplicate = true;
+									break;
+								}
+								if (acl.numExtensions() < cl.numExtensions() ||
+									acl.numExtensions() < 2 && acl.getLength() < cl.getLength()) {
+									if (DEBUGCENTERLINES)
+										System.out.println("***REMOVE "+acl.toString()+" - SUBOPTIMAL");
+									centerlines.remove(ci--);
+									continue;
+								}
+							}
 						}
 						if (duplicate) continue;
 
@@ -5631,11 +5568,11 @@ public class Connectivity
 	{
 		if (alignment != null) width = Math.floor(width / alignment.getWidth()) * alignment.getWidth();
 		if (DBMath.areEquals(pt1, pt2)) {
-			System.out.println("realizeArc: not creating zero length"+ap+" at "+pt1);
+			if (DEBUGWIRES) System.out.println("realizeArc: not creating zero length "+ap+" at "+pt1);
 			return null;
 		}
 		if (DBMath.areEquals(width, 0)) {
-			System.out.println("realizeArc: not creating width"+ap+" at "+pt1);
+			if (DEBUGWIRES) System.out.println("realizeArc: not creating zero width "+ap+" at "+pt1);
 			return null;
 		}
 		if (width == 0) ap = Generic.tech().universal_arc;
