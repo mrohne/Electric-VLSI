@@ -47,6 +47,8 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Class to route vertically (in Z direction) between two RouteElements.
@@ -97,6 +99,11 @@ public class VerticalRoute {
             }
         }
     }
+	private static class SpecifiedRoutesByLength implements Comparator<SpecifiedRoute> {
+		public int compare(SpecifiedRoute pb1, SpecifiedRoute pb2) {
+			return pb1.size()-pb2.size();
+		}
+	}
 
     /**
      * Private constructor. Any of start/endPort, or start/endArc may be null, however
@@ -468,7 +475,8 @@ public class VerticalRoute {
 
         // pull off the first object, which will be a port, and create contact from that
         RouteElementPort node = RouteElementPort.newNode(cell, pp.getParent(), pp,
-                location, contactSize.getWidth(), contactSize.getHeight(), orient, ep);
+														 location, contactSize.getWidth(), contactSize.getHeight(), orient, 
+														 stayInside, ep);
         route.add(node);
         route.setStart(node);
         route.setEnd(node);
@@ -480,7 +488,8 @@ public class VerticalRoute {
 
             // create node
             RouteElementPort newNode = RouteElementPort.newNode(cell, port.getParent(), port,
-                    location, contactSize.getWidth(), contactSize.getHeight(), Orientation.IDENT, ep);
+																location, contactSize.getWidth(), contactSize.getHeight(), Orientation.IDENT,
+																stayInside, ep);
             route.add(newNode);
             route.setEnd(newNode);
 
@@ -556,8 +565,8 @@ public class VerticalRoute {
                     specifiedRoute = r;
             }
         }
-
-        allSpecifiedRoutes.clear();
+		// sort routes by increasing length
+		Collections.sort(allSpecifiedRoutes, new SpecifiedRoutesByLength());
         startArc = specifiedRoute.startArc;
         endArc = specifiedRoute.endArc;
         if (DEBUGSEARCH || DEBUGTERSE) {
