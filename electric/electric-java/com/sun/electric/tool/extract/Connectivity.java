@@ -1793,12 +1793,31 @@ public class Connectivity
 			List<PortInst> possiblePorts = findPortInstsTouchingPoint(extPoly, layer, newCell, ap);
 			for(PortInst pi : possiblePorts) {
 				Poly portPoly = pi.getPoly();
+				// Search for near intersection of centerline extension
+				Point2D nearPt = intersectPoly(headPt, (lineAngle+1800)%3600, portPoly);
+				if (nearPt != null) {
+					double nearDist = headPt.distance(nearPt);
+					if (nearDist < cl.getLength()/2) {
+						loc1.setLocation(nearPt);
+						piRet = pi;
+						break;
+					}
+				}
 				// Check if port contains headPt
 				if (portPoly.contains(headPt)) {
-					bestDist = 0.0;
 					loc1.setLocation(headPt);
 					piRet = pi;
 					break;
+				}
+				// Search for far intersection of centerline extension
+				Point2D testPt = intersectPoly(headPt, lineAngle, portPoly);
+				if (testPt != null) {
+					double testDist = headPt.distance(testPt);
+					if (testDist < headExt) {
+						loc1.setLocation(testPt);
+						piRet = pi;
+						break;
+					}
 				}
 				// Search for closest approach of centerline extension
 				Point2D centerPt = portPoly.getCenter();
@@ -3930,6 +3949,7 @@ public class Connectivity
 		portRect.setRect((portRect.getMinX()), (portRect.getMinY()),
 			(portRect.getWidth()), (portRect.getHeight()));
 		PrimitiveNode np = ap.findPinProto();
+		double size = np.getFactoryDefaultBaseDimension().getLambdaWidth();
 
 		// is the port inside of the area to be covered?
 		if (polyCtr.getY() >= portRect.getMinY() && polyCtr.getY() <= portRect.getMaxY() &&
@@ -4334,10 +4354,10 @@ public class Connectivity
 					double minDistToEnd = Math.min(distToStart, distToEnd);
 
 					// see if intersection is deeply inside of the segment
-					boolean makeT = insideSegment(newStart, newEnd, intersect) && (minDistToEnd > both[b].width/2);
+					boolean makeT = insideSegment(newHead, newTail, intersect) && (minDistToTail > both[b].width/2);
 
 					// see if intersection is actually on line
-                    boolean internalIntersect = DBMath.areEquals(new Line2D.Double(newStart, newEnd).ptSegDist(intersect), 0);
+                    boolean internalIntersect = DBMath.areEquals(new Line2D.Double(newHead, newTail).ptSegDist(intersect), 0);
 
                     // if intersection is off-grid, rather than having two arcs join at this point,
                     // which can cause off-grid errors, make a pure layer node that is the intersection area,
@@ -4347,88 +4367,96 @@ public class Connectivity
                     if (alignment != null && (intersect.getX() % (alignment.getWidth()) != 0)) offgrid = true;
                     if (alignment != null && (intersect.getY() % (alignment.getHeight()) != 0)) offgrid = true;
 
-					// adjust the centerline to end at the intersection point
-					double extendStart = 0, extendEnd = 0, extendAltStart = 0, extendAltEnd = 0, betterExtension = 0;
-					Point2D altNewStart = new Point2D.Double(0,0), altNewEnd = new Point2D.Double(0,0);
-					if (distToStart < distToEnd)
+					// adjust the centerline to tail at the intersection point
+					double extHead = 0, extTail = 0, extAltHead = 0, extAltTail = 0, extBest = 0;
+					Point2D altNewHead = new Point2D.Double(0,0), altNewTail = new Point2D.Double(0,0);
+					if (distToHead < distToTail)
 					{
-						betterExtension = newStart.distance(intersect);
-						altNewStart.setLocation(newStart);   altNewEnd.setLocation(intersect);
-						newStart = intersect;
-						extendAltEnd = extendStart = both[b].width / 2;
+						extBest = newHead.distance(intersect);
+						altNewHead.setLocation(newHead);   altNewTail.setLocation(intersect);
+						newHead = intersect;
+						extAltTail = extHead = both[b].width / 2;
                         if (offgrid && !makeT) {
                             if (internalIntersect) {
-                                // adjust closer end point out of intersection area
-                                double diffX = altNewStart.getX() - intersect.getX();
-                                double diffY = altNewStart.getY() - intersect.getY();
-                                newStart = new Point2D.Double(intersect.getX() - diffX, intersect.getY() - diffY);
-                                altNewEnd.setLocation(intersect.getX() + diffX, intersect.getY() + diffY);
+                                // adjust closer tail point out of intersection area
+                                double diffX = altNewHead.getX() - intersect.getX();
+                                double diffY = altNewHead.getY() - intersect.getY();
+                                newHead = new Point2D.Double(intersect.getX() - diffX, intersect.getY() - diffY);
+                                altNewTail.setLocation(intersect.getX() + diffX, intersect.getY() + diffY);
                             } else {
-                                newStart.setLocation(altNewStart);
+                                newHead.setLocation(altNewHead);
                             }
-                            extendAltEnd = extendStart = Math.abs(betterExtension);
+                            extAltTail = extHead = Math.abs(extBest);
                         }
-                        else if (!makeT && betterExtension < extendStart) {
+                        else if (!makeT && extBest < extHead) {
                             // wire will not have ends extended, add in extra wire to account for non-end extension
-                            Centerline newCl = new Centerline(both[b].width, altNewStart, intersect, 0.0, 0.0);
+                            Centerline newCl = new Centerline(both[b].width, altNewHead, intersect, 1*both[b].headExt, 0*both[b].headExt);
                             newCl.headHub = false;
                             newCl.tailHub = true;
                             if (newCl.head.distance(newCl.tail) > 0)
                                 extraCenterlines.add(newCl);
                         }
-                    } else // case: distToEnd <= distToStart
+                    } else // case: distToTail <= distToHead
 					{
-						betterExtension = newEnd.distance(intersect);
-						altNewStart.setLocation(intersect);   altNewEnd.setLocation(newEnd);
-						newEnd = intersect;
-						extendAltStart = extendEnd = both[b].width / 2;
+						extBest = newTail.distance(intersect);
+						altNewHead.setLocation(intersect);   altNewTail.setLocation(newTail);
+						newTail = intersect;
+						extAltHead = extTail = both[b].width / 2;
                         if (offgrid && !makeT) {
                             if (internalIntersect) {
-                                double diffX = altNewEnd.getX() - intersect.getX();
-                                double diffY = altNewEnd.getY() - intersect.getY();
-                                newEnd = new Point2D.Double(intersect.getX() - diffX, intersect.getY() - diffY);
-                                altNewStart.setLocation(intersect.getX() + diffX, intersect.getY() + diffY);
+                                double diffX = altNewTail.getX() - intersect.getX();
+                                double diffY = altNewTail.getY() - intersect.getY();
+                                newTail = new Point2D.Double(intersect.getX() - diffX, intersect.getY() - diffY);
+                                altNewHead.setLocation(intersect.getX() + diffX, intersect.getY() + diffY);
                             } else {
-                                newEnd.setLocation(altNewEnd);
+                                newTail.setLocation(altNewTail);
                             }
-                            extendAltStart = extendEnd = Math.abs(betterExtension);
+                            extAltHead = extTail = Math.abs(extBest);
                         }
-                        else if (!makeT && betterExtension < extendEnd) {
+                        else if (!makeT && extBest < extTail) {
                             // wire will not have ends extended, add in extra wire to account for non-end extension
-                            Centerline newCl = new Centerline(both[b].width, intersect, altNewEnd, 0.0, 0.0);
+                            Centerline newCl = new Centerline(both[b].width, intersect, altNewTail, 0*both[b].headExt, 1*both[b].headExt);
                             newCl.headHub = true;
                             newCl.tailHub = false;
                             if (newCl.head.distance(newCl.tail) > 0)
                                 extraCenterlines.add(newCl);
                         }
 					}
-					Poly extended = Poly.makeEndPointPoly(newStart.distance(newEnd), both[b].width, both[b].angle,
-						newStart, extendStart, newEnd, extendEnd, Poly.Type.FILLED);
+					Poly extended = Poly.makeEndPointPoly(newHead.distance(newTail), both[b].width, both[b].angle,
+						newHead, extHead, newTail, extTail, Poly.Type.FILLED);
 					if (!originalMerge.contains(layer, extended))
 					{
-						if (extendStart > 0) extendStart = betterExtension;
-						if (extendEnd > 0) extendEnd = betterExtension;
-						extended = Poly.makeEndPointPoly(newStart.distance(newEnd), both[b].width, both[b].angle,
-							newStart, extendStart, newEnd, extendEnd, Poly.Type.FILLED);
+						if (extHead > 0) extHead = extBest;
+						if (extTail > 0) extTail = extBest;
+						extended = Poly.makeEndPointPoly(newHead.distance(newTail), both[b].width, both[b].angle,
+							newHead, extHead, newTail, extTail, Poly.Type.FILLED);
                     }
 					if (originalMerge.contains(layer, extended))
 					{
-						both[b].setHead(newStart.getX(), newStart.getY());
-						both[b].setTail(newEnd.getX(), newEnd.getY());
-						if (extendStart != 0) both[b].headHub = true;
-						if (extendEnd != 0) both[b].tailHub = true;
+						both[b] = new Centerline(both[b].width, newHead, newTail, extHead, extTail);
+						if (extHead != 0) both[b].headHub = true;
+						if (extTail != 0) both[b].tailHub = true;
 						if (makeT)
 						{
 							// too much shrinkage: split the centerline
-							Centerline newCL = new Centerline(both[b].width, altNewStart, altNewEnd, 0.0, 0.0);
-							if (extendAltStart != 0) newCL.headHub = true;
-							if (extendAltEnd != 0) newCL.tailHub = true;
+							Centerline newCL = new Centerline(both[b].width, altNewHead, altNewTail, extAltHead, extAltTail);
+							if (extAltHead != 0) newCL.headHub = true;
+							if (extAltTail != 0) newCL.tailHub = true;
 							validCenterlines.add(newCL);
 							continue;
 						}
 					} else {
                         //System.out.println("Merge does not contain arc");
                     }
+				}
+				// Update modified centerlines
+				if (!both[0].equals(cl)) {
+					cl = both[0];
+					validCenterlines.set(i, cl);
+				}
+				if (!both[1].equals(ocl)) {
+					ocl = both[1];
+					validCenterlines.set(j, ocl);
 				}
 			}
         }
@@ -4616,23 +4644,31 @@ public class Connectivity
 					Poly clPoly = Poly.makeEndPointPoly(clLength, clWidth, clAngle, clHead, 0, clTail, 0, Poly.Type.FILLED);
 					if (!originalMerge.contains(layer, clPoly)) continue;
 
+					// stretch rectangle within poly
+					Point2D stHead = trimEndPoint(clHead, clWidth, clAngle, poly);
+					Point2D stTail = trimEndPoint(clTail, clWidth, (clAngle+1800)%3600, poly);
+					double stWidth = oneSide.distance(otherSide);
+					double stLength = stTail.distance(stHead);
+					int stAngle = GenMath.figureAngle(stTail, stHead);
+					Poly stPoly = Poly.makeEndPointPoly(stLength, stWidth, stAngle, stHead, 0, stTail, 0, Poly.Type.FILLED);
+
 					// require a single area, posibly with holes
-					Area clArea = merge.inclusive(layer, clPoly);
-					List<PolyBase> clLoop = PolyBase.getLoopsFromArea(clArea, layer);
-					List<PolyBase.PolyBaseTree> clRoot = PolyBase.getTreesFromLoops(clLoop);
-					if (clRoot.size() != 1) continue;
-					TreeMap<Double, Point2D> clDist = new TreeMap<Double, Point2D>();
-					for (PolyBase.PolyBaseTree root : clRoot) {
+					Area stArea = merge.inclusive(layer, stPoly);
+					List<PolyBase> stLoop = PolyBase.getLoopsFromArea(stArea, layer);
+					List<PolyBase.PolyBaseTree> stRoot = PolyBase.getTreesFromLoops(stLoop);
+					if (stRoot.size() != 1) continue;
+					TreeMap<Double, Point2D> stHole = new TreeMap<Double, Point2D>();
+					for (PolyBase.PolyBaseTree root : stRoot) {
 						for (PolyBase.PolyBaseTree tree : root.getSons()) {
 							PolyBase hole = tree.getPoly();
 							Point2D cent = hole.getCenter();
-							Point2D head = GenMath.intersect(clTail, angle, cent, perpAngle);
-							double dist = clTail.distance(head);
-							clDist.put(dist, head);
+							Point2D head = GenMath.intersect(stTail, angle, cent, perpAngle);
+							double dist = stTail.distance(head);
+							stHole.put(dist, head);
 						}
 					}
-					clDist.put(0.0, clTail);
-					clDist.put(clLength, clHead);
+					stHole.put(0.0, stTail);
+					stHole.put(stLength, stHead);
 
 					// try all possible spans
 					double width = oneSide.distance(otherSide);
@@ -4849,20 +4885,18 @@ public class Connectivity
 						if (width >= actualWidth && height >= actualWidth)
 						{
 							PrimitiveNode np = ap.findPinProto();
+							double size = np.getFactoryDefaultBaseDimension().getLambdaWidth();
 							Point2D end1 = null, end2 = null;
-							double size = 0;
 							if (width > height)
 							{
 								// make a horizontal arc
 								end1 = new Point2D.Double((polyBounds.getMinX()), polyBounds.getCenterY());
 								end2 = new Point2D.Double((polyBounds.getMaxX()), polyBounds.getCenterY());
-								size = height;
 							} else
 							{
 								// make a vertical arc
 								end1 = new Point2D.Double(polyBounds.getCenterX(), (polyBounds.getMinY()));
 								end2 = new Point2D.Double(polyBounds.getCenterX(), (polyBounds.getMaxY()));
-								size = width;
 							}
 							MutableBoolean headExtend = new MutableBoolean(false), tailExtend = new MutableBoolean(false);
 							if (originalMerge.arcPolyFits(layer, end1, end2, size, headExtend, tailExtend))
