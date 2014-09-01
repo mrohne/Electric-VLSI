@@ -4640,8 +4640,8 @@ public class Connectivity
 						Point2D clPrevPnt = trimEndPoint(clPrev, clWidth, (clAngle+1800)%3600, keepin);
 						double clNextExt = clNextPnt.distance(clNext);
 						double clPrevExt = clPrevPnt.distance(clPrev);
-						clNextExt = clNext.equals(stHead) ? Math.min(clNextExt, clWidth/2) : 0;
-						clPrevExt = clPrev.equals(stTail) ? Math.min(clPrevExt, clWidth/2) : 0;
+						clNextExt = Math.min(clNextExt, clWidth/2);
+						clPrevExt = Math.min(clPrevExt, clWidth/2);
 						// provisionally add centerline
 						Centerline cl = new Centerline(clWidth, clAngle, clNext, clPrev, clNextExt, clPrevExt, clPoly);
 						newCenterlines.add(cl);
@@ -4689,14 +4689,14 @@ public class Connectivity
 								}
 								// compare number of extensions
 								if (cl.numExtensions() < acl.numExtensions() || 
-									cl.numExtensions() < 2 && cl.getLength() < acl.getLength()) {
+									cl.numExtensions() ==acl.numExtensions() && cl.getLength() < acl.getLength()) {
 									if (DEBUGCENTERLINES)
 										System.out.println("***IGNORE "+cl.toString()+" - SUBOPTIMAL");
 									duplicate = true;
 									break;
 								}
 								if (acl.numExtensions() < cl.numExtensions() ||
-									acl.numExtensions() < 2 && acl.getLength() < cl.getLength()) {
+									acl.numExtensions() ==cl.numExtensions() && acl.getLength() < cl.getLength()) {
 									if (DEBUGCENTERLINES)
 										System.out.println("***REMOVE "+acl.toString()+" - SUBOPTIMAL");
 									centerlines.remove(ci--);
