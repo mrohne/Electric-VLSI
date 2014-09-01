@@ -2612,6 +2612,9 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @throws IllegalArgumentException if PortProto doesn't belong to node's proto
      */
     public PortInst findPortInstFromProto(PortProto pp) {
+		if (pp == null) {
+			throw new IllegalArgumentException("Missing PortProto in findPortInstFromProto: " + this);
+		}
         if (pp instanceof Export && !((Export) pp).isLinked() || pp.getParent() != getProto()) {
             throw new IllegalArgumentException();
         }
@@ -2626,9 +2629,26 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @throws IllegalArgumentException if PortProto is not linked
      */
     public PortInst findPortInstFromEquivalentProto(PortProto pp) {
-        if (pp instanceof Export && ((Export) pp).isLinked() && pp.getParent() != getProto()) {
-            pp = ((Export) pp).findEquivalent((Cell) getProto());
-        }
+		if (pp == null) {
+			throw new IllegalArgumentException("Missing PortProto in findPortInstFromEquivalentProto: " + this);
+		}
+		if (pp instanceof Export) {
+			Export ex = (Export) pp;
+			while (ex.isLinked()) {
+				if (isCellInstance()) {
+					Cell np = (Cell) getProto();
+					if (ex.getParent() == np) return findPortInstFromProto(ex);
+					Export eq = ex.findEquivalent(np);
+					if (eq != null)	return findPortInstFromProto(eq);
+				} else {
+					PortInst pi = ex.getOriginalPort();
+					if (pi.getNodeInst() == this) return pi;
+				}
+				PortProto px = ex.getOriginalPort().getPortProto();
+				if (px instanceof Export) ex = (Export) px;
+				else break;
+			}
+		}
         return findPortInstFromProto(pp);
     }
 
