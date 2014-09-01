@@ -48,7 +48,6 @@ import com.sun.electric.database.topology.PortInst;
 import com.sun.electric.database.topology.RTBounds;
 import com.sun.electric.database.topology.RTNode;
 import com.sun.electric.database.variable.DisplayedText;
-import com.sun.electric.database.variable.EditWindow_;
 import com.sun.electric.database.variable.ElectricObject;
 import com.sun.electric.database.variable.UserInterface;
 import com.sun.electric.database.variable.Variable;
@@ -70,6 +69,7 @@ import com.sun.electric.tool.user.Highlight;
 import com.sun.electric.tool.user.User;
 import com.sun.electric.tool.user.dialogs.EDialog;
 import com.sun.electric.tool.user.ui.TopLevel;
+import com.sun.electric.tool.user.ui.EditWindow;
 import com.sun.electric.util.math.DBMath;
 import com.sun.electric.util.math.ECoord;
 import com.sun.electric.util.math.EDimension;
@@ -210,6 +210,7 @@ public class Connectivity
 		/** debugging: list of objects created */	private List<List<ERectangle>> addedBatchRectangles;
 		/** debugging: list of objects created */	private List<List<ERectangle>> addedBatchLines;
 		/** debugging: list of objects created */	private List<String> addedBatchNames;
+		/** debugging: list of objects created */	private List<Cell> addedBatchCells;
 		/** */ private ErrorLogger errorLogger;
 
 		private ExtractJob(Cell cell, boolean recursive)
@@ -262,6 +263,7 @@ public class Connectivity
 				addedBatchRectangles = new ArrayList<List<ERectangle>>();
 				addedBatchLines = new ArrayList<List<ERectangle>>();
 				addedBatchNames = new ArrayList<String>();
+				addedBatchCells = new ArrayList<Cell>();
 			}
 			Job.getUserInterface().startProgressDialog("Extracting", null);
 
@@ -272,7 +274,7 @@ public class Connectivity
 			if (recursive) c.totalCells = c.countExtracted(cell, pats, flattenPcells);
 
 			newCell = c.doExtract(cell, recursive, pats, flattenPcells, usePureLayerNodes,
-				true, this, addedBatchRectangles, addedBatchLines, addedBatchNames);
+								  true, this, addedBatchRectangles, addedBatchLines, addedBatchNames, addedBatchCells);
 			if (newCell == null)
 				System.out.println("ERROR: Extraction of cell " + cell.describe(false) + " failed");
 
@@ -280,6 +282,7 @@ public class Connectivity
 			fieldVariableChanged("addedBatchRectangles");
 			fieldVariableChanged("addedBatchLines");
 			fieldVariableChanged("addedBatchNames");
+			fieldVariableChanged("addedBatchCells");
 			fieldVariableChanged("newCell");
 			fieldVariableChanged("errorLogger");
 			return true;
@@ -287,8 +290,7 @@ public class Connectivity
 
 		public void terminateOK()
 		{
-			UserInterface ui = Job.getUserInterface();
-			EditWindow_ wnd = ui.displayCell(newCell);
+			EditWindow wnd = EditWindow.showEditWindowForCell(newCell, null);
 			Job.getUserInterface().termLogging(errorLogger, false, false);
 
 			if (DEBUGSTEPS)
@@ -296,7 +298,7 @@ public class Connectivity
 				// show results of each step
 				JFrame jf = null;
 				if (!TopLevel.isMDIMode()) jf = TopLevel.getCurrentJFrame();
-				ShowExtraction theDialog = new ShowExtraction(jf, addedBatchRectangles, addedBatchLines, addedBatchNames);
+				ShowExtraction theDialog = new ShowExtraction(jf, addedBatchRectangles, addedBatchLines, addedBatchNames, addedBatchCells);
 				theDialog.setVisible(true);
 			} else
 			{
@@ -564,7 +566,8 @@ public class Connectivity
 						  boolean top, Job job, 
 						  List<List<ERectangle>> addedBatchRectangles, 
 						  List<List<ERectangle>> addedBatchLines, 
-						  List<String> addedBatchNames)
+						  List<String> addedBatchNames,
+						  List<Cell> addedBatchCells)
 	{
 		if (recursive)
 		{
@@ -583,7 +586,7 @@ public class Connectivity
 					if (convertedCell == null)
 					{
 						Cell result = doExtract(subCell, recursive, pats, flattenPcells, usePureLayerNodes,
-							false, job, addedBatchRectangles, addedBatchLines, addedBatchNames);
+												false, job, addedBatchRectangles, addedBatchLines, addedBatchNames, addedBatchCells);
 						if (result == null)
 							System.out.println("ERROR: Extraction of cell " + subCell.describe(false) + " failed");
 					}
@@ -630,7 +633,7 @@ public class Connectivity
 			initDebugging();
 			if (!startSection(oldCell, "Extracting vias...")) return null; // aborted
 			if (!extractVias(merge, originalMerge, oldCell, newCell, usePureLayerNodes)) return null; // aborted
-			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Vias");
+			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Vias", addedBatchCells, newCell);
 		}
 
 		// now extract transistors
@@ -638,7 +641,7 @@ public class Connectivity
 			initDebugging();
 			if (!startSection(oldCell, "Extracting transistors...")) return null; // aborted
 			extractTransistors(merge, originalMerge, newCell, usePureLayerNodes);
-			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Transistors");
+			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Transistors", addedBatchCells, newCell);
 		}
 
         if (usePureLayerNodes) {
@@ -654,7 +657,7 @@ public class Connectivity
 				initDebugging();
 				if (!startSection(oldCell, "Extracting wires...")) return null; // aborted
 				if (makeWires(merge, originalMerge, newCell, usePureLayerNodes)) return newCell;
-				termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Wires");
+				termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Wires", addedBatchCells, newCell);
 			}
 
             // convert any geometry that connects two networks
@@ -662,7 +665,7 @@ public class Connectivity
 				initDebugging();
 				if (!startSection(oldCell, "Extracting connections...")) return null; // aborted
 				extendGeometry(merge, originalMerge, newCell, false, usePureLayerNodes);
-				termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Bridges");
+				termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Bridges", addedBatchCells, newCell);
 			}
         }
 
@@ -671,7 +674,7 @@ public class Connectivity
 			initDebugging();
 			if (!startSection(oldCell, "Extracting leftover geometry...")) return null; // aborted
 			convertAllGeometry(merge, originalMerge, newCell, usePureLayerNodes);
-			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Pures");
+			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Pures", addedBatchCells, newCell);
 		}
 
         // reexport any that were there before
@@ -743,7 +746,7 @@ public class Connectivity
 				Poly arcPoly = ai.makeLambdaPoly(ai.getGridBaseWidth(), Poly.Type.CLOSED);
 				addedRectangles.add(ERectangle.fromLambda(arcPoly.getBounds2D()));
 			}
-			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Stitches");
+			termDebugging(addedBatchRectangles, addedBatchLines, addedBatchNames, "Stitches", addedBatchCells, newCell);
 		}
 		System.out.println("Extraction done.");
 
@@ -778,13 +781,15 @@ public class Connectivity
 	}
 
 	private void termDebugging(List<List<ERectangle>> addedBatchRectangles,
-		List<List<ERectangle>> addedBatchLines, List<String> addedBatchNames, String descr)
+							   List<List<ERectangle>> addedBatchLines, List<String> addedBatchNames, String descr, List<Cell> addedBatchCells, Cell cell)
 	{
-		if (DEBUGSTEPS)
-		{
-			addedBatchRectangles.add(addedRectangles);
-			addedBatchLines.add(addedLines);
-			addedBatchNames.add(descr);
+		if (DEBUGSTEPS) {
+			if (!addedRectangles.isEmpty() || !addedLines.isEmpty()) {
+				addedBatchRectangles.add(addedRectangles);
+				addedBatchLines.add(addedLines);
+				addedBatchNames.add(descr);
+				addedBatchCells.add(cell);
+			}
 		}
 	}
 
@@ -5605,16 +5610,18 @@ public class Connectivity
 		private List<List<ERectangle>> addedBatchRectangles;
 		private List<List<ERectangle>> addedBatchLines;
 		private List<String> addedBatchNames;
+		private List<Cell> addedBatchCells;
 		private int batchPosition;
 		private JLabel comingUp;
 
 		private ShowExtraction(Frame parent, List<List<ERectangle>> addedBatchRectangles,
-			List<List<ERectangle>> addedBatchLines, List<String> addedBatchNames)
+							   List<List<ERectangle>> addedBatchLines, List<String> addedBatchNames, List<Cell> addedBatchCells)
 		{
 			super(parent, false);
 			this.addedBatchRectangles = addedBatchRectangles;
 			this.addedBatchLines = addedBatchLines;
 			this.addedBatchNames = addedBatchNames;
+			this.addedBatchCells = addedBatchCells;
 
 			getContentPane().setLayout(new GridBagLayout());
 			setTitle("Extraction Progress");
@@ -5678,11 +5685,11 @@ public class Connectivity
 			comingUp.setText("Batch " + (batchPosition+1) + ": " + addedBatchNames.get(batchPosition));
 			pack();
 
-			UserInterface ui = Job.getUserInterface();
-			EditWindow_ wnd = ui.getCurrentEditWindow_();
-			wnd.clearHighlighting();
-			Cell cell = wnd.getCell();
-
+			// display cell
+			Cell cell = addedBatchCells.get(batchPosition);
+			EditWindow wnd = EditWindow.getCurrent();
+			wnd.setCell(cell, null, null);
+			
 			// highlight
 			List<ERectangle> rects = addedBatchRectangles.get(batchPosition);
 			for(ERectangle er : rects)
@@ -5692,6 +5699,9 @@ public class Connectivity
 				wnd.addHighlightLine(new Point2D.Double(er.getMinX(), er.getMinY()),
                                      new Point2D.Double(er.getMaxX(), er.getMaxY()), cell, false, false);
 			wnd.finishedHighlighting();
+
+			// keep dialog visible
+			setVisible(true);
 		}
 	}
 }
