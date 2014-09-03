@@ -2321,7 +2321,8 @@ name=null;
                 if (net != netlist.getNetwork(expi)) continue;
                 if (ex.connectsTo(ap)) {
                     // re-export up the hierarchy
-                    makeExportDrill(ex.getOriginalPort().getNodeInst(), ex, sp.context.pop(), preferredExportArea, ap);
+					PortInst pi = ex.getOriginalPort();
+                    makeExportDrill(pi.getNodeInst(), pi.getPortProto(), sp.context.pop(), preferredExportArea, ap);
                     return;
                 }
             }
