@@ -2714,6 +2714,23 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
 		if (pp == null) {
 			throw new IllegalArgumentException("Missing PortProto in findPortInstFromEquivalentProto: " + this);
 		}
+        if (pp instanceof Export && ((Export) pp).isLinked() && pp.getParent() != getProto()) {
+            pp = ((Export) pp).findEquivalent((Cell) getProto());
+        }
+        return findPortInstFromProto(pp);
+    }
+
+    /**
+     * Method to return the Portinst on this NodeInst connected to an upper prototype.
+     * If portProto bewlongs to another view then try to use equivalent port.
+     * @param pp the PortProto to find.
+     * @return the selected PortInst.
+     * @throws IllegalArgumentException if PortProto is not linked
+     */
+    public PortInst findPortInstFromConnectedProto(PortProto pp) {
+		if (pp == null) {
+			throw new IllegalArgumentException("Missing PortProto in findPortInstFromEquivalentProto: " + this);
+		}
 		if (pp instanceof Export) {
 			Export ex = (Export) pp;
 			while (ex.isLinked()) {
@@ -2728,8 +2745,9 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
 				}
 				PortProto px = ex.getOriginalPort().getPortProto();
 				if (px instanceof Export) ex = (Export) px;
-				else break;
+				else return null;
 			}
+			return null;
 		}
         return findPortInstFromProto(pp);
     }
