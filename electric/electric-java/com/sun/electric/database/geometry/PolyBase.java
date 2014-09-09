@@ -215,6 +215,19 @@ public class PolyBase implements Shape, PolyNodeMerge {
     }
 
     /**
+     * The constructor creates a new Poly that clones an existing Poly
+     * @param rect the Rectangle2D of the rectangle.
+     */
+    public PolyBase(PolyBase poly) {
+        List<Point> list = new ArrayList<Point>();
+		for (Point point : poly.points) list.add(from(point));
+		this.style  = poly.style;
+		this.points = list.toArray(new Point[list.size()]);
+		this.layer  = poly.layer;
+		this.pp     = poly.pp;
+    }
+
+    /**
      * Method to create an array of Points that describes a Rectangle.
      * @param lX the low X coordinate of the rectangle.
      * @param hX the high X coordinate of the rectangle.
@@ -2343,6 +2356,11 @@ public class PolyBase implements Shape, PolyNodeMerge {
     }
 
     // Get Points
+    public static PolyBase getPointsFromPoly(PolyBase poly) {
+		Area area = new Area(poly);
+		Layer layer = poly.getLayer();
+		return getPointsFromArea(area, layer);
+	}
     public static PolyBase getPointsFromArea(Area area, Layer layer) {
         List<Point> pointList = new ArrayList<Point>();
 		PathIterator pIt = area.getPathIterator(null);
@@ -2351,7 +2369,11 @@ public class PolyBase implements Shape, PolyNodeMerge {
 			int type = getPointsFromPath(pIt, pointList);
 			switch (type) {
 			case PathIterator.SEG_CLOSE:
-				if (loop < pointList.size()) pointList.add(pointList.get(loop));
+				if (loop < pointList.size()) {
+					Point head = pointList.get(loop);
+					Point tail = from(head);
+					pointList.add(tail);
+				}
 				break;
 			case PathIterator.SEG_MOVETO:
 			default:
@@ -2366,15 +2388,26 @@ public class PolyBase implements Shape, PolyNodeMerge {
     }
 
     // Get Loops
+    public static List<PolyBase> getLoopsFromPoly(PolyBase poly) {
+		Area area = new Area(poly);
+		Layer layer = poly.getLayer();
+		return getLoopsFromArea(area, layer);
+	}
     public static List<PolyBase> getLoopsFromArea(Area area, Layer layer) {
         List<Point> pointList = new ArrayList<Point>();
         List<PolyBase> list = new ArrayList<PolyBase>();
 
 		PathIterator pIt = area.getPathIterator(null);		
         while (!pIt.isDone()) {
+			int loop = pointList.size();
             int type = getPointsFromPath(pIt, pointList);
 			switch (type) {
 			case PathIterator.SEG_CLOSE:
+				if (loop < pointList.size()) {
+					Point head = pointList.get(loop);
+					Point tail = from(head);
+					pointList.add(tail);
+				}
 				Point[] points = pointList.toArray(new Point[pointList.size()]);
                 pointList.clear();
                 if (!ALLOWTINYPOLYGONS && !DBMath.isGreaterThan(DBMath.getAreaOfPoints(points), 0)) break;
