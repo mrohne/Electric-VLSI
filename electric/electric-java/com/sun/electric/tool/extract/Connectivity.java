@@ -630,6 +630,21 @@ public class Connectivity
 		PolyMerge originalMerge = new PolyMerge();
 		originalMerge.addMerge(merge, new FixpTransform());
 
+		// remove copied geometry from merge
+		for(Iterator<NodeInst> nIt = newCell.getNodes(); nIt.hasNext(); ) {
+			NodeInst ni = nIt.next();
+			if (ni.isCellInstance()) continue;
+			for (Poly poly : tech.getShapeOfNode(ni)) {
+				merge.subtract(poly.getLayer(), poly);
+			}
+		}
+		for (Iterator<ArcInst> aIt = newCell.getArcs(); aIt.hasNext(); ) {
+			ArcInst ai = aIt.next();
+			for (Poly poly : tech.getShapeOfArc(ai)) {
+				merge.subtract(poly.getLayer(), poly);
+			}
+		}
+
 		// start by extracting vias
 		if (doVias) {
 			initDebugging();
@@ -826,53 +841,58 @@ public class Connectivity
 		int totalNodes = oldCell.getNumNodes();
 
         // first get select, so we can determine proper active type
-        if (!unifyActive && !ignoreActiveSelectWell)
-        {
-            for (Iterator<NodeInst> nIt = oldCell.getNodes(); nIt.hasNext(); )
-            {
+        if (!unifyActive && !ignoreActiveSelectWell) {
+			List<Poly> polyList = new ArrayList<Poly>();
+            for (Iterator<NodeInst> nIt = oldCell.getNodes(); nIt.hasNext(); ) {
                 NodeInst ni = nIt.next();
 				if (ni.getFunction().isPin()) continue;
                 if (ni.isCellInstance()) continue;
-                Poly [] polys = tech.getShapeOfNode(ni);
-                for(int j=0; j<polys.length; j++)
-                {
-                    Poly poly = polys[j];
-
-                    // get the layer for the geometry
-                    Layer layer = poly.getLayer();
-                    if (layer == null) continue;
-
-                    // make sure the geometric database is made up of proper layers
-                    layer = geometricLayer(layer);
-                    if (layer.getFunction() != Layer.Function.IMPLANTN && layer.getFunction() != Layer.Function.IMPLANTP) continue;
-
-                    // selectMerge has non-scaled-up coordinates, and has all geometric coordinates relative to top level
-                    FixpTransform trans = ni.rotateOut(prevTrans);
-                    poly.transform(trans);
-                    selectMerge.add(layer, poly);
-                }
+				FixpTransform trans = ni.rotateOut(prevTrans);
+                for (Poly poly : tech.getShapeOfNode(ni)) {
+					poly.transform(trans);
+					polyList.add(poly);
+				}
+			}
+            for (Iterator<ArcInst> aIt = oldCell.getArcs(); aIt.hasNext(); ) {
+                ArcInst ai = aIt.next();
+				FixpTransform trans = new FixpTransform(prevTrans);
+                for (Poly poly : tech.getShapeOfArc(ai)) {
+					poly.transform(trans);
+					polyList.add(poly);
+				}
+			}
+			for (Poly poly : polyList) {
+				// get the layer for the geometry
+				Layer layer = poly.getLayer();
+				if (layer == null) continue;
+				
+				// make sure the geometric database is made up of proper layers
+				layer = geometricLayer(layer);
+				if (layer.getFunction() != Layer.Function.IMPLANTN && layer.getFunction() != Layer.Function.IMPLANTP) continue;
+				
+				selectMerge.add(layer, poly);
             }
         }
 
+		// collect polygons to be merged
+		List<Poly> polyList = new ArrayList<Poly>();
+		
+		// copy or merge the nodes
         int soFar = 0;
-		for(Iterator<NodeInst> nIt = oldCell.getNodes(); nIt.hasNext(); )
-		{
+		for(Iterator<NodeInst> nIt = oldCell.getNodes(); nIt.hasNext(); ) {
 			NodeInst ni = nIt.next();
 			if (ni.getFunction().isPin()) continue;
-			soFar++;
-			if (!recursive && (soFar % 100) == 0) Job.getUserInterface().setProgressValue(soFar * 100 / totalNodes);
 			if (Generic.isCellCenter(ni)) continue;
+			
+			if (!recursive && (soFar % 100) == 0) Job.getUserInterface().setProgressValue(soFar * 100 / totalNodes);
 
 			// see if the node can be copied or must be extracted
 			NodeProto copyType = null;			
-			if (ni.isCellInstance())
-			{
+			if (ni.isCellInstance()) {
 				Cell subCell = (Cell)ni.getProto();
-
 				// if subcell is expanded, do it now
 				boolean flatIt = isCellFlattened(subCell, pats, flattenPcells);
-				if (flatIt)
-				{
+				if (flatIt)	{
 					// expanding the subcell
 					expandedCells.add(subCell);
 					FixpTransform subTrans = ni.translateOut(ni.rotateOut(prevTrans));
@@ -880,37 +900,31 @@ public class Connectivity
 					extractCell(subCell, newCell, pats, flattenPcells, expandedCells, merge, selectMerge, subTrans, or);
 					continue;
 				}
-
 				// subcell not expanded, figure out what gets placed in the new cell
 				copyType = convertedCells.get(subCell);
 				if (copyType == null) copyType = subCell;
-			} else
-			{
+			} else {
 				PrimitiveNode np = (PrimitiveNode)ni.getProto();
-
 				// special case for exported but unconnected pins: save for later
-				if (np.getFunction().isPin())
-				{
-					if (ni.hasExports() && !ni.hasConnections())
-					{
+				if (np.getFunction().isPin()) {
+					if (ni.hasExports() && !ni.hasConnections()) {
 						ExportedPin ep = new ExportedPin(ni, ni.getTrueCenter(), prevTrans);
 						pinsForLater.add(ep);
 						continue;
 					}
 				}
-				if (np.getFunction() != PrimitiveNode.Function.NODE) copyType = ni.getProto(); else
-				{
-					if (ignoreNodes.contains(np)) copyType = ni.getProto();
-				}
+				if (ignoreNodes.contains(np)) copyType = ni.getProto();
+				if (np.getFunction().isContact()) copyType = ni.getProto();
+				if (np.getFunction().isTransistor()) copyType = ni.getProto();
+				if (np.getFunction().isCapacitor()) copyType = ni.getProto();
+				if (np.getFunction().isResistor()) copyType = ni.getProto();
 			}
 
 			// copy it now if requested
-			if (copyType != null)
-			{
+			if (copyType != null) {
 				double sX = ni.getXSize();
 				double sY = ni.getYSize();
-				if (copyType instanceof Cell)
-				{
+				if (copyType instanceof Cell) {
 					Rectangle2D cellBounds = ((Cell)copyType).getBounds();
 					sX = cellBounds.getWidth();
 					sY = cellBounds.getHeight();
@@ -924,17 +938,15 @@ public class Connectivity
 				Orientation or = orient.concatenate(ni.getOrient());
 				if (name != null && newCell.findNode(name) != null) name = null;
 				NodeInst newNi = NodeInst.makeInstance(copyType, ep, instanceAnchor, sX, sY,
-					newCell, or, name, ni.getTechSpecific());
-				if (newNi == null)
-				{
+													   newCell, or, name, ni.getTechSpecific());
+				if (newNi == null) {
 					addErrorLog(newCell, "Problem creating new instance of " + ni.getProto(), EPoint.fromLambda(sX, sY));
 					continue;
 				}
 				newNodes.put(ni, newNi);
 
 				// copy exports too
-				for(Iterator<Export> it = ni.getExports(); it.hasNext(); )
-				{
+				for(Iterator<Export> it = ni.getExports(); it.hasNext(); ) {
 					Export e = it.next();
 					PortInst pi = newNi.findPortInstFromEquivalentProto(e.getOriginalPort().getPortProto());
 					Export.newInstance(newCell, pi, e.getName(), ep);
@@ -942,110 +954,15 @@ public class Connectivity
 				continue;
 			}
 
-			// see if the size is at an odd coordinate (and may suffer rounding problems)
-			double alignX = 1, alignY = 1;
-			if (alignment != null)
-			{
-				alignX = alignment.getWidth();
-				alignY = alignment.getHeight();
-			}
-			boolean growABit = false;
-			int growXSize = (int)Math.round(ni.getXSize() / alignX * DBMath.GRID);
-			int growYSize = (int)Math.round(ni.getYSize() / alignY * DBMath.GRID);
-			if ((growXSize % 2) != 0 || (growYSize % 2) != 0) growABit = true;
-
 			// extract the geometry from the pure-layer node
 			FixpTransform trans = ni.rotateOut(prevTrans);
-			Poly [] polys = tech.getShapeOfNode(ni);
-
-			for(int j=0; j<polys.length; j++)
-			{
-				Poly poly = polys[j];
-
-				// get the layer for the geometry
-				Layer layer = poly.getLayer();
-				if (layer == null) continue;
-
-				// make sure the geometric database is made up of proper layers
-				layer = geometricLayer(layer);
-
-				// finally add the geometry to the merge
+			for (Poly poly : tech.getShapeOfNode(ni)) {
 				poly.transform(trans);
-				Point2D [] points = poly.getPoints();
-				if (alignment != null)
-				{
-					Point2D hold = new Point2D.Double();
-					for(int i=0; i<points.length; i++)
-					{
-						hold.setLocation(points[i]);
-                        DBMath.gridAlign(hold, alignment);
-						poly.setPoint(i, hold.getX(), hold.getY());
-					}
-				} else
-				{
-					// grow the polygon to account for rounding problems
-					if (growABit)
-					{
-						double growth = DBMath.getEpsilon()/2;
-						Point2D polyCtr = poly.getCenter();
-						for(int i=0; i<points.length; i++)
-						{
-							double x = points[i].getX();
-							double y = points[i].getY();
-							if (x < polyCtr.getX()) x -= growth; else x += growth;
-							if (y < polyCtr.getY()) y -= growth; else y += growth;
-							poly.setPoint(i, x, y);
-						}
-					}
-				}
-
-                // check overlap with selectMerge here, after poly has been rotated up to top level, but before scaling
-                if (layer.getFunction() == Layer.Function.DIFFN) {
-                    // make sure n-diffusion is in n-select
-                    if (selectMerge.contains(pSelectLayer, poly)) {
-                        // switch it p-active
-                        layer = pActiveLayer;
-                    }
-                }
-                if (layer.getFunction() == Layer.Function.DIFFP) {
-                    // make sure p-diffusion is in p-select
-                    if (selectMerge.contains(nSelectLayer, poly)) {
-                        // switch it n-active
-                        layer = nActiveLayer;
-                    }
-                }
-
-				if (layer.getFunction().isContact())
-				{
-					// cut layers are stored in lists because merging them is too expensive and pointless
-					CutInfo cInfo = allCutLayers.get(layer);
-					if (cInfo == null) allCutLayers.put(layer, cInfo = new CutInfo());
-
-					// see if the cut is already there
-					boolean found = false;
-					for(Iterator<CutBound> sea = new RTNode.Search<CutBound>(poly.getBounds2D(), cInfo.getRTree(), true); sea.hasNext(); )
-					{
-						CutBound cBound = sea.next();
-						if (cBound.getBounds().equals(poly.getBounds2D())) { found = true;   break; }
-					}
-					if (!found)
-					{
-						cInfo.addCut(poly);
-					}
-				} else
-				{
-					Rectangle2D box = poly.getBox();
-					if (box == null) merge.addPolygon(layer, poly); else
-					{
-						if (box.getWidth() > 0 && box.getHeight() > 0)
-							merge.addRectangle(layer, box);
-					}
-				}
+				polyList.add(poly);
 			}
 
 			// save exports on pure-layer nodes for restoration later
-			for(Iterator<Export> it = ni.getExports(); it.hasNext(); )
-			{
+			for(Iterator<Export> it = ni.getExports(); it.hasNext(); ) {
 				Export e = it.next();
 				exportsToRestore.add(e);
 			}
@@ -1057,15 +974,23 @@ public class Connectivity
 			ArcInst ai = aIt.next();
 			NodeInst end1 = newNodes.get(ai.getHeadPortInst().getNodeInst());
 			NodeInst end2 = newNodes.get(ai.getTailPortInst().getNodeInst());
-			if (end1 == null || end2 == null) continue;
-			PortInst pi1 = end1.findPortInstFromEquivalentProto(ai.getHeadPortInst().getPortProto());
-			PortInst pi2 = end2.findPortInstFromEquivalentProto(ai.getTailPortInst().getPortProto());
-			Point2D headLocation = new Point2D.Double(0, 0);
-			Point2D tailLocation = new Point2D.Double(0, 0);
-			prevTrans.transform(ai.getHeadLocation(), headLocation);
-			prevTrans.transform(ai.getTailLocation(), tailLocation);
-			ArcInst.makeInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), pi1, pi2,
-				headLocation, tailLocation, ai.getName());
+			if (end1 != null && end2 != null) {
+				PortInst pi1 = end1.findPortInstFromEquivalentProto(ai.getHeadPortInst().getPortProto());
+				PortInst pi2 = end2.findPortInstFromEquivalentProto(ai.getTailPortInst().getPortProto());
+				Point2D headLocation = new Point2D.Double(0, 0);
+				Point2D tailLocation = new Point2D.Double(0, 0);
+				prevTrans.transform(ai.getHeadLocation(), headLocation);
+				prevTrans.transform(ai.getTailLocation(), tailLocation);
+				ArcInst.makeInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), pi1, pi2,
+										 headLocation, tailLocation, ai.getName());
+				continue;
+			}
+							FixpTransform trans = new FixpTransform(prevTrans);
+                for (Poly poly : tech.getShapeOfArc(ai)) {
+					poly.transform(trans);
+					polyList.add(poly);
+				}
+
 		}
 
 		// throw all cell text into the new cell, too
@@ -1081,6 +1006,67 @@ public class Connectivity
             	newCell.addVar(newVar);
 			new DisplayedText(newCell, var.getKey());
 		}
+
+		// merge the collected polygons
+		for (Poly poly : polyList) {
+
+			// align points to grid
+			EDimension grid = alignment != null ? alignment : new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+			Point2D hold = new Point2D.Double();
+			Point2D [] points = poly.getPoints();
+			for(int i=0; i<points.length; i++) {
+				double x = points[i].getX();
+				double y = points[i].getY();
+				hold.setLocation(x, y);
+				DBMath.gridAlign(hold, grid);
+				poly.setPoint(i, hold.getX(), hold.getY());
+			}
+
+			// get the layer for the geometry
+			Layer layer = poly.getLayer();
+			if (layer == null) continue;
+			
+			// make sure the geometric database is made up of proper layers
+			layer = geometricLayer(layer);
+			
+			// check overlap with selectMerge here, after poly has been rotated up to top level, but before scaling
+			if (layer.getFunction() == Layer.Function.DIFFN) {
+				// make sure n-diffusion is in n-select
+				if (selectMerge.contains(pSelectLayer, poly)) {
+					// switch it p-active
+					layer = pActiveLayer;
+				}
+			}
+			if (layer.getFunction() == Layer.Function.DIFFP) {
+				// make sure p-diffusion is in p-select
+				if (selectMerge.contains(nSelectLayer, poly)) {
+					// switch it n-active
+					layer = nActiveLayer;
+				}
+			}
+			
+			if (layer.getFunction().isContact()) {
+				// cut layers are stored in lists because merging them is too expensive and pointless
+				CutInfo cInfo = allCutLayers.get(layer);
+				if (cInfo == null) allCutLayers.put(layer, cInfo = new CutInfo());
+				
+				// see if the cut is already there
+				boolean found = false;
+				for(Iterator<CutBound> sea = new RTNode.Search<CutBound>(poly.getBounds2D(), cInfo.getRTree(), true); sea.hasNext(); ) {
+					CutBound cBound = sea.next();
+					if (cBound.getBounds().equals(poly.getBounds2D())) { found = true;   break; }
+				}
+				if (!found) {
+					cInfo.addCut(poly);
+				}
+			} else {
+				Rectangle2D box = poly.getBox();
+				if (box == null) merge.addPolygon(layer, poly); 
+				else if (box.getWidth() > 0 && box.getHeight() > 0)
+					merge.addRectangle(layer, box);
+			}
+		}
+
 	}
 
 	/**
@@ -1233,13 +1219,12 @@ public class Connectivity
 
 	/********************************************** WIRE EXTRACTION **********************************************/
 
-	static boolean isOnGrid(double value, double grid)
-	{
+	static boolean isOnGrid(double value, double grid) {
 		if (grid == 0) return true;
 		long x = Math.round(value / grid);
 		return x * grid == value;
 	}
-
+	
 	static boolean isOnGrid(Point2D point, double grid) {
 		if (isOnGrid(point.getX(), grid) && isOnGrid(point.getY(), grid)) return true;
 		return false;
