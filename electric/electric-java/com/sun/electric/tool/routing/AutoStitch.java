@@ -1022,8 +1022,9 @@ name=null;
 
 						// compute best distance to the other node
 						Poly portPoly = ni.getShapeOfPort(tPp);
-						double x = portPoly.getCenterX();
-						double y = portPoly.getCenterY();
+						Point2D portPt = portPoly.closestPoint(oNi.getAnchorCenter());
+						double x = portPt.getX();
+						double y = portPt.getY();
 						double dist = Math.abs(x-oX) + Math.abs(y-oY);
 						if (bestPp == null)
 						{
@@ -1053,8 +1054,9 @@ name=null;
 
 						// compute best distance to the other node
 						Poly portPoly = ni.getShapeOfPort(tPp);
-						double x = portPoly.getCenterX();
-						double y = portPoly.getCenterY();
+						Point2D portPt = portPoly.closestPoint(oNi.getAnchorCenter());
+						double x = portPt.getX();
+						double y = portPt.getY();
 						double dist = Math.abs(x-oX) + Math.abs(y-oY);
 						if (bestPp == null) bestDist = dist;
 						if (dist > bestDist) continue;
@@ -1291,8 +1293,8 @@ name=null;
 			Layer.Function arcLayerFun = arcLayer.getFunction();
 			if (!arcLayerFun.isMetal() && !arcLayerFun.isDiff() && !arcLayerFun.isPoly()) continue;
 			Rectangle2D arcBounds = arcPoly.getBounds2D();
-			double aCX = arcBounds.getCenterX();
-			double aCY = arcBounds.getCenterY();
+			double aCX = arcPoly.getCenterX();
+			double aCY = arcPoly.getCenterY();
 
 			// compare them against all of the polygons in the node
 			for(int j=0; j<nTot; j++)
@@ -1319,8 +1321,9 @@ name=null;
 
 					// compute best distance to the other node
 					Poly portPoly = ni.getShapeOfPort(tPp);
-					double portCX = portPoly.getCenterX();
-					double portCY = portPoly.getCenterY();
+					Point2D portPt = portPoly.closestPoint(arcPoly.getCenter());
+					double portCX = portPt.getX();
+					double portCY = portPt.getY();
 					double dist = Math.abs(portCX-aCX) + Math.abs(portCY-aCY);
 					if (bestPp == null) bestDist = dist;
 					if (dist > bestDist) continue;
@@ -1538,7 +1541,10 @@ name=null;
 
 					// compute best distance to the other node
 					Poly portPoly = oNi.getShapeOfPort(rPp);
-					double dist = Math.abs(portPoly.getCenterX()-ox) + Math.abs(portPoly.getCenterY()-oy);
+					Point2D portPt = portPoly.closestPoint(poly.getCenter());
+					double x = portPt.getX();
+					double y = portPt.getY();
+					double dist = Math.abs(x-ox) + Math.abs(y-oy);
 					if (bestPp == null)
 					{
 						bestDist = dist;
@@ -1595,7 +1601,10 @@ name=null;
 
 						// compute best distance to the other node
 						Poly portPoly = oNi.getShapeOfPort(rPp);
-						double dist = Math.abs(ox-portPoly.getCenterX()) + Math.abs(oy-portPoly.getCenterY());
+						Point2D portPt = portPoly.closestPoint(poly.getCenter());
+						double x = portPt.getX();
+						double y = portPt.getY();
+						double dist = Math.abs(x-ox) + Math.abs(y-oy);
 						if (bestPp == null) bestDist = dist;
 						if (dist > bestDist) continue;
 						bestPp = rPp;   bestDist = dist;
