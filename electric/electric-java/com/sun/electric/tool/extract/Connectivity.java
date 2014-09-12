@@ -1222,12 +1222,20 @@ public class Connectivity
 	static boolean isOnGrid(double value, double grid) {
 		if (grid == 0) return true;
 		long x = Math.round(value / grid);
-		return x * grid == value;
+		if (x * grid == value) return true;
+		return false;
 	}
 	
 	static boolean isOnGrid(Point2D point, double grid) {
-		if (isOnGrid(point.getX(), grid) && isOnGrid(point.getY(), grid)) return true;
-		return false;
+		return isOnGrid(point.getX(), grid) && isOnGrid(point.getY(), grid);
+	}
+	
+	static boolean isOnGrid(Point2D point, double gridX, double gridY) {
+		return isOnGrid(point.getX(), gridX) && isOnGrid(point.getY(), gridY);
+	}
+	
+	static boolean isOnGrid(Point2D point, EDimension grid) {
+		return isOnGrid(point.getX(), grid.getWidth()) && isOnGrid(point.getY(), grid.getHeight());
 	}
 
 	static boolean isValidAngle(int angle, int delta) {
@@ -1608,10 +1616,11 @@ public class Connectivity
 		{
 			double length = head.distance(tail);
 			int angle = GenMath.figureAngle(tail, head);
-			if (DEBUGGEOMETRY && !isOnGrid(head, 0.025))
+			EDimension grid = new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+			if (DEBUGGEOMETRY && !isOnGrid(head, grid))
 				System.out.println("***DEBUGGEOMETRY: Non-grid point "+head);			
-			if (DEBUGGEOMETRY && !isOnGrid(tail, 0.025))
-				System.out.println("***DEBUGGEOMETRY: Off-grid point "+tail);			
+			if (DEBUGGEOMETRY && !isOnGrid(tail, grid))
+				System.out.println("***DEBUGGEOMETRY: Non-grid point "+tail);			
 			if (DEBUGGEOMETRY && !isValidAngle(angle, 450))
 				System.out.println("***DEBUGGEOMETRY: ***Non-octant angle "+angle);
 			this.width = width;
@@ -1628,10 +1637,11 @@ public class Connectivity
 		{
 			double length = head.distance(tail);
 			int angle = GenMath.figureAngle(tail, head);
-			if (DEBUGGEOMETRY && !isOnGrid(head, 0.025))
+			EDimension grid = new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+			if (DEBUGGEOMETRY && !isOnGrid(head, grid))
 				System.out.println("***DEBUGGEOMETRY: Non-grid point "+head);			
-			if (DEBUGGEOMETRY && !isOnGrid(tail, 0.025))
-				System.out.println("***DEBUGGEOMETRY: Off-grid point "+tail);			
+			if (DEBUGGEOMETRY && !isOnGrid(tail, grid))
+				System.out.println("***DEBUGGEOMETRY: Non-grid point "+tail);			
 			if (DEBUGGEOMETRY && !isValidAngle(angle, 450))
 				System.out.println("***DEBUGGEOMETRY: ***Non-octant angle "+angle);
 			this.width = width;
@@ -1647,8 +1657,9 @@ public class Connectivity
 
 		Centerline(double width, int angle, Point2D head, Point2D tail, double headExt, double tailExt, PolyBase poly)
 		{
-			if (DEBUGGEOMETRY && !isOnGrid(head, 0.025)) System.out.println("***DEBUGGEOMETRY: Non-grid point "+head);			
-			if (DEBUGGEOMETRY && !isOnGrid(tail, 0.025)) System.out.println("***DEBUGGEOMETRY: Off-grid point "+tail);			
+			EDimension grid = new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+			if (DEBUGGEOMETRY && !isOnGrid(head, grid)) System.out.println("***DEBUGGEOMETRY: Non-grid point "+head);			
+			if (DEBUGGEOMETRY && !isOnGrid(tail, grid)) System.out.println("***DEBUGGEOMETRY: Non-grid point "+tail);			
 			if (DEBUGGEOMETRY && !isValidAngle(angle, 450)) System.out.println("***DEBUGGEOMETRY: ***Non-octant angle "+angle);
 			this.width = width;
 			this.angle = GenMath.figureAngle(tail, head);
@@ -1764,7 +1775,8 @@ public class Connectivity
 			if (testPoint == null) continue;
 			if (DBMath.areEquals(point, testPoint)) continue;
 			if (!DBMath.isOnLine(thisPoint, nextPoint, testPoint)) continue;
-			if (DEBUGGEOMETRY && !isOnGrid(testPoint, 0.025))
+			EDimension grid = new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+			if (DEBUGGEOMETRY && !isOnGrid(testPoint, grid))
 				System.out.println("***DEBUGGEOMETRY: Non-grid point "+testPoint);
 			int testAngle = GenMath.figureAngle(point, testPoint);
 			if (DEBUGGEOMETRY && !isValidAngle(testAngle, 450))
