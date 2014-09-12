@@ -1818,48 +1818,29 @@ name=null;
 			if (oGeom instanceof ArcInst) {
 				// other geometric is an ArcInst
 				ArcInst oAi = (ArcInst)oGeom;
-
-				if (ni == null) continue;
-
-				// compare node "ni" against arc "oAi"
-				if (ni.isCellInstance())
+				if (ni != null && ni.isCellInstance()) {
+					// compare node "ni" against arc "oAi"
 					compareNodeInstWithArcMakeExport(ni, oAi, overlapMap, gatherNetworks);
-			} else
-			{
-				// other geometric a NodeInst
-				NodeInst oNi = (NodeInst)oGeom;
-				if (!oNi.isCellInstance())
-				{
-					PrimitiveNode pnp = (PrimitiveNode)oNi.getProto();
-					if (pnp.getTechnology() == Generic.tech()) continue;
-					if (!includePureLayerNodes && pnp.getFunction() == PrimitiveNode.Function.NODE) continue;
-					if (includePureLayerNodes && pnp.getFunction() == PrimitiveNode.Function.NODE) {
-                        // check that pure layer node has routable layer (this filters dummy layers, etc)
-                        boolean hasValidLayer = false;
-                        for (Iterator<Layer> layIt = pnp.getLayerIterator(); layIt.hasNext(); ) {
-                            Layer l = layIt.next();
-                            if (l.getFunction().isMetal() || l.getFunction().isDiff() || l.getFunction().isPoly()) {
-                                hasValidLayer = true; break;
-                            }
-                        }
-                        if (!hasValidLayer) continue;
-                    } else {
-                        continue;
-                    }
-                }
-
-				if (ni == null)
-				{
-					// compare arc "geom" against node "oNi"
-					if (oNi.isCellInstance())
-						compareNodeInstWithArcMakeExport(oNi, (ArcInst)geom, overlapMap, gatherNetworks);
 					continue;
 				}
-
-				// compare node "ni" against node "oNi"
-				if (ni.isCellInstance())
-				{
+			} 
+			if (oGeom instanceof NodeInst) {
+				// other geometric a NodeInst
+				NodeInst oNi = (NodeInst)oGeom;
+				if (oNi.isCellInstance() && ai != null) {
+					// compare arc "geom" against node "oNi"
+					compareNodeInstWithArcMakeExport(oNi, ai, overlapMap, gatherNetworks);
+					continue;
+				}
+				if (ni != null && ni.isCellInstance()) {
+					// compare node "geom" against node "oNi"
 					compareTwoNodesMakeExport(ni, oNi, overlapMap, gatherNetworks);
+					continue;
+				}
+				if (oNi.isCellInstance() && ni != null) {
+					// compare node "geom" against node "oNi"
+					compareTwoNodesMakeExport(oNi, ni, overlapMap, gatherNetworks);
+					continue;
 				}
 			}
 		}
