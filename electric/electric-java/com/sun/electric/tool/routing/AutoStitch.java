@@ -784,28 +784,8 @@ name=null;
 	}
 
 	/****************************************** NORMAL STITCHING ******************************************/
-//private void scanRTree(RTNode rTop)
-//{
-//	for(int i=0; i<rTop.getTotal(); i++)
-//	{
-//		Object obj = rTop.getChild(i);
-//		if (obj instanceof RTNode) scanRTree((RTNode)obj); else
-//		{
-//			if (obj instanceof NodeInst)
-//			{
-//				NodeInst n = (NodeInst)obj;
-//				if (n.getFunction() == PrimitiveNode.Function.NODE || n.getName().equals("plnode@29"))
-//				{
-//					Rectangle2D r = n.getBounds();
-//					System.out.println("   R-TREE HAS NODE "+n.describe(false)+" AT "+r.getMinX()+"<=X<="+
-//						r.getMaxX()+" AND "+r.getMinY()+"<=Y<="+r.getMaxY());
-//				}
-//			}
-//		}
-//	}
-//}
 
-/**
+	/**
 	 * Method to check an object for possible stitching to neighboring objects.
 	 * @param geom the object to check for stitching.
 	 * @param nodePortBounds quad-tree bounds information for all nodes in the Cell.
@@ -815,13 +795,14 @@ name=null;
 	 * @param limitBound if not null, only consider connections that occur in this area.
 	 * @param preferredArc preferred ArcProto to use.
 	 */
-//private static final boolean DEBUGFORDIMA = false;
 	private void checkStitching(Geometric geom, Map<NodeInst, ObjectQTree> nodePortBounds, Map<ArcProto,Layer> arcLayers,
 		PolyMerge stayInside, StitchingTopology top, Rectangle2D limitBound, ArcProto preferredArc)
 	{
 		Cell cell = geom.getParent();
 		NodeInst ni = null;
 		if (geom instanceof NodeInst) ni = (NodeInst)geom;
+		ArcInst ai = null;
+		if (geom instanceof ArcInst) ai = (ArcInst)geom;
 
 		// make a list of other geometrics that touch or overlap this one (copy it because the main list will change)
 		List<Geometric> geomsInArea = new ArrayList<Geometric>();
@@ -829,25 +810,6 @@ name=null;
 		double epsilon = DBMath.getEpsilon();
 		Rectangle2D searchBounds = new Rectangle2D.Double(geomBounds.getMinX()-epsilon, geomBounds.getMinY()-epsilon,
 			geomBounds.getWidth()+epsilon*2, geomBounds.getHeight()+epsilon*2);
-//if (DEBUGFORDIMA)
-//{
-//	if (ni != null && ni.getName().equals("plnode@29"))
-//	{
-//		System.out.println("==== R-TREE TEST ====");
-//		for(Iterator<NodeInst> it = cell.getNodes(); it.hasNext(); )
-//		{
-//			NodeInst n = it.next();
-//			if (n.getName().equals("plnode@29"))
-//			{
-//				Rectangle2D r = n.getBounds();
-//				System.out.println("   CELL HAS NODE "+n.describe(false)+" AT "+r.getMinX()+"<=X<="+
-//					r.getMaxX()+" AND "+r.getMinY()+"<=Y<="+r.getMaxY());
-//			}
-//		}
-//		RTNode rTop = cell.getTopology().getRTree();
-//		scanRTree(rTop);
-//	}
-//}
 		for(Iterator<Geometric> it = cell.searchIterator(searchBounds); it.hasNext(); )
 		{
 			Geometric oGeom = it.next();
@@ -867,7 +829,7 @@ name=null;
 					if (!arcTooWide(oAi)) continue;
 
 					// compare arc "geom" against arc "oAi"
-					compareTwoArcs((ArcInst)geom, oAi, stayInside, top);
+					compareTwoArcs(ai, oAi, stayInside, top);
 					continue;
 				}
 
@@ -895,10 +857,10 @@ name=null;
 					// compare arc "geom" against node "oNi"
 					if (oNi.isCellInstance())
 					{
-						compareNodeInstWithArc(oNi, (ArcInst)geom, stayInside, top, nodePortBounds);
+						compareNodeInstWithArc(oNi, ai, stayInside, top, nodePortBounds);
 					} else
 					{
-						compareNodePrimWithArc(oNi, (ArcInst)geom, stayInside, top);
+						compareNodePrimWithArc(oNi, ai, stayInside, top);
 					}
 					continue;
 				}
@@ -1837,6 +1799,8 @@ name=null;
 		Cell cell = geom.getParent();
 		NodeInst ni = null;
 		if (geom instanceof NodeInst) ni = (NodeInst)geom;
+		ArcInst ai = null;
+		if (geom instanceof ArcInst) ai = (ArcInst)geom;
 
 		// make a list of other geometrics that touch or overlap this one (copy it because the main list will change)
 		List<Geometric> geomsInArea = new ArrayList<Geometric>();
@@ -1844,16 +1808,13 @@ name=null;
 		double epsilon = DBMath.getEpsilon();
 		Rectangle2D searchBounds = new Rectangle2D.Double(geomBounds.getMinX()-epsilon, geomBounds.getMinY()-epsilon,
 			geomBounds.getWidth()+epsilon*2, geomBounds.getHeight()+epsilon*2);
-		for(Iterator<Geometric> it = cell.searchIterator(searchBounds); it.hasNext(); )
-		{
+		for(Iterator<Geometric> it = cell.searchIterator(searchBounds); it.hasNext(); )	{
 			Geometric oGeom = it.next();
 			if (oGeom != geom) geomsInArea.add(oGeom);
 		}
-		for(Geometric oGeom : geomsInArea)
-		{
+		for(Geometric oGeom : geomsInArea) {
 			// find another node in this area
-			if (oGeom instanceof ArcInst)
-			{
+			if (oGeom instanceof ArcInst) {
 				// other geometric is an ArcInst
 				ArcInst oAi = (ArcInst)oGeom;
 
@@ -2103,8 +2064,7 @@ name=null;
 		public boolean enterCell(HierarchyEnumerator.CellInfo info) { return true; }
 
         @Override
-		public void exitCell(HierarchyEnumerator.CellInfo info)
-		{
+		public void exitCell(HierarchyEnumerator.CellInfo info)	{
 			if (info.isRootCell()) return;
 			Netlist nl = info.getNetlist();
 
@@ -2357,6 +2317,7 @@ name=null;
         PrimitiveNode pNp = lowAI.getProto().findPinProto();
         ni = NodeInst.makeInstance(pNp, ep, topLoc, pNp.getDefWidth(ep), pNp.getDefHeight(ep), cell);
 
+		
         // insert the pin into the arc
         ArcInst newAi1 = ArcInst.makeInstanceBase(ap, ep, width, lowAI.getHeadPortInst(), ni.getOnlyPortInst(), lowAI.getHeadLocation(), topLoc, null);
         ArcInst newAi2 = ArcInst.makeInstanceBase(ap, ep, width, ni.getOnlyPortInst(), lowAI.getTailPortInst(), topLoc, lowAI.getTailLocation(), null);
