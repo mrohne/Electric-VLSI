@@ -78,6 +78,7 @@ import com.sun.electric.util.math.FixpCoord;
 import com.sun.electric.util.math.GenMath;
 import com.sun.electric.util.math.MutableInteger;
 import com.sun.electric.util.math.Orientation;
+import com.sun.electric.util.math.EDimension;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -162,6 +163,7 @@ public class GDS extends Input<Object>
 	private Point2D []       theVertices;
 	private int              numVertices;
 	private double           theScale;
+	private EDimension       alignment;
 	private Map<Integer,List<Layer>> layerNames; // can be a list of layers for example Diff layers 
 	private Map<Integer,UnknownLayerMessage> layerErrorMessages;
 	private static Map<Integer,UnknownLayerMessage> layerWarningMessages;
@@ -1725,7 +1727,10 @@ public class GDS extends Input<Object>
 
 		// compute the scale
 		double microScale = TextUtils.convertFromDistance(1, curTech, TextUtils.UnitScale.MICRO);
-		theScale = roundedScale * 1000000.0 * microScale * localPrefs.inputScale;
+		theScale = meterUnit * 1000000.0 * microScale * localPrefs.inputScale;
+
+		// establish alignment
+		alignment = new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
 
 		if (localPrefs.dumpReadable) printWriter.println("- Units: precision=" + TextUtils.formatDouble(precision, 0) +
 			" meter=" + TextUtils.formatDouble(meterUnit, 0) + " scale=" + TextUtils.formatDouble(theScale, 0));
@@ -1978,12 +1983,14 @@ public class GDS extends Input<Object>
 		{
 			colInterval.setLocation((theVertices[1].getX() - theVertices[0].getX()) / nCols,
 				(theVertices[1].getY() - theVertices[0].getY()) / nCols);
+			DBMath.gridAlign(colInterval, alignment);
 		}
 		Point2D rowInterval = new Point2D.Double(0, 0);
 		if (nRows != 1)
 		{
 			rowInterval.setLocation((theVertices[2].getX() - theVertices[0].getX()) / nRows,
 				(theVertices[2].getY() - theVertices[0].getY()) / nRows);
+			DBMath.gridAlign(rowInterval, alignment);
 		}
 
 		theCell.makeInstanceArray(np, nCols, nRows, Orientation.fromJava(angle, mX, mY), scale,
@@ -2144,6 +2151,7 @@ public class GDS extends Input<Object>
 			// create the rectangle
 			Point2D ctr = new Point2D.Double((theVertices[0].getX()+theVertices[1].getX())/2,
 				(theVertices[0].getY()+theVertices[1].getY())/2);
+			DBMath.gridAlign(ctr, alignment);
 			double sX = Math.abs(theVertices[1].getX() - theVertices[0].getX());
 			double sY = Math.abs(theVertices[1].getY() - theVertices[0].getY());
 			if (localPrefs.mergeBoxes)
@@ -2508,6 +2516,8 @@ public class GDS extends Input<Object>
 		double x = theVertices[0].getX() + MINFONTWIDTH * charstring.length();
 		double y = theVertices[0].getY() + MINFONTHEIGHT;
 		theVertices[1].setLocation(x, y);
+		DBMath.gridAlign(theVertices[1], alignment);
+
 
 		// set the text size and orientation
 		MutableTextDescriptor td = new MutableTextDescriptor(ep.getNodeTextDescriptor());
@@ -2947,6 +2957,7 @@ public class GDS extends Input<Object>
 			gdsRead.getToken();
 			double y = scaleValue(gdsRead.getIntValue());
 			theVertices[numVertices].setLocation(x, y);
+			DBMath.gridAlign(theVertices[numVertices], alignment);
 			numVertices++;
 			if (numVertices > max_points)
 			{
