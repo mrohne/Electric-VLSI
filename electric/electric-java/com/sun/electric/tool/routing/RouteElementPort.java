@@ -439,8 +439,15 @@ public class RouteElementPort extends RouteElement {
         double heightoffset = so.getLowYOffset() + so.getHighYOffset();
         double defWidth = np.getDefWidth(ep) - widthoffset;       // this is width we see on the screen
         double defHeight = np.getDefHeight(ep) - heightoffset;    // this is height we see on the screen
-		width = Math.max(setWidth, defWidth);
-		height = Math.max(setHeight, defHeight);
+		double fitWidth = Math.max(setWidth, defWidth);
+		double fitHeight = Math.max(setHeight, defHeight);
+		if (setWidth < fitWidth || setHeight < fitHeight) {
+			System.out.println("RouteElementPort.newNode: upsizing "+np+" at "+location+
+							   ": ("+setWidth+", "+setHeight+")"+
+							   "->("+fitWidth+", "+fitHeight+")");
+		}
+		width = fitWidth;
+		height = fitHeight;
     }
 
     /**
