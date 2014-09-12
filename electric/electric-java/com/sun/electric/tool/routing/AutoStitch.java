@@ -1887,59 +1887,60 @@ name=null;
      */
     private void makeExport(List<PolyConnection> polys)
     {
-        if (polys.size() == 0) return;
+        // Loop over registered connections
+        for (PolyConnection p : polys) {
+			// get actual overlap
+			List<Line2D> edges = new ArrayList<Line2D>();
+			List<PolyBase> clips = p.sp1.poly.getIntersection(p.sp2.poly, edges);
+			PolyBase area = null;
+			if (area == null)
+				for (PolyBase clip : clips)
+					if (!DBMath.areEquals(clip.getArea(), 0))
+						area = clip; 
+			if (area == null)
+				for (Line2D line : edges)
+					area = new PolyBase(PolyBase.from(line.getP1()), PolyBase.from(line.getP2()));
+			if (area == null) continue;
+			area.setLayer(p.sp1.poly.getLayer());
+			PolyBase exportArea = area;
+			// check for existing exports
+			Point2D sp1AtTop = isExportedToTop(p.sp1);
+			Point2D sp2AtTop = isExportedToTop(p.sp2);
 
-        // check for existing export
-        Point2D sp1AtTop = null, sp2AtTop = null;
-        for (PolyConnection p : polys)
-        {
-            sp1AtTop = isExportedToTop(p.sp1);
-            sp2AtTop = isExportedToTop(p.sp2);
-            if (sp1AtTop != null && sp2AtTop != null) return; // both exported to top
-        }
-        if (sp1AtTop != null) sp1AtTop = new Point2D.Double(sp1AtTop.getX(), sp1AtTop.getY()); //convert Epoint to Point2D
-        if (sp2AtTop != null) sp2AtTop = new Point2D.Double(sp2AtTop.getX(), sp2AtTop.getY()); //convert Epoint to Point2D
+			// require mutual coincidence
+			sp1AtTop = (sp1AtTop != null && exportArea.contains(sp1AtTop)) ? sp1AtTop : null;
+			sp2AtTop = (sp2AtTop != null && exportArea.contains(sp2AtTop)) ? sp2AtTop : null;
+		
+			// figure out which arc to use to connect the two - needed to decide how to create exports
+			ArcProto ap = null;
+			if (p.sp1.theObj instanceof ArcInst) {
+				ap = ((ArcInst)p.sp1.theObj).getProto();
+			}
+			if (p.sp2.theObj instanceof ArcInst) {
+				ap = ((ArcInst)p.sp2.theObj).getProto();
+			}
+			if (ap == null) {
+				ap = Router.getArcToUse(p.sp1.poly.getPort(), p.sp2.poly.getPort());
+			}
 
-        // none can connect at top level, export up first pair
-        PolyConnection p = polys.get(0);
-        List<Line2D> overlappingEdges = new ArrayList<Line2D>();
-        List<PolyBase> intersectionList = p.sp1.poly.getIntersection(p.sp2.poly, overlappingEdges);
-        PolyBase preferredExportArea = null;
-        if (intersectionList != null && intersectionList.size() > 0) {
-            preferredExportArea = intersectionList.get(0);
-        } else if (overlappingEdges.size() > 0) {
-            preferredExportArea = new PolyBase(overlappingEdges.get(0).getBounds());
-        }
-
-        // figure out which arc to use to connect the two - needed to decide how to create exports
-        ArcProto ap = null;
-        if (p.sp1.theObj instanceof ArcInst) {
-            ap = ((ArcInst)p.sp1.theObj).getProto();
-        }
-        if (p.sp2.theObj instanceof ArcInst) {
-            ap = ((ArcInst)p.sp2.theObj).getProto();
-        }
-        if (ap == null) {
-            ap = Router.getArcToUse(p.sp1.poly.getPort(), p.sp2.poly.getPort());
-        }
-
-        // make nodeinst exports first to get locations for arc exports
-        if (sp1AtTop == null && (p.sp1.theObj instanceof NodeInst)) {
-            sp1AtTop = makeExportDrill((NodeInst)p.sp1.theObj, p.sp1.poly.getPort(), p.sp1.context, preferredExportArea, ap);
-        }
-        if (sp2AtTop == null && (p.sp2.theObj instanceof NodeInst)) {
-            sp2AtTop = makeExportDrill((NodeInst)p.sp2.theObj, p.sp2.poly.getPort(), p.sp2.context, preferredExportArea, ap);
-        }
-
-        // make arc instance connections
-        if (sp1AtTop == null && (p.sp1.theObj instanceof ArcInst) && sp2AtTop != null) {
-            makeExportDrillOnArc(sp2AtTop, p.sp1, preferredExportArea);
-            //System.out.println("Making export on arc for netID "+p.sp1.netID);
-        }
-        if (sp2AtTop == null && (p.sp2.theObj instanceof ArcInst) && sp1AtTop != null) {
-            makeExportDrillOnArc(sp1AtTop, p.sp2, preferredExportArea);
-            //System.out.println("Making export on arc for netID "+p.sp2.netID);
-        }
+			// make nodeinst exports first to get locations for arc exports
+			if (sp1AtTop == null && (p.sp1.theObj instanceof NodeInst)) {
+				sp1AtTop = makeExportDrill((NodeInst)p.sp1.theObj, p.sp1.poly.getPort(), p.sp1.context, exportArea, ap);
+			}
+			if (sp1AtTop == null && (p.sp1.theObj instanceof ArcInst)) {
+				Point2D topLoc = sp2AtTop != null ? sp2AtTop : exportArea.getCenter();
+				sp1AtTop = makeExportDrillOnArc((ArcInst)p.sp1.theObj, topLoc, p.sp1.context, exportArea, ap);
+				//System.out.println("Making export on arc for netID "+p.sp1.netID);
+			}
+			if (sp2AtTop == null && (p.sp2.theObj instanceof NodeInst)) {
+				sp2AtTop = makeExportDrill((NodeInst)p.sp2.theObj, p.sp2.poly.getPort(), p.sp2.context, exportArea, ap);
+			}
+			if (sp2AtTop == null && (p.sp2.theObj instanceof ArcInst)) {
+				Point2D topLoc = sp1AtTop != null ? sp1AtTop : exportArea.getCenter();
+				sp2AtTop = makeExportDrillOnArc((ArcInst)p.sp2.theObj, topLoc, p.sp2.context, exportArea, ap);
+				//System.out.println("Making export on arc for netID "+p.sp2.netID);
+			}
+		}
     }
 
     /**
@@ -2120,7 +2121,7 @@ name=null;
 	 * @param where the hierarchical stack that defines the path to the top.
 	 * @return the coordinate at the top-level where the drill happened.
 	 */
-	private Point2D makeExportDrill(NodeInst ni, PortProto exportThis, VarContext where, PolyBase preferredExportArea, ArcProto ap)
+	private Point2D makeExportDrill(NodeInst ni, PortProto exportThis, VarContext where, PolyBase exportArea, ArcProto ap)
 	{
 		Point2D topCoord = new Point2D.Double(0, 0);
 		while (where != VarContext.globalContext)
@@ -2207,11 +2208,12 @@ name=null;
                     exportThis = Export.newInstance(cell, pi, exportName, ep);
             }
 			ni = where.getNodable().getNodeInst();
-			where = where.pop();
+			exportThis = exportNext;
 			FixpTransform trans = ni.transformOut();
-			trans.transform(pi.getPoly().getCenter(), topCoord);
+			topLoc = trans.transform(topLoc, null);
+			where = where.pop();
 		}
-		return topCoord;
+		return topLoc;
 	}
 
 	/**
@@ -2219,83 +2221,113 @@ name=null;
 	 * @param topLoc the coordinate at the top level where the ArcInst should be broken.
 	 * @param sp the context to the ArcInst.
 	 */
-	private void makeExportDrillOnArc(Point2D topLoc, SubPolygon sp, PolyBase preferredExportArea)
+	private Point2D makeExportDrillOnArc(ArcInst ai, Point2D loc, VarContext where, PolyBase exportArea, ArcProto ap)
 	{
 		// save information about the arc
-		ArcInst lowAI = (ArcInst)sp.theObj;
-		if (!lowAI.isLinked()) return;
-		String arcName = lowAI.getName();
-		if (lowAI.getNameKey().isTempname()) arcName = null;
-		int angle = lowAI.getAngle();
-		ArcProto ap = lowAI.getProto();
-		double width = lowAI.getLambdaBaseWidth();
-		Cell cell = lowAI.getParent();
+		String arcName = ai.getName();
+		if (ai.getNameKey().isTempname()) arcName = null;
+		int angle = ai.getAngle();
+		double width = ai.getLambdaBaseWidth();
+		Cell cell = ai.getParent();
 
-        for (Iterator<Nodable> noit = sp.context.getPathIterator(); noit.hasNext(); )
-        {
+		// need layer and poly
+		if (exportArea == null) return null;
+		if (exportArea.getLayer() == null) return null;
+
+		// transform geometry into this cell
+		Point2D topLoc = new Point2D.Double(loc.getX(), loc.getY());
+		PolyBase preferredExportArea = new PolyBase(exportArea);
+        for (Iterator<Nodable> noit = where.getPathIterator(); noit.hasNext(); ) {
             NodeInst niHier = noit.next().getNodeInst();
             FixpTransform trans = niHier.transformIn();
-            trans.transform(topLoc, topLoc);
-            if (preferredExportArea != null)
-                preferredExportArea.transform(trans);
+            topLoc = trans.transform(topLoc, null);
+			preferredExportArea.transform(trans);
         }
 
-        // check if there is already an export on this network in the preferred area,
-        // and that it can connect to ai
+        // check for suitable export on this network in the preferred area
         Netlist netlist = cell.getNetlist();
-        Network net = netlist.getNetwork(lowAI, 0);
-        for (Iterator<Export> eit = cell.getExports(); eit.hasNext(); )
-        {
-            Export ex = eit.next();
-            PortInst expi = ex.getOriginalPort();
-            if (preferredExportArea.contains(expi.getCenter()))
-            {
-                if (net != netlist.getNetwork(expi)) continue;
-                if (ex.connectsTo(ap)) {
-                    // re-export up the hierarchy
-					PortInst pi = ex.getOriginalPort();
-                    makeExportDrill(pi.getNodeInst(), pi.getPortProto(), sp.context.pop(), preferredExportArea, ap);
-                    return;
-                }
-            }
+        Network net = netlist.getNetwork(ai, 0);
+        for (Iterator<Export> eIt = cell.getExports(); eIt.hasNext(); )  {
+            Export ex = eIt.next();
+			if (!ex.connectsTo(ap)) continue;
+            PortInst pi = ex.getOriginalPort();
+			if (!netlist.getNetwork(pi).equals(net)) continue;
+			double dist = preferredExportArea.separation(pi.getPoly());
+			if (!DBMath.areEquals(dist, 0)) continue;
+			NodeInst ni = where.getNodable().getNodeInst();
+			return makeExportDrill(ni, ex, where.pop(), exportArea, ap);
         }
 
-		// make a pin at the desired location on the arc
-        NodeInst ni = null;
+        // check for suitable port on this network in the preferred area
+		Rectangle2D rect = preferredExportArea.getBounds2D();
+		for(Iterator<Geometric> gIt = cell.searchIterator(rect); gIt.hasNext(); )	{
+			Geometric geom = gIt.next();
+			if (geom instanceof NodeInst) {
+				NodeInst ni = (NodeInst)geom;
+				for(Iterator<PortInst> pIt = ni.getPortInsts(); pIt.hasNext(); ) {
+					PortInst pi = pIt.next();
+					if (!netlist.getNetwork(pi).equals(net)) continue;
+					PortProto pp = pi.getPortProto();
+					if (!pp.connectsTo(ap)) continue;
+					double dist = preferredExportArea.separation(pi.getPoly());
+					if (!DBMath.areEquals(dist, 0)) continue;
+					return makeExportDrill(ni, pp, where, exportArea, ap);
+				}
+			}
+		}
+				
+		// clip polygon against arc
+		Layer layer = preferredExportArea.getLayer();
+		Point2D pinLoc = GenMath.closestPointToSegment(ai.getHeadLocation(), ai.getTailLocation(), topLoc);
+		PolyBase port = Poly.makeEndPointPoly(0, width, angle, pinLoc, width/2, pinLoc, width/2, Poly.Type.FILLED);
+		Technology tech = ai.getProto().getTechnology();
+		for (PolyBase poly : tech.getShapeOfArc(ai, new Layer.Function.Set(layer))) {
+			List<Line2D> edges = new ArrayList<Line2D>();
+			List<PolyBase> clips = port.getIntersection(poly, edges);
+			PolyBase area = null;
+			if (area == null)
+				for (PolyBase clip : clips)
+					if (!DBMath.areEquals(clip.getArea(), 0))
+						area = clip; 
+			if (area == null)
+				for (Line2D line : edges)
+					area = new PolyBase(PolyBase.from(line.getP1()), PolyBase.from(line.getP2()));
+			port = area;
+		}
 
-        // make sure the location is on the arc
-        if (GenMath.distToLine(lowAI.getHeadLocation(), lowAI.getTailLocation(), topLoc) > 0)
-            return;
-        PrimitiveNode pNp = lowAI.getProto().findPinProto();
-        ni = NodeInst.makeInstance(pNp, ep, topLoc, pNp.getDefWidth(ep), pNp.getDefHeight(ep), cell);
+		// make pure layer pin replacement
+        PrimitiveNode pNp = layer.getPureLayerNode();
+        NodeInst ni = NodeInst.makeInstance(pNp, ep, pinLoc, width, width, cell);
+		ni.setTrace(port.getPoints());
 
 		
         // insert the pin into the arc
-        ArcInst newAi1 = ArcInst.makeInstanceBase(ap, ep, width, lowAI.getHeadPortInst(), ni.getOnlyPortInst(), lowAI.getHeadLocation(), topLoc, null);
-        ArcInst newAi2 = ArcInst.makeInstanceBase(ap, ep, width, ni.getOnlyPortInst(), lowAI.getTailPortInst(), topLoc, lowAI.getTailLocation(), null);
-        newAi1.setHeadNegated(lowAI.isHeadNegated());
-        newAi1.setHeadExtended(lowAI.isHeadExtended());
-        newAi1.setHeadArrowed(lowAI.isHeadArrowed());
-        newAi2.setTailNegated(lowAI.isTailNegated());
-        newAi2.setTailExtended(lowAI.isTailExtended());
-        newAi2.setTailArrowed(lowAI.isTailArrowed());
-        lowAI.kill();
-        if (arcName != null)
-        {
-            if (lowAI.getHeadLocation().distance(topLoc) > lowAI.getTailLocation().distance(topLoc))
-            {
-                newAi1.setName(arcName, ep);
-                newAi1.copyTextDescriptorFrom(lowAI, ArcInst.ARC_NAME);
-            } else
-            {
-                newAi2.setName(arcName, ep);
-                newAi2.copyTextDescriptorFrom(lowAI, ArcInst.ARC_NAME);
-            }
-        }
-        newAi1.setAngle(angle);
-        newAi2.setAngle(angle);
+		if (ai.getHeadLocation().distance(pinLoc) < ai.getHeadLocation().distance(pinLoc)) {
+			ArcInst newAi1 = ArcInst.makeInstanceBase(ap, ep, width, 
+													  ai.getHeadPortInst(), ni.getOnlyPortInst(), 
+													  ai.getHeadLocation(), pinLoc, null);
+			newAi1.setAngle(angle);
+			newAi1.setHeadExtended(false);
+			newAi1.setTailExtended(false);
+			if (arcName != null) {
+				newAi1.setName(arcName, ep);
+				newAi1.copyTextDescriptorFrom(ai, ArcInst.ARC_NAME);
+			}
+		} else {
+			ArcInst newAi2 = ArcInst.makeInstanceBase(ap, ep, width, 
+													  ni.getOnlyPortInst(), ai.getTailPortInst(), 
+													  pinLoc, ai.getTailLocation(), null);
+			newAi2.setAngle(angle);
+			newAi2.setHeadExtended(false);
+			newAi2.setTailExtended(false);
+			if (arcName != null) {
+				newAi2.setName(arcName, ep);
+				newAi2.copyTextDescriptorFrom(ai, ArcInst.ARC_NAME);
+			}
+		}
 
-        makeExportDrill(ni, ni.getOnlyPortInst().getPortProto(), sp.context, preferredExportArea, ap);
+		// re-export up the hierarchy
+		return makeExportDrill(ni, ni.getOnlyPortInst().getPortProto(), where, exportArea, ap);
 	}
 
 	private String getExportNameInCell(Cell cell, PortInst pi)
