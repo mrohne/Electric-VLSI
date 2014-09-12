@@ -4524,7 +4524,8 @@ public class Connectivity
 		}
 
 		// preallocate
-		Point2D [] limits = new Point2D[4];
+		Point2D [] limit = new Point2D[2];
+		Point2D [] other = new Point2D[2];
 		Point2D [] maxed = new Point2D[2];
 		Point2D [] mixed = new Point2D[2];
 		Centerline [] both = new Centerline[2];
@@ -4552,20 +4553,20 @@ public class Connectivity
 														  (oneSide.getY()+otherSide.getY())/2);
 
 					// determine range along that centerline
-					limits[0] = GenMath.intersect(lastPt, perpAngle, centerPt, angle);
-					limits[1] = GenMath.intersect(thisPt, perpAngle, centerPt, angle);
-					limits[2] = GenMath.intersect(oLastPt, perpAngle, centerPt, angle);
-					limits[3] = GenMath.intersect(oThisPt, perpAngle, centerPt, angle);
+					limit[0] = GenMath.intersect(lastPt, perpAngle, centerPt, angle);
+					limit[1] = GenMath.intersect(thisPt, perpAngle, centerPt, angle);
+					other[0] = GenMath.intersect(oLastPt, perpAngle, centerPt, angle);
+					other[1] = GenMath.intersect(oThisPt, perpAngle, centerPt, angle);
 
 					// find the inner bounding box of the range lines
-					double minX = Math.max(Math.min(limits[0].getX(), limits[1].getX()),
-										   Math.min(limits[2].getX(), limits[3].getX()));
-					double minY = Math.max(Math.min(limits[0].getY(), limits[1].getY()),
-										   Math.min(limits[2].getY(), limits[3].getY()));
-					double maxX = Math.min(Math.max(limits[0].getX(), limits[1].getX()),
-										   Math.max(limits[2].getX(), limits[3].getX()));
-					double maxY = Math.min(Math.max(limits[0].getY(), limits[1].getY()),
-										   Math.max(limits[2].getY(), limits[3].getY()));
+					double minX = Math.max(Math.min(limit[0].getX(), limit[1].getX()),
+										   Math.min(other[0].getX(), other[1].getX()));
+					double minY = Math.max(Math.min(limit[0].getY(), limit[1].getY()),
+										   Math.min(other[0].getY(), other[1].getY()));
+					double maxX = Math.min(Math.max(limit[0].getX(), limit[1].getX()),
+										   Math.max(other[0].getX(), other[1].getX()));
+					double maxY = Math.min(Math.max(limit[0].getY(), limit[1].getY()),
+										   Math.max(other[0].getY(), other[1].getY()));
 					if (minX > maxX || minY > maxY) continue;
 					mixed[0] = new Point2D.Double(minX, minY);
 					mixed[1] = new Point2D.Double(maxX, minY);
@@ -4576,8 +4577,8 @@ public class Connectivity
 					Point2D clHead = null;
 					Point2D clTail = null;
 					for (int m=0; m<2; m++) {
-						for (Point2D limit : limits) {
-							if (limit.equals(mixed[m])) {
+						for (int n=0; n<2; n++) {
+							if (limit[n].equals(mixed[m]) || other[n].equals(mixed[m])) {
 								clHead = mixed[m];
 								clTail = maxed[m];
 							}
@@ -4609,6 +4610,7 @@ public class Connectivity
 					List<PolyBase.PolyBaseTree> stRoot = PolyBase.getTreesFromLoops(stLoop);
 					if (stRoot.size() != 1) continue;
 					TreeMap<Double, Point2D> stHole = new TreeMap<Double, Point2D>();
+					stHole.put(0.0, stTail);
 					for (PolyBase.PolyBaseTree root : stRoot) {
 						for (PolyBase.PolyBaseTree tree : root.getSons()) {
 							PolyBase hole = tree.getPoly();
@@ -4616,9 +4618,9 @@ public class Connectivity
 							Point2D head = GenMath.intersect(stTail, angle, cent, perpAngle);
 							double dist = stTail.distance(head);
 							stHole.put(dist, head);
+							if (DEBUGCENTERLINES) System.out.println("***REGION " + stPoly + " HAS HOLE " + hole);
 						}
 					}
-					stHole.put(0.0, stTail);
 					stHole.put(stLength, stHead);
 
 					// make the inner polygons
@@ -4643,24 +4645,6 @@ public class Connectivity
 						// provisionally add centerline
 						Centerline cl = new Centerline(clWidth, clAngle, clNext, clPrev, clNextExt, clPrevExt, clPoly);
 						newCenterlines.add(cl);
-						// generate orthogonal polygon
-						Point2D orCenter = new Point2D.Double((clNext.getX()+clPrev.getX())/2, (clNext.getY()+clPrev.getY())/2);
-						Point2D orNext = GenMath.intersect(orCenter, perpAngle, thisPt, angle);
-						Point2D orPrev = GenMath.intersect(orCenter, perpAngle, oThisPt, angle);
-						double orWidth = clNext.distance(clPrev);
-						double orLength = orNext.distance(orPrev);
-						int orAngle = GenMath.figureAngle(orPrev, orNext);
-						Poly orPoly = Poly.makeEndPointPoly(orLength, orWidth, orAngle, orNext, 0, orPrev, 0, Poly.Type.FILLED);
-						// try extending head and tail
-						Point2D orNextPnt = trimEndPoint(orNext, orWidth, orAngle, keepin);
-						Point2D orPrevPnt = trimEndPoint(orPrev, orWidth, (orAngle+1800)%3600, keepin);
-						double orNextExt = orNextPnt.distance(orNext);
-						double orPrevExt = orPrevPnt.distance(orPrev);
-						orNextExt = Math.min(orNextExt, orWidth/2);
-						orPrevExt = Math.min(orPrevExt, orWidth/2);
-						// provisionally add centerline
-						Centerline or = new Centerline(orWidth, orAngle, orNext, orPrev, orNextExt, orPrevExt, orPoly);
-						newCenterlines.add(or);
 					}
 
 					// check the new centerlines
