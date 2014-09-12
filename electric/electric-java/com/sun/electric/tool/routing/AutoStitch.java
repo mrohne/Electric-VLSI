@@ -1852,22 +1852,9 @@ name=null;
         SubPolygon sp2 = new SubPolygon(arcPoly, VarContext.globalContext, netID, ai);
 
 		// look for geometry inside the cell that touches the arc, and make an export so it can connect
-		ArcTouchVisitor atv = new ArcTouchVisitor(ai, arcPoly, ni, false, gatherNetworks);
+		ArcTouchVisitor atv = new ArcTouchVisitor(ai, arcPoly, ni, gatherNetworks);
 		HierarchyEnumerator.enumerateCell(ni.getParent(), VarContext.globalContext, atv);
-		SubPolygon sp = atv.getExportDrillLocation();
-		if (sp != null)
-		{
-            registerPoly(overlapMap, new PolyConnection(sp, sp2));
-            //makeExportDrill((NodeInst)sp.theObj, sp.poly.getPort(), sp.context, null, null);
-			return;
-		}
-
-		// try arcs
-		atv.setDoArcs(true);
-		HierarchyEnumerator.enumerateCell(ni.getParent(), VarContext.globalContext, atv);
-		sp = atv.getExportDrillLocation();
-		if (sp != null)
-		{
+		for (SubPolygon sp : atv.getTouching().values()) {
             registerPoly(overlapMap, new PolyConnection(sp, sp2));
 		}
 	}
@@ -2001,26 +1988,23 @@ name=null;
 		private Poly arcPoly;
 		private int arcNetID;
 		private NodeInst cellOfInterest;
-		private boolean doArcs;
 		private Rectangle2D arcBounds;
-		private SubPolygon bestSubPolygon;
+		private Map<Long, SubPolygon> netTouching;
         private GatherNetworksVisitor gatherNetworks;
 
-        public ArcTouchVisitor(ArcInst arcOfInterest, Poly arcPoly, NodeInst cellOfInterest, boolean doArcs, GatherNetworksVisitor gatherNetworks)
-		{
+        public ArcTouchVisitor(ArcInst arcOfInterest, Poly arcPoly, NodeInst cellOfInterest, GatherNetworksVisitor gatherNetworks) {
 			this.arcOfInterest = arcOfInterest;
 			this.arcPoly = arcPoly;
 			this.cellOfInterest = cellOfInterest;
-			this.doArcs = doArcs;
 			arcNetID = -1;
 			arcBounds = arcPoly.getBounds2D();
-			bestSubPolygon = null;
+			this.netTouching = new HashMap<Long, SubPolygon>();
             this.gatherNetworks = gatherNetworks;
         }
 
-		public SubPolygon getExportDrillLocation() { return bestSubPolygon; }
-
-		public void setDoArcs(boolean doArcs) { this.doArcs = doArcs; }
+		public Map<Long, SubPolygon> getTouching() { 
+			return netTouching; 
+		}
 
         @Override
 		public boolean enterCell(HierarchyEnumerator.CellInfo info) { return true; }
@@ -2029,66 +2013,52 @@ name=null;
 		public void exitCell(HierarchyEnumerator.CellInfo info)	{
 			if (info.isRootCell()) return;
 			Netlist nl = info.getNetlist();
-
-			if (doArcs)
-			{
-				// look at all arcs and see if they intersect the arc
-				for(Iterator<ArcInst> it = info.getCell().getArcs(); it.hasNext(); )
-				{
-					ArcInst ai = it.next();
-					ArcProto ap = ai.getProto();
-					FixpTransform arcTrans = info.getTransformToRoot();
-					Technology tech = ap.getTechnology();
-					Poly [] arcInstPolyList = tech.getShapeOfArc(ai);
-					for(int i=0; i<arcInstPolyList.length; i++)
-					{
-						PolyBase poly = arcInstPolyList[i];
-						if (poly.getLayer() != arcPoly.getLayer()) continue;
-						int netID = -1;
-						Network net = nl.getNetwork(ai, 0);
-						if (net != null) netID = info.getNetID(net);
-						if (netID == arcNetID) continue;
-						poly.transform(arcTrans);
-						double dist = poly.separation(arcPoly);
-						if (dist >= DBMath.getEpsilon()) continue;
-						int netIDglobal = gatherNetworks.getGlobalNetworkID(info.getContext(), ai.getHeadPortInst());
-                        SubPolygon sp = new SubPolygon(poly, info.getContext(), netIDglobal, ai);
-						bestSubPolygon = sp;
-					}
+			// look at all arcs and see if they intersect the arc
+			for(Iterator<ArcInst> it = info.getCell().getArcs(); it.hasNext(); ) {
+				ArcInst ai = it.next();
+				ArcProto ap = ai.getProto();
+				FixpTransform arcTrans = info.getTransformToRoot();
+				Technology tech = ap.getTechnology();
+				Poly [] arcInstPolyList = tech.getShapeOfArc(ai);
+				for(int i=0; i<arcInstPolyList.length; i++)	{
+					PolyBase poly = arcInstPolyList[i];
+					if (poly.getLayer() != arcPoly.getLayer()) continue;
+					Network net = nl.getNetwork(ai, 0);
+					if (net == null) continue;
+					int netID = info.getNetID(net);
+					if (netID == arcNetID) continue;
+					if (netTouching.containsKey(netID)) continue;
+					poly.transform(arcTrans);
+					double dist = poly.separation(arcPoly);
+					if (dist >= DBMath.getEpsilon()) continue;
+					int netIDglobal = gatherNetworks.getGlobalNetworkID(info.getContext(), ai.getHeadPortInst());
+					SubPolygon sp = new SubPolygon(poly, info.getContext(), netIDglobal, ai);
+					netTouching.put(new Long(netID), sp);
 				}
-			} else
-			{
-				// look at all nodes and see if they intersect the arc
-				for(Iterator<NodeInst> it = info.getCell().getNodes(); it.hasNext(); )
-				{
-					NodeInst ni = it.next();
-					if (ni.isCellInstance()) continue;
-					PrimitiveNode pNp = (PrimitiveNode)ni.getProto();
-					FixpTransform nodeTrans = ni.rotateOut(info.getTransformToRoot());
-					Technology tech = pNp.getTechnology();
-					Poly [] nodeInstPolyList = tech.getShapeOfNode(ni, true, true, null);
-					for(int i=0; i<nodeInstPolyList.length; i++)
-					{
-						PolyBase poly = nodeInstPolyList[i];
-						if (poly.getLayer() != arcPoly.getLayer()) continue;
-						int netID = -1, netIDglobal = -1;
-						if (poly.getPort() != null)
-						{
-                            netIDglobal = gatherNetworks.getGlobalNetworkID(info.getContext(), ni.findPortInstFromEquivalentProto(poly.getPort()));
-							Network net = nl.getNetwork(ni, poly.getPort(), 0);
-							if (net != null) netID = info.getNetID(net);
-						}
-						if (netID == arcNetID) continue;
-						poly.transform(nodeTrans);
-						double dist = poly.separation(arcPoly);
-						if (dist >= DBMath.getEpsilon()) continue;
-						SubPolygon sp = new SubPolygon(poly, info.getContext(), netIDglobal, ni);
-						if (bestSubPolygon != null)
-						{
-							if (!ni.hasExports()) continue;
-						}
-						bestSubPolygon = sp;
-					}
+			}
+			// look at all nodes and see if they intersect the arc
+			for(Iterator<NodeInst> it = info.getCell().getNodes(); it.hasNext(); ) {
+				NodeInst ni = it.next();
+				if (ni.isCellInstance()) continue;
+				PrimitiveNode pNp = (PrimitiveNode)ni.getProto();
+				FixpTransform nodeTrans = ni.rotateOut(info.getTransformToRoot());
+				Technology tech = pNp.getTechnology();
+				Poly [] nodeInstPolyList = tech.getShapeOfNode(ni, true, true, null);
+				for(int i=0; i<nodeInstPolyList.length; i++) {
+					PolyBase poly = nodeInstPolyList[i];
+					if (poly.getLayer() != arcPoly.getLayer()) continue;
+					if (poly.getPort() == null)	continue;
+					Network net = nl.getNetwork(ni, poly.getPort(), 0);
+					if (net == null) continue;
+					int netID = info.getNetID(net);
+					if (netID == arcNetID) continue;
+					if (netTouching.containsKey(netID)) continue;
+					poly.transform(nodeTrans);
+					double dist = poly.separation(arcPoly);
+					if (dist >= DBMath.getEpsilon()) continue;
+					int netIDglobal = gatherNetworks.getGlobalNetworkID(info.getContext(), ni.findPortInstFromEquivalentProto(poly.getPort()));
+					SubPolygon sp = new SubPolygon(poly, info.getContext(), netIDglobal, ni);
+					netTouching.put(new Long(netID), sp);
 				}
 			}
 		}
