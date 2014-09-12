@@ -359,8 +359,6 @@ public class AutoStitch
 					Job.getUserInterface().setProgressValue(soFar * 100 / totalToStitch);
 				}
 
-				// only interested in arcs that are wider than their nodes (and have geometry that sticks out)
-				if (!arcTooWide(ai)) continue;
 				if (!ai.isLinked()) continue;
 				checkExportCreationStitching(ai, overlapMap, gatherNetworks);
 			}
@@ -482,9 +480,6 @@ public class AutoStitch
 			}
 
 			if (!ai.isLinked()) continue;
-
-			// only interested in arcs that are wider than their nodes (and have geometry that sticks out)
-			if (!arcTooWide(ai)) continue;
 			checkStitching(ai, nodePortBounds, arcLayers, stayInside, top, limitBound, preferredArc);
 		}
 
@@ -805,9 +800,6 @@ name=null;
 
 				if (ni == null)
 				{
-					// only interested in arcs that are wider than their nodes (and have geometry that sticks out)
-					if (!arcTooWide(oAi)) continue;
-
 					// compare arc "geom" against arc "oAi"
 					compareTwoArcs(ai, oAi, stayInside, top);
 					continue;
