@@ -296,11 +296,13 @@ public class Connectivity
 
 			if (DEBUGSTEPS)
 			{
-				// show results of each step
-				JFrame jf = null;
-				if (!TopLevel.isMDIMode()) jf = TopLevel.getCurrentJFrame();
-				ShowExtraction theDialog = new ShowExtraction(jf, addedBatchRectangles, addedBatchLines, addedBatchNames, addedBatchCells);
-				theDialog.setVisible(true);
+				if (addedBatchNames.size() > 0) {
+					// show results of each step
+					JFrame jf = null;
+					if (!TopLevel.isMDIMode()) jf = TopLevel.getCurrentJFrame();
+					ShowExtraction theDialog = new ShowExtraction(jf, addedBatchRectangles, addedBatchLines, addedBatchNames, addedBatchCells);
+					theDialog.setVisible(true);
+				}
 			} else
 			{
 				// highlight pure layer nodes
@@ -618,8 +620,7 @@ public class Connectivity
 		pinsForLater = new ArrayList<ExportedPin>();
 		allCutLayers = new TreeMap<Layer,CutInfo>();
 		extractCell(oldCell, newCell, pats, flattenPcells, expandedCells, merge, selectMerge, GenMath.MATID, Orientation.IDENT);
-		if (expandedCells.size() > 0)
-		{
+		if (expandedCells.size() > 0) {
 			System.out.println("These cells were expanded:");
 			for(Cell c : expandedCells)
 				System.out.println("         " + c.describe(false));
@@ -5468,7 +5469,11 @@ public class Connectivity
 		
 		if (DEBUGSTEPS)
 		{
-			Poly niPoly = Highlight.getNodeInstOutline(ni);
+			Poly niPoly = null;
+			if (np.getFunction().isPin())
+				niPoly = new Poly(ni.getAnchorCenter());
+			else
+				niPoly = Highlight.getNodeInstOutline(ni);
 			addedRectangles.add(ERectangle.fromLambda(niPoly.getBounds2D()));
 		}
 		return ni;
@@ -5790,12 +5795,14 @@ public class Connectivity
 				batchPosition--;
 				if (batchPosition < 0) batchPosition = 0;
 			}
+			if (batchPosition >= addedBatchNames.size()) return;
 			comingUp.setText("Batch " + (batchPosition+1) + ": " + addedBatchNames.get(batchPosition));
 			pack();
 
 			// display cell
 			Cell cell = addedBatchCells.get(batchPosition);
 			EditWindow wnd = EditWindow.getCurrent();
+			wnd.clearHighlighting();
 			wnd.setCell(cell, null, null);
 			
 			// highlight
