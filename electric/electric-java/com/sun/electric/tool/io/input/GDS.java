@@ -1730,7 +1730,7 @@ public class GDS extends Input<Object>
 		theScale = meterUnit * 1000000.0 * microScale * localPrefs.inputScale;
 
 		// establish alignment
-		alignment = new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+		alignment = new EDimension(10*DBMath.getEpsilon(), 10*DBMath.getEpsilon());
 
 		if (localPrefs.dumpReadable) printWriter.println("- Units: precision=" + TextUtils.formatDouble(precision, 0) +
 			" meter=" + TextUtils.formatDouble(meterUnit, 0) + " scale=" + TextUtils.formatDouble(theScale, 0));
