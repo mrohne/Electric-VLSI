@@ -31,6 +31,7 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.PathIterator;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -499,7 +500,12 @@ public class PolyMerge extends GeometryHandler implements Serializable
 	{
 		Area area = (Area)layers.get(layer);
 		if (area == null) return false;
-		return area.contains(pt);
+		// pt is in the interior of area?
+		if (area.contains(pt)) return true;
+		// pt is on the boundary of area?
+		PathIterator pIt = area.getPathIterator(null);
+		if (PolyBase.isPointOnPath(pIt, pt)) return true;
+		return false;
 	}
 
 	public Collection<PolyBase> getObjects(Object key, boolean modified, boolean simple)
