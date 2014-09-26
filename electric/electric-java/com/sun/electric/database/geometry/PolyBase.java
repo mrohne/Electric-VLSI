@@ -1072,6 +1072,19 @@ public class PolyBase implements Shape, PolyNodeMerge {
     }
 
     /**
+     * Method to report the distance of a point to this Poly.
+     * @param Point2D coordinate of a point
+     * @return the distance of the point to the Poly.
+     * The method returns a negative amount if the point is a direct hit on or inside
+     * the polygon (the more negative, the closer to the center).
+     */
+    public double polyDistance(Point2D pt) {
+		Point2D cl = closestPoint(pt);
+		if (isInside(pt)) return -pt.distance(cl);
+		else return pt.distance(cl);
+    }
+
+    /**
      * Method to report the distance of a rectangle or point to this Poly.
      * @param otherBounds the area to test for distance to the Poly.
      * @return the distance of the area to the Poly.
@@ -2242,37 +2255,43 @@ public class PolyBase implements Shape, PolyNodeMerge {
 	}
 
 	// Make a hole in area
-	public static Point[] subtractPoints(Point[] loop, Point[] hoop) {
+	public static Point[] subtractPoints(Point[] loop, Point[] hole) {
 		// Both must be non-degenerate
-		assert(loop.length >= 3);
-		assert(hoop.length >= 3);
-		// Search for point on loop closest to hoop
+		assert(loop.length >= 1);
+		assert(hole.length >= 1);
+		// Will need lengths
+		int nl = loop.length;
+		int nh = hole.length;
+		// Search for point on hole closest to loop
 		int l0 = 0;
 		int h0 = 0;
-		double d0 = loop[l0].distance(hoop[h0]);
-		for (int l1 = 0; l1 < loop.length; l1++) {
-			double d1 = loop[l1].distance(hoop[h0]);
+		double d0 = Double.MAX_VALUE;
+		for (int l1 = 0; l1 < nl; l1++) {
+			double d1 = loop[l1].distance(hole[h0]);
 			if (DBMath.isLessThan(d1, d0)) {
 				l0 = l1;
 				d0 = d1;
 			}
 		}
-		// Then for point on hoop closest to loop
-		for (int h1 = 0; h1 < hoop.length; h1++) {
-			double d1 = loop[l0].distance(hoop[h1]);
+		for (int h1 = 0; h1 < nh; h1++) {
+			double d1 = loop[l0].distance(hole[h1]);
 			if (DBMath.isLessThan(d1, d0)) {
 				h0 = h1;
 				d0 = d1;
 			}
 		}
-		// Traverse loop and hoop in clockwise direction
-		Point[] points = new Point[loop.length + 1 + hoop.length + 1];
-		int p1 = 0;
-		for (int l1 = 0; l1 < loop.length; l1++) points[p1++] = from(loop[(l0+l1)%loop.length]);
-		points[p1++] = from(loop[l0]);
-		for (int h1 = 0; h1 < hoop.length; h1++) points[p1++] = from(hoop[(h0+h1)%hoop.length]);
-		points[p1++] = from(hoop[h0]);
-		return points;
+		// Reserve space for points, closing loops if required
+		int np = nl + nh;
+		if (loop[l0] != loop[(l0+nl-1)%nl]) np += 1;
+		if (hole[h0] != hole[(h0+nh-1)%nh]) np += 1;
+		Point[] hoop = new Point[np];
+		// Traverse loop and hole in clockwise direction
+		int ip = 0;
+		for (int l1 = 0; l1 < nl; l1++) hoop[ip++] = from(loop[(l0+l1)%nl]);
+		if (loop[l0] != loop[(l0+nl-1)%nl]) hoop[ip++] = from(loop[l0]);
+		for (int h1 = 0; h1 < nh; h1++) hoop[ip++] = from(hole[(h0+h1)%nh]);
+		if (hole[h0] != hole[(h0+nh-1)%nh]) hoop[ip++] = from(hole[h0]);
+		return hoop;
 	}
 				
 
@@ -2292,13 +2311,14 @@ public class PolyBase implements Shape, PolyNodeMerge {
         }
 
         public PolyBase getPoly() {
-			Layer layer = poly.getLayer();
-			Area area = new Area(poly);
+			Point [] area = poly.getPoints();
 			for (PolyBaseTree son : sons) {
-				Area hole = new Area(son.poly);
-				area.subtract(hole);
+				Point [] hole = son.poly.getPoints();
+				area = subtractPoints(area, hole);
 			}
-			return getPointsFromArea(area, layer);
+			PolyBase poly = new PolyBase(area);
+			poly.setLayer(poly.getLayer());
+			return poly;
         }
 		
         public void getLoops(int level, Stack<PolyBaseTree> list) {
@@ -2417,6 +2437,35 @@ public class PolyBase implements Shape, PolyNodeMerge {
         return list;
     }
 
+	// Check if point is on path
+	public static boolean isPointOnPath(PathIterator pIt, Point2D aPt) {
+		int type = -1;
+		Point [] pt = new Point[3];
+		double [] coords = new double[6];
+        while (!pIt.isDone()) {
+			type = pIt.currentSegment(coords);
+			pt[0] = pt[1];
+			pt[1] = fromLambda(coords[0], coords[1]);
+			pIt.next();
+			switch (type) {
+			case PathIterator.SEG_CLOSE:
+				pt[1] = pt[2];
+				if (DBMath.isOnLine(pt[0], pt[1], aPt)) return true;
+				break;
+			case PathIterator.SEG_MOVETO:
+				pt[2] = pt[1];
+				break;
+			case PathIterator.SEG_LINETO:
+				if (DBMath.isOnLine(pt[0], pt[1], aPt)) return true;
+				break;
+			default:
+				if (DBMath.isOnLine(pt[0], pt[1], aPt)) return true;
+				break;
+			}
+        }
+		return false;
+    }
+	
 	// Get lines on a single loop
     public static int getLinesFromEdge(PolyPathIterator pIt, List<Line2D> pLs) {
 		int nm = 4;
