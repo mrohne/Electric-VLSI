@@ -59,6 +59,7 @@ import java.util.Set;
 public class RouteElementPort extends RouteElement {
 
     // ---- New Port info ----
+	/** true to debug resize */                     private static final boolean DEBUGRESIZE = false;
     /** Node type to create */                      private NodeProto np;
     /** Port on node to use */                      private PortProto portProto;
     /** location to create Node */                  private EPoint location;
@@ -89,13 +90,15 @@ public class RouteElementPort extends RouteElement {
      * @param ep EditingPreferences with default sizes
      */
     public static RouteElementPort newNode(Cell cell, NodeProto np, PortProto newNodePort, Point2D location,
-										   double width, double height, Orientation orient, PolyMerge stayInside, EditingPreferences ep) {
-		double fitWidth = width;
-		double fitHeight = height;
+										   double width, double height, Orientation orient, PolyMerge stayInside, 
+										   EditingPreferences ep) 
+	{
+		double setWidth = width;
+		double setHeight = height;
 		if (stayInside != null) {
         	Set<Layer> allLayers = stayInside.getKeySet();
 			EPoint snap = EPoint.snap(location);
-			NodeInst ni = NodeInst.makeDummyInstance(np, ep, snap, fitWidth, fitHeight, orient);
+			NodeInst ni = NodeInst.makeDummyInstance(np, ep, snap, setWidth, setHeight, orient);
 			// scale down until convergence
 			while (true) {
 				double delWidth = 0;
@@ -111,8 +114,8 @@ public class RouteElementPort extends RouteElement {
 					// compute shrinkage
 					Area incl = stayInside.inclusive(layer, poly);
 					if (incl == null || incl.isEmpty()) {
-						delWidth = fitWidth;
-						delHeight = fitHeight;
+						delWidth = setWidth;
+						delHeight = setHeight;
 					} else {
 						Rectangle2D outBox = poly.getBounds2D();
 						Rectangle2D newBox = incl.getBounds2D();
@@ -121,21 +124,29 @@ public class RouteElementPort extends RouteElement {
 					}
 				}
 				// can't shrink more than size
-				delWidth = Math.min(delWidth, fitWidth);
-				delHeight = Math.min(delHeight, fitHeight);
+				delWidth = Math.min(delWidth, setWidth);
+				delHeight = Math.min(delHeight, setHeight);
 				// shrink dummy node
 				if (DBMath.areEquals(delWidth, 0) && DBMath.areEquals(delHeight, 0)) break;
 				ni.resize(-delWidth, -delHeight);
 				// update with resulting size
-				if (DBMath.areEquals(fitWidth, ni.getXSize()) && DBMath.areEquals(fitHeight, ni.getYSize())) break;
-				fitWidth = ni.getXSize();
-				fitHeight = ni.getYSize();
+				if (DBMath.areEquals(setWidth, ni.getXSize()) && DBMath.areEquals(setHeight, ni.getYSize())) break;
+				setWidth = ni.getXSize();
+				setHeight = ni.getYSize();
 			}
+			// check against default size
+			SizeOffset so = np.getProtoSizeOffset();
+			double widthoffset = so.getLowXOffset() + so.getHighXOffset();
+			double heightoffset = so.getLowYOffset() + so.getHighYOffset();
+			double defWidth = np.getDefWidth(ep) - widthoffset;       // this is width we see on the screen
+			double defHeight = np.getDefHeight(ep) - heightoffset;    // this is height we see on the screen
+			double fitWidth = Math.max(setWidth, defWidth);
+			double fitHeight = Math.max(setHeight, defHeight);
 			// change size
 			if ((fitWidth < width) || (fitHeight < height)) {
-				System.out.println("RouteElementPort.newNode: resizing "+np+" at "+location+
-								   ": ("+width+", "+height+")"+
-								   "->("+fitWidth+", "+fitHeight+")");
+				if (DEBUGRESIZE) System.out.println("RouteElementPort.newNode: resizing "+np+" at "+location+
+													": ("+width+", "+height+")"+
+													"->("+fitWidth+", "+fitHeight+")");
 				width = fitWidth;
 				height = fitHeight;
 			}
@@ -148,7 +159,8 @@ public class RouteElementPort extends RouteElement {
         e.orient = orient;
         e.isBisectArcPin = false;
         e.newArcs = new ArrayList<RouteElementArc>();
-        e.setNodeSize(new EDimension(width, height), ep);
+        e.width = width;
+        e.height = height;
         e.nodeInst = null;
         e.portInst = null;
         e.portInstSite = new Poly(Poly.from(location));
@@ -442,9 +454,9 @@ public class RouteElementPort extends RouteElement {
 		double fitWidth = Math.max(setWidth, defWidth);
 		double fitHeight = Math.max(setHeight, defHeight);
 		if (setWidth < fitWidth || setHeight < fitHeight) {
-			System.out.println("RouteElementPort.newNode: upsizing "+np+" at "+location+
-							   ": ("+setWidth+", "+setHeight+")"+
-							   "->("+fitWidth+", "+fitHeight+")");
+			if (DEBUGRESIZE) System.out.println("RouteElementPort.newNode: upsizing "+np+" at "+location+
+												": ("+setWidth+", "+setHeight+")"+
+												"->("+fitWidth+", "+fitHeight+")");
 		}
 		width = fitWidth;
 		height = fitHeight;
