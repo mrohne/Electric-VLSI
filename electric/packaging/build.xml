@@ -179,12 +179,8 @@
 
 	<target name="compilePublic" description="Compile the public part of Electric">
 		<!-- deprecation flag: deprecation="true" -->
-<<<<<<< HEAD
 		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m"
 		       encoding="UTF-8" source="1.8" target="1.8">
-=======
-		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m" source="1.7" target="1.7">
->>>>>>> More fixes to ant mac-app
 			<classpath>
 				<pathelement location="${slf4j-api}" />
 				<pathelement location="${slf4j-jdk}" />
@@ -222,12 +218,8 @@
 	</target>
 
 	<target name="compilePrivate" description="Compile the private part of Electric">
-<<<<<<< HEAD
 	  <javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricPrivateLoc}" fork="true" memoryMaximumSize="1024m"
 		 encoding="UTF-8" source="1.8" target="1.8">
-=======
-		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricPrivateLoc}" fork="true" memoryMaximumSize="1024m" source="1.7" target="1.7">
->>>>>>> More fixes to ant mac-app
 			<classpath>
 				<pathelement location="${slf4j-api}" />
 				<pathelement location="${slf4j-jdk}" />
