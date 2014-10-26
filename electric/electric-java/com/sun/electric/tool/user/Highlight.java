@@ -113,6 +113,18 @@ public abstract class Highlight implements Cloneable{
         return false;
     }
 
+    // creating so HighlightPoly is not a public class
+    public boolean isHighlightPoly() { return false; }
+
+    // creating so HighlightLine is not a public class
+    public boolean isHighlightLine() { return false; }
+
+    // creating so HighlightObject is not a public class
+    public boolean isHighlightObject() { return false; }
+
+    // creating so HighlightArea is not a public class
+    public boolean isHighlightArea() { return false; }
+
     // creating so HighlightEOBJ is not a public class
     public boolean isHighlightEOBJ() { return false; }
 
@@ -797,6 +809,10 @@ class HighlightPoly extends Highlight
         if (oldColor != null)
             g.setColor(oldColor);
     }
+
+	@Override
+	public boolean isHighlightPoly() { return true; }
+
 }
 
 /**
@@ -860,6 +876,10 @@ class HighlightLine extends Highlight
             end.getX() + "," + end.getY() + ")";
         return description;
     }
+
+	@Override
+	public boolean isHighlightLine() { return true; }
+
 }
 
 class HighlightObject extends Highlight
@@ -880,6 +900,10 @@ class HighlightObject extends Highlight
     {
         System.out.println("Should call this one?");
     }
+
+	@Override
+	public boolean isHighlightObject() { return true; }
+
 }
 
 /**
@@ -985,6 +1009,10 @@ class HighlightArea extends Highlight
             " and " + bounds.getMinY() + "<=Y<=" + bounds.getMaxY();
         return description;
     }
+	
+	@Override
+	public boolean isHighlightArea() { return true; }
+
 }
 
 /**
