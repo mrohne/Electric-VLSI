@@ -92,7 +92,7 @@ import java.util.TreeSet;
 public class AutoStitch
 {
 	/** true to ignore true pin size */								private static final boolean ZEROSIZEPINS = true;
-
+	/** true to debug export creation */                            private static final boolean DEBUGEXPORTS = false;
 	/** router used to wire */  									private InteractiveRouter router;
     /** default sizes and text descriptors */                       private final EditingPreferences ep;
 	/** list of all routes to be created at end of analysis */		private List<Route> allRoutes;
@@ -349,7 +349,8 @@ public class AutoStitch
 		// if creating exports, make first pass in which exports must be created
 		if (prefs.createExports)
 		{
-			if (showProgress) Job.getUserInterface().setProgressNote("Routing " + totalToStitch + " objects with export creation...");
+			if (showProgress) Job.getUserInterface().setProgressNote("Routing " + totalToStitch + 
+																	 " objects with export creation...");
 
             // make global network map
             GatherNetworksVisitor gatherNetworks = new GatherNetworksVisitor();
@@ -381,7 +382,8 @@ public class AutoStitch
 				checkExportCreationStitching(ai, overlapMap, gatherNetworks);
 			}
 
-            if (showProgress) Job.getUserInterface().setProgressNote("Gathering " + totalToStitch + " objects for export creation...");
+            if (showProgress) Job.getUserInterface().setProgressNote("Gathering " + totalToStitch + 
+																	 " objects for export creation...");
 
             // check for existing exports, or make export if needed
             for (Long netID : overlapMap.keySet())
@@ -527,7 +529,8 @@ public class AutoStitch
 		}
 		if (pinsToPassThrough.size() > 0)
 		{
-			CircuitChangeJobs.CleanupChanges ccJob = new CircuitChangeJobs.CleanupChanges(cell, true, Collections.<NodeInst>emptySet(),
+			CircuitChangeJobs.CleanupChanges ccJob = 
+				new CircuitChangeJobs.CleanupChanges(cell, true, Collections.<NodeInst>emptySet(),
 				pinsToPassThrough, new HashMap<NodeInst,EPoint>(), new ArrayList<NodeInst>(), new HashSet<ArcInst>(), 0, 0, 0);
 			try
 			{
@@ -887,7 +890,8 @@ name=null;
 		{
 			// complex node instance: look at all ports near this bound
 			ObjectQTree oqt = nodePortBounds.get(ni);
-			Rectangle2D biggerBounds = new Rectangle2D.Double(oBounds.getMinX()-1, oBounds.getMinY()-1, oBounds.getWidth()+2, oBounds.getHeight()+2);
+			Rectangle2D biggerBounds = new Rectangle2D.Double(oBounds.getMinX()-1, oBounds.getMinY()-1, 
+															  oBounds.getWidth()+2, oBounds.getHeight()+2);
 			Set<?> set = oqt.find(biggerBounds);
 			if (set != null)
 			{
@@ -921,7 +925,8 @@ name=null;
 
 					// look at all polygons on this nodeinst
 					boolean usePortPoly = false;
-					Poly [] nodePolys = shapeOfNode(rNi);
+					Technology tech = rNi.getProto().getTechnology();
+					Poly [] nodePolys = tech.getShapeOfNode(rNi, true, true, null);
 					int tot = nodePolys.length;
 					if (tot == 0 || rNi.getProto() == Generic.tech().simProbeNode)
 					{
@@ -937,6 +942,9 @@ name=null;
 						{
 							poly = ni.getShapeOfPort(pp);
 							layer = poly.getLayer();
+
+							// only want polygon with layer info
+							if (layer == null) continue;
 						} else
 						{
 							poly = nodePolys[j];
@@ -1019,7 +1027,6 @@ name=null;
 					for(Iterator<PortProto> pIt = ni.getProto().getPorts(); pIt.hasNext(); )
 					{
 						PortProto tPp = pIt.next();
-
 						// compute best distance to the other node
 						Poly portPoly = ni.getShapeOfPort(tPp);
 						Point2D portPt = portPoly.closestPoint(oNi.getAnchorCenter());
@@ -1137,23 +1144,21 @@ name=null;
 		Network net2 = top.getArcNetwork(ai2);
 		if (net1 == net2) return;
 
-		// look at all polygons on the first arcinst
+		// gather geometry
 		Poly [] polys1 = ai1.getProto().getTechnology().getShapeOfArc(ai1);
-		int tot1 = polys1.length;
 		Poly [] polys2 = ai2.getProto().getTechnology().getShapeOfArc(ai2);
-		int tot2 = polys2.length;
-		for(int i1=0; i1<tot1; i1++)
-		{
-			Poly poly1 = polys1[i1];
+
+		// look at all polygons on the first arcinst
+		for(Poly poly1 : polys1) {
+
+			// get arc layer and function 
 			Layer layer1 = poly1.getLayer();
 			Layer.Function fun = layer1.getFunction();
 			if (!fun.isMetal() && !fun.isDiff() && !fun.isPoly()) continue;
 			Rectangle2D bounds1 = poly1.getBounds2D();
 
 			// compare them against all of the polygons in the second arcinst
-			for(int i2=0; i2<tot2; i2++)
-			{
-				Poly poly2 = polys2[i2];
+			for(Poly poly2 : polys2) {
 				if (layer1 != poly2.getLayer()) continue;
 
 				// two polygons on the same layer...are they even near each other?
@@ -1187,7 +1192,7 @@ name=null;
 		Map<NodeInst,ObjectQTree> nodePortBounds)
 	{
 		Network arcNet = top.getArcNetwork(ai);
-
+		
 		// find all ports on the instance that are near the arc
 		ObjectQTree oqt = nodePortBounds.get(ni);
 		Rectangle2D aBounds = ai.getBounds();
@@ -1252,14 +1257,14 @@ name=null;
 					double aCX = arcBounds.getCenterX();
 					double aCY = arcBounds.getCenterY();
 					Point2D bend1 = new Point2D.Double(portCX, aCY);
-					Point2D bend2 = new Point2D.Double(aCX, portCY);
-					if (stayInside != null)
-					{
-						if (!stayInside.contains(arcLayer, bend1)) bend1 = bend2;
-					} else
-					{
-						if (!arcPoly.contains(bend1)) bend1 = bend2;
-					}
+					Point2D bend2 = new Point2D.Double(aCX, portCY);					
+					if (!stayInside.contains(arcLayer, bend1)) bend1 = bend2;
+
+					// enforce minimum alignment
+					EDimension grid = alignment != null ? alignment : new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+					DBMath.gridAlign(bend1, grid);
+
+					// make the connection
 					connectObjects(ai, arcNet, pi, portNet, ai.getParent(), bend1, stayInside, top);
 					return;
 				}
@@ -1279,16 +1284,17 @@ name=null;
 		Network arcNet = top.getArcNetwork(ai);
 
 		// gather information about the node
+		Poly [] arcPolys = ai.getProto().getTechnology().getShapeOfArc(ai);
 		Poly [] nodePolys = shapeOfNode(ni);
-		int nTot = nodePolys.length;
-		FixpTransform trans = ni.rotateOut();
+
+		// transform geometry relative to cell
+		FixpTransform trans = ni.rotateOut();		
+		for (Poly nodePoly : nodePolys) nodePoly.transform(trans);
 
 		// look at all polygons on the arcinst
-		Poly [] arcPolys = ai.getProto().getTechnology().getShapeOfArc(ai);
-		int aTot = arcPolys.length;
-		for(int i=0; i<aTot; i++)
-		{
-			Poly arcPoly = arcPolys[i];
+		for (Poly arcPoly : arcPolys) {
+
+			// get arc layer and function 
 			Layer arcLayer = arcPoly.getLayer();
 			Layer.Function arcLayerFun = arcLayer.getFunction();
 			if (!arcLayerFun.isMetal() && !arcLayerFun.isDiff() && !arcLayerFun.isPoly()) continue;
@@ -1297,10 +1303,7 @@ name=null;
 			double aCY = arcPoly.getCenterY();
 
 			// compare them against all of the polygons in the node
-			for(int j=0; j<nTot; j++)
-			{
-				Poly nodePoly = nodePolys[j];
-				nodePoly.transform(trans);
+			for(Poly nodePoly : nodePolys) {
 
 				// they must be on the same layer and touch
 				Layer nodeLayer = nodePoly.getLayer();
@@ -1336,30 +1339,19 @@ name=null;
 				Poly portPoly = ni.getShapeOfPort(bestPp);
 				double portCX = portPoly.getCenterX();
 				double portCY = portPoly.getCenterY();
-				Network nodeNet = top.getPortNetwork(pi);
-				if (arcNet == nodeNet) continue;
-				if (alignment != null)
-				{
-					if (alignment.getWidth() > 0)
-					{
-						portCX = Math.round(portCX / alignment.getWidth()) * alignment.getWidth();
-						aCX = Math.round(aCX / alignment.getWidth()) * alignment.getWidth();
-					}
-					if (alignment.getHeight() > 0)
-					{
-						portCY = Math.round(portCY / alignment.getHeight()) * alignment.getHeight();
-						aCY = Math.round(aCY / alignment.getHeight()) * alignment.getHeight();
-					}
-				}
 				Point2D bend1 = new Point2D.Double(portCX, aCY);
 				Point2D bend2 = new Point2D.Double(aCX, portCY);
-				if (stayInside != null)
-				{
-					if (!stayInside.contains(arcLayer, bend1)) bend1 = bend2;
-				} else
-				{
-					if (!arcPoly.contains(bend1)) bend1 = bend2;
-				}
+
+				// enforce minimum alignment
+				EDimension grid = alignment != null ? alignment : new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+				DBMath.gridAlign(bend1, grid);
+				DBMath.gridAlign(bend2, grid);
+				
+				Network nodeNet = top.getPortNetwork(pi);
+				if (arcNet == nodeNet) continue;
+				
+				if (!stayInside.contains(arcLayer, bend1)) bend1 = bend2;
+				// save and restore preferred arc here?
 				connectObjects(ai, arcNet, pi, nodeNet, ai.getParent(), bend1, stayInside, top);
 				return;
 			}
@@ -1473,12 +1465,15 @@ name=null;
                     }
 
 					// see how much geometry is on this node
-					Poly [] polys = shapeOfNode(rNi);
-					int tot = polys.length;
+					Technology tech = rNi.getProto().getTechnology();
+					Poly [] nodePolys = tech.getShapeOfNode(rNi, true, true, null);
+					int tot = nodePolys.length;
 					if (tot == 0)
 					{
 						// not a geometric primitive: look for ports that touch
 						Poly oPoly = oNi.getShapeOfPort(mPp);
+						Layer oLayer = arcLayers.get(ap);
+						oPoly.setLayer(oLayer);
 						if (comparePoly(oNi, mPp, oPoly, oNet, ni, pp, poly, net, ap, stayInside, top, limitBound))
                         {
 							connectionsMade = true;
@@ -1490,7 +1485,7 @@ name=null;
 						Netlist subNetlist = rNi.getParent().getNetlist();
 						for(int j=0; j<tot; j++)
 						{
-							Poly oPoly = polys[j];
+							Poly oPoly = nodePolys[j];
 
 							// only want electrically connected polygons
 							if (oPoly.getPort() == null) continue;
@@ -1646,89 +1641,72 @@ name=null;
 		NodeInst ni, PortProto pp, Poly poly, Network net,
 		ArcProto ap, PolyMerge stayInside, StitchingTopology top, Rectangle2D limitBound)
 	{
-		double sep = poly.separation(oPoly);
-//System.out.println("   DISTANCE BETWEEN PORT "+pp.getName()+" OF NODE "+ni.describe(false)+" AND PORT "+opp.getName()+" OF NODE "+oNi.describe(false)+" IS "+sep);
-		// find the bounding boxes of the polygons
-		if (sep > DBMath.getEpsilon()) return false;
+
+		// be sure the closest points are being used
+		Point2D point = poly.closestPoint(oPoly.getCenter());
+		Point2D oPoint = oPoly.closestPoint(point);
+		double delta= point.distance(oPoint);
+
+		// check minimum separation
+		if (!(poly.intersects(oPoly) || delta < DBMath.getEpsilon())) return false;
 
 		// be sure the closest ports are being used
 		Poly portPoly = ni.getShapeOfPort(pp);
-		Point2D portCenter = new Point2D.Double(portPoly.getCenterX(), portPoly.getCenterY());
 		Poly oPortPoly = oNi.getShapeOfPort(opp);
-		Point2D oPortCenter = new Point2D.Double(oPortPoly.getCenterX(), oPortPoly.getCenterY());
-
-		if (stayInside == null)
-		{
-			if (ni.isCellInstance() || oNi.isCellInstance())
-			{
-				Rectangle2D polyBounds = portPoly.getBounds2D();
-				Rectangle2D oPolyBounds = oPortPoly.getBounds2D();
-
-				// quit now if bounding boxes don't intersect
-				if ((polyBounds.getMinX() > oPolyBounds.getMaxX() || oPolyBounds.getMinX() > polyBounds.getMaxX()) &&
-					(polyBounds.getMinY() > oPolyBounds.getMaxY() || oPolyBounds.getMinY() > polyBounds.getMaxY())) return false;
+		Point2D portPt = portPoly.closestPoint(oPortPoly.getCenter());
+		Point2D oPortPt = oPortPoly.closestPoint(portPt);
+		double dist = portPt.distance(oPortPt);
+		for(Iterator<PortProto> aIt = ni.getProto().getPorts(); aIt.hasNext(); )	{
+			PortProto aPp = aIt.next();
+			if (aPp == pp) continue;
+			if (!top.portsConnected(ni, aPp, pp)) continue;
+			if (!aPp.getBasePort().connectsTo(ap)) continue;
+			Poly aPortPoly = ni.getShapeOfPort(aPp);
+			for(Iterator<PortProto> tIt = oNi.getProto().getPorts(); tIt.hasNext(); )	{
+				PortProto tPp = tIt.next();
+				if (tPp == opp) continue;
+				if (!top.portsConnected(oNi, tPp, opp)) continue;
+				if (!tPp.getBasePort().connectsTo(ap)) continue;
+				Poly tPortPoly = oNi.getShapeOfPort(tPp);
+				Point2D aPortPt = aPortPoly.closestPoint(tPortPoly.getCenter());
+				Point2D tPortPt = tPortPoly.closestPoint(aPortPt);
+				double aDist = aPortPt.distance(tPortPt);
+				if (aDist >= dist) continue;
+				dist = aDist;
+				pp = aPp;
+				opp = tPp;
+				portPoly = aPortPoly;
+				oPortPoly = tPortPoly;
+				portPt.setLocation(aPortPt);
+				oPortPt.setLocation(tPortPt);
 			}
-		}
-
-		double dist = portCenter.distance(oPortCenter);
-		for(Iterator<PortProto> it = oNi.getProto().getPorts(); it.hasNext(); )
-		{
-			PortProto tPp = it.next();
-			if (tPp == opp) continue;
-			if (!top.portsConnected(oNi, tPp, opp)) continue;
-			if (!tPp.getBasePort().connectsTo(ap)) continue;
-			portPoly = oNi.getShapeOfPort(tPp);
-			Point2D tPortCenter = new Point2D.Double(portPoly.getCenterX(), portPoly.getCenterY());
-			double tDist = portCenter.distance(tPortCenter);
-			if (tDist >= dist) continue;
-			dist = tDist;
-			opp = tPp;
-			oPortCenter.setLocation(tPortCenter);
-		}
-		for(Iterator<PortProto> it = ni.getProto().getPorts(); it.hasNext(); )
-		{
-			PortProto tPp = it.next();
-			if (tPp == pp) continue;
-			if (!top.portsConnected(ni, tPp, pp)) continue;
-			if (!tPp.getBasePort().connectsTo(ap)) continue;
-			portPoly = ni.getShapeOfPort(tPp);
-			Point2D tPortCenter = new Point2D.Double(portPoly.getCenterX(), portPoly.getCenterY());
-			double tDist = oPortCenter.distance(tPortCenter);
-			if (tDist >= dist) continue;
-			dist = tDist;
-			pp = tPp;
-			portCenter.setLocation(tPortCenter);
-		}
+		}		
 
 		// reject connection if it is out of the limit bounds
-		if (limitBound != null)
-		{
-			if (!DBMath.pointInRect(portCenter, limitBound) && !DBMath.pointInRect(oPortCenter, limitBound))
+		if (limitBound != null)	{
+			if (!DBMath.pointInRect(portPt, limitBound) && !DBMath.pointInRect(oPortPt, limitBound))
 				return false;
 		}
 
 		// find some dummy position to help run the arc
-		double x = (oPortCenter.getX() + portCenter.getX()) / 2;
-		double y = (oPortCenter.getY() + portCenter.getY()) / 2;
-		if (alignment != null)
-		{
-			if (alignment.getWidth() > 0)
-				x = Math.round(x / alignment.getWidth()) * alignment.getWidth();
-			if (alignment.getHeight() > 0)
-				y = Math.round(y / alignment.getHeight()) * alignment.getHeight();
-		}
+		Point2D bend1 = new Point2D.Double(portPt.getX(), oPortPt.getY());
+		Point2D bend2 = new Point2D.Double(portPt.getY(), oPortPt.getX());
+		if (!stayInside.contains(poly.getLayer(), bend1)) bend1 = bend2;
 
+		// enforce minimum alignment
+		EDimension grid = alignment != null ? alignment : new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+		DBMath.gridAlign(bend1, grid);
+		
 		// run the wire
 		PortInst pi = ni.findPortInstFromEquivalentProto(pp);
 		PortInst opi = oNi.findPortInstFromEquivalentProto(opp);
-//System.out.println("   *** MAKING THE CONNECTION");
 
 		// remember the current ArcProto and force the desired one
 		ArcProto oldAP = User.getUserTool().getCurrentArcProto();
 		User.getUserTool().setCurrentArcProtoTemporarily(ap);
 
 		// make the connection
-		boolean didConnect = connectObjects(pi, net, opi, oNet, ni.getParent(), new Point2D.Double(x,y), stayInside, top);
+		boolean didConnect = connectObjects(pi, net, opi, oNet, ni.getParent(), bend1, stayInside, top);
 
 		// restore the current ArcProto
 		User.getUserTool().setCurrentArcProtoTemporarily(oldAP);
@@ -1795,7 +1773,8 @@ name=null;
 	 * Actual stitching is not done, but necessary exports are created.
 	 * @param geom the object to check for stitching.
 	 */
-	private void checkExportCreationStitching(Geometric geom, Map<Long,List<PolyConnection>> overlapMap, GatherNetworksVisitor gatherNetworks)
+	private void checkExportCreationStitching(Geometric geom, Map<Long,List<PolyConnection>> overlapMap, 
+											  GatherNetworksVisitor gatherNetworks)
 	{
 		Cell cell = geom.getParent();
 		NodeInst ni = null;
@@ -1851,7 +1830,8 @@ name=null;
 	 * @param ni the NodeInst to compare.
 	 * @param ai the ArcInst to compare.
 	 */
-	private void compareNodeInstWithArcMakeExport(NodeInst ni, ArcInst ai, Map<Long,List<PolyConnection>> overlapMap, GatherNetworksVisitor gatherNetworks)
+	private void compareNodeInstWithArcMakeExport(NodeInst ni, ArcInst ai, Map<Long,List<PolyConnection>> overlapMap, 
+												  GatherNetworksVisitor gatherNetworks)
 	{
 		// get the polygon and layer that needs to connect
 		Poly arcPoly = null;
@@ -1872,7 +1852,7 @@ name=null;
         SubPolygon sp2 = new SubPolygon(arcPoly, VarContext.globalContext, netID, ai);
 
 		// look for geometry inside the cell that touches the arc, and make an export so it can connect
-		ArcTouchVisitor atv = new ArcTouchVisitor(ai, arcPoly, ni, gatherNetworks);
+		ArcTouchVisitor atv = new ArcTouchVisitor(ai, arcPoly, gatherNetworks);
 		HierarchyEnumerator.enumerateCell(ni.getParent(), VarContext.globalContext, atv);
 		for (SubPolygon sp : atv.getTouching().values()) {
             registerPoly(overlapMap, new PolyConnection(sp, sp2));
@@ -1892,17 +1872,17 @@ name=null;
 			// get actual overlap
 			List<Line2D> edges = new ArrayList<Line2D>();
 			List<PolyBase> clips = p.sp1.poly.getIntersection(p.sp2.poly, edges);
-			PolyBase area = null;
-			if (area == null)
+			PolyBase exportArea = null;
+			if (exportArea == null)
 				for (PolyBase clip : clips)
 					if (!DBMath.areEquals(clip.getArea(), 0))
-						area = clip; 
-			if (area == null)
+						exportArea = clip; 
+			if (exportArea == null)
 				for (Line2D line : edges)
-					area = new PolyBase(PolyBase.from(line.getP1()), PolyBase.from(line.getP2()));
-			if (area == null) continue;
-			area.setLayer(p.sp1.poly.getLayer());
-			PolyBase exportArea = area;
+					exportArea = new PolyBase(PolyBase.from(line.getP1()), PolyBase.from(line.getP2()));
+			if (exportArea == null) continue;
+			exportArea.setLayer(p.sp1.poly.getLayer());
+
 			// check for existing exports
 			Point2D sp1AtTop = isExportedToTop(p.sp1);
 			Point2D sp2AtTop = isExportedToTop(p.sp2);
@@ -1927,17 +1907,17 @@ name=null;
 			if (sp1AtTop == null && (p.sp1.theObj instanceof NodeInst)) {
 				sp1AtTop = makeExportDrill((NodeInst)p.sp1.theObj, p.sp1.poly.getPort(), p.sp1.context, exportArea, ap);
 			}
-			if (sp1AtTop == null && (p.sp1.theObj instanceof ArcInst)) {
-				Point2D topLoc = sp2AtTop != null ? sp2AtTop : exportArea.getCenter();
-				sp1AtTop = makeExportDrillOnArc((ArcInst)p.sp1.theObj, topLoc, p.sp1.context, exportArea, ap);
-				//System.out.println("Making export on arc for netID "+p.sp1.netID);
-			}
 			if (sp2AtTop == null && (p.sp2.theObj instanceof NodeInst)) {
 				sp2AtTop = makeExportDrill((NodeInst)p.sp2.theObj, p.sp2.poly.getPort(), p.sp2.context, exportArea, ap);
 			}
+			if (sp1AtTop == null && (p.sp1.theObj instanceof ArcInst)) {
+				Point2D loc = sp2AtTop != null ? sp2AtTop : exportArea.getCenter();
+				sp1AtTop = makeExportDrillOnArc((ArcInst)p.sp1.theObj, loc, p.sp1.context, exportArea, ap);
+				//System.out.println("Making export on arc for netID "+p.sp1.netID);
+			}
 			if (sp2AtTop == null && (p.sp2.theObj instanceof ArcInst)) {
-				Point2D topLoc = sp1AtTop != null ? sp1AtTop : exportArea.getCenter();
-				sp2AtTop = makeExportDrillOnArc((ArcInst)p.sp2.theObj, topLoc, p.sp2.context, exportArea, ap);
+				Point2D loc = sp1AtTop != null ? sp1AtTop : exportArea.getCenter();
+				sp2AtTop = makeExportDrillOnArc((ArcInst)p.sp2.theObj, loc, p.sp2.context, exportArea, ap);
 				//System.out.println("Making export on arc for netID "+p.sp2.netID);
 			}
 		}
@@ -2008,15 +1988,14 @@ name=null;
 		private ArcInst arcOfInterest;
 		private Poly arcPoly;
 		private int arcNetID;
-		private NodeInst cellOfInterest;
 		private Rectangle2D arcBounds;
 		private Map<Long, SubPolygon> netTouching;
         private GatherNetworksVisitor gatherNetworks;
 
-        public ArcTouchVisitor(ArcInst arcOfInterest, Poly arcPoly, NodeInst cellOfInterest, GatherNetworksVisitor gatherNetworks) {
+        public ArcTouchVisitor(ArcInst arcOfInterest, Poly arcPoly, GatherNetworksVisitor gatherNetworks) 
+		{
 			this.arcOfInterest = arcOfInterest;
 			this.arcPoly = arcPoly;
-			this.cellOfInterest = cellOfInterest;
 			arcNetID = -1;
 			arcBounds = arcPoly.getBounds2D();
 			this.netTouching = new HashMap<Long, SubPolygon>();
@@ -2077,7 +2056,8 @@ name=null;
 					poly.transform(nodeTrans);
 					double dist = poly.separation(arcPoly);
 					if (dist >= DBMath.getEpsilon()) continue;
-					int netIDglobal = gatherNetworks.getGlobalNetworkID(info.getContext(), ni.findPortInstFromEquivalentProto(poly.getPort()));
+					int netIDglobal = gatherNetworks.getGlobalNetworkID(info.getContext(), 
+																		ni.findPortInstFromEquivalentProto(poly.getPort()));
 					SubPolygon sp = new SubPolygon(poly, info.getContext(), netIDglobal, ni);
 					netTouching.put(new Long(netID), sp);
 				}
@@ -2090,9 +2070,6 @@ name=null;
 			NodeInst ni = no.getNodeInst();
 			if (info.isRootCell())
 			{
-				// ignore any subcells that aren't the one being examined
-				if (ni != cellOfInterest) return false;
-
 				// cache the network ID of the arc
 				if (arcNetID < 0)
 				{
@@ -2121,7 +2098,7 @@ name=null;
 	 * @param where the hierarchical stack that defines the path to the top.
 	 * @return the coordinate at the top-level where the drill happened.
 	 */
-	private Point2D makeExportDrill(NodeInst ni, PortProto exportThis, VarContext where, PolyBase exportArea, ArcProto ap)
+	private Point2D makeExportDrill(NodeInst ni, PortProto exportThis, VarContext where, PolyBase area, ArcProto ap)
 	{
 		Point2D topCoord = new Point2D.Double(0, 0);
 		while (where != VarContext.globalContext)
@@ -2221,46 +2198,38 @@ name=null;
 	 * @param topLoc the coordinate at the top level where the ArcInst should be broken.
 	 * @param sp the context to the ArcInst.
 	 */
-	private Point2D makeExportDrillOnArc(ArcInst ai, Point2D loc, VarContext where, PolyBase exportArea, ArcProto ap)
+	private Point2D makeExportDrillOnArc(ArcInst ai, Point2D loc, VarContext where, PolyBase area, ArcProto ap)
 	{
 		// save information about the arc
+		Cell cell = ai.getParent();
+		Layer layer = area.getLayer();
 		String arcName = ai.getName();
 		if (ai.getNameKey().isTempname()) arcName = null;
 		int angle = ai.getAngle();
 		double width = ai.getLambdaBaseWidth();
-		Cell cell = ai.getParent();
 
-		// need layer and poly
-		if (exportArea == null) return null;
-		if (exportArea.getLayer() == null) return null;
+		// try head port
+		PortInst pi = ai.getHeadPortInst();
+		NodeInst ni = pi.getNodeInst();
+		Point2D pinLoc = pi.getCenter();
 
-		// transform geometry into this cell
-		Point2D topLoc = new Point2D.Double(loc.getX(), loc.getY());
-		PolyBase preferredExportArea = new PolyBase(exportArea);
-        for (Iterator<Nodable> noit = where.getPathIterator(); noit.hasNext(); ) {
-            NodeInst niHier = noit.next().getNodeInst();
-            FixpTransform trans = niHier.transformIn();
-            topLoc = trans.transform(topLoc, null);
-			preferredExportArea.transform(trans);
-        }
-
-        // check for suitable export on this network in the preferred area
+		// need netlist information
         Netlist netlist = cell.getNetlist();
         Network net = netlist.getNetwork(ai, 0);
-        for (Iterator<Export> eIt = cell.getExports(); eIt.hasNext(); )  {
-            Export ex = eIt.next();
-			if (!ex.connectsTo(ap)) continue;
-            PortInst pi = ex.getOriginalPort();
-			if (!netlist.getNetwork(pi).equals(net)) continue;
-			double dist = preferredExportArea.separation(pi.getPoly());
-			if (!DBMath.areEquals(dist, 0)) continue;
-			NodeInst ni = where.getNodable().getNodeInst();
-			return makeExportDrill(ni, ex, where.pop(), exportArea, ap);
+
+		// transform geometry into this cell
+		Point2D topLoc = PolyBase.from(loc);
+		PolyBase exportArea = new PolyBase(area);
+        for (Iterator<Nodable> nIt = where.getPathIterator(); nIt.hasNext(); ) {
+            NodeInst niHier = nIt.next().getNodeInst();
+            FixpTransform trans = niHier.transformIn();
+            topLoc = trans.transform(topLoc, null);
+			exportArea.transform(trans);
         }
 
-        // check for suitable port on this network in the preferred area
-		Rectangle2D rect = preferredExportArea.getBounds2D();
-		for(Iterator<Geometric> gIt = cell.searchIterator(rect); gIt.hasNext(); )	{
+        // check for suitable port inside preferred area
+		double best = Double.MAX_VALUE;
+		for (Iterator<Geometric> gIt = cell.searchIterator(ai.getBounds()); gIt.hasNext(); ) {
 			Geometric geom = gIt.next();
 			if (geom instanceof NodeInst) {
 				NodeInst ni = (NodeInst)geom;
@@ -2391,7 +2360,8 @@ name=null;
 	 * @param ni1 the first cell instance being checked.
 	 * @param ni2 the second cell instance being checked.
 	 */
-	private void compareTwoNodesMakeExport(NodeInst ni1, NodeInst ni2, Map<Long,List<PolyConnection>> overlapMap, GatherNetworksVisitor gatherNetworks)
+	private void compareTwoNodesMakeExport(NodeInst ni1, NodeInst ni2, Map<Long,List<PolyConnection>> overlapMap, 
+										   GatherNetworksVisitor gatherNetworks)
 	{
 		// force the second to be a cell instance
 		if (!ni2.isCellInstance())
@@ -2414,30 +2384,9 @@ name=null;
 		Rectangle2D intersectArea = bound1.createIntersection(bound2);
 
 		// now find all polygons in Node 1 that are in the intersection area
-		RTNode<SubPolygon> rtree = null;
-		if (ni1.isCellInstance())
-		{
-			GatherPolygonVisitor gpv = new GatherPolygonVisitor(intersectArea, ni1, gatherNetworks);
-			HierarchyEnumerator.enumerateCell(ni1.getParent(), VarContext.globalContext, gpv);
-			rtree = gpv.getRTree();
-		} else
-		{
-			rtree = RTNode.makeTopLevel();
-			Technology tech = ni1.getProto().getTechnology();
-			Poly[] polys = tech.getShapeOfNode(ni1, true, true, null);
-			FixpTransform trans = ni1.rotateOut();
-			for(int i=0; i<polys.length; i++)
-			{
-				Poly poly = polys[i];
-				poly.transform(trans);
-                int netID = -1;
-                if (poly.getPort() != null) {
-                    netID = gatherNetworks.getGlobalNetworkID(VarContext.globalContext, ni1.findPortInstFromEquivalentProto(poly.getPort()));
-                }
-                if (!DBMath.rectsIntersect(poly.getBounds2D(), intersectArea)) continue;
-				rtree = RTNode.linkGeom(null, rtree, new SubPolygon(poly, VarContext.globalContext, netID, ni1));
-			}
-		}
+		GatherPolygonVisitor gpv = new GatherPolygonVisitor(intersectArea, ni1, gatherNetworks);
+		HierarchyEnumerator.enumerateCell(ni1.getParent(), VarContext.globalContext, gpv);
+		RTNode<SubPolygon> rtree = gpv.getRTree();
 
 		// now take the list into the second node and look for connections
 		CheckPolygonVisitor cpv = new CheckPolygonVisitor(rtree, intersectArea, ni2, gatherNetworks);
@@ -2461,7 +2410,8 @@ name=null;
 		private List<PolyConnection> connectionsFound;
         private GatherNetworksVisitor gatherNetworks;
 
-        public CheckPolygonVisitor(RTNode<SubPolygon> rtree, Rectangle2D intersectArea, NodeInst cellOfInterest, GatherNetworksVisitor gatherNetworks)
+        public CheckPolygonVisitor(RTNode<SubPolygon> rtree, Rectangle2D intersectArea, NodeInst cellOfInterest, 
+								   GatherNetworksVisitor gatherNetworks)
 		{
 			this.rtree = rtree;
 			this.intersectArea = intersectArea;
@@ -2485,6 +2435,7 @@ name=null;
 			{
 				NodeInst ni = it.next();
 				if (ni.isCellInstance()) continue;
+				if (NodeInst.isSpecialNode(ni)) continue;
 				FixpTransform nodeTrans = ni.rotateOut(toTop);
 				Technology tech = ni.getProto().getTechnology();
 				Poly[] polys = tech.getShapeOfNode(ni, true, true, null);
@@ -2499,7 +2450,9 @@ name=null;
 						SubPolygon sp = sea.next();
 						if (sp.poly.getLayer() != poly.getLayer()) continue;
 						if (sp.poly.separation(poly) >= DBMath.getEpsilon()) continue;
-						int netID = gatherNetworks.getGlobalNetworkID(info.getContext(), ni.findPortInstFromEquivalentProto(poly.getPort()));
+						PortProto pp = poly.getPort();
+						PortInst pi = ni.findPortInstFromEquivalentProto(pp);
+						int netID = gatherNetworks.getGlobalNetworkID(info.getContext(), pi);
 						SubPolygon sp2 = new SubPolygon(poly, info.getContext(), netID, ni);
 						addConnection(sp, sp2);
 					}
@@ -2613,6 +2566,7 @@ name=null;
 			{
 				NodeInst ni = it.next();
 				if (ni.isCellInstance()) continue;
+				if (NodeInst.isSpecialNode(ni)) continue;
 				FixpTransform nodeTrans = ni.rotateOut(toTop);
 				Technology tech = ni.getProto().getTechnology();
 				Poly[] polys = tech.getShapeOfNode(ni, true, true, null);
@@ -2624,7 +2578,8 @@ name=null;
 					if (poly.getPort() == null) continue;
 					poly.transform(nodeTrans);
 					if (!DBMath.rectsIntersect(poly.getBounds2D(), intersectArea)) continue;
-					int netID = gatherNetworks.getGlobalNetworkID(info.getContext(), ni.findPortInstFromEquivalentProto(poly.getPort()));
+					int netID = gatherNetworks.getGlobalNetworkID(info.getContext(), 
+																  ni.findPortInstFromEquivalentProto(poly.getPort()));
 					rtree = RTNode.linkGeom(null, rtree, new SubPolygon(poly, info.getContext(), netID, ni));
 				}
 			}
@@ -2774,6 +2729,43 @@ name=null;
 
 		return headTooWide || tailTooWide;
 	}
+
+	/**
+	 * Method to gather geometry from cell in/around rect
+	 * 
+	 */
+
+	private PolyMerge mergeGeometry(Cell cell, Rectangle2D rect) {
+		// collect routing area
+		GatherNetworksVisitor gnv = new GatherNetworksVisitor();
+		HierarchyEnumerator.enumerateCell(cell, VarContext.globalContext, gnv);
+		PolyMerge merge = new PolyMerge();
+		for(Iterator<Geometric> gIt = cell.searchIterator(rect); gIt.hasNext(); )	{
+			Geometric geom = gIt.next();
+			if (geom instanceof NodeInst) {
+				NodeInst node = (NodeInst) geom;
+				GatherPolygonVisitor gpv = new GatherPolygonVisitor(rect, node, gnv);
+				HierarchyEnumerator.enumerateCell(cell, VarContext.globalContext, gpv);
+				RTNode<SubPolygon> rtree = gpv.getRTree();
+				for (Iterator<SubPolygon> sIt = new RTNode.Search<SubPolygon>(rect, rtree, true); sIt.hasNext(); ) {
+					SubPolygon sp = sIt.next();
+					merge.addPolygon(sp.poly.getLayer(), sp.poly);
+				}
+				if (geom instanceof ArcInst) {
+					ArcInst arc = (ArcInst) geom;
+					for (Poly poly : arc.getProto().getTechnology().getShapeOfArc(arc)) {
+						ArcTouchVisitor atv = new ArcTouchVisitor(arc, poly, gnv);
+						HierarchyEnumerator.enumerateCell(cell, VarContext.globalContext, atv);
+						for (SubPolygon sp : atv.getTouching().values()) {
+							merge.addPolygon(sp.poly.getLayer(), sp.poly);
+						}
+					}
+				}
+			}
+		}
+		return merge;
+	}
+	
 
 	/**
 	 * Method to get the shape of a node as a list of Polys.
@@ -3069,7 +3061,7 @@ name=null;
 			for(Network net : combined)
 				connected.put(net, combined);
 		}
-	}
+	}	
 
 	/**
 	 * Class to package Preferences for the server.
