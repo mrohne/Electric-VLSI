@@ -42,6 +42,7 @@ import com.sun.electric.database.hierarchy.View;
 import com.sun.electric.database.id.CellId;
 import com.sun.electric.database.id.ExportId;
 import com.sun.electric.database.id.PortProtoId;
+import com.sun.electric.database.id.CellUsage;
 import com.sun.electric.database.prototype.NodeProto;
 import com.sun.electric.database.prototype.PortCharacteristic;
 import com.sun.electric.database.prototype.PortProto;
@@ -70,6 +71,7 @@ import com.sun.electric.tool.io.GDSReader;
 import com.sun.electric.tool.io.GDSReader.GSymbol;
 import com.sun.electric.tool.io.IOTool;
 import com.sun.electric.tool.io.input.CellArrayBuilder;
+import static com.sun.electric.tool.io.input.CellArrayBuilder.*;
 import com.sun.electric.tool.ncc.basic.NccCellAnnotations;
 import com.sun.electric.tool.user.dialogs.OpenFile;
 import com.sun.electric.tool.user.ui.LayerVisibility;
@@ -135,7 +137,7 @@ public class GDS extends Input<Object>
     public static final boolean INSTANTIATE_ARRAYS_VIA_BISECTION = true;
 
 	// data declarations
-	private static final int MAXPOINTS     =  2048;
+	private static final int MAXPOINTS     =  256*1024;
 	private static final int MINFONTWIDTH  =  130;
 	private static final int MINFONTHEIGHT =  190;
 
@@ -474,14 +476,12 @@ public class GDS extends Input<Object>
 
     private class CellBuilder
     {
-//		private static Set<CellId> cellsTooComplex;
 		private GDSPreferences localPrefs;
 		private Technology tech;
 		private Cell cell;
         private List<MakeInstance> insts = new ArrayList<MakeInstance>();
         private Map<UnknownLayerMessage,List<MakeInstance>> allErrorInsts = new LinkedHashMap<UnknownLayerMessage,List<MakeInstance>>();
         private List<MakeInstanceArray> instArrays = new ArrayList<MakeInstanceArray>();
-//        public GDS gds;
 
         private boolean topLevel;
         private int nodeId;
@@ -1278,48 +1278,13 @@ public class GDS extends Input<Object>
                 }
             }
 
-            if (INSTANTIATE_ARRAYS_VIA_BISECTION)
-            {
-                double colspace;
-                double rowspace;
-                int rows;
-                int cols;
-                if (orient.getAngle() % 1800 == 0)
-                {
-                    if (rowOffset.getX() == 0 && colOffset.getY() == 0)
-                    {
-                        colspace = colOffset.getX();
-                        rowspace = rowOffset.getY();
-                        cols = nCols;
-                        rows = nRows;
-                    } else
-                    {
-                        throw new Error("jagged arrays not allowed");
-                    }
-                } else if (orient.getAngle() % 1800 == 900)
-                {
-                    if (colOffset.getX() == 0 && rowOffset.getY() == 0)
-                    {
-                        colspace = rowOffset.getX();
-                        rowspace = colOffset.getY();
-                        cols = nRows;
-                        rows = nCols;
-                    } else
-                    {
-                        throw new Error("jagged arrays not allowed");
-                    }
-                } else
-                {
-                    throw new Error("nonrectangular arrays not allowed");
-                }
+            if (INSTANTIATE_ARRAYS_VIA_BISECTION) {
                 cellArrayBuilder.buildArray(proto,
                                             parent,
                                             EPoint.fromLambda(startLoc.getX(), startLoc.getY()),
-                                            orient,
-                                            cols,
-                                            rows,
-                                            FixpCoord.fromLambda(colspace),
-                                            FixpCoord.fromLambda(rowspace),
+                                            orient, nCols, nRows,
+                                            EPoint.fromLambda(colOffset.getX(), colOffset.getY()),
+                                            EPoint.fromLambda(rowOffset.getX(), rowOffset.getY()),
                                             ep);
                 return;
             }
@@ -1960,7 +1925,6 @@ public class GDS extends Input<Object>
 			gdsRead.getToken();
 		}
 		if (gdsRead.getTokenType() != GDSReader.GDS_XY) gdsRead.handleError("Array reference has no parameters");
-		gdsRead.getToken();
 		determinePoints(3, 3);
 
 		// see if the instance is a single object
@@ -2058,7 +2022,6 @@ public class GDS extends Input<Object>
 			scale = ro.scale;
 		}
 		if (gdsRead.getTokenType() != GDSReader.GDS_XY) gdsRead.handleError("Structure reference has no translation value");
-		gdsRead.getToken();
 		determinePoints(1, 1);
 
 		if (TALLYCONTENTS)
@@ -2088,7 +2051,6 @@ public class GDS extends Input<Object>
 		gdsRead.getToken();
 		if (gdsRead.getTokenType() != GDSReader.GDS_XY) gdsRead.handleError("Boundary has no points");
 
-		gdsRead.getToken();
 		determinePoints(3, MAXPOINTS);
 		if (TALLYCONTENTS)
 		{
@@ -2267,7 +2229,6 @@ public class GDS extends Input<Object>
 		}
 		if (gdsRead.getTokenType() == GDSReader.GDS_XY)
 		{
-			gdsRead.getToken();
 			determinePoints(2, MAXPOINTS);
 
 			if (TALLYCONTENTS)
@@ -2398,7 +2359,6 @@ public class GDS extends Input<Object>
 		// make a dot
 		if (gdsRead.getTokenType() != GDSReader.GDS_XY) gdsRead.handleError("Boundary has no points");
 
-		gdsRead.getToken();
 		determinePoints(1, 1);
 
 		if (TALLYCONTENTS)
@@ -2461,7 +2421,6 @@ public class GDS extends Input<Object>
 			}
 			if (gdsRead.getTokenType() == GDSReader.GDS_XY)
 			{
-				gdsRead.getToken();
 				determinePoints(1, 1);
 				continue;
 			}
@@ -2572,7 +2531,6 @@ public class GDS extends Input<Object>
 		determineLayer(false);
 		if (gdsRead.getTokenType() != GDSReader.GDS_XY) gdsRead.handleError("Boundary has no points");
 
-		gdsRead.getToken();
 		determinePoints(2, MAXPOINTS);
 		if (TALLYCONTENTS)
 		{
@@ -2589,7 +2547,7 @@ public class GDS extends Input<Object>
 		} else
 		{
             theCell.makeInstance(layerNodeProto, new Point2D.Double(theVertices[0].getX(), theVertices[0].getY()),
-            	Orientation.IDENT, 0, 0, null, currentUnknownLayerMessage);
+								 Orientation.IDENT, 1.0, 0, 0, null, currentUnknownLayerMessage);
 		}
 
         if (localPrefs.dumpReadable)
@@ -2951,23 +2909,28 @@ public class GDS extends Input<Object>
 		throws Exception
 	{
 		numVertices = 0;
-		while (gdsRead.getTokenType() == GDSReader.GDS_NUMBER)
-		{
-			double x = scaleValue(gdsRead.getIntValue());
-			gdsRead.getToken();
-			double y = scaleValue(gdsRead.getIntValue());
-			theVertices[numVertices].setLocation(x, y);
-			DBMath.gridAlign(theVertices[numVertices], alignment);
-			numVertices++;
-			if (numVertices > max_points)
-			{
-				System.out.println("Found " + numVertices + " points (too many)");
-				gdsRead.handleError("Too many points in the shape");
+		while (numVertices < MAXPOINTS) {
+			while (numVertices < MAXPOINTS) {
+				if (gdsRead.getRemainingDataCount() < 4) break;
+				gdsRead.getToken();
+				if (gdsRead.getTokenType() != GDSReader.GDS_NUMBER) break;
+				double x = scaleValue(gdsRead.getIntValue());
+				if (gdsRead.getRemainingDataCount() < 4) break;
+				gdsRead.getToken();
+				if (gdsRead.getTokenType() != GDSReader.GDS_NUMBER) break;
+				double y = scaleValue(gdsRead.getIntValue());
+				theVertices[numVertices].setLocation(x, y);
+				DBMath.gridAlign(theVertices[numVertices], alignment);
+				numVertices++;
 			}
 			gdsRead.getToken();
+			if (gdsRead.getTokenType() != GDSReader.GDS_XY) break;
 		}
-		if (numVertices < min_points)
-		{
+		if (numVertices > max_points) {
+			System.out.println("Found " + numVertices + " points (too many)");
+			gdsRead.handleError("Too many points in the shape");
+		}
+		if (numVertices < min_points) {
 			System.out.println("Found " + numVertices + " points (too few)");
 			gdsRead.handleError("Not enough points in the shape");
 		}
