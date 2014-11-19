@@ -179,21 +179,22 @@
 
 	<target name="compilePublic" description="Compile the public part of Electric">
 		<!-- deprecation flag: deprecation="true" -->
-		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m"
-		       encoding="UTF-8" source="1.8" target="1.8">
-			<classpath>
-				<pathelement location="${slf4j-api}" />
-				<pathelement location="${slf4j-jdk}" />
-                                <pathelement location="${scala-library}" />
-				<pathelement location="${beanshell}" />
-				<pathelement location="${jython}" />
-				<pathelement location="${AppleJava}" />
-				<pathelement location="${junit}" />
-				<pathelement location="${j3dcore}" />
-				<pathelement location="${j3dutils}" />
-				<pathelement location="${vecmath}" />
-				<pathelement location="${jmf}" />
-			</classpath>
+		<javac deprecation="true" debug="true" encoding="utf-8" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m" source="1.8" target="1.8">
+		  <compilerarg value="-Xlint:unchecked"/>
+		  <compilerarg value="-g"/>
+		  <classpath>
+		    <pathelement location="${slf4j-api}" />
+		    <pathelement location="${slf4j-jdk}" />
+                    <pathelement location="${scala-library}" />
+		    <pathelement location="${beanshell}" />
+		    <pathelement location="${jython}" />
+		    <pathelement location="${AppleJava}" />
+		    <pathelement location="${junit}" />
+		    <pathelement location="${j3dcore}" />
+		    <pathelement location="${j3dutils}" />
+		    <pathelement location="${vecmath}" />
+		    <pathelement location="${jmf}" />
+		  </classpath>
 		</javac>
 		<copy todir="${antBuild}/com">
 			<fileset dir="${ElectricJavaLoc}/com"
@@ -369,4 +370,46 @@
 		</delete>
 	</target>
 
+	<!-- Create the app bundle -->
+	<property environment="env"/>
+	<exec executable="/usr/libexec/java_home" 
+	      outputproperty="env.JAVA_HOME">
+	  <arg value="-v1.8"/>
+	</exec>
+	<property name="env.JAVA_HOME" 
+		  value="/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home"/>
+	<taskdef name="bundleapp" 
+		 classname="com.oracle.appbundler.AppBundlerTask"
+		 classpath="packaging/appbundler-1.0.jar">
+	</taskdef>
+	<target name="mac-bundle" depends="initialize" description="Build Macintosh Application">
+	  <property name="jarname" value="electric-${version}.jar" />
+	  <antcall target="ensureBuildDirectory" />
+	  <antcall target="compilePublic" />
+	  <antcall target="createJARFile" />
+	  <property name="bundledir" value="${packaging}/Bundle${version}" />
+	  <mkdir dir="${bundledir}" />
+	  <bundleapp outputdirectory="${bundledir}"
+		     name="Electric"
+		     displayname="Electric VLSI"
+		     identifier="com.sun.Electric"
+		     shortversion="${version}"
+		     icon="${packaging}/electric.icns"
+		     applicationCategory="public.cae.electronics"
+		     mainclassname="com.sun.electric.Launcher">
+            <runtime dir="${env.JAVA_HOME}"/>
+            <classpath dir="${packaging}">
+	      <!-- <filename name="**/*.jar"/> -->
+	      <filename name="electric-${version}.jar"/>
+	    </classpath>
+	    <option value="-Xdebug"/>
+	    <option value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
+	    <option value="-Xms64m"/>
+	    <option value="-Xmx2048m"/>
+	    <option value="-Xss64m"/>
+	    <option value="-XX:PermSize=64m"/>
+	    <option value="-XX:MaxPermSize=2048m"/>
+	    <option value="-Dcom.apple.mrj.application.apple.menu.about.name=Electric"/>
+	  </bundleapp>
+	</target>
 </project>
