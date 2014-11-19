@@ -41,35 +41,32 @@
 	<target name="jarForGNUBinary" depends="initialize" description="Make binary Jar file for GNU">
 		<property name="jarname" value="electricBinary-${version}.jar" />
 		<echo message="Building ${jarname}" />
-		<antcall target="createBuildDirectory" />
+		<mkdir dir="${antBuild}"/>
 		<antcall target="compilePublic" />
-		<antcall target="copyPublicJARs" />
 		<antcall target="copyGNUParts" />
 		<antcall target="createJARFile">
-			<param name="GNU" value="1"/>
+		  <param name="GNU" value="1"/>
 		</antcall>
-		<antcall target="deleteBuildDirectory" />
 	</target>
 
 	<target name="jarForGNUSource" depends="initialize" description="Make source Jar file for GNU">
 		<property name="jarname" value="electric-${version}.jar" />
 		<echo message="Building ${jarname}" />
-		<antcall target="createBuildDirectory" />
+		<mkdir dir="${antBuild}"/>
 		<antcall target="compilePublic" />
-		<antcall target="copyPublicJARs" />
 		<antcall target="copyGNUParts" />
 		<antcall target="copyPublicSources" />
 		<antcall target="createJARFile">
-			<param name="GNU" value="1"/>
+		  <param name="GNU" value="1"/>
 		</antcall>
-		<antcall target="deleteBuildDirectory" />
 	</target>
 
 	<target name="jarForSFSExtras" depends="initialize" description="Make SFS Extra Jar file for IRSIM, j3d, and JMF">
 		<property name="jarname" value="electricSFS-${version}.jar" />
 		<echo message="Building ${jarname}" />
-		<antcall target="createBuildDirectory" />
+		<mkdir dir="${antBuild}"/>
 		<antcall target="compilePublic" />
+		<antcall target="copyGNUParts" />
 		<antcall target="copyPublicSources" />
 		<copy file="${packaging}/LicenseIRSIM.txt" tofile="${antBuild}/LicenseIRSIM.txt" />
 		<zip basedir="${antBuild}" compress="true" zipfile="${packaging}/${jarname}">
@@ -77,7 +74,6 @@
 			<include name="com/sun/electric/plugins/irsim/**" />
 			<include name="com/sun/electric/plugins/JMF/**" />
 		</zip>
-		<antcall target="deleteBuildDirectory" />
 	</target>
 
 	<target name="jarForOracle" depends="initialize" description="Make binary Jar file for Oracle internal use">
@@ -150,6 +146,10 @@
 		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.7.jar" />
 		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.7.jar" />
 		<property name="junit"              value="${packaging}/junit-4.10.jar" />
+		<property name="jogl-all"           value="${packaging}/jogl-all.jar" />
+		<property name="gluegen-rt"         value="${packaging}/gluegen-rt.jar" />
+		<property name="jogl-all-natives"   value="${packaging}/jogl-all-natives-macosx-universal.jar" />
+		<property name="gluegen-rt-natives" value="${packaging}/gluegen-rt-natives-macosx-universal.jar" />
 		<property name="vecmath"            value="${packaging}/vecmath.jar" />
 		<property name="j3dcore"            value="${packaging}/j3dcore.jar" />
 		<property name="j3dutils"           value="${packaging}/j3dutils.jar" />
@@ -179,7 +179,11 @@
 
 	<target name="compilePublic" description="Compile the public part of Electric">
 		<!-- deprecation flag: deprecation="true" -->
-		<javac deprecation="true" debug="true" encoding="utf-8" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m" source="1.8" target="1.8">
+		<javac deprecation="true" debug="true" 
+		       encoding="utf-8" includeantruntime="false"
+		       destdir="${antBuild}" srcdir="${ElectricJavaLoc}"
+		       fork="true" memoryMaximumSize="1024m"
+		       source="1.8" target="1.8">
 		  <compilerarg value="-Xlint:unchecked"/>
 		  <compilerarg value="-g"/>
 		  <classpath>
@@ -327,39 +331,6 @@
 		<antcall target="copyABCLJAR" />
 	</target>
 	
-	<target name="mac-app" depends="initialize" description="Build Macintosh Application">
-	        <property name="jarname" value="electric-${version}.jar" />
-	        <antcall target="ensureBuildDirectory" />
-		<antcall target="compilePublic" />
-		<antcall target="createJARFile" />
-
-		<property name="releasedir" value="${packaging}/Release${version}" />
-		<property name="appdir" value="${releasedir}/Electric.app" />
-		<mkdir dir="${releasedir}" />
-		<mkdir dir="${appdir}" />
-		<mkdir dir="${appdir}/Contents" />
-		<mkdir dir="${appdir}/Contents/MacOS" />
-		<mkdir dir="${appdir}/Contents/Resources" />
-		<mkdir dir="${appdir}/Contents/Resources/Java" />
-		<copy file="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub" todir="${appdir}/Contents/MacOS" />
-		<chmod file="${appdir}/Contents/MacOS/JavaApplicationStub" perm="755" />
-		<copy file="${packaging}/Info.plist" todir="${appdir}/Contents" />
-		<replace file="${appdir}/Contents/Info.plist" token="@VERSION" value="${version}" />
-		<copy file="${packaging}/PkgInfo" todir="${appdir}/Contents" />
-		<copy file="${packaging}/electric.icns" todir="${appdir}/Contents/Resources" />
-		<copy file="${packaging}/${jarname}" tofile="${appdir}/Contents/Resources/Java/electric.jar" />
-		<exec executable="SetFile">
-			<arg value="-a" />
-			<arg value="B" />
-			<arg value="${appdir}" />
-		</exec>
-		<!--
-		<exec executable="${packaging}/mkdmg.sh">
-			<arg value="Electric${version}" />
-			<arg value="${releasedir}" />
-		</exec>
-		-->
-	</target>
 
 	<target name="clean" depends="initialize" description="Clean all build products">
 		<delete dir="${antBuild}" />
@@ -370,7 +341,6 @@
 		</delete>
 	</target>
 
-	<!-- Create the app bundle -->
 	<property environment="env"/>
 	<exec executable="/usr/libexec/java_home" 
 	      outputproperty="env.JAVA_HOME">
@@ -382,12 +352,10 @@
 		 classname="com.oracle.appbundler.AppBundlerTask"
 		 classpath="packaging/appbundler-1.0.jar">
 	</taskdef>
-	<target name="mac-bundle" depends="initialize" description="Build Macintosh Application">
-	  <property name="jarname" value="electric-${version}.jar" />
-	  <antcall target="ensureBuildDirectory" />
-	  <antcall target="compilePublic" />
-	  <antcall target="createJARFile" />
-	  <property name="bundledir" value="${packaging}/Bundle${version}" />
+	<target name="mac-app" depends="initialize" description="Build Macintosh Application">
+	  <antcall target="jarForGNUSource" />
+	  <property name="electric" value="${packaging}/electric-${version}.jar" />
+	  <property name="bundledir" value="${packaging}/Release${version}" />
 	  <mkdir dir="${bundledir}" />
 	  <bundleapp outputdirectory="${bundledir}"
 		     name="Electric"
@@ -398,9 +366,28 @@
 		     applicationCategory="public.cae.electronics"
 		     mainclassname="com.sun.electric.Launcher">
             <runtime dir="${env.JAVA_HOME}"/>
-            <classpath dir="${packaging}">
-	      <!-- <filename name="**/*.jar"/> -->
-	      <filename name="electric-${version}.jar"/>
+	    <classpath dir=".">
+	      <include name="${electric}" />
+	      <include name="${AppleJava}" />
+	      <include name="${abcl-contrib}" />
+	      <include name="${abcl}" />
+	      <include name="${beanshell}" />
+	      <include name="${jmf}" />
+	      <include name="${junit}" />
+	      <include name="${jython}" />
+	      <include name="${scala-compiler}" />
+	      <include name="${scala-library}" />
+	      <include name="${slf4j-api}" />
+	      <include name="${slf4j-jdk}" />
+              <include name="${scala-compiler}" />
+              <include name="${scala-library}" />
+	      <include name="${j3dcore}" />
+	      <include name="${j3dutils}" />
+	      <include name="${vecmath}" />
+	      <include name="${jogl-all}" />
+	      <include name="${jogl-all-natives}"/>
+	      <include name="${gluegen-rt}" />
+	      <include name="${gluegen-rt-natives}" />
 	    </classpath>
 	    <option value="-Xdebug"/>
 	    <option value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
