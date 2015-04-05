@@ -38,34 +38,45 @@ import com.sun.electric.database.hierarchy.Nodable;
 import com.sun.electric.database.hierarchy.HierarchyEnumerator;
 
 import java.util.List;
-import java.io.Reader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
+import java.io.PrintStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.awt.EventQueue;
 
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import javax.script.ScriptContext;
 import javax.script.CompiledScript;
 import javax.script.Compilable;
 import javax.script.Invocable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EvalABCL {
 
     private static boolean abclChecked = false;
     private static ScriptEngineFactory abclFactory;
+    private static final Logger logger = LoggerFactory.getLogger(EvalABCL.class);
 
     public static boolean hasABCL() {
 		// find the ABCL class
 		if (!abclChecked) {
             abclChecked = true;
 			ScriptEngineManager mgr = new ScriptEngineManager();
-			System.out.println("Scanning scriptFactories");
+			System.out.println("Scanning scriptFactories for ABCL Script");
 			for (ScriptEngineFactory factory: mgr.getEngineFactories()) {
 				System.out.println("getEngineName(): "+factory.getEngineName());
 				if (factory.getEngineName().equals("ABCL Script") &&
@@ -73,7 +84,12 @@ public class EvalABCL {
 					abclFactory = factory;
 				}
 			}
-			System.out.println("Found abclFactory: "+abclFactory);
+			System.out.println("Found ABCL Script: "+abclFactory);
+			ScriptContext ctx = abclFactory.getScriptEngine().getContext();
+			ctx.setReader(new InputStreamReader(System.in));
+			ctx.setWriter(new OutputStreamWriter(System.out));
+			ctx.setErrorWriter(new OutputStreamWriter(new PrintStream(System.out, true)));
+			abclFactory.getScriptEngine().setContext(ctx);
         }
         // if already initialized, return state
         return abclFactory != null;
@@ -85,19 +101,49 @@ public class EvalABCL {
 		}
 	}
 
-    public static boolean runScriptNoJob(String string) {
-		try {
-			return abclFactory.getScriptEngine().eval(string) != null;
-		} catch (Throwable e) {
-			System.out.println("runScriptNoJob: " + e);
-			throw new Bypass(e);
-		}
-			
-    }
+    public static boolean runScriptNoJob(final String string) {
+		Runnable thunk = new Runnable() {
+				public void run() {
+					try {
+						logger.trace("runScriptNoJob: "+string);
+						abclFactory.getScriptEngine().eval(string);
+					} catch (Throwable e) {
+						logger.trace("runScriptNoJob: " + e);
+					}
+				}
+			};
+		return runScriptNoJob(thunk);
+	}
 
-    public static void runScript(String string, Job.Type jobType, Job.Priority jobPriority) {
-		ScriptJob job = new ScriptJob(string, jobType, jobPriority);
-		job.startJob();
+    public static boolean runScriptNoJob(final CompiledScript script) {
+		Runnable thunk = new Runnable() {
+				public void run() {
+					try {
+						logger.trace("runScriptNoJob: "+script);
+						script.eval();
+					} catch (Throwable e) {
+						logger.trace("runScriptNoJob: " + e);
+					}
+				}
+			};
+		return runScriptNoJob(thunk);
+	}
+
+	public static boolean runScriptNoJob(Runnable thunk) {
+		if (EventQueue.isDispatchThread()) thunk.run();
+		else EventQueue.invokeLater(thunk);
+		return true;
+	}
+
+    public static void runScript(final String string, final Job.Type jobType, final Job.Priority jobPriority) {
+		Runnable run = 
+			new Runnable() {
+				public void run() {
+					ScriptJob job = new ScriptJob(string, jobType, jobPriority);
+					job.startJob();
+				}
+			};
+		runScriptNoJob(run);
 	}
 
     public static void displayCell(Cell cell) {
@@ -111,7 +157,7 @@ public class EvalABCL {
 		private String string;
         private Cell cell;
 
-		public ScriptJob(String string, Job.Type jobType, Job.Priority jobPriority) {
+		public ScriptJob(final String string, Job.Type jobType, Job.Priority jobPriority) {
 			super("ABCL script", User.getUserTool(), jobType, null, null, jobPriority);
 			this.string = string;
             this.cell = null;
@@ -119,7 +165,45 @@ public class EvalABCL {
         }
 
         public boolean doIt() {
-			return runScriptNoJob(string);
+			try {
+				abclFactory.getScriptEngine().eval(string);
+				return true;
+			} catch (ScriptException e) {
+				logger.trace("ScriptJob: "+e);
+				return false;
+			}
+		}
+
+        private void displayCell(Cell cell) {
+            this.cell = cell;
+            fieldVariableChanged("cell");
+        }
+
+        public void terminateOK() {
+            if (cell != null) {
+                Job.getUserInterface().displayCell(cell);
+            }
+        }
+    }
+
+    private static class ThunkJob extends Job {
+		private CompiledScript thunk;
+        private Cell cell;
+
+		public ThunkJob(CompiledScript thunk, Job.Type jobType, Job.Priority jobPriority) {
+			super("ABCL thunk", User.getUserTool(), jobType, null, null, jobPriority);
+			this.thunk = thunk;
+            this.cell = null;
+			System.out.println("EvalABCL.ThunkJob(\""+thunk+"\", "+jobType+", "+jobPriority+")");
+        }
+
+        public boolean doIt() {
+			try {
+				thunk.eval();
+				return true;
+			} catch (Throwable e) {
+				return false;
+			}
 		}
 
         private void displayCell(Cell cell) {
