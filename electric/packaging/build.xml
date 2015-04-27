@@ -29,12 +29,11 @@
 		<antcall target="jarForPublicIncremental" />
 	</target>
 
-	<target name="jarForPublicIncremental" depends="initialize" description="Make (incrementally) binary Jar file for public use">
+	<target name="jarForPublic" depends="initialize" description="Make (incrementally) binary Jar file for public use">
 		<property name="jarname" value="electricPublic-${version}.jar" />
 		<echo message="Building ${jarname} incrementally" />
-		<mkdir dir="${antBuild}"/>
+		<antcall target="ensureBuildDirectory" />
 		<antcall target="compilePublic" />
-		<antcall target="incrementalJARs" />
 		<antcall target="createJARFile" />
 	</target>
 
@@ -113,7 +112,7 @@
 
 	<target name="javadoc" depends="initialize" description="Create Javadoc">
 		<mkdir dir="apidoc" />
-		<javadoc destdir="apidoc" private="false" use="true" source="1.8" maxmemory="400m">
+		<javadoc destdir="apidoc" private="false" use="true" encoding="utf-8" source="1.8" maxmemory="400m">
 			<packageset dir="electric-java">
 				<include name="com/sun/electric/**" />
 				<exclude name="com/sun/electric/plugins/**" />
@@ -142,9 +141,9 @@
 		<property name="jython"             value="${packaging}/jython.jar" />
 		<property name="abcl"               value="${packaging}/abcl.jar" />
 		<property name="abcl-contrib"       value="${packaging}/abcl-contrib.jar" />
-		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions-1.4.jar" />
-		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.7.jar" />
-		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.7.jar" />
+		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions.jar" />
+		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.10.jar" />
+		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.10.jar" />
 		<property name="junit"              value="${packaging}/junit-4.10.jar" />
 		<property name="jogl-all"           value="${packaging}/jogl-all.jar" />
 		<property name="gluegen-rt"         value="${packaging}/gluegen-rt.jar" />
@@ -246,15 +245,14 @@
 	</target>
 
 	<target name="copyPublicJARs" description="Copy Jar files for logging and Scala">
-		<unjar src="${slf4j-api}" dest="${antBuild}">
-			<patternset> <include name="org/"/> </patternset>
-		</unjar>
-		<unjar src="${slf4j-jdk}" dest="${antBuild}">
-			<patternset> <include name="org/"/> </patternset>
-		</unjar>
-		<unjar src="${scala-library}" dest="${antBuild}">
-			<patternset> <include name="scala/"/> </patternset>
-		</unjar>
+		<unjar src="${scala-library}" dest="${antBuild}"/>
+		<unjar src="${junit}" dest="${antBuild}"/>
+		<unjar src="${jmf}" dest="${antBuild}"/>
+		<unjar src="${slf4j-api}" dest="${antBuild}"/>
+		<unjar src="${slf4j-jdk}" dest="${antBuild}"/>
+		<unjar src="${j3dcore}" dest="${antBuild}"/>
+		<unjar src="${j3dutils}" dest="${antBuild}"/>
+		<unjar src="${vecmath}" dest="${antBuild}"/>
 		<copy todir="${antBuild}/META-INF">
 			<fileset dir="${ElectricScalaLoc}/META-INF" />
 		</copy>
@@ -269,7 +267,7 @@
 		</unjar>
 	</target>
 
-	<target name="copyBshJAR" description="Copy Jar files for Apple stubs and Bean Shell">
+	<target name="copyBshJAR" description="Copy Jar files for Bean Shell">
 		<unjar dest="${antBuild}" src="${beanshell}">
 			<patternset> <include name="bsh/"/> </patternset>
 		</unjar>
@@ -353,8 +351,8 @@
 		 classpath="packaging/appbundler-1.0.jar">
 	</taskdef>
 	<target name="mac-app" depends="initialize" description="Build Macintosh Application">
-	  <antcall target="jarForGNUSource" />
-	  <property name="electric" value="${packaging}/electric-${version}.jar" />
+	  <antcall target="jarForPublic" />
+	  <property name="electric" value="${packaging}/electricPublic-${version}.jar" />
 	  <property name="bundledir" value="${packaging}/Release${version}" />
 	  <mkdir dir="${bundledir}" />
 	  <bundleapp outputdirectory="${bundledir}"
@@ -385,10 +383,16 @@
 	      <include name="${j3dutils}" />
 	      <include name="${vecmath}" />
 	      <include name="${jogl-all}" />
-	      <include name="${jogl-all-natives}"/>
 	      <include name="${gluegen-rt}" />
+	      <include name="${jogl-all-natives}" />
 	      <include name="${gluegen-rt-natives}" />
 	    </classpath>
+	    <librarypath dir=".">
+	      <include name="${jogl-all}" />
+	      <include name="${gluegen-rt}" />
+	      <include name="${jogl-all-natives}" />
+	      <include name="${gluegen-rt-natives}" />
+	    </librarypath>
 	    <option value="-Xdebug"/>
 	    <option value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
 	    <option value="-Xms64m"/>
