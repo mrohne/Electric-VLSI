@@ -27,6 +27,8 @@ package com.sun.electric.tool.io.input;
 import com.sun.electric.database.EditingPreferences;
 import com.sun.electric.database.ImmutableExport;
 import com.sun.electric.database.ImmutableNodeInst;
+import com.sun.electric.database.ImmutableArcInst;
+import com.sun.electric.database.constraint.Constraints;
 import com.sun.electric.database.geometry.EPoint;
 import com.sun.electric.database.geometry.ERectangle;
 import com.sun.electric.database.geometry.GeometryHandler;
@@ -53,6 +55,7 @@ import com.sun.electric.database.topology.Geometric;
 import com.sun.electric.database.topology.NodeInst;
 import com.sun.electric.database.topology.ArcInst;
 import com.sun.electric.database.topology.PortInst;
+import com.sun.electric.database.topology.Topology;
 import com.sun.electric.database.variable.ElectricObject;
 import com.sun.electric.database.variable.MutableTextDescriptor;
 import com.sun.electric.database.variable.TextDescriptor;
@@ -60,9 +63,11 @@ import com.sun.electric.database.variable.Variable;
 import com.sun.electric.technology.ArcProto;
 import com.sun.electric.technology.Layer;
 import com.sun.electric.technology.PrimitiveNode;
+import com.sun.electric.technology.PrimitivePort;
 import com.sun.electric.technology.SizeOffset;
 import com.sun.electric.technology.Technology;
 import com.sun.electric.technology.Technology.NodeLayer;
+import com.sun.electric.technology.Technology.ArcLayer;
 import com.sun.electric.technology.technologies.Artwork;
 import com.sun.electric.technology.technologies.Generic;
 import com.sun.electric.tool.Job;
@@ -94,6 +99,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -485,8 +491,10 @@ public class GDS extends Input<Object>
 
         private boolean topLevel;
         private int nodeId;
+		private int arcId;
 
         private List<ImmutableNodeInst> nodesToCreate = new ArrayList<ImmutableNodeInst>();
+		private List<ImmutableArcInst> arcsToCreate = new ArrayList<ImmutableArcInst>();
         private Map<String,ImmutableExport> exportsByName = new HashMap<String,ImmutableExport>();
 		private Set<String> alreadyExports = exportsByName.keySet();
 		private Map<String, MutableInteger> nextExportPlainIndex = new HashMap<String, MutableInteger>();
@@ -515,6 +523,14 @@ public class GDS extends Input<Object>
                 exportsToKill.add(it.next());
             cell.killExports(exportsToKill);
             allBuilders.put(cell.getId(), this);
+        }
+
+        private void makeArcPath(ArcProto arcProto, PrimitiveNode pinProto, 
+								 double width, int endcode, 
+								 Point2D [] theLoc, int numLoc)
+		{
+			MakeArcPath ap = new MakeArcPath(this, arcProto, pinProto, width, endcode, theLoc, numLoc);
+			paths.add(ap);
         }
 
         private void makeInstance(NodeProto proto, Point2D loc, Orientation orient, double scale, double wid, double hei,
@@ -690,6 +706,15 @@ public class GDS extends Input<Object>
 			}
             createNodes();
 
+			// second make the paths
+			Map<PrimitiveNode,Map<Point2D,ImmutableNodeInst>> pinHash = 
+				new HashMap<PrimitiveNode, Map<Point2D, ImmutableNodeInst>>();
+			for(MakeArcPath ap : paths) {
+				ap.instantiate(this, cell);
+			}
+            createNodes();
+			createArcs();
+
 			// next make the exports
 			for(MakeInstance mi : insts)
 			{
@@ -860,6 +885,22 @@ public class GDS extends Input<Object>
         private void createNodes() {
             cell.addNodes(nodesToCreate);
             nodesToCreate.clear();
+        }
+        private void createArcs() {
+			Topology topology = cell.getTopology();
+			Constraints constraints = Constraints.getCurrent();
+			for (ImmutableArcInst ia : arcsToCreate) {
+				NodeInst headPin = topology.getNodeById(ia.headNodeId);
+				NodeInst tailPin = topology.getNodeById(ia.tailNodeId);
+				PortInst headPort = headPin.getOnlyPortInst();
+				PortInst tailPort = tailPin.getOnlyPortInst();
+				ArcInst ai = new ArcInst(topology, ia, headPort, tailPort);
+				headPort.getNodeInst().redoGeometric();
+				tailPort.getNodeInst().redoGeometric();
+				topology.addArc(ai);
+				constraints.newObject(ai);
+			}
+			arcsToCreate.clear();
         }
 
         private void doSkeleton(NodeProto proto, Point2D loc, Orientation orient, double wid, double hei, EPoint[] points)
@@ -1147,8 +1188,14 @@ public class GDS extends Input<Object>
 		}
 
         Set<CellId> builtCells = new HashSet<CellId>();
-        for(CellBuilder cellBuilder : allBuilders.values())
-            cellBuilder.makeInstances(builtCells);
+        for(CellBuilder cellBuilder : allBuilders.values()) {
+			try {
+				cellBuilder.makeInstances(builtCells);
+			} catch (Error e) {
+				String msg = "Failed to instantiate "+cellBuilder.cell.noLibDescribe()+": "+e.getMessage();
+				errorLogger.logMessage(msg, null, null, -1, true);
+			}
+		}
 
         if (localPrefs.skeletonize)
 		{
@@ -1201,6 +1248,113 @@ public class GDS extends Input<Object>
     	}
     	cb.skeletonCellInstances.clear();
     }
+
+	private class MakeArcPath
+	{
+		private ArcProto arcProto;
+		private PrimitiveNode pinProto;
+        private double width;
+		private int endcode;
+		private Point2D [] theLoc;
+        private ImmutableNodeInst n;
+
+        private MakeArcPath(CellBuilder cb, 
+							ArcProto arcProto, PrimitiveNode pinProto, 
+							double width, int endcode, 
+							Point2D [] theLoc, int numLoc)
+		{
+			this.arcProto = arcProto;
+			this.pinProto = pinProto;
+            this.width = DBMath.round(width);
+            this.endcode = endcode;
+            this.theLoc = new Point2D[numLoc]; 
+			for (int i=0; i<numLoc; i++) this.theLoc[i] = (Point2D) theLoc[i].clone();
+		}
+
+        /**
+         * Method to instantiate a node/export in a Cell.
+         * @param parent the Cell in which to create the geometry.
+         * @param exportUnify a map that shows how renamed exports connect.
+         * @param saveHere a list of ImmutableNodeInst to save this instance in.
+         * @return true if the export had to be renamed.
+         */
+        private void instantiate(CellBuilder cb, Cell parent)
+        {
+            assert parent.isLinked();
+			// calculate width and size
+			ERectangle pinRect = pinProto.getFullRectangle();
+			long pinWidth = DBMath.lambdaToSizeGrid(width - pinRect.getLambdaWidth());
+			EPoint pinSize = EPoint.fromGrid(pinWidth, pinWidth);
+			long arcWidth = DBMath.lambdaToGrid(0.5 * width) - arcProto.getBaseExtend().getGrid();
+			// pin invariants
+			PrimitivePort pinPort = pinProto.getPort(0);
+			int pinFlags = 0;
+			int pinBits = 0;
+			Name pinBase = pinProto.getPrimitiveFunction(pinBits).getBasename();
+			MutableInteger pinSuffix = cb.maxSuffixes.get(pinBase.toString());
+			if (pinSuffix == null) {
+				pinSuffix = new MutableInteger(0);
+				cb.maxSuffixes.put(pinBase.toString(), pinSuffix);
+			}
+			// arc invariants
+			Name arcBase = ImmutableArcInst.BASENAME;
+			MutableInteger arcSuffix = cb.maxSuffixes.get(arcBase.toString());
+			if (arcSuffix == null) {
+				arcSuffix = new MutableInteger(0);
+				cb.maxSuffixes.put(arcBase.toString(), arcSuffix);
+			}
+			// loop over vertices
+			ImmutableNodeInst headPin = null;
+			ImmutableNodeInst tailPin = null;
+			ImmutableArcInst headArc = null;
+			for (int i = 0; i < theLoc.length; i++) {
+				// pin variants
+				Point2D headLoc = theLoc[i];
+				int pinId = cb.nodeId++;
+				Name pinName = pinBase.findSuffixed(pinSuffix.intValue());
+				pinSuffix.increment();
+				EPoint pinAnchor = EPoint.snap(headLoc);
+				// shift pins
+				tailPin = headPin;
+				headPin = ImmutableNodeInst.newInstance(pinId, pinProto.getId(), 
+														pinName, ep.getNodeTextDescriptor(),
+														Orientation.IDENT, pinAnchor, pinSize, 
+														pinFlags, pinBits, 
+														ep.getInstanceTextDescriptor());
+				cb.nodesToCreate.add(headPin);
+				if (tailPin == null) continue;
+				// extension
+				int arcFlags = ImmutableArcInst.DEFAULT_FLAGS;
+				if (i==1) {
+					switch (endcode) {
+					case 0:
+					case 1:
+						arcFlags &= ~ImmutableArcInst.TAIL_EXTENDED.mask;
+						break;
+					}						
+				}
+				if (i==theLoc.length-1) {
+					switch (endcode) {
+					case 0:
+					case 1:
+						arcFlags &= ~ImmutableArcInst.HEAD_EXTENDED.mask;
+						break;
+					}						
+				}
+				// create segment
+				int arcId = cb.arcId++;
+				Name arcName = arcBase.findSuffixed(arcSuffix.intValue());
+				arcSuffix.increment();
+				int arcAngle = GenMath.figureAngle(headPin.anchor, tailPin.anchor);
+				headArc = ImmutableArcInst.newInstance(arcId, arcProto.getId(),
+													   arcName, ep.getArcTextDescriptor(),
+													   tailPin.nodeId, pinPort.getId(), tailPin.anchor,
+													   headPin.nodeId, pinPort.getId(), headPin.anchor,
+													   arcWidth, arcAngle, arcFlags);
+				cb.arcsToCreate.add(headArc);
+			}
+        }
+	}
 
     /**
      * Class to save instance array information.
@@ -1470,11 +1624,15 @@ public class GDS extends Input<Object>
             int flags = 0;
             int techBits = 0;
             TextDescriptor protoDescriptor = ep.getInstanceTextDescriptor();
+			if (DEBUGREF) System.out.println("newInstance: " + proto.toString() + "@" + orient.toString());
             n = ImmutableNodeInst.newInstance(nodeId, proto.getId(), nodeName, nameDescriptor,
-                orient, anchor, size, flags, techBits, protoDescriptor);
+                Orientation.IDENT, anchor, size, flags, techBits, protoDescriptor);
             if (points != null && GenMath.getAreaOfPoints(points) != wid*hei) {
                 n = n.withTrace(points, null);
             }
+			if (orient != Orientation.IDENT) {
+				n = n.withOrient(orient);
+			}
 
             // if it is an annotation text
             if (isVariableText)
@@ -1934,13 +2092,9 @@ public class GDS extends Input<Object>
 			countATotal += nCols*nRows;
 			return;
 		}
-		boolean mY = false;
 		boolean mX = false;
-		if (trans)
-		{
-			mY = true;
-			angle = (angle + 900) % 3600;
-		}
+		boolean mY = trans;
+		if (trans) angle = 3600 - angle;
 
 		Point2D colInterval = new Point2D.Double(0, 0);
 		if (nCols != 1)
@@ -1975,7 +2129,8 @@ public class GDS extends Input<Object>
 			scale = 1.0;
 			boolean mirror_x = false;
 			gdsRead.getToken();
-			if (gdsRead.getTokenType() != GDSReader.GDS_FLAGSYM) gdsRead.handleError("Structure reference is missing its flags field");
+			if (gdsRead.getTokenType() != GDSReader.GDS_FLAGSYM) 
+				gdsRead.handleError("Structure reference is missing its flags field");
 			if ((gdsRead.getFlagsValue()&0100000) != 0) mirror_x = true;
 			gdsRead.getToken();
 			if (gdsRead.getTokenType() == GDSReader.GDS_MAG)
@@ -1992,8 +2147,6 @@ public class GDS extends Input<Object>
 			}
 			angle = ((int)anglevalue) % 3600;
 			trans = mirror_x;
-			if (trans)
-				angle = (2700 - angle) % 3600;
 
 			// should not happen...*/
 			if (angle < 0) angle = angle + 3600;
@@ -2031,12 +2184,10 @@ public class GDS extends Input<Object>
 		}
 
 		Point2D loc = new Point2D.Double(theVertices[0].getX(), theVertices[0].getY());
-		boolean mY = false;
-		if (trans)
-		{
-			mY = true;
-			angle = (angle + 900) % 3600;
-		}
+		boolean mX = false;
+		boolean mY = trans;
+		if (trans) angle = 3600 - angle;
+
 		theCell.makeInstance(np, loc, Orientation.fromJava(angle, false, mY), scale, 0, 0, null, null);
 		if (localPrefs.dumpReadable) printWriter.println("-- Instance of " + theNodeProto.noLibDescribe() +
         	" at (" + TextUtils.formatDistance(loc.getX()) + "," + TextUtils.formatDistance(loc.getY()) + ")");
@@ -2237,85 +2388,169 @@ public class GDS extends Input<Object>
 				return;
 			}
 
-			// construct the path
-			for (int i=0; i < numVertices-1; i++)
-			{
-				Point2D fromPt = theVertices[i];
-				Point2D toPt = theVertices[i+1];
-
-				// determine whether either end needs to be shrunk
-				double fextend = width / 2;
-				double textend = fextend;
-				int thisAngle = GenMath.figureAngle(fromPt, toPt);
-				if (i > 0)
-				{
-					Point2D prevPoint = theVertices[i-1];
-					int lastAngle = GenMath.figureAngle(prevPoint, fromPt);
-					if (Math.abs(thisAngle-lastAngle) % 900 != 0)
-					{
-						int ang = Math.abs(thisAngle-lastAngle) / 10;
-						if (ang > 180) ang = 360 - ang;
-						if (ang > 90) ang = 180 - ang;
-						fextend = Poly.getExtendFactor(width, ang);
+			// search for suitable arc
+			ArcProto arcProto = null;
+			for (Iterator<ArcProto> aIt = curTech.getArcs(); aIt.hasNext(); ) {
+				ArcProto ap = aIt.next();
+				int numMatchedLayers = 0;
+				for (ArcLayer al : ap.getArcLayers()) {
+					if (layerNodeProto == null) continue;
+					for (NodeLayer nl : layerNodeProto.getNodeLayers()) {
+						if (al.getLayer() != nl.getLayer()) continue;
+						numMatchedLayers++;
+						break;
 					}
 				} else
 				{
 					fextend = bgnextend;
 				}
-				if (i+1 < numVertices-1)
-				{
-					Point2D nextPoint = theVertices[i+2];
-					int nextAngle = GenMath.figureAngle(toPt, nextPoint);
-					if (Math.abs(thisAngle-nextAngle) % 900 != 0)
-					{
-						int ang = Math.abs(thisAngle-nextAngle) / 10;
-						if (ang > 180) ang = 360 - ang;
-						if (ang > 90) ang = 180 - ang;
-						textend = Poly.getExtendFactor(width, ang);
-					}
-				} else
-				{
-					textend = endextend;
+				if (numMatchedLayers != ap.getArcLayers().length) continue;
+				switch (endcode) {
+				case 0: 
+					// no extension - must wipe
+					if (!ap.isWipable()) break;
+					arcProto = ap;
+					break;
+				case 1: 
+					// round extension - should not wipe
+					if (ap.isWipable()) break;
+					arcProto = ap;
+					System.out.println("***ENDCODE 1 USING "+arcProto);
+					break;
+				case 2:
+					// square extension - must wipe
+					if (!ap.isWipable()) break;
+					arcProto = ap;
+					break;
+				case 4: // don't use arcs anyway
+					arcProto = ap;
+					break;
+				default:
+					System.out.println("***UNKNOWN PATH ENDCODE: "+endcode);
+					break;
 				}
+				break;
+			}
 
-				// handle arbitrary angle path segment
-				double length = fromPt.distance(toPt);
-				Poly poly = Poly.makeEndPointPoly(length, width, GenMath.figureAngle(toPt, fromPt),
-					fromPt, fextend, toPt, textend, Poly.Type.FILLED);
-
-				if (localPrefs.mergeBoxes)
-				{
-					if (layerNodeProto != null)
-					{
-						NodeLayer [] layers = layerNodeProto.getNodeLayers();
-						merge.addPolygon(layers[0].getLayer(), poly);
+			// search for suitable pin
+			PrimitiveNode pinProto = null;
+			for (Iterator<PrimitiveNode> pIt = curTech.getNodes(); pIt.hasNext(); ) {
+				PrimitiveNode pn = pIt.next();
+				if (pn.getFunction() != PrimitiveNode.Function.PIN) continue;
+				if (pn.getNumPorts() != 1) continue;
+				if (pn.connectsTo(arcProto) == null) continue;
+				int numMatchedLayers = 0;
+				for (NodeLayer pl : pn.getNodeLayers()) {
+					for (NodeLayer nl : layerNodeProto.getNodeLayers()) {
+						if (pl.getLayer() != nl.getLayer()) continue;
+						numMatchedLayers++;
+						break;
 					}
-				} else
-				{
-					// make the node for this segment
-					Rectangle2D polyBox = poly.getBox();
-					if (polyBox != null)
-					{
-                        theCell.makeInstance(layerNodeProto,
-											 EPoint.fromLambda(polyBox.getCenterX(), polyBox.getCenterY()),
-											 Orientation.IDENT, 1.0, polyBox.getWidth(), polyBox.getHeight(), null, currentUnknownLayerMessage);
-					} else
-					{
-						polyBox = poly.getBounds2D();
-						double cx = polyBox.getCenterX();
-						double cy = polyBox.getCenterY();
+				}
+				if (numMatchedLayers != pn.getNodeLayers().length) continue;
+				switch (endcode) {
+				case 0: 
+					// no extension - must wipe
+					if (!pn.isWipeOn1or2()) break;
+					pinProto = pn;
+					break;
+				case 1: 
+					// round extension - should not wipe
+					if (pn.isWipeOn1or2()) break;
+					pinProto = pn;
+					System.out.println("***ENDCODE 1 USING "+pinProto);
+					break;
+				case 2:
+					// square extension - must wipe
+					if (!pn.isWipeOn1or2()) break;
+					pinProto = pn;
+					break;
+				case 4: // don't use pins anyway
+					pinProto = null;
+					break;
+				default:
+					System.out.println("***UNKNOWN PATH ENDCODE: "+endcode);
+					break;
+				}
+				if (pinProto != null) break;
+			}
 
-						// store the trace information
-						Point2D [] polyPoints = poly.getPoints();
-						EPoint [] points = new EPoint[polyPoints.length];
-						for(int j=0; j<polyPoints.length; j++)
-						{
-							points[j] = EPoint.fromLambda(polyPoints[j].getX(), polyPoints[j].getY());
+			// construct the path from pins and arcs
+			if (arcProto != null && pinProto != null) {
+				theCell.makeArcPath(arcProto, pinProto, width, endcode, theVertices, numVertices);
+			} 
+			// construct the path from pure layer nodes
+			else {
+				for (int i=0; i < numVertices-1; i++) {
+					Point2D fromPt = theVertices[i];
+					Point2D toPt = theVertices[i+1];
+
+					// determine whether either end needs to be shrunk
+					double fextend = width / 2;
+					double textend = fextend;
+					int thisAngle = GenMath.figureAngle(fromPt, toPt);
+					if (i > 0) {
+						Point2D prevPoint = theVertices[i-1];
+						int lastAngle = GenMath.figureAngle(prevPoint, fromPt);
+						if (Math.abs(thisAngle-lastAngle) % 900 != 0) {
+							int ang = Math.abs(thisAngle-lastAngle) / 10;
+							if (ang > 180) ang = 360 - ang;
+							if (ang > 90) ang = 180 - ang;
+							fextend = Poly.getExtendFactor(width, ang);
 						}
+					} 
+					else {
+						fextend = bgnextend;
+					}
+					if (i+1 < numVertices-1) {
+						Point2D nextPoint = theVertices[i+2];
+						int nextAngle = GenMath.figureAngle(toPt, nextPoint);
+						if (Math.abs(thisAngle-nextAngle) % 900 != 0) {
+							int ang = Math.abs(thisAngle-nextAngle) / 10;
+							if (ang > 180) ang = 360 - ang;
+							if (ang > 90) ang = 180 - ang;
+							textend = Poly.getExtendFactor(width, ang);
+						}
+					} 
+					else {
+						textend = endextend;
+					}
 
-						// store the trace information
-                        theCell.makeInstance(layerNodeProto, EPoint.fromLambda(cx, cy), Orientation.IDENT, 1.0,
-                        	polyBox.getWidth(), polyBox.getHeight(), points, currentUnknownLayerMessage);
+					// handle arbitrary angle path segment
+					double length = fromPt.distance(toPt);
+					Poly poly = Poly.makeEndPointPoly(length, width, GenMath.figureAngle(toPt, fromPt),
+													  fromPt, fextend, toPt, textend, Poly.Type.FILLED);
+
+					if (localPrefs.mergeBoxes) {
+						if (layerNodeProto != null)	{
+							NodeLayer [] layers = layerNodeProto.getNodeLayers();
+							merge.addPolygon(layers[0].getLayer(), poly);
+						}
+					} else {
+						// make the node for this segment
+						Rectangle2D polyBox = poly.getBox();
+						if (polyBox != null) {
+							theCell.makeInstance(layerNodeProto,
+												 EPoint.fromLambda(polyBox.getCenterX(), polyBox.getCenterY()),
+												 Orientation.IDENT, 1.0, polyBox.getWidth(), polyBox.getHeight(), null, 
+												 currentUnknownLayerMessage);
+						} 
+						else {
+							polyBox = poly.getBounds2D();
+							double cx = polyBox.getCenterX();
+							double cy = polyBox.getCenterY();
+
+							// store the trace information
+							Point2D [] polyPoints = poly.getPoints();
+							EPoint [] points = new EPoint[polyPoints.length];
+							for(int j=0; j<polyPoints.length; j++) {
+								points[j] = EPoint.fromLambda(polyPoints[j].getX(), polyPoints[j].getY());
+							}
+
+							// store the trace information
+							theCell.makeInstance(layerNodeProto, EPoint.fromLambda(cx, cy), Orientation.IDENT, 1.0,
+												 polyBox.getWidth(), polyBox.getHeight(), points, currentUnknownLayerMessage);
+						}
 					}
 				}
 			}
@@ -2876,6 +3111,32 @@ public class GDS extends Input<Object>
 		}
 		return cell;
     }
+	private String orientName(String name, Orientation orient)
+	{
+		// name for scaled cell
+		String full = (orient == Orientation.IDENT) ? name : name  + "$" + orient.toString();
+		View view = localPrefs.skeletonize ? View.LAYOUTSKEL : View.LAYOUT;
+		int version = 0;
+		return CellName.newName(full, view, version).toString();
+	}
+    private Cell orientCell(Cell orig, Orientation orient)
+    {
+		// don't scale to unity
+		if (orient == Orientation.IDENT) return orig;
+		// construct name for scaled cell
+		String name = orientName(orig.getName(), orient);
+		// search for oriented cell
+		Cell cell = findCell(name);
+		if (cell != null) return cell;         
+		// create new cell
+		System.out.println("Creating scaled cell: " + name);
+		cell = Cell.newInstance(theLibrary, name);
+		if (cell == null) return cell;
+		double wd = orig.getDefWidth();
+		double ht = orig.getDefHeight();
+		NodeInst ni = NodeInst.makeInstance(orig, ep, EPoint.ORIGIN, wd, ht, cell, orient, null);
+		return cell;
+	}
 
 	private void readGenerations()
 		throws Exception
