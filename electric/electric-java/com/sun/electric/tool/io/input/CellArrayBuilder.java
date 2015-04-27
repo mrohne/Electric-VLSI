@@ -75,14 +75,16 @@ public class CellArrayBuilder {
     public class CellArray {
 
         public final NodeProto proto;
+		public final Orientation orient;
         public final int cols;
         public final int rows;
         public final EPoint colspace;
         public final EPoint rowspace;
         private Cell cell = null;
 
-        public CellArray(NodeProto proto, int cols, int rows, EPoint colspace, EPoint rowspace) {
+        public CellArray(NodeProto proto, Orientation orient, int cols, int rows, EPoint colspace, EPoint rowspace) {
             this.proto = proto;
+            this.orient = orient;
             this.cols = cols;
             this.rows = rows;
             this.colspace = colspace;
@@ -90,31 +92,31 @@ public class CellArrayBuilder {
         }
 
         public NodeProto makeCell(EditingPreferences ep) {
-			if (cols == 1 && rows == 1) return proto;
             if (cell != null) return cell;
             String name = proto.getName();
             if (name.indexOf('{') != -1) name = name.substring(0, name.indexOf('{'));
-            name += "_" + makeArrayName(cols, rows, colspace, rowspace) + "{lay}";
+            name += "_" + makeArrayName(orient, cols, rows, colspace, rowspace) + "{lay}";
             this.cell = Cell.newInstance(theLibrary, name);
             if (cell == null) throw new RuntimeException("Cell.newInstance("+name+") returned null");
             EPoint loc = EPoint.ORIGIN;
-            buildArrayUsingSubcells(proto, cell, loc, Orientation.IDENT, cols, rows, colspace, rowspace, ep);
+            buildArrayUsingSubcells(proto, cell, loc, orient, cols, rows, colspace, rowspace, ep);
             return cell;
         }
     }
 
-    private String makeArrayName(int cols, int rows, EPoint colspace, EPoint rowspace) {
+    private String makeArrayName(Orientation orient, int cols, int rows, EPoint colspace, EPoint rowspace) {
     	return cols + "x" + rows + "sep" + 
 			TextUtils.formatDouble(colspace.getX()) + "," + TextUtils.formatDouble(colspace.getY()) + "x" + 
-			TextUtils.formatDouble(rowspace.getX()) + "," + TextUtils.formatDouble(rowspace.getY());
+			TextUtils.formatDouble(rowspace.getX()) + "," + TextUtils.formatDouble(rowspace.getY()) + "x" +
+			orient.toString();
     }
 
-    private CellArray getCellArray(NodeProto proto, int cols, int rows, EPoint colspace, EPoint rowspace) {
+    private CellArray getCellArray(NodeProto proto, Orientation orient, int cols, int rows, EPoint colspace, EPoint rowspace) {
         Map.Entry<NodeProto, String> key =
-            new java.util.AbstractMap.SimpleEntry(proto, makeArrayName(cols, rows, colspace, rowspace));
+            new java.util.AbstractMap.SimpleEntry(proto, makeArrayName(orient, cols, rows, colspace, rowspace));
         CellArray ret = cellArrayCache.get(key);
         if (ret == null) {
-            ret = new CellArray(proto, cols, rows, colspace, rowspace);
+            ret = new CellArray(proto, orient, cols, rows, colspace, rowspace);
             cellArrayCache.put(key, ret);
         }
         return ret;
@@ -124,10 +126,10 @@ public class CellArrayBuilder {
                                         int cols, int rows, EPoint colspace, EPoint rowspace, EditingPreferences ep) {
 		if (rows < 4 && cols < 4) {
 			// leaf cell of the bisection hierarchy
-			buildFlatArray(proto, parent, startLoc, Orientation.IDENT, cols, rows, colspace, rowspace, ep);
+			buildFlatArray(proto, parent, startLoc, orient, cols, rows, colspace, rowspace, ep);
 		} else {
 			// non-leaf cell of the bisection hierarchy
-			buildArrayBisected(proto, parent, startLoc, Orientation.IDENT, cols, rows, colspace, rowspace, ep);
+			buildArrayBisected(proto, parent, startLoc, orient, cols, rows, colspace, rowspace, ep);
 		}
     }
 
@@ -137,7 +139,7 @@ public class CellArrayBuilder {
 		EPoint colLoc = startLoc;
         for(int x=0; x<cols; ) {
             int width = 1;
-			EPoint colOffset = EPoint.snap(orient.transformPoint(colspace));
+			EPoint colOffset = EPoint.snap(colspace);
             while ((width<<1)+x <= cols && (width<<1)<=(cols>=rows?cols/2:cols)) {
 				width = width<<1;
 				colOffset = EPoint.fromFixp(colOffset.getFixpX()<<1, colOffset.getFixpY()<<1);
@@ -145,13 +147,14 @@ public class CellArrayBuilder {
 			EPoint rowLoc = colLoc;
             for(int y=0; y<rows; ) {
                 int height = 1;
-				EPoint rowOffset = EPoint.snap(orient.transformPoint(rowspace));
+				EPoint rowOffset = EPoint.snap(rowspace);
                 while ((height<<1)+y <= rows && (height<<1)<=(rows>=cols?rows/2:rows)) {
 					height = height<<1;
 					rowOffset = EPoint.fromFixp(rowOffset.getFixpX()<<1, rowOffset.getFixpY()<<1);
 				}
-				NodeProto arrCell = getCellArray(proto, width, height, colspace, rowspace).makeCell(ep);
-				NodeInst.makeInstance(arrCell, ep, rowLoc, arrCell.getDefWidth(null), arrCell.getDefHeight(null), parent, orient, null);
+				NodeProto arrCell = getCellArray(proto, orient, width, height, colspace, rowspace).makeCell(ep);
+				NodeInst.makeInstance(arrCell, ep, rowLoc, arrCell.getDefWidth(null), arrCell.getDefHeight(null), 
+									  parent, Orientation.IDENT, null);
                 y += height;
 				rowLoc = EPoint.fromFixp(rowLoc.getFixpX()+rowOffset.getFixpX(), rowLoc.getFixpY()+rowOffset.getFixpY());
             }
@@ -165,10 +168,10 @@ public class CellArrayBuilder {
                                int cols, int rows, EPoint colspace, EPoint rowspace, EditingPreferences ep) {
 		EPoint colLoc = startLoc;
         for (int ic = 0; ic < cols; ic++) {
-			EPoint colOffset = EPoint.snap(orient.transformPoint(colspace));
+			EPoint colOffset = EPoint.snap(colspace);
 			EPoint rowLoc = colLoc;
             for (int ir = 0; ir < rows; ir++) {
-				EPoint rowOffset = EPoint.snap(orient.transformPoint(rowspace));
+				EPoint rowOffset = EPoint.snap(rowspace);
                 NodeInst ni = NodeInst.makeInstance(proto, ep,
 													rowLoc,
 													proto.getDefWidth(null), proto.getDefHeight(null), 
