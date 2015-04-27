@@ -2310,6 +2310,18 @@ public class PolyBase implements Shape, PolyNodeMerge {
 			return sons;
         }
 
+		public PolyBase getLoop() {
+			return poly;
+		}
+
+		public List<PolyBase> getHoles() {
+			List<PolyBase> holes = new ArrayList<PolyBase>();
+			for (PolyBaseTree son : sons) {
+				holes.add(son.poly);
+			}
+			return holes;
+		}
+
         public PolyBase getPoly() {
 			Point [] area = poly.getPoints();
 			for (PolyBaseTree son : sons) {
