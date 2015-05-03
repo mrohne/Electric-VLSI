@@ -112,13 +112,18 @@
 
 	<target name="javadoc" depends="initialize" description="Create Javadoc">
 		<mkdir dir="apidoc" />
-		<javadoc destdir="apidoc" private="false" use="true" encoding="utf-8" source="1.8" maxmemory="400m">
+		<javadoc destdir="apidoc" private="false" use="true" encoding="utf-8" source="1.8" maxmemory="400m" additionalparam="-Xdoclint:none">
 			<packageset dir="electric-java">
 				<include name="com/sun/electric/**" />
 				<exclude name="com/sun/electric/plugins/**" />
 			</packageset>
 			<classpath>
 				<pathelement location="${beanshell}" />
+				<pathelement location="${slf4j-api}" />
+				<pathelement location="${scala-compiler}" />
+				<pathelement location="${scala-library}" />
+				<pathelement location="${scala-actors}" />
+				<pathelement location="${scala-reflect}" />
 				<pathelement location="${AppleJava}" />
 			</classpath>
 			<sourcepath>
@@ -142,8 +147,8 @@
 		<property name="abcl"               value="${packaging}/abcl.jar" />
 		<property name="abcl-contrib"       value="${packaging}/abcl-contrib.jar" />
 		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions.jar" />
-		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.10.jar" />
-		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.10.jar" />
+		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.12.jar" />
+		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.12.jar" />
 		<property name="junit"              value="${packaging}/junit-4.10.jar" />
 		<property name="jogl-all"           value="${packaging}/jogl-all.jar" />
 		<property name="gluegen-rt"         value="${packaging}/gluegen-rt.jar" />
@@ -176,7 +181,7 @@
 		</loadfile>
 	</target>
 
-	<target name="compilePublic" description="Compile the public part of Electric">
+	<target name="compilePublic" depends="initialize" description="Compile the public part of Electric">
 		<!-- deprecation flag: deprecation="true" -->
 		<javac deprecation="true" debug="true" 
 		       encoding="utf-8" includeantruntime="false"
@@ -189,15 +194,19 @@
 		    <pathelement location="${slf4j-api}" />
 		    <pathelement location="${slf4j-jdk}" />
                     <pathelement location="${scala-library}" />
+                    <pathelement location="${scala-actors}" />
+                    <pathelement location="${scala-reflect}" />
 		    <pathelement location="${beanshell}" />
 		    <pathelement location="${jython}" />
 		    <pathelement location="${AppleJava}" />
 		    <pathelement location="${junit}" />
+		    <pathelement location="${jmf}" />
 		    <pathelement location="${j3dcore}" />
 		    <pathelement location="${j3dutils}" />
 		    <pathelement location="${vecmath}" />
-		    <pathelement location="${jmf}" />
 		  </classpath>
+		  <exclude name="com/sun/electric/plugins/irsim/" if="GNU" />
+		  <exclude name="com/sun/electric/plugins/JMF/" if="GNU" />
 		</javac>
 		<copy todir="${antBuild}/com">
 			<fileset dir="${ElectricJavaLoc}/com"
@@ -244,8 +253,10 @@
 		</copy>
 	</target>
 
-	<target name="copyPublicJARs" description="Copy Jar files for logging and Scala">
+	<target name="copyPublicJARs" depends="initialize" description="Copy Jar files for logging and Scala">
 		<unjar src="${scala-library}" dest="${antBuild}"/>
+		<unjar src="${scala-actors}" dest="${antBuild}"/>
+		<unjar src="${scala-reflect}" dest="${antBuild}"/>
 		<unjar src="${junit}" dest="${antBuild}"/>
 		<unjar src="${jmf}" dest="${antBuild}"/>
 		<unjar src="${slf4j-api}" dest="${antBuild}"/>
@@ -258,7 +269,7 @@
 		</copy>
 	</target>
 
-	<target name="copyPrivateJARs" description="Copy Jar files for Apple stubs and Bean Shell">
+	<target name="copyPrivateJARs" depends="initialize" description="Copy Jar files for Apple stubs and Bean Shell">
 		<unjar dest="${antBuild}" src="${AppleJava}">
 			<patternset> <include name="com/"/> </patternset>
 		</unjar>
@@ -267,17 +278,17 @@
 		</unjar>
 	</target>
 
-	<target name="copyBshJAR" description="Copy Jar files for Bean Shell">
+	<target name="copyBshJAR" depends="initialize" description="Copy Jar files for Bean Shell">
 		<unjar dest="${antBuild}" src="${beanshell}">
 			<patternset> <include name="bsh/"/> </patternset>
 		</unjar>
 	</target>
 
-	<target name="copyJythonJAR" description="Copy Jar file for Jythyon">
+	<target name="copyJythonJAR" depends="initialize" description="Copy Jar file for Jythyon">
 		<unjar dest="${antBuild}" src="${jython}" />
 	</target>
 
-	<target name="copyABCLJAR" description="Copy Jar file for ABCL">
+	<target name="copyABCLJAR" depends="initialize" description="Copy Jar file for ABCL">
 		<unjar dest="${antBuild}" src="${abcl}" />
 		<unjar dest="${antBuild}" src="${abcl-contrib}" />
 	</target>
@@ -344,8 +355,6 @@
 	      outputproperty="env.JAVA_HOME">
 	  <arg value="-v1.8"/>
 	</exec>
-	<property name="env.JAVA_HOME" 
-		  value="/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home"/>
 	<taskdef name="bundleapp" 
 		 classname="com.oracle.appbundler.AppBundlerTask"
 		 classpath="packaging/appbundler-1.0.jar">
@@ -394,6 +403,7 @@
 	      <include name="${gluegen-rt-natives}" />
 	    </librarypath>
 	    <option value="-Xdebug"/>
+	    <option value="-Xverify:none"/>
 	    <option value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
 	    <option value="-Xms64m"/>
 	    <option value="-Xmx2048m"/>
