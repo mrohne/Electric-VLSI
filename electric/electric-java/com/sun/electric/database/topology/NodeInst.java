@@ -2458,7 +2458,9 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
                     epoints[i] = (EPoint) p;
                 } else if (p != null) {
                     epoints[i] = EPoint.snap(p);
-                }
+                } else {
+					throw new IllegalArgumentException();
+				}
             }
         }
         setTrace(epoints);
@@ -2497,7 +2499,9 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
             for (int i = 0; i < points.length; i++) {
                 if (points[i] != null) {
                     orient.transform(0, 0, points, i, newPoints, i, 1);
-                }
+                } else {
+					throw new IllegalArgumentException();
+				}
             }
             points = newPoints;
         }
@@ -2615,8 +2619,8 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
 		if (pp == null) {
 			throw new IllegalArgumentException("Missing PortProto in findPortInstFromProto: " + this);
 		}
-        if (pp instanceof Export && !((Export) pp).isLinked() || pp.getParent() != getProto()) {
-            throw new IllegalArgumentException();
+        if (pp instanceof Export && !((Export) pp).isLinked()) {
+            throw new IllegalArgumentException("Export not linked: "+pp);
         }
         return portInsts[pp.getPortIndex()];
     }
@@ -2632,9 +2636,6 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
 		if (pp == null) {
 			throw new IllegalArgumentException("Missing PortProto in findPortInstFromEquivalentProto: " + this);
 		}
-        if (pp instanceof Export && ((Export) pp).isLinked() && pp.getParent() != getProto()) {
-            pp = ((Export) pp).findEquivalent((Cell) getProto());
-        }
         return findPortInstFromProto(pp);
     }
 
