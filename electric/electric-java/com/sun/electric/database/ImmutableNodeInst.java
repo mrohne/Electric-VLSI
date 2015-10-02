@@ -1223,7 +1223,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         long maxY = Long.MIN_VALUE;
         for (EPoint p : trace) {
             if (p == null) {
-                continue;
+                throw new NullPointerException("trace");
             }
             minX = Math.min(minX, p.getGridX());
             maxX = Math.max(maxX, p.getGridX());
