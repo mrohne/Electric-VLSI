@@ -76,7 +76,6 @@ import com.sun.electric.tool.io.GDSReader;
 import com.sun.electric.tool.io.GDSReader.GSymbol;
 import com.sun.electric.tool.io.IOTool;
 import com.sun.electric.tool.io.input.CellArrayBuilder;
-import static com.sun.electric.tool.io.input.CellArrayBuilder.*;
 import com.sun.electric.tool.ncc.basic.NccCellAnnotations;
 import com.sun.electric.tool.user.dialogs.OpenFile;
 import com.sun.electric.tool.user.ui.LayerVisibility;
@@ -204,7 +203,7 @@ public class GDS extends Input<Object>
 		public double inputScale;
 		public boolean simplifyCells;
 		public int arraySimplification;
-		public boolean instantiateArrays;
+		public int arrayInstantiate;
 		public boolean expandCells;
 		public boolean mergeBoxes;
 		public boolean includeText;
@@ -227,7 +226,7 @@ public class GDS extends Input<Object>
 				inputScale = IOTool.getFactoryGDSInputScale();
 				simplifyCells = IOTool.isFactoryGDSInSimplifyCells();
 				arraySimplification = IOTool.getFactoryGDSArraySimplification();
-				instantiateArrays = IOTool.isFactoryGDSInInstantiatesArrays();
+				arrayInstantiate = IOTool.getFactoryGDSArrayInstantiation();
 				expandCells = IOTool.isFactoryGDSInExpandsCells();
 				mergeBoxes = IOTool.isFactoryGDSInMergesBoxes();
 				includeText = IOTool.isFactoryGDSIncludesText();
@@ -235,12 +234,11 @@ public class GDS extends Input<Object>
 				cadenceCompatibility = IOTool.isFactoryGDSCadenceCompatibility();
 				dumpReadable = IOTool.isFactoryGDSDumpReadable();
 				onlyVisibleLayers = IOTool.isFactoryGDSOnlyInvisibleLayers();
-			} else
-            {
+			} else {
                 inputScale = IOTool.getGDSInputScale();
                 simplifyCells = IOTool.isGDSInSimplifyCells();
                 arraySimplification = IOTool.getGDSArraySimplification();
-                instantiateArrays = IOTool.isGDSInInstantiatesArrays();
+                arrayInstantiate = IOTool.getGDSArrayInstantiation();
                 expandCells = IOTool.isGDSInExpandsCells();
                 mergeBoxes = IOTool.isGDSInMergesBoxes();
                 includeText = IOTool.isGDSIncludesText();
@@ -325,7 +323,20 @@ public class GDS extends Input<Object>
 		arraySimplificationUseful = false;
 		init();
 		theLibrary = lib;
-        cellArrayBuilder = new CellArrayBuilder(theLibrary);
+		switch (localPrefs.arrayInstantiate) {
+		case IOTool.GDSINSTANTIATEARRAYSIMPLE:
+			cellArrayBuilder = new CellArrayBuilder.Simple(theLibrary);
+			break;
+		case IOTool.GDSINSTANTIATEARRAYBISECTION:
+			cellArrayBuilder = new CellArrayBuilder.Bisection(theLibrary);
+			break;
+		case IOTool.GDSINSTANTIATEARRAYANNOTATE:
+			cellArrayBuilder = new CellArrayBuilder.Annotate(theLibrary);
+			break;
+		default:
+			cellArrayBuilder = new CellArrayBuilder.Annotate(theLibrary);
+			break;
+		}
 		curTech = tech;
 		initialize();
 
@@ -834,7 +845,7 @@ public class GDS extends Input<Object>
 			}
             createNodes();
             
-			Map<NodeProto,List<EPoint>> massiveMerge = new HashMap<NodeProto,List<EPoint>>();
+			PolyMerge massiveMerge = new PolyMerge();
 			for(MakeInstanceArray mia : instArrays)
 			{
 				if (countOff && ((++count % 1000) == 0))
@@ -843,13 +854,13 @@ public class GDS extends Input<Object>
 				// make the instance array
                 mia.instantiate(this, cell, massiveMerge);
 			}
-			List<NodeProto> mergeNodeSet = new ArrayList<NodeProto>();
-			for(NodeProto np : massiveMerge.keySet()) mergeNodeSet.add(np);
-			for(NodeProto np : mergeNodeSet)
-			{
-				// place a pure-layer node that embodies all arrays for the whole cell
-				List<EPoint> points = massiveMerge.get(np);
-				buildComplexNode(this, points, np, this.cell, ep);
+			
+			// place a pure-layer nodes that embodies all arrays for the whole cell
+			for(Layer layer : massiveMerge.getKeySet()) {
+				NodeProto np = layer.getPureLayerNode();
+				for(PolyBase poly : massiveMerge.getMergedPoints(layer, false)) {
+					buildComplexNode(this, poly, np, this.cell, ep);
+				}
 			}
             cell.addExports(exportsByName.values());
 
@@ -1386,122 +1397,58 @@ public class GDS extends Input<Object>
          * Method to instantiate an array of cell instances.
          * @param parent the Cell in which to create the geometry.
          */
-        private void instantiate(CellBuilder cb, Cell parent, Map<NodeProto,List<EPoint>> massiveMerge)
-        {
+        private void instantiate(CellBuilder cb, Cell parent, PolyMerge massiveMerge) {
             assert parent.isLinked();
 			if (proto instanceof Cell) proto = scaleCell((Cell)proto, scale);
         	int arraySimplification = localPrefs.arraySimplification;
-            NodeInst subNi = null;
             Cell subCell = (Cell)proto;
             int numArcs = subCell.getNumArcs();
             int numNodes = subCell.getNumNodes();
             int numExports = subCell.getNumPorts();
-            if (numArcs == 0 && numExports == 0 && numNodes == 1)
-            {
-                subNi = subCell.getNode(0);
-                if (subNi.getProto().getFunction() != PrimitiveNode.Function.NODE)
-                    subNi = null;
-            }
-            if (subNi != null && subNi.getTrace() != null) subNi = null;
-            if (subNi != null)
-            {
-                if (arraySimplification > 0)
-                {
-                    List<EPoint> points = buildArray();
-                    if (arraySimplification == 2)
-                    {
-                        // add the array's geometry the layer's outline
-                        List<EPoint> soFar = massiveMerge.get(subNi.getProto());
-                        if (soFar == null)
-                        {
-                            soFar = new ArrayList<EPoint>();
-                            massiveMerge.put(subNi.getProto(), soFar);
-                        }
-                        if (soFar.size() > 0) soFar.add(null);
-                        for(EPoint ep : points) soFar.add(ep);
-                    } else
-                    {
-                        // place a pure-layer node that embodies the array
-                        buildComplexNode(cb, points, subNi.getProto(), parent, ep);
-                    }
-                    return;
-                } else
-                {
-                    // remember that array simplification would have helped
-                    arraySimplificationUseful = true;
-                }
-            }
+            if (numArcs == 0 && numExports == 0 && numNodes == 1) {
+				NodeInst subNi = subCell.getNode(0);
+                if (subNi.getProto().getFunction() == PrimitiveNode.Function.NODE && subNi.getTrace() == null) {
+					PrimitiveNode subPn = (PrimitiveNode) subNi.getProto();
+					if (arraySimplification > 0) {
+						Rectangle2D bounds = ((Cell)proto).getBounds();
+						Rectangle2D rect = new Rectangle2D.Double();
+						rect.setRect(bounds);
+						DBMath.transformRect(rect, orient.pureRotate());
+						double width = rect.getWidth();
+						double height = rect.getHeight();
+						for (int ic = 0; ic < nCols; ic++) {
+						for (int ir = 0; ir < nRows; ir++) {
+								double ptrX = startLoc.getX() + ic*colOffset.getX() + ir*rowOffset.getX() + rect.getCenterX();
+								double ptrY = startLoc.getY() + ic*colOffset.getY() + ir*rowOffset.getY() + rect.getCenterY();
+								PolyBase poly = new PolyBase(ptrX, ptrY, width, height);
+								if (arraySimplification == 2) {
+									// add the array's geometry the layer's outline
+									for (Iterator<Layer> lIt = subPn.getLayerIterator(); lIt.hasNext(); ) {
+										Layer layer = lIt.next();
+										massiveMerge.addPolygon(layer, poly);
+									}
+								} else {
+									// place a pure-layer node that embodies the array
+									buildComplexNode(cb, poly, subPn, parent, ep);
+								}
+							}
+						}
+						return;
+					}
+					else {
+						// remember that array simplification would have helped
+						arraySimplificationUseful = true;
+					}
+				}
+			}
 
-            if (INSTANTIATE_ARRAYS_VIA_BISECTION) {
-                cellArrayBuilder.buildArray(proto,
-                                            parent,
-                                            EPoint.fromLambda(startLoc.getX(), startLoc.getY()),
-                                            orient, nCols, nRows,
-                                            EPoint.fromLambda(colOffset.getX(), colOffset.getY()),
-                                            EPoint.fromLambda(rowOffset.getX(), rowOffset.getY()),
-                                            ep);
-                return;
-            }
-
-    		// generate an array
-    		double ptcX = startLoc.getX();
-    		double ptcY = startLoc.getY();
-    		for (int ic = 0; ic < nCols; ic++)
-    		{
-    			double ptX = ptcX;
-    			double ptY = ptcY;
-    			for (int ir = 0; ir < nRows; ir++)
-    			{
-    				// create the node
-    				if (localPrefs.instantiateArrays ||
-    					(ir == 0 && ic == 0) ||
-    						(ir == (nRows-1) && ic == (nCols-1)))
-    				{
-    					Point2D loc = new Point2D.Double(ptX, ptY);
-    					double wid = proto.getDefWidth(ep);
-    					double hei = proto.getDefHeight(ep);
-    					NodeInst.makeInstance(proto, ep, loc, wid, hei, parent, orient, null);
-    				}
-
-    				// add the row displacement
-    				ptX += rowOffset.getX();   ptY += rowOffset.getY();
-    			}
-
-    			// add displacement
-    			ptcX += colOffset.getX();   ptcY += colOffset.getY();
-    		}
-        }
-
-        private List<EPoint> buildArray()
-        {
-			List<EPoint> points = new ArrayList<EPoint>();
-			Rectangle2D bounds = ((Cell)proto).getBounds();
-			Rectangle2D boundCopy = new Rectangle2D.Double(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-			DBMath.transformRect(boundCopy, orient.pureRotate());
-    		double ptcX = startLoc.getX();
-    		double ptcY = startLoc.getY();
-    		for (int ic = 0; ic < nCols; ic++)
-    		{
-    			double ptX = ptcX;
-    			double ptY = ptcY;
-    			for (int ir = 0; ir < nRows; ir++)
-    			{
-    	    		points.add(EPoint.fromLambda(ptX+boundCopy.getMinX(), ptY+boundCopy.getMinY()));
-    	    		points.add(EPoint.fromLambda(ptX+boundCopy.getMaxX(), ptY+boundCopy.getMinY()));
-    	    		points.add(EPoint.fromLambda(ptX+boundCopy.getMaxX(), ptY+boundCopy.getMaxY()));
-    	    		points.add(EPoint.fromLambda(ptX+boundCopy.getMinX(), ptY+boundCopy.getMaxY()));
-
-    	    		// insert a "break" marker to start a new polygon
-    	    		if (ic < nCols-1 || ir < nRows-1) points.add(null);
-
-    				// add the row displacement
-    				ptX += rowOffset.getX();   ptY += rowOffset.getY();
-    			}
-
-    			// add displacement
-    			ptcX += colOffset.getX();   ptcY += colOffset.getY();
-    		}
-			return points;
+			cellArrayBuilder.buildArray(proto,
+										parent,
+										EPoint.fromLambda(startLoc.getX(), startLoc.getY()),
+										orient, nCols, nRows,
+										EPoint.fromLambda(colOffset.getX(), colOffset.getY()),
+										EPoint.fromLambda(rowOffset.getX(), rowOffset.getY()),
+										ep);
         }
     }
 
@@ -1511,7 +1458,7 @@ public class GDS extends Input<Object>
 		private final Point2D loc;
 		private final Orientation orient;
 		private final double scale;
-        private final double wid, hei;
+        private double wid, hei;
         private final EPoint[] points; // trace
         private String exportOrTextName; // export
         private boolean isVariableText; // for annotation text
@@ -1986,31 +1933,28 @@ public class GDS extends Input<Object>
 	 * @param parent the Cell in which to create the node.
      * @param ep EditingPreferences
 	 */
-	private void buildComplexNode(CellBuilder cb, List<EPoint> points, NodeProto pureType, Cell parent, EditingPreferences ep)
+	private void buildComplexNode(CellBuilder cb, PolyBase poly, NodeProto pureType, Cell parent, EditingPreferences ep)
 	{
-		EPoint [] pointArray = new EPoint[points.size()];
+		Point2D [] polyPoints = poly.getPoints();
+		EPoint [] points = new EPoint[polyPoints.length];
 		double lX=0, hX=0, lY=0, hY=0;
-		for(int i=0; i<points.size(); i++)
-		{
-			pointArray[i] = points.get(i);
-			if (pointArray[i] == null) continue;
-			if (i == 0)
-			{
-				lX = hX = pointArray[i].getX();
-				lY = hY = pointArray[i].getY();
-			} else
-			{
-				if (pointArray[i].getX() < lX) lX = pointArray[i].getX();
-				if (pointArray[i].getX() > hX) hX = pointArray[i].getX();
-				if (pointArray[i].getY() < lY) lY = pointArray[i].getY();
-				if (pointArray[i].getY() > hY) hY = pointArray[i].getY();
+		for(int j=0; j<polyPoints.length; j++) {
+			points[j] = EPoint.fromLambda(polyPoints[j].getX(), polyPoints[j].getY());
+			if (j == 0) {
+				lX = hX = points[j].getX();
+				lY = hY = points[j].getY();
+			} else {
+				if (points[j].getX() < lX) lX = points[j].getX();
+				if (points[j].getX() > hX) hX = points[j].getX();
+				if (points[j].getY() < lY) lY = points[j].getY();
+				if (points[j].getY() > hY) hY = points[j].getY();
 			}
 		}
 		Point2D loc = new Point2D.Double((lX+hX)/2, (lY+hY)/2);
-        NodeInst ni = NodeInst.makeInstance(pureType, ep, loc, hX-lX, hY-lY,
-        	parent, Orientation.IDENT, null);
-        if (ni != null && GenMath.getAreaOfPoints(pointArray) != (hX-lX)*(hY-lY))
-        	ni.setTrace(pointArray);
+		NodeInst ni = NodeInst.makeInstance(pureType, ep, loc, hX-lX, hY-lY,
+											parent, Orientation.IDENT, null);
+		if (ni != null && GenMath.getAreaOfPoints(points) != (hX-lX)*(hY-lY))
+			ni.setTrace(points);
 	}
 
 	private void getElement()
