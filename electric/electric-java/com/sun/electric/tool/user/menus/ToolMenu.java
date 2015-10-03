@@ -95,7 +95,6 @@ import com.sun.electric.tool.io.output.Spice;
 import com.sun.electric.tool.io.output.Verilog;
 import com.sun.electric.tool.lang.EvalJavaBsh;
 import com.sun.electric.tool.lang.EvalJython;
-import com.sun.electric.tool.lang.EvalABCL;
 import com.sun.electric.tool.logicaleffort.LENetlister;
 import com.sun.electric.tool.logicaleffort.LETool;
 import com.sun.electric.tool.ncc.AllSchemNamesToLay;
@@ -2334,27 +2333,13 @@ public class ToolMenu {
 		}
 	}
 
-    /**
-     * Method to invoke ABCL on a script file.
-     * Prompts for the file and executes it.
-     */
-    private static void abclScriptCommand()
-    {
-    	if (!EvalABCL.hasABCL()) {
-    		System.out.println("ABCL is not installed");
-    		return;
-    	}
-        String fileName = OpenFile.chooseInputFile(FileType.ABCL, null, null);
-		EvalABCL.runScriptNoJob("(LOAD #p\""+fileName+"\")");
-    }
-
 	/**
 	 * Method to change the Languages menu to include preassigned scripts.
 	 */
 	public static void setDynamicLanguageMenu() {
 		for (EMenuBar.Instance menuBarInstance : TopLevel.getMenuBars()) {
 			JMenu menu = (JMenu) menuBarInstance.findMenuItem(languageMenu.getPath());
-			while (menu.getMenuComponentCount() > 4)
+			while (menu.getMenuComponentCount() > 3)
 				menu.remove(menu.getMenuComponentCount() - 1);
 
 			for (LanguageScripts.ScriptBinding script : LanguageScripts.getScripts()) {
@@ -2367,14 +2352,9 @@ public class ToolMenu {
 				FileType type = FileType.JAVA;
 				if (menuName.toLowerCase().endsWith(".bsh")) {
 					menuName = menuName.substring(0, menuName.length() - 4);
-					type = FileType.JAVA;
 				} else if (menuName.toLowerCase().endsWith(".py") || menuName.toLowerCase().endsWith(".jy")) {
 					menuName = menuName.substring(0, menuName.length() - 3);
 					type = FileType.JYTHON;
-				}
-				else if (menuName.toLowerCase().endsWith(".lisp") || menuName.toLowerCase().endsWith(".abcl")) {
-					menuName = menuName.substring(0, menuName.length() - 5);
-					type = FileType.ABCL;
 				}
 				if (script.mnemonic != 0)
 					menuName = "_" + script.mnemonic + ": " + menuName;
@@ -2409,9 +2389,6 @@ public class ToolMenu {
 			} else if (type == FileType.JYTHON) {
 				System.out.println("Executing commands in Python Script: " + fileName);
 				EvalJython.runScript(fileName);
-			} else if (type == FileType.ABCL) {
-				System.out.println("Executing commands in ABCL Script: " + fileName);
-	        	EvalABCL.runScriptNoJob("(LOAD #p\""+fileName+"\")");
 			}
 		}
 	}
