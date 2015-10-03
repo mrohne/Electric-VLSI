@@ -189,6 +189,7 @@
 		       fork="true" memoryMaximumSize="1024m"
 		       source="1.8" target="1.8">
 		  <compilerarg value="-Xlint:unchecked"/>
+		  <compilerarg value="-Xdiags:verbose"/>
 		  <compilerarg value="-g"/>
 		  <classpath>
 		    <pathelement location="${slf4j-api}" />
