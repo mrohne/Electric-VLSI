@@ -43,7 +43,7 @@ import java.io.Reader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
@@ -88,7 +88,7 @@ public class EvalABCL {
 			ScriptContext ctx = abclFactory.getScriptEngine().getContext();
 			ctx.setReader(new InputStreamReader(System.in));
 			ctx.setWriter(new OutputStreamWriter(System.out));
-			ctx.setErrorWriter(new OutputStreamWriter(new PrintStream(System.out, true)));
+			ctx.setErrorWriter(new PrintWriter(System.out, true));
 			abclFactory.getScriptEngine().setContext(ctx);
         }
         // if already initialized, return state
@@ -105,10 +105,10 @@ public class EvalABCL {
 		Runnable thunk = new Runnable() {
 				public void run() {
 					try {
-						logger.trace("runScriptNoJob: "+string);
+						System.out.println("runScriptNoJob("+string+")");
 						abclFactory.getScriptEngine().eval(string);
 					} catch (Throwable e) {
-						logger.trace("runScriptNoJob: " + e);
+						System.out.println("runScriptNoJob: " + e);
 					}
 				}
 			};
@@ -119,10 +119,10 @@ public class EvalABCL {
 		Runnable thunk = new Runnable() {
 				public void run() {
 					try {
-						logger.trace("runScriptNoJob: "+script);
+						System.out.println("runScriptNoJob: "+script);
 						script.eval();
 					} catch (Throwable e) {
-						logger.trace("runScriptNoJob: " + e);
+						System.out.println("runScriptNoJob: " + e);
 					}
 				}
 			};
@@ -169,7 +169,7 @@ public class EvalABCL {
 				abclFactory.getScriptEngine().eval(string);
 				return true;
 			} catch (ScriptException e) {
-				logger.trace("ScriptJob: "+e);
+				System.out.println("ScriptJob: "+e);
 				return false;
 			}
 		}
