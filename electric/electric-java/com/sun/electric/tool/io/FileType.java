@@ -43,6 +43,7 @@ public class FileType implements Serializable {
 	/** all types */                        private static final ArrayList<FileType> allTypes = new ArrayList<FileType>();
 
 	/** Describes any file.*/				public static final FileType ANY          = makeFileType("All", new String[] {}, "All Files");
+	/** Describes ABCL source. */			public static final FileType ABCL         = makeFileType("ABCL", new String[] {"lisp", "cl"}, "ABCL Script File (lisp, cl)");
 	/** Describes ALS decks. */				public static final FileType ALS          = makeFileType("ALS", new String[] {"als"}, "ALS Simulation Deck (als)", FileTypeGroup.BUILTINSIMGRP);
 	/** Describes ALS vector decks. */		public static final FileType ALSVECTOR    = makeFileType("ALS Vectors", new String[] {"vec"}, "ALS Vector Deck (vec)", FileTypeGroup.BUILTINSIMGRP);
 	/** Describes Applicon 860 decks. */	public static final FileType APPLICON860  = makeFileType("Applicon 860", new String[] {"apl"}, "Applicon 860 Deck (apl)");
