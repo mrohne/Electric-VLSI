@@ -121,9 +121,10 @@ import javax.swing.JLabel;
 public class Connectivity
 {
 	/** true to prevent objects smaller than minimum size */	private static final boolean ENFORCEMINIMUMSIZE = true;
+	/** true to prevent objects smaller than minimum size */	private static final boolean ENFORCEMANHATTAN = false;
 	/** true to debug geometry issues */         				private static final boolean DEBUGGEOMETRY = false;
 	/** true to debug centerline determination */				private static final boolean DEBUGCENTERLINES = false;
-	/** true to debug object creation */						private static final boolean DEBUGSTEPS = true;
+	/** true to debug object creation */						private static final boolean DEBUGSTEPS = false;
 	/** true to debug contact extraction */						private static final boolean DEBUGCONTACTS = false;
 	/** true to debug nodes creation */						    private static final boolean DEBUGNODES = false;
 	/** true to debug nodes creation */						    private static final boolean DEBUGWIRES = false;
@@ -143,7 +144,6 @@ public class Connectivity
 	/** set of pure-layer nodes that are not processed */		private Set<PrimitiveNode> ignoreNodes;
 	/** set of contacts that are not used for extraction */		private Set<PrimitiveNode> bogusContacts;
     /** PrimitiveNodes for p-diffusion and n-diffusion */       private PrimitiveNode diffNode, pDiffNode, nDiffNode;
-    /** list of Exports to restore after extraction */			private List<Export> exportsToRestore;
 	/** auto-generated exports that may need better names */	private List<Export> generatedExports;
 	/** true if this is a P-well process (presume P-well) */	private boolean pSubstrateProcess;
 	/** true if this is a N-well process (presume N-well) */	private boolean nSubstrateProcess;
@@ -156,7 +156,6 @@ public class Connectivity
 	/** the smallest polygon acceptable for merging */			private double smallestPoly;
 	/** debugging: list of objects created */					private List<ERectangle> addedRectangles;
 	/** debugging: list of objects created */					private List<ERectangle> addedLines;
-	/** list of exported pins to realize at the end */			private List<ExportedPin> pinsForLater;
 	/** ErrorLogger to keep up with errors during extraction */ private ErrorLogger errorLogger;
 	/** total number of cells to extract when recursing */		private int totalCells;
 	/** total number of cells extracted when recursing */		private int cellsExtracted;
@@ -615,11 +614,13 @@ public class Connectivity
 		if (!startSection(oldCell, "Gathering geometry in " + oldCell + "..."))		// HAS PROGRESS IN IT
 			return null; // aborted
 		Set<Cell> expandedCells = new HashSet<Cell>();
-		exportsToRestore = new ArrayList<Export>();
+		List<Export> exportsToRestore = new ArrayList<Export>();
+		List<ExportedPin> pinsForLater = new ArrayList<ExportedPin>();
 		generatedExports = new ArrayList<Export>();
-		pinsForLater = new ArrayList<ExportedPin>();
 		allCutLayers = new TreeMap<Layer,CutInfo>();
-		extractCell(oldCell, newCell, pats, flattenPcells, expandedCells, merge, selectMerge, GenMath.MATID, Orientation.IDENT);
+		extractCell(oldCell, newCell, pats, flattenPcells, 
+					expandedCells, exportsToRestore, pinsForLater,
+					merge, selectMerge, GenMath.MATID, Orientation.IDENT);
 		if (expandedCells.size() > 0) {
 			System.out.println("These cells were expanded:");
 			for(Cell c : expandedCells)
@@ -696,7 +697,7 @@ public class Connectivity
 
         // reexport any that were there before
 		if (!startSection(oldCell, "Adding connecting wires...")) return null; // aborted
-		cleanupExports(oldCell, newCell);
+		cleanupExports(oldCell, newCell, exportsToRestore, pinsForLater);
 
 		// cleanup by auto-stitching
 		Set<ArcInst> allArcs = null;
@@ -834,9 +835,11 @@ public class Connectivity
 	 * @param merge the merge to be filled.
 	 * @param prevTrans the transformation coming into this cell.
 	 */
-	private void extractCell(Cell oldCell, Cell newCell, List<Pattern> pats, boolean flattenPcells, Set<Cell> expandedCells,
-		PolyMerge merge, PolyMerge selectMerge, FixpTransform prevTrans, Orientation orient)
+	private void extractCell(Cell oldCell, Cell newCell, List<Pattern> pats, boolean flattenPcells, 
+							 Set<Cell> expandedCells, List<Export> exportsToRestore, List<ExportedPin> pinsForLater,
+							 PolyMerge merge, PolyMerge selectMerge, FixpTransform prevTrans, Orientation orient)
 	{
+		System.out.println("extractCell("+oldCell+")");
 		Map<NodeInst,NodeInst> newNodes = new HashMap<NodeInst,NodeInst>();
 		int totalNodes = oldCell.getNumNodes();
 
@@ -897,7 +900,9 @@ public class Connectivity
 					expandedCells.add(subCell);
 					FixpTransform subTrans = ni.translateOut(ni.rotateOut(prevTrans));
 					Orientation or = orient.concatenate(ni.getOrient());
-					extractCell(subCell, newCell, pats, flattenPcells, expandedCells, merge, selectMerge, subTrans, or);
+					extractCell(subCell, newCell, pats, flattenPcells,
+								expandedCells, exportsToRestore, pinsForLater,
+								merge, selectMerge, subTrans, or);
 					continue;
 				}
 				// subcell not expanded, figure out what gets placed in the new cell
@@ -988,12 +993,11 @@ public class Connectivity
 										 headLocation, tailLocation, ai.getName());
 				continue;
 			}
-							FixpTransform trans = new FixpTransform(prevTrans);
-                for (Poly poly : tech.getShapeOfArc(ai)) {
-					poly.transform(trans);
-					polyList.add(poly);
-				}
-
+			FixpTransform trans = new FixpTransform(prevTrans);
+			for (Poly poly : tech.getShapeOfArc(ai)) {
+				poly.transform(trans);
+				polyList.add(poly);
+			}
 		}
 
 		// throw all cell text into the new cell, too
@@ -2162,12 +2166,12 @@ public class Connectivity
 					cutBox = cut.getBounds2D();
 					double centerX = cutBox.getCenterX();
 					double centerY = cutBox.getCenterY();
-					String msg = "Cannot extract nonManhattan contact cut at (" + TextUtils.formatDistance(centerX) +
+					String msg = "Attemting to extract nonManhattan contact cut at (" + TextUtils.formatDistance(centerX) +
 						"," + TextUtils.formatDistance(centerY) + ")";
 					addErrorLog(newCell, msg, EPoint.fromLambda(centerX, centerY));
-					cInfo.removeCut(cut);
-					cutsNotExtracted.add(cut);
-					continue;
+					// cInfo.removeCut(cut);
+					// cutsNotExtracted.add(cut);
+					// continue;
 				}
 				Point2D ctr = new Point2D.Double(cutBox.getCenterX(), cutBox.getCenterY());
 				Set<Layer> layersPresent = new TreeSet<Layer>();
@@ -2236,8 +2240,11 @@ public class Connectivity
 					if (thisCutSizeX == pv.cutSizeY && thisCutSizeY == pv.cutSizeX) rightSize = true;
 					if (!rightSize)
 					{
-						String reason = "cut size is " + TextUtils.formatDistance(thisCutSizeX) + "x" + TextUtils.formatDistance(thisCutSizeY) +
-							" but wants " + TextUtils.formatDistance(pv.cutSizeX) + "x" + TextUtils.formatDistance(pv.cutSizeY);
+						String reason = 
+							"cut size is " + TextUtils.formatDistance(thisCutSizeX) + 
+							"x" + TextUtils.formatDistance(thisCutSizeY) +
+							" but wants " + TextUtils.formatDistance(pv.cutSizeX) + 
+							"x" + TextUtils.formatDistance(pv.cutSizeY);
 						reasons.put(pv, reason);
 						continue;
 					}
@@ -2355,7 +2362,7 @@ public class Connectivity
 					Layer badLayer = doesNodeFit(pv, multiCutBounds, originalMerge, ignorePWell, ignoreNWell);
 					if (badLayer == null)
 					{
-						// it fits: see if a the cuts fit
+						// it fits: see if the cuts fit
 						double mw = contactBound.getWidth();
 						double mh = contactBound.getHeight();
 						if (pv.rotation == 90 || pv.rotation == 270)
@@ -2420,6 +2427,39 @@ public class Connectivity
 						cInfo.removeCut(cut);
 						foundCut = true;
 						break;
+					}
+
+					// try to fit explicit node
+					if (DEBUGCONTACTS) System.out.println("   CONSIDER NON-MANHATTAN CONTACT IN "+
+						TextUtils.formatDouble(cutBox.getMinX())+"<=X<="+
+						TextUtils.formatDouble(cutBox.getMaxX())+" AND "+
+						TextUtils.formatDouble(cutBox.getMinY())+"<=Y<="+
+						TextUtils.formatDouble(cutBox.getMaxY()));
+					double cx = cutBox.getCenterX();
+					double cy = cutBox.getCenterY();
+					EPoint cp = EPoint.fromLambda(cx, cy);
+					SizeOffset so = pv.pNp.getProtoSizeOffset();
+					double dx = cutBox.getWidth() + so.getLowXOffset() + so.getHighXOffset();
+					double dy = cutBox.getHeight() + so.getLowYOffset() + so.getHighYOffset();
+					NodeInst ni = makeDummyNodeInst(pv.pNp, cp, dx, dy,
+													Orientation.fromAngle(pv.rotation*10),
+													Technology.NodeLayer.MULTICUT_CENTERED);
+					PolyBase po = dummyNodeFits(ni, originalMerge, activeCut, polyCut, cutsInArea);
+					if (po == null) {
+						if (DEBUGCONTACTS) System.out.println("   FITTED NON-MANHATTAN CONTACT "+
+															  pv.pNp.toString()+":"+
+															  " W = "+cutBox.getWidth()+
+															  " H = "+cutBox.getHeight());
+						// it fits: create it
+						realizeNode(pv.pNp, Technology.NodeLayer.MULTICUT_CENTERED, 
+									cx, cy, dx, dy,
+									pv.rotation*10, null, originalMerge, 
+									newCell, contactNodes, usePureLayerNodes);
+						cInfo.removeCut(cut);
+						foundCut = true;
+						break;
+					} else {
+						badLayer = po.getLayer();
 					}
 
 					String reason = "not enough of layer " + badLayer.getName();
@@ -4658,6 +4698,7 @@ public class Connectivity
 			// check the new centerlines
 			for (Centerline cl : preCenterlines) {
 				Rectangle2D clBounds = cl.getBounds();
+				if (clBounds == null) continue;
 				// discard thin lines 
 				if (cl.width < minWidth) {
 					if (DEBUGCENTERLINES) System.out.println("***IGNORE " + cl + " - TOO THIN");
@@ -4668,8 +4709,8 @@ public class Connectivity
 				for (int ci=0; ci < newCenterlines.size(); ci++) {
 					Centerline acl = newCenterlines.get(ci);
 					Rectangle2D aclBounds = acl.getBounds();
-					// check if equal bounds
 					if (aclBounds == null) continue;
+					// check if equal bounds
 					if (aclBounds.contains(clBounds) || clBounds.contains(aclBounds)) {
 						// check if exactly redundant
 						if (cl.head.equals(acl.head) && cl.tail.equals(acl.tail) ||
@@ -5030,12 +5071,10 @@ public class Connectivity
                             points[i] = PolyBase.fromLambda(origPoints[i].getX()+ni.getAnchorCenterX(), origPoints[i].getY()+ni.getAnchorCenterY());
                         }
 
-                        boolean BREAKUPTRACE = true;
-
                         PolyBase poly = new PolyBase(points);
                         poly.setLayer(layer);
 
-                        if (BREAKUPTRACE)
+                        if (ENFORCEMANHATTAN)
                         {
                             // irregular shape: break it up with simpler polygon merging algorithm
                             GeometryHandler thisMerge = GeometryHandler.createGeometryHandler(GeometryHandler.GHMode.ALGO_SWEEP, 1);
@@ -5284,8 +5323,7 @@ public class Connectivity
 			return null;
 		}
 		List<NodeInst> createdNodes = new ArrayList<NodeInst>();
-		if (poly.getBox() == null)
-		{
+		if (ENFORCEMANHATTAN) {
 			// irregular shape: break it up with simpler polygon merging algorithm
 			GeometryHandler thisMerge = GeometryHandler.createGeometryHandler(GeometryHandler.GHMode.ALGO_SWEEP, 1);
 			thisMerge.add(layer, poly);
@@ -5299,13 +5337,14 @@ public class Connectivity
 				if (ni == null) continue;
 				createdNodes.add(ni);
 			}
-			return createdNodes;
+		} else {
+			Rectangle2D polyBounds = poly.getBounds2D();
+			NodeInst ni = makeAlignedPoly(polyBounds, layer, originalMerge, pNp, cell);
+			if (ni != null)
+				createdNodes.add(ni);
 		}
-		Rectangle2D polyBounds = poly.getBounds2D();
-		NodeInst ni = makeAlignedPoly(polyBounds, layer, originalMerge, pNp, cell);
-		if (ni != null)
-			createdNodes.add(ni);
 		return createdNodes;
+			
 	}
 
 	private NodeInst makeAlignedPoly(Rectangle2D polyBounds, Layer layer, PolyMerge originalMerge, PrimitiveNode pNp, Cell cell)
@@ -5362,54 +5401,46 @@ public class Connectivity
      * @param oldCell the original cell (unextracted)
      * @param newCell the new cell
 	 */
-	private void cleanupExports(Cell oldCell, Cell newCell)
+	private void cleanupExports(Cell oldCell, Cell newCell, List<Export> exportsToRestore, List<ExportedPin> pinsForLater)
 	{
-		// first restore original exports (which were on pure-layer nodes and must now be placed back)
-		for(Export e : exportsToRestore)
-		{
+		// first restore original exports (which were on pure-layer nodes and must now be placed back)		
+		for(Export e : exportsToRestore) {
 			EPoint loc = e.getPoly().getCenter();
-			boolean found = false;
+			Export found = null;
 			Rectangle2D bounds = new Rectangle2D.Double(loc.getX(), loc.getY(), 0, 0);
-			for(Iterator<Geometric> it = newCell.searchIterator(bounds); it.hasNext(); )
-			{
+			for(Iterator<Geometric> it = newCell.searchIterator(bounds); it.hasNext(); ) {
 				Geometric geom = it.next();
 				if (!(geom instanceof NodeInst)) continue;
 				NodeInst ni = (NodeInst)geom;
-				for(Iterator<PortInst> pIt = ni.getPortInsts(); pIt.hasNext(); )
-				{
+				for(Iterator<PortInst> pIt = ni.getPortInsts(); pIt.hasNext(); ) {
 					PortInst pi = pIt.next();
 					PortProto pp = pi.getPortProto();
 					if (!sameConnection(e, pp)) continue;
-					EPoint pLoc = pi.getPoly().getCenter();
-					if (loc.equals(pLoc))
-					{
-						Export.newInstance(newCell, pi, e.getName(), ep);
-						found = true;
+					Poly poly = pi.getPoly();
+					if (poly.contains(loc)) {
+						found = Export.newInstance(newCell, pi, e.getName(), ep);
 						break;
 					}
 				}
+				if (found != null) break;
 			}
-			if (!found)
-			{
-				// did not reexport: create the pin and export...let it get auto-routed in
-				PrimitiveNode pnUse = null;
-				for(Iterator<PrimitiveNode> it = tech.getNodes(); it.hasNext(); )
-				{
-					PrimitiveNode pn = it.next();
-					if (!pn.getFunction().isPin()) continue;
-					if (!sameConnection(e, pn.getPort(0))) continue;
-					pnUse = pn;
-					break;
-				}
-				if (pnUse == null) continue;
-				NodeInst ni = NodeInst.makeInstance(pnUse, ep, loc, pnUse.getDefWidth(ep), pnUse.getDefHeight(ep), newCell);
-				Export.newInstance(newCell, ni.getOnlyPortInst(), e.getName(), ep);
+			if (found != null) continue;
+			// did not reexport: create the pin and export...let it get auto-routed in
+			PrimitiveNode pnUse = null;
+			for(Iterator<PrimitiveNode> it = tech.getNodes(); it.hasNext(); ) {
+				PrimitiveNode pn = it.next();
+				if (!pn.getFunction().isPin()) continue;
+				if (!sameConnection(e, pn.getPort(0))) continue;
+				pnUse = pn;
+				break;
 			}
+			if (pnUse == null) continue;
+			NodeInst ni = NodeInst.makeInstance(pnUse, ep, loc, pnUse.getDefWidth(ep), pnUse.getDefHeight(ep), newCell);
+			found = Export.newInstance(newCell, ni.getOnlyPortInst(), e.getName(), ep);
 		}
 
 		// now handle exported pins
-		for(ExportedPin exportedPin : pinsForLater)
-		{
+		for(ExportedPin exportedPin : pinsForLater)	{
 			for(Iterator<Export> eIt = exportedPin.ni.getExports(); eIt.hasNext(); )
 			{
 				Export e = eIt.next();
@@ -5442,8 +5473,7 @@ public class Connectivity
 		}
 
 		// finally rename auto-generated export names to be more sensible
-		for(Export e : generatedExports)
-		{
+		for(Export e : generatedExports) {
 			Cell cell = e.getParent();
 			Netlist nl = cell.getNetlist();
 			Network net = nl.getNetwork(e, 0);
