@@ -187,7 +187,12 @@ public class BatchChanges
                 Variable var = it.next();
                 if (var.getKey() == NodeInst.TRACE)
                 {
-                    newD = newD.withTrace((EPoint[])var.getObject(), oldD.anchor);
+					PrimitiveNode pn = techPool.getPrimitiveNode((PrimitiveNodeId)newProtoId);
+					if (pn.isPin()) {
+						System.out.println("Dropping pin outline: "+var.getObject());
+						continue;
+					}
+					newD = newD.withTrace((EPoint[])var.getObject(), oldD.anchor);
                 } else
                 {
                     newD = newD.withVariable(var);
