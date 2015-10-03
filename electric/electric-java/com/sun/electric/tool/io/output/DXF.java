@@ -42,6 +42,7 @@ import com.sun.electric.technology.Technology;
 import com.sun.electric.technology.technologies.Artwork;
 import com.sun.electric.tool.io.IOTool;
 import com.sun.electric.util.JavaCompatiblity;
+import com.sun.electric.util.math.GenMath;
 import com.sun.electric.util.math.FixpTransform;
 
 import java.awt.geom.Point2D;
@@ -489,8 +490,6 @@ public class DXF extends Output
 			}
 			else errorLogger.logError("Malformed LINE", poly, cell, dxfEntityHandle);
 			break;
-		case FILLED:
-		case CLOSED:
 		case CROSSED:
 			if (points.length == 4) {
 				printWriter.print("  0\nSOLID\n");
@@ -518,6 +517,26 @@ public class DXF extends Output
 				printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
 				printWriter.print("  8\n" + layer + "\n");
 				printWriter.print(" 70\n0\n");
+				for(int j=0; j<points.length; j++) {
+					printWriter.print("  0\nVERTEX\n");
+					printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
+					double x = TextUtils.convertDistance(points[j].getX(), localPrefs.tech, dxfDispUnit);
+					double y = TextUtils.convertDistance(points[j].getY(), localPrefs.tech, dxfDispUnit);
+					printWriter.print(" 10" + "\n" + TextUtils.formatDouble(x) + "\n");
+					printWriter.print(" 20" + "\n" + TextUtils.formatDouble(y) + "\n");
+					printWriter.print(" 30\n0\n");
+				}
+				printWriter.print("  0\nSEQEND\n");
+			}
+			else errorLogger.logError("Malformed SOLID", poly, cell, dxfEntityHandle);
+			break;
+		case FILLED:
+		case CLOSED:
+			if (points.length >= 2) {
+				printWriter.print("  0\nPOLYLINE\n");
+				printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
+				printWriter.print("  8\n" + layer + "\n");
+				printWriter.print(" 70\n1\n");
 				for(int j=0; j<points.length; j++) {
 					printWriter.print("  0\nVERTEX\n");
 					printWriter.print("  5\n" + getThreeDigitHex(dxfEntityHandle++) + "\n");
