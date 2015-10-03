@@ -88,7 +88,6 @@ public class FileType implements Serializable {
 	/** Describes Jython source. */			public static final FileType JYTHON       = makeFileType("Jython", new String[] {"jy", "py"}, "Jython Script File (jy, py)");
     /** Describes L files.*/				public static final FileType L            = makeFileType("L", new String[] {"L"}, "L File (L)", FileTypeGroup.EXPORTIMPORTGRP);
 	/** Describes LEF files.*/				public static final FileType LEF          = makeFileType("LEF", new String[] {"lef"}, "LEF File (lef)", FileTypeGroup.EXPORTIMPORTGRP);
-	/** Describes VHDL decks. */			public static final FileType VST          = makeFileType("VST", new String[] {"vst", "vhd", "vhdl"}, "Structural VHDL Netlist (vst)", FileTypeGroup.EXPORTIMPORTGRP);
 	/** Describes Library files.*/			public static final FileType LIBFILE      = makeFileType("LIBFILE", new String[] {"jelib", "elib", "txt"}, "Library File", FileTypeGroup.DATABASEGRP);
 	/** Describes Liberty input. */			public static final FileType LIB         = makeFileType("LIB", new String[] {"lib"}, "Liberty File (lib)", FileTypeGroup.EXPORTIMPORTGRP);
 	/** Describes Lisp or ACL2 output. */	public static final FileType LISP         = makeFileType("LISP", new String[] {"lisp"}, "Lisp File (lisp)", FileTypeGroup.EXPORTIMPORTGRP);
