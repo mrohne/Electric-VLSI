@@ -25,6 +25,7 @@
 package com.sun.electric.tool.io.input;
 
 import com.sun.electric.database.EditingPreferences;
+import com.sun.electric.database.variable.Variable;
 import com.sun.electric.database.geometry.EPoint;
 import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.hierarchy.Library;
@@ -34,9 +35,9 @@ import com.sun.electric.util.TextUtils;
 import com.sun.electric.util.math.FixpCoord;
 import com.sun.electric.util.math.Orientation;
 
+import java.lang.Integer;
 import java.util.HashMap;
 import java.util.Map;
-
 /**
  * This class builds large instance arrays by creating a
  * logarithmic-depth tree of bisections; this makes it possible to
@@ -65,9 +66,14 @@ import java.util.Map;
 
 public class CellArrayBuilder {
 
+	public static final Variable.Key ARRAY_COLS = Variable.newKey("ATTR_GDS_array_cols");
+	public static final Variable.Key ARRAY_ROWS = Variable.newKey("ATTR_GDS_array_rows");
+	public static final Variable.Key ARRAY_COLSPACE = Variable.newKey("ATTR_GDS_array_colspace");
+	public static final Variable.Key ARRAY_ROWSPACE = Variable.newKey("ATTR_GDS_array_rowspace");
+
     public final Library theLibrary;
 
-    public CellArrayBuilder(Library theLibrary) { this.theLibrary = theLibrary; }
+    protected CellArrayBuilder(Library theLibrary) { this.theLibrary = theLibrary; }
 
     private static HashMap<Map.Entry<NodeProto, String>, CellArray> cellArrayCache =
         new HashMap<Map.Entry<NodeProto, String>, CellArray>();
@@ -113,7 +119,7 @@ public class CellArrayBuilder {
 
     private CellArray getCellArray(NodeProto proto, Orientation orient, int cols, int rows, EPoint colspace, EPoint rowspace) {
         Map.Entry<NodeProto, String> key =
-            new java.util.AbstractMap.SimpleEntry(proto, makeArrayName(orient, cols, rows, colspace, rowspace));
+            new java.util.AbstractMap.SimpleEntry<NodeProto, String>(proto, makeArrayName(orient, cols, rows, colspace, rowspace));
         CellArray ret = cellArrayCache.get(key);
         if (ret == null) {
             ret = new CellArray(proto, orient, cols, rows, colspace, rowspace);
@@ -182,13 +188,62 @@ public class CellArrayBuilder {
         }
     }
 
-    /** makes an array as intelligently as possible */
-    public void buildArray(NodeProto proto, Cell parent,
-                           EPoint startLoc, Orientation orient,
-                           int cols, int rows,
-                           EPoint colspace, EPoint rowspace, EditingPreferences ep) {
-        if (cols<1) throw new Error();
-        if (rows<1) throw new Error();
-        buildArrayUsingSubcells(proto, parent, startLoc, orient, cols, rows, colspace, rowspace, ep);
+    /** makes an annotate array */
+    public void buildAnnotateArray(NodeProto proto, Cell parent, EPoint startLoc, Orientation orient,
+                               int cols, int rows, EPoint colspace, EPoint rowspace, EditingPreferences ep) {
+		NodeInst ni = NodeInst.makeInstance(proto, ep,
+											startLoc,
+											proto.getDefWidth(null), proto.getDefHeight(null), 
+											parent, orient, null);
+		ni.newDisplayVar(ARRAY_COLS, new Integer(cols), ep);
+		ni.newDisplayVar(ARRAY_ROWS, new Integer(rows), ep);
+		ni.newDisplayVar(ARRAY_COLSPACE, colspace.toString(), ep);
+		ni.newDisplayVar(ARRAY_ROWSPACE, rowspace.toString(), ep);
     }
+
+	public void buildArray(NodeProto proto, Cell parent,
+						   EPoint startLoc, Orientation orient,
+						   int cols, int rows,
+						   EPoint colspace, EPoint rowspace, EditingPreferences ep) {
+		System.err.println("CellArrayBuilder: "+proto+" "+parent);
+	}
+
+	public static class Simple extends CellArrayBuilder {
+		public Simple(Library theLibrary) { super(theLibrary); }
+		/** makes an array as simple as possible */
+		@Override
+		public void buildArray(NodeProto proto, Cell parent,
+							   EPoint startLoc, Orientation orient,
+							   int cols, int rows,
+							   EPoint colspace, EPoint rowspace, EditingPreferences ep) {
+			if (cols<1) throw new Error();
+			if (rows<1) throw new Error();
+			buildFlatArray(proto, parent, startLoc, orient, cols, rows, colspace, rowspace, ep);
+		}
+	}
+	public static class Bisection extends CellArrayBuilder {
+		public Bisection(Library theLibrary) { super(theLibrary); }
+		/** makes an array as intelligently as possible */
+		@Override
+		public void buildArray(NodeProto proto, Cell parent,
+							   EPoint startLoc, Orientation orient,
+							   int cols, int rows,
+							   EPoint colspace, EPoint rowspace, EditingPreferences ep) {
+			if (cols<1) throw new Error();
+			if (rows<1) throw new Error();
+			buildArrayUsingSubcells(proto, parent, startLoc, orient, cols, rows, colspace, rowspace, ep);
+		}
+	}
+	public static class Annotate extends CellArrayBuilder {
+		public Annotate(Library theLibrary) { super(theLibrary); }
+		@Override
+		public void buildArray(NodeProto proto, Cell parent,
+							   EPoint startLoc, Orientation orient,
+							   int cols, int rows,
+							   EPoint colspace, EPoint rowspace, EditingPreferences ep) {
+			if (cols<1) throw new Error();
+			if (rows<1) throw new Error();
+			buildAnnotateArray(proto, parent, startLoc, orient, cols, rows, colspace, rowspace, ep);
+		}
+	}
 }
