@@ -52,6 +52,7 @@ import com.sun.electric.technology.technologies.Generic;
 import com.sun.electric.technology.technologies.Schematics;
 import com.sun.electric.tool.Job;
 import com.sun.electric.tool.routing.Router;
+import com.sun.electric.tool.user.HighlightEOBJ;
 import com.sun.electric.tool.user.ui.EditWindow;
 import com.sun.electric.tool.user.ui.LayerVisibility;
 import com.sun.electric.tool.user.ui.WindowContent;
