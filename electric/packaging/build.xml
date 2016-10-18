@@ -143,13 +143,13 @@
 
 		<!-- the location of various JAR files -->
 		<property name="beanshell"          value="${packaging}/bsh-2.0b4.jar" />
-		<property name="jython"             value="${packaging}/jython.jar" />
+		<property name="jython"             value="${packaging}/jython-standalone-2.7.0.jar" />
 		<property name="abcl"               value="${packaging}/abcl.jar" />
 		<property name="abcl-contrib"       value="${packaging}/abcl-contrib.jar" />
 		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions.jar" />
 		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.12.jar" />
 		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.12.jar" />
-		<property name="junit"              value="${packaging}/junit-4.10.jar" />
+		<property name="junit"              value="${packaging}/junit-4.12.jar" />
 		<property name="jogl-all"           value="${packaging}/jogl-all.jar" />
 		<property name="gluegen-rt"         value="${packaging}/gluegen-rt.jar" />
 		<property name="jogl-all-natives"   value="${packaging}/jogl-all-natives-macosx-universal.jar" />
@@ -161,6 +161,7 @@
 		<property name="scala-compiler"     value="${packaging}/scala-compiler-2.11.7.jar" />
 		<property name="scala-reflect"      value="${packaging}/scala-reflect-2.11.7.jar" />
 		<property name="scala-library"      value="${packaging}/scala-library-2.11.7.jar" />
+		<property name="scala-actors"      value="${packaging}/scala-actors-2.11.0.jar" />
 
 		<!-- does the build directory already exist? -->
 		<condition property="buildDirExists">
@@ -409,8 +410,6 @@
 	    <option value="-Xms64m"/>
 	    <option value="-Xmx2048m"/>
 	    <option value="-Xss64m"/>
-	    <option value="-XX:PermSize=64m"/>
-	    <option value="-XX:MaxPermSize=2048m"/>
 	    <option value="-Dcom.apple.mrj.application.apple.menu.about.name=Electric"/>
 	  </bundleapp>
 	</target>
