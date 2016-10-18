@@ -115,7 +115,7 @@ public class PrefTest extends AbstractTest
 			putPrefs(new GraphicsPreferences(true, techPool), m, true);
 			putPrefs(new LayerVisibility(true), m, true);
 			putPrefs(new ComponentMenu.ComponentMenuPreferences(true), m, true);
-			putPrefs(new GenerateVHDL.VHDLPreferences(true), m, false);
+			putPrefs(new GenerateVHDL.VHDLPrefPackage(true), m, false);
 			putPrefs(new DRC.DRCPreferences(true), m, true);
 			putPrefs(new LayerCoverageTool.LayerCoveragePreferences(true), m, true);
 			putPrefs(new SilComp.SilCompPrefs(true), m, false);
