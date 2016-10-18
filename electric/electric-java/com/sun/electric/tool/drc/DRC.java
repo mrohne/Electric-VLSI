@@ -551,7 +551,7 @@ public class DRC extends Listener
                     if (!DBMath.areEquals(from, points[i]))
                     {
                         to = points[i];
-                        found = true;
+                        found = false;
                         break;
                     }
                 }
