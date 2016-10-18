@@ -2848,6 +2848,7 @@ public class ExplorerTree extends JTree implements DragSourceListener // , DragG
 				if (!groupToDelete.isEmpty()) confirmMsg += "/groups";
 				for(Cell cell : cellsToDelete) confirmMsg += " " + cell.describe(false);
 				for(Cell.CellGroup grp : groupToDelete) confirmMsg += " " + grp.getName() + "(grp)";
+				if (confirmMsg.length() > 132) confirmMsg = confirmMsg.substring(0, 129) + "...";
 				int response = JOptionPane.showConfirmDialog(TopLevel.getCurrentJFrame(),
 					confirmMsg + "?", "Confirm Cell Deletion", JOptionPane.YES_NO_OPTION);
 				if (response != JOptionPane.YES_OPTION) return;
