@@ -218,6 +218,31 @@ public class PolyMerge extends GeometryHandler implements Serializable
 	}
 
 	/**
+	 * Method to add two layers in this merge and produce a third.
+	 * @param sourceA the first Layer to intersect.
+	 * @param sourceB the second Layer to intersect.
+	 * @param dest the destination layer to place the union of the first two.
+	 * If there is no intersection, all geometry on this layer is cleared.
+	 */
+	public void unionLayers(Layer sourceA, Layer sourceB, Layer dest)
+	{
+		Area destArea = null;
+		Area sourceAreaA = (Area)layers.get(sourceA);
+		if (sourceAreaA != null)
+		{
+			Area sourceAreaB = (Area)layers.get(sourceB);
+			if (sourceAreaB != null)
+			{
+				destArea = new Area(sourceAreaA);
+				destArea.add(sourceAreaB);
+				if (destArea.isEmpty()) destArea = null;
+			}
+		}
+		if (destArea == null) layers.remove(dest); else
+			layers.put(dest, destArea);
+	}
+
+	/**
 	 * Method to intersect two layers in this merge and produce a third.
 	 * @param sourceA the first Layer to intersect.
 	 * @param sourceB the second Layer to intersect.
@@ -392,28 +417,38 @@ public class PolyMerge extends GeometryHandler implements Serializable
 
     public Area exclusive(Layer layer, PolyBase poly)
     {
-        // find the area for the given layer
-		Area area = (Area)layers.get(layer);
-		if (area == null) return null;
-
         // create an area that is the new polygon minus the original area
-		Area polyArea = new Area(poly);
-		polyArea.subtract(area);
-
-        return polyArea;
+		return exclusive(layer, new Area(poly));
     }
 
-    public Area inclusive(Layer layer, PolyBase poly)
+    public Area exclusive(Layer layer, Area poly)
     {
         // find the area for the given layer
 		Area area = (Area)layers.get(layer);
 		if (area == null) return null;
 
         // create an area that is the new polygon minus the original area
-		Area polyArea = new Area(poly);
-		polyArea.intersect(area);
+		poly.subtract(area);
 
-        return polyArea;
+        return poly;
+    }
+
+    public Area inclusive(Layer layer, PolyBase poly)
+    {
+        // create an area that is the new polygon intersecting the original area
+		return inclusive(layer, new Area(poly));
+    }
+
+    public Area inclusive(Layer layer, Area poly)
+    {
+        // find the area for the given layer
+		Area area = (Area)layers.get(layer);
+		if (area == null) return null;
+
+        // create an area that is the new polygon intersecting the original area
+		poly.intersect(area);
+
+        return poly;
     }
 
     /**
@@ -524,6 +559,16 @@ public class PolyMerge extends GeometryHandler implements Serializable
     public Area getMergedArea(Layer layer)
 	{
 		return (Area)layers.get(layer);
+	}
+
+    /**
+	 * Method to return set basic Area on a given Layer in this Merge.
+	 * @param layer the layer in question.
+	 * @return the list of Polys that describes this Merge.
+	 */
+    public void setMergedArea(Layer layer, Area area)
+	{
+		layers.put(layer, area);
 	}
 
     /**
