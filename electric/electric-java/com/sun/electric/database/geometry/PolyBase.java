@@ -63,7 +63,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
 	private static final boolean DEBUGCOINCIDENT = false;
 	private static final boolean DEBUGCOLLINEAR = false;
 	private static final boolean DEBUGMANHATTAN = false;
-    private static final boolean ALLOWTINYPOLYGONS = false;
+    private static final boolean ALLOWTINYPOLYGONS = true;
     /** the style (outline, text, lines, etc.) */
     private Poly.Type style;
     /** the points */
@@ -2031,8 +2031,12 @@ public class PolyBase implements Shape, PolyNodeMerge {
                 double area = GenMath.getArea(bounds);
                 return Math.abs(area);
             }
-
             return GenMath.getAreaOfPoints(points);
+        }
+        if (style == Poly.Type.CIRCLE || style == Poly.Type.THICKCIRCLE || style == Poly.Type.DISC) {
+            Rectangle2D bounds = getBounds2D();
+			double area = GenMath.getArea(bounds);
+			return Math.abs(area)*Math.PI/4;
         }
         return 0;
     }
@@ -2280,6 +2284,13 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				d0 = d1;
 			}
 		}
+		for (int l1 = 0; l1 < nl; l1++) {
+			double d1 = loop[l1].distance(hole[h0]);
+			if (DBMath.isLessThan(d1, d0)) {
+				l0 = l1;
+				d0 = d1;
+			}
+		}
 		// Reserve space for points, closing loops if required
 		int np = nl + nh;
 		if (loop[l0] != loop[(l0+nl-1)%nl]) np += 1;
@@ -2345,7 +2356,8 @@ public class PolyBase implements Shape, PolyNodeMerge {
         }
 		
         public boolean addTree(PolyBaseTree tree) {
-			// if (poly.intersects(tree.poly)) System.out.print("*** INTERSECTING LOOPS "+poly+" "+tree.poly);
+			if (poly.intersects(tree.poly)) System.out.print("*** INTERSECTING LOOPS "+poly+" "+tree.poly);
+			if (tree.poly.getPoints().length == 0) return false;
 			if (!poly.contains(tree.poly.getPoints()[0])) return false;
 			for (PolyBaseTree son : sons) {
 				if (son.poly.intersects(tree.poly)) System.out.print("*** INTERSECTING HOLES "+son.poly+" "+tree.poly);
@@ -2540,7 +2552,6 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				if (DEBUGMANHATTAN && isNonManhattan(pt[1], pt[2]) && nm-- > 0)
 					System.out.println("PolyBase.getPointsFromPath: non-Manhattan segment " + pt[1] + " " + pt[2]);
 				if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
-				else if (isCollinear(pt[0], pt[1], pt[2])) pLs.remove(pLs.size() - 1);
 				return type;
 			case PathIterator.SEG_MOVETO:
 				if (DEBUGMERGE && pt[3] != null)
@@ -2562,7 +2573,6 @@ public class PolyBase implements Shape, PolyNodeMerge {
 				if (DEBUGMANHATTAN && isNonManhattan(pt[1], pt[2]) && nm-- > 0)
 					System.out.println("PolyBase.getPointsFromPath: non-Manhattan segment " + pt[1] + " " + pt[2]);
 				if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
-				else if (isCollinear(pt[0], pt[1], pt[2])) pLs.remove(pLs.size() - 1);
 				if (pt[2] != null) pLs.add(pt[2]);
 				pt[0] = pt[1];
 				pt[1] = pt[2];
@@ -2570,7 +2580,6 @@ public class PolyBase implements Shape, PolyNodeMerge {
 			default:
 				if (DEBUGMERGE) System.out.println("PolyBase.getPointsFromPath(" + pIt + ", " + pLs + "): unknown PathIterator type " + type);
 				if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
-				else if (isCollinear(pt[0], pt[1], pt[2])) pLs.remove(pLs.size() - 1);
 				if (pt[2] != null) pLs.add(pt[2]);
 				pt[0] = pt[1];
 				pt[1] = pt[2];
@@ -2595,7 +2604,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
 
         @Override
         public int getWindingRule() {
-            return WIND_EVEN_ODD;
+            return WIND_NON_ZERO;
         }
 
         @Override
