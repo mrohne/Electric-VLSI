@@ -82,6 +82,7 @@ public class Xml {
         public int defaultNumMetals;
         public double scaleValue;
         public double resolutionValue; // min resolution value allowed by the foundry
+        public double angleStepValue; // min angleStep value allowed by the foundry
         public boolean scaleRelevant;
         public String defaultFoundry;
         public double minResistance;
@@ -451,6 +452,7 @@ public class Xml {
         numMetals,
         scale,
         resolution,
+        angleStep,
         defaultFoundry,
         minResistance,
         minCapacitance,
@@ -960,6 +962,9 @@ public class Xml {
                     break;
                 case resolution:
                     tech.resolutionValue = Double.parseDouble(a("value")); // default is 0;
+                    break;
+                case angleStep:
+                    tech.angleStepValue = Double.parseDouble(a("value")); // default is 0;
                     break;
                 case defaultFoundry:
                     tech.defaultFoundry = a("value");
@@ -1676,6 +1681,7 @@ public class Xml {
                 case numMetals:
                 case scale:
                 case resolution:
+                case angleStep:
                 case defaultFoundry:
                 case minResistance:
                 case minCapacitance:
