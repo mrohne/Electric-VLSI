@@ -684,7 +684,8 @@ public class ServerJobManager {
 
         @Override
         public EditWindow_ displayCell(Cell cell) {
-            throw new IllegalStateException();
+			printStackTrace("displayCell "+cell);
+			return null;
         }
 
         @Override
@@ -693,11 +694,11 @@ public class ServerJobManager {
         }
 
         public void updateNetworkErrors(Cell cell, List<ErrorLogger.MessageLog> errors) {
-            throw new IllegalStateException();
+			printStackTrace("updateNetworkErrors "+cell);
         }
 
         public void updateIncrementalDRCErrors(Cell cell, List<ErrorLogger.MessageLog> errors) {
-            throw new IllegalStateException();
+			printStackTrace("updateIncrementalDRCErrors "+cell);
         }
 
         /**
