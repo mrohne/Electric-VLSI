@@ -43,6 +43,7 @@ public class FileType implements Serializable {
 	/** all types */                        private static final ArrayList<FileType> allTypes = new ArrayList<FileType>();
 
 	/** Describes any file.*/				public static final FileType ANY          = makeFileType("All", new String[] {}, "All Files");
+	/** Describes ABCL source. */			public static final FileType ABCL         = makeFileType("ABCL", new String[] {"lisp", "cl"}, "ABCL Script File (lisp, cl)");
 	/** Describes ALS decks. */				public static final FileType ALS          = makeFileType("ALS", new String[] {"als"}, "ALS Simulation Deck (als)", FileTypeGroup.BUILTINSIMGRP);
 	/** Describes ALS vector decks. */		public static final FileType ALSVECTOR    = makeFileType("ALS Vectors", new String[] {"vec"}, "ALS Vector Deck (vec)", FileTypeGroup.BUILTINSIMGRP);
 	/** Describes Applicon 860 decks. */	public static final FileType APPLICON860  = makeFileType("Applicon 860", new String[] {"apl"}, "Applicon 860 Deck (apl)");
@@ -86,6 +87,7 @@ public class FileType implements Serializable {
 	/** Describes Jython source. */			public static final FileType JYTHON       = makeFileType("Jython", new String[] {"jy", "py"}, "Jython Script File (jy, py)");
     /** Describes L files.*/				public static final FileType L            = makeFileType("L", new String[] {"L"}, "L File (L)", FileTypeGroup.EXPORTIMPORTGRP);
 	/** Describes LEF files.*/				public static final FileType LEF          = makeFileType("LEF", new String[] {"lef"}, "LEF File (lef)", FileTypeGroup.EXPORTIMPORTGRP);
+	/** Describes VHDL decks. */			public static final FileType VST          = makeFileType("VST", new String[] {"vst", "vhd", "vhdl"}, "Structural VHDL Netlist (vst)", FileTypeGroup.EXPORTIMPORTGRP);
 	/** Describes Library files.*/			public static final FileType LIBFILE      = makeFileType("LIBFILE", new String[] {"jelib", "elib", "txt"}, "Library File", FileTypeGroup.DATABASEGRP);
 	/** Describes Liberty input. */			public static final FileType LIB         = makeFileType("LIB", new String[] {"lib"}, "Liberty File (lib)", FileTypeGroup.EXPORTIMPORTGRP);
 	/** Describes Lisp or ACL2 output. */	public static final FileType LISP         = makeFileType("LISP", new String[] {"lisp"}, "Lisp File (lisp)", FileTypeGroup.EXPORTIMPORTGRP);
