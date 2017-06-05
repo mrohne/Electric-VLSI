@@ -1479,10 +1479,10 @@ public class FileMenu {
             if (SimulationTool.getSpiceUseRunDir())
                 filePath = SimulationTool.getSpiceRunDir() + File.separator + filePath;
             else
-                filePath = User.getWorkingDirectory() + File.separator + filePath;
+                filePath = FileType.SPICE.getGroupPath() + File.separator + filePath;
             // check for automatic overwrite
             if (User.isShowFileSelectionForNetlists() && !SimulationTool.getSpiceOutputOverwrite()) {
-                String saveDir = User.getWorkingDirectory();
+                String saveDir = FileType.SPICE.getGroupPath();
                 filePath = OpenFile.chooseOutputFile(type, null, filePath);
                 User.setWorkingDirectory(saveDir);
                 if (filePath == null) return;
