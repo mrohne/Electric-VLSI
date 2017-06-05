@@ -509,6 +509,9 @@ public class LibToTech
                 case Info.TECHRESOLUTION:
 					gi.resolution = TextUtils.atof(str);
 					break;
+                case Info.TECHANGLESTEP:
+					gi.angleStep = TextUtils.atof(str);
+					break;
                 case Info.TECHFOUNDRY:
 					gi.defaultFoundry = str;
 					break;
@@ -1208,12 +1211,16 @@ public class LibToTech
 			NodeInfo.PortDetails port1 = nIn.nodePortDetails[dif1Port];
 			NodeInfo.PortDetails port2 = nIn.nodePortDetails[pol2Port];
 			NodeInfo.PortDetails port3 = nIn.nodePortDetails[dif2Port];
+			nIn.nodePortDetails[pol1Port] = nIn.nodePortDetails[0];
+			nIn.nodePortDetails[dif1Port] = nIn.nodePortDetails[1];
+			nIn.nodePortDetails[pol2Port] = nIn.nodePortDetails[2];
+			nIn.nodePortDetails[dif2Port] = nIn.nodePortDetails[3];
 			nIn.nodePortDetails[pol1Port=0] = port0;
 			nIn.nodePortDetails[dif1Port=1] = port1;
 			nIn.nodePortDetails[pol2Port=2] = port2;
 			nIn.nodePortDetails[dif2Port=3] = port3;
-			for(int j=0; j<extras.size(); j++)
-				nIn.nodePortDetails[j+4] = extras.get(j);
+			for(int j=4; j<extras.size(); j++)
+				nIn.nodePortDetails[j] = extras.get(j);
 
 			// make sure implant layers are not connected to ports
 			for(int k=0; k<nIn.nodeLayers.length; k++)
@@ -1335,9 +1342,9 @@ public class LibToTech
 					nIn.nodePortDetails[pol1Port].values[1].getX().getAdder().getLambda());
 
 				// setup electrical layers for diffusion
-				diff1.values[0] = diff1.values[0].withX(new EdgeH(0,0));
+				diff1.values[0] = diff1.values[0].withY(new EdgeV(0,0));
 				diff1.rWidth = 0;
-				diff2.values[1] = diff2.values[0].withY(new EdgeV(0,0));
+				diff2.values[1] = diff2.values[1].withY(new EdgeV(0,0));
 				diff2.lWidth = 0;
 			} else
 			{
@@ -1368,9 +1375,9 @@ public class LibToTech
 					nIn.nodePortDetails[pol1Port].values[1].getY().getAdder().getLambda());
 
 				// setup electrical layers for diffusion
-                diff1.values[0] = diff1.values[0].withX(new EdgeH(0, 0));
+				diff1.values[0] = diff1.values[0].withY(new EdgeV(0,0));
 				diff1.rWidth = 0;
-                diff2.values[1] = diff2.values[1].withX(new EdgeH(0, 0));
+				diff2.values[1] = diff2.values[1].withY(new EdgeV(0,0));
 				diff2.lWidth = 0;
 			}
 		}
@@ -2532,6 +2539,7 @@ public class LibToTech
 		t.scaleValue = gi.scale;
 		t.scaleRelevant = gi.scaleRelevant;
 		t.resolutionValue = gi.resolution;
+		t.angleStepValue = gi.angleStep;
 		t.defaultFoundry = gi.defaultFoundry;
 		t.minResistance = gi.minRes;
 		t.minCapacitance = gi.minCap;
@@ -2735,7 +2743,7 @@ public class LibToTech
             hy = Long.MIN_VALUE;
             for (int i = 0; i < nodeLayers.size(); i++) {
                 Xml.NodeLayer nl = nodeLayers.get(i);
-                long x, y;
+                long x, y, r;
                 if (nl.representation == Technology.NodeLayer.BOX || nl.representation == Technology.NodeLayer.MULTICUTBOX) {
                     x = DBMath.lambdaToGrid(nl.lx.value);
                     lx = Math.min(lx, x);

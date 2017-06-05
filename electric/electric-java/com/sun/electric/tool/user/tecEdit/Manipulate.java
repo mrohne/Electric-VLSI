@@ -1648,7 +1648,12 @@ public class Manipulate
 		if (ni.getProto() != Artwork.tech().filledBoxNode) return 0;
 		Variable var = ni.getVar(Artwork.ART_PATTERN);
 		if (var == null) return 0xFFFF;
-		return ((Short[])var.getObject())[0].intValue();
+		Object obj = var.getObject();
+		if (obj instanceof Short[])
+			return ((Short[])var.getObject())[0].intValue();
+		else if (obj instanceof Integer[])
+			return ((Integer[])var.getObject())[0].intValue();
+		return 0xFFFF;
 	}
 
 	/**
