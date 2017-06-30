@@ -2339,7 +2339,7 @@ public class ToolMenu {
 	public static void setDynamicLanguageMenu() {
 		for (EMenuBar.Instance menuBarInstance : TopLevel.getMenuBars()) {
 			JMenu menu = (JMenu) menuBarInstance.findMenuItem(languageMenu.getPath());
-			while (menu.getMenuComponentCount() > 3)
+			while (menu.getMenuComponentCount() > 4)
 				menu.remove(menu.getMenuComponentCount() - 1);
 
 			for (LanguageScripts.ScriptBinding script : LanguageScripts.getScripts()) {
