@@ -1113,11 +1113,13 @@ public class Manipulate
 			case Info.ARCNOEXTEND:
 				return "The arc extension of " + cell;
 			case Info.ARCWIPESPINS:
-				return "Thie arc coverage of " + cell;
+				return "Whether " + cell + " is wipes pins";
 			case Info.ARCANTENNARATIO:
 				return "The maximum antenna ratio for " + cell;
 			case Info.ARCWIDTHOFFSET:
 				return "The ELIB width offset for " + cell;
+			case Info.ARCCURVABLE:
+				return "Whether " + cell + " is curvable";
 
 			case Info.NODEFUNCTION:
 				return "The function of " + cell;
@@ -1224,6 +1226,7 @@ public class Manipulate
 			case Info.ARCWIPESPINS:      modArcWipes(wnd, ni);               break;
 			case Info.ARCANTENNARATIO:   modArcAntennaRatio(wnd, ni);        break;
 			case Info.ARCWIDTHOFFSET:    modArcWidthOffset(wnd, ni);         break;
+			case Info.ARCCURVABLE:       modArcCurvable(wnd, ni);            break;
 
 			case Info.NODEFUNCTION:      modNodeFunction(wnd, ni);           break;
 			case Info.NODELOCKABLE:      modNodeLockability(wnd, ni);        break;
@@ -1987,6 +1990,18 @@ public class Manipulate
 		if (finalChoice != initialChoice)
 		{
 			new SetTextJob(ni, "Wipes pins: " + (finalChoice ? "Yes" : "No"));
+		}
+	}
+
+	private static void modArcCurvable(EditWindow wnd, NodeInst ni)
+	{
+		String initialMsg = Info.getValueOnNode(ni);
+		boolean initialChoice = initialMsg.equalsIgnoreCase("yes");
+		boolean finalChoice = PromptAt.showPromptAt(wnd, ni, "Set Whether this Arc is Curvable",
+			"Can this arc be curved?", initialChoice);
+		if (finalChoice != initialChoice)
+		{
+			new SetTextJob(ni, "Curvable arc: " + (finalChoice ? "Yes" : "No"));
 		}
 	}
 
