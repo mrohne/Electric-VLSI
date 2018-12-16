@@ -1381,9 +1381,9 @@ public class ExplorerTree extends JTree implements DragSourceListener // , DragG
                     setIcon(iconErrorMsg);
                 }
             }
-			if (nodeInfo instanceof JobTree.JobTreeNode)
+			if (nodeInfo instanceof JobTree.EJobTreeNode)
 			{
-				//JobTree.JobTreeNode j = (JobTree.JobTreeNode)nodeInfo;
+				//JobTree.EJobTreeNode j = (JobTree.EJobTreeNode)nodeInfo;
 				//setToolTipText(j.getToolTip());
 				//System.out.println("set tool tip to "+j.getToolTip());
 			}
@@ -1585,9 +1585,9 @@ public class ExplorerTree extends JTree implements DragSourceListener // , DragG
 					return;
 				}
 
-				if (nodeObj instanceof JobTree.JobTreeNode)
+				if (nodeObj instanceof JobTree.EJobTreeNode)
 				{
-					System.out.println(((JobTree.JobTreeNode)nodeObj).getInfo());
+					System.out.println(((JobTree.EJobTreeNode)nodeObj).getInfo());
 					return;
 				}
 
@@ -2001,9 +2001,9 @@ public class ExplorerTree extends JTree implements DragSourceListener // , DragG
 			}
 
 			// show Job menu if user clicked on a Job
-			if (selectedObject instanceof JobTree.JobTreeNode)
+			if (selectedObject instanceof JobTree.EJobTreeNode)
 			{
-				JobTree.JobTreeNode job = (JobTree.JobTreeNode)selectedObject;
+				JobTree.EJobTreeNode job = (JobTree.EJobTreeNode)selectedObject;
 				JPopupMenu popup = JobTree.getPopupStatus(job);
 				popup.show((Component)currentMouseEvent.getSource(), currentMouseEvent.getX(), currentMouseEvent.getY());
 				return;

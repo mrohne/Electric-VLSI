@@ -47,7 +47,7 @@ public class JobTree extends DefaultMutableTreeNode {
     private static final JobTree jobTree = new JobTree();
     private static final TreePath jobPath = (new TreePath(ExplorerTreeModel.rootNode)).pathByAddingChild(jobTree);
 
-    private final Vector<JobTreeNode> jobNodes = new Vector<JobTreeNode>();
+    private final Vector</*EJob*/TreeNode> jobNodes = new Vector</*EJob*/TreeNode>();
 
     // array of ints
     private int[] indices = new int[1];
@@ -70,7 +70,7 @@ public class JobTree extends DefaultMutableTreeNode {
     }
 
     /** popup menu when user right-clicks on job in explorer tree */
-    public static JPopupMenu getPopupStatus(JobTreeNode jobNode) {
+    public static JPopupMenu getPopupStatus(EJobTreeNode jobNode) {
         JPopupMenu popup = new JPopupMenu();
         ActionListener a = new JobMenuActionListener(jobNode);
         JMenuItem m;
@@ -102,7 +102,7 @@ public class JobTree extends DefaultMutableTreeNode {
      */
     public int getIndex(TreeNode aChild) {
         try {
-            JobTreeNode tn = (JobTreeNode)aChild;
+            EJobTreeNode tn = (EJobTreeNode)aChild;
             return jobNodes.indexOf(tn);
         } catch (Exception e) {
             if (aChild == null)
@@ -120,7 +120,7 @@ public class JobTree extends DefaultMutableTreeNode {
     	List<Job.Inform> jobs = new ArrayList<Job.Inform>();
         for (int i = 0; i < jobNodes.size(); i++)
         {
-        	JobTreeNode jtn = jobNodes.get(i);
+        	EJobTreeNode jtn = (EJobTreeNode)jobNodes.get(i);
         	Job.Inform ji = jtn.jobInfo;
         	if (ji.isChangeJobQueuedOrRunning())
         		jobs.add(ji);
@@ -133,7 +133,8 @@ public class JobTree extends DefaultMutableTreeNode {
         indicesClear();
         int newJ = 0;
         for (int oldJ = 0; oldJ < jobNodes.size(); oldJ++) {
-            Job.Key jobKey = jobNodes.get(oldJ).getKey();
+            EJobTreeNode oldJobNode = (EJobTreeNode)jobNodes.get(oldJ);
+            Job.Key jobKey = oldJobNode.getKey();
             int k;
             for (k = newJ; k < newJobs.size() && !newJobs.get(k).getKey().equals(jobKey); k++);
             if (k == newJobs.size())
@@ -154,9 +155,12 @@ public class JobTree extends DefaultMutableTreeNode {
         indicesClear();
         for (int i = 0; i < newJobs.size(); i++) {
             Job.Key jobKey = newJobs.get(i).getKey();
-            if (i < jobNodes.size() && jobNodes.get(i).getKey().equals(jobKey))
-                continue;
-            jobNodes.add(i, new JobTreeNode(newJobs.get(i)));
+            if (i < jobNodes.size()) {
+                EJobTreeNode jobNode = (EJobTreeNode) jobNodes.get(i);
+                if (jobNode.getKey().equals(jobKey))
+                    continue;
+            }
+            jobNodes.add(i, new EJobTreeNode(newJobs.get(i)));
             indicesAdd(i);
         }
         if (indicesCount != 0) {
@@ -172,7 +176,7 @@ public class JobTree extends DefaultMutableTreeNode {
 
         indicesClear();
         for (int i = 0; i < jobNodes.size(); i++) {
-            JobTreeNode node = jobNodes.get(i);
+            EJobTreeNode node = (EJobTreeNode)jobNodes.get(i);
             Job.Inform jobInfo = newJobs.get(i);
             assert node.getKey().equals(jobInfo.getKey());
             if (!node.toString().equals(jobInfo.toString()))
@@ -202,9 +206,9 @@ public class JobTree extends DefaultMutableTreeNode {
     }
 
     private static class JobMenuActionListener implements ActionListener {
-        private final JobTreeNode jobNode;
+        private final EJobTreeNode jobNode;
 
-        JobMenuActionListener(JobTreeNode jobNode) { this.jobNode = jobNode; }
+        JobMenuActionListener(EJobTreeNode jobNode) { this.jobNode = jobNode; }
 
         /** respond to menu item command */
         public void actionPerformed(ActionEvent e) {
@@ -223,11 +227,11 @@ public class JobTree extends DefaultMutableTreeNode {
         }
     }
 
-    public static class JobTreeNode implements TreeNode
+    public static class EJobTreeNode implements TreeNode
     {
         private Job.Inform jobInfo;
 
-        JobTreeNode(Job.Inform jobInfo)
+        EJobTreeNode(Job.Inform jobInfo)
         {
             this.jobInfo = jobInfo;
         }
