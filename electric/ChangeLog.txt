@@ -4,6 +4,9 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-a: ******************************
 
+BUG: (12/19/18) 3D rendering of cylinders has wrong height.
+FIX: In J3DUtils.addCylinder(), bottomCenter vector must move up by thickness/2 in Z.
+
 IMP: (9/21/18, AR) Maven builds both jar and jar-with-dependencies.
 
 IMP: (6/17/17, DN) Add Ngspice to the list of Spice engines.

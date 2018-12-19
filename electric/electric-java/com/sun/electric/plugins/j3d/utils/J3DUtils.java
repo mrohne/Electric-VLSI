@@ -224,7 +224,7 @@ public final class J3DUtils
 	public static boolean isFactory3DPerspective() { return cache3DPerspective.getBooleanFactoryValue(); }
 
 	/**
-	 * Method to tell whether to use antialiasing in 3D view.
+	 * Method to tell whether to use anti-aliasing in 3D view.
 	 * The default is "false" due to performance.
 	 * @return true to draw 3D views with perspective.
 	 */
@@ -235,7 +235,7 @@ public final class J3DUtils
 	 */
 	public static void set3DAntialiasing(boolean on) { cache3DAntialiasing.setBoolean(on); }
 	/**
-	 * Method to tell whether to use antialiasing in 3D view, by default.
+	 * Method to tell whether to use anti-aliasing in 3D view, by default.
 	 * @return true to draw 3D views with perspective, by default.
 	 */
 	public static boolean isFactory3DAntialiasing() { return cache3DAntialiasing.getBooleanFactoryValue(); }
@@ -342,7 +342,7 @@ public final class J3DUtils
                 // get keyword from file
                 String line = lineReader.readLine();
                 if (line == null) break;
-                // responce 0 -> Accept All
+                // response 0 -> Accept All
                 if (response != 0)
                 {
                     response = Job.getUserInterface().askForChoice("Applying following data " + line, "Action",
@@ -355,6 +355,7 @@ public final class J3DUtils
                 if (knotList == null) knotList = new ArrayList<J3DUtils.ThreeDDemoKnot>();
                 knotList.add(view3D.moveAndRotate(values));
             }
+            lineReader.close();
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -794,7 +795,7 @@ public final class J3DUtils
         double cY = points[0].getY();
         double radius = points[0].distance(points[1]);
         Cylinder cylinder = new Cylinder((float)radius, (float)thickness, ap);
-        Vector3d bottomCenter = new Vector3d(cX,cY,distance);
+        Vector3d bottomCenter = new Vector3d(cX,cY,distance+thickness/2);
         Transform3D t = new Transform3D();
         t.rotX(Math.PI/2);
         t.setTranslation(bottomCenter);
