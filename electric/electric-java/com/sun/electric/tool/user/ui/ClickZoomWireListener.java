@@ -1840,6 +1840,34 @@ public class ClickZoomWireListener
     }
 
     /**
+     * see if this technology has metal-0 with functions shifted from the names, and no poly (for example, josephson)
+     * @param tech the technology to examine
+     * @return true if this is a metal-0 technology with no poly
+     */
+    private boolean shiftToMetalZero(Technology tech)
+    {
+        int shiftCount = 0, notShiftCount = 0;
+        boolean hasPoly = false;
+        for (Iterator<ArcProto> it = tech.getArcs(); it.hasNext(); )
+        {
+            ArcProto ap = it.next();
+            if (ap.getFunction().isPoly()) hasPoly = true;
+            if (ap.getFunction().isMetal())
+            {
+            	int level = ap.getFunction().getLevel();
+            	String name = ap.getName();
+            	int dashPos = name.lastIndexOf('-');
+            	if (dashPos < 0) dashPos = name.lastIndexOf('_');
+            	int nameLevel = -1;
+            	if (dashPos >= 0) nameLevel = TextUtils.atoi(name.substring(dashPos+1));
+            	if (nameLevel+1 == level) shiftCount++; else
+            		notShiftCount++;
+            }
+        }
+        return !hasPoly && shiftCount > 0 && notShiftCount == 0;
+    }
+
+    /**
      * Wire to a layer.
      * @param layerNumber
      */
@@ -1849,9 +1877,12 @@ public class ClickZoomWireListener
         Highlighter highlighter = wnd.getHighlighter();
         Cell cell = wnd.getCell();
         if (cell == null) return;
+        Technology tech = cell.getTechnology();
+
+        // if the metals are shifted down to include metal-0, let keys do the right thing
+        if (shiftToMetalZero(tech)) layerNumber++;
 
         ArcProto ap = null;
-        Technology tech = cell.getTechnology();
         boolean found = false;
         for (Iterator<ArcProto> it = tech.getArcs(); it.hasNext(); ) {
             ap = it.next();

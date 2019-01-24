@@ -4,8 +4,11 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-a: ******************************
 
-BUG: (12/19/18) 3D rendering of cylinders has wrong height.
-FIX: In J3DUtils.addCylinder(), bottomCenter vector must move up by thickness/2 in Z.
+IMP: (1/21/19, SMR) Modified ClickZoomWireListener.wireTo() to handle technologies with no
+     poly and a metal-0 when typing keys to shift layers.
+
+BUG: (12/19/18, SMR) 3D rendering of cylinders has wrong height.
+FIX: In plugins.j3d.utils.J3DUtils.addCylinder(), bottomCenter vector must move up by thickness/2 in Z.
 
 IMP: (9/21/18, AR) Maven builds both jar and jar-with-dependencies.
 
