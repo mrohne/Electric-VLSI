@@ -3119,6 +3119,46 @@
         </primitivePort>
     </primitiveNode>
 
+    <primitiveNode name="Josephson-Junction" fun="JOSEPHSON">
+        <diskOffset untilVersion="2" x="3.0" y="3.0"/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-3.0" khx="3.0" kly="-3.0" khy="3.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Node" style="OPENED">
+            <points/>
+            <techPoint xm="-0.5" xa="0.0" ym="-0.5" ya="0.0"/>
+            <techPoint xm="0.5" xa="0.0" ym="0.5" ya="0.0"/>
+        </nodeLayer>
+        <nodeLayer layer="Node" style="OPENED">
+            <points/>
+            <techPoint xm="-0.5" xa="0.0" ym="0.5" ya="0.0"/>
+            <techPoint xm="0.5" xa="0.0" ym="-0.5" ya="0.0"/>
+        </nodeLayer>
+        <nodeLayer layer="Node" style="OPENED">
+            <points/>
+            <techPoint xm="0.0" xa="0.0" ym="0.5" ya="0.0"/>
+            <techPoint xm="0.0" xa="0.0" ym="-0.5" ya="0.0"/>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box klx="0.0" khx="0.0" kly="1.0">
+                <lambdaBox klx="0.0" khx="0.0" kly="2.0" khy="2.0"/>
+            </box>
+            <portArc>wire</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box klx="0.0" khx="0.0" khy="-1.0">
+                <lambdaBox klx="0.0" khx="0.0" kly="-2.0" khy="-2.0"/>
+            </box>
+            <portArc>wire</portArc>
+        </primitivePort>
+    </primitiveNode>
+
     <primitiveNode name="Meter" fun="METER">
         <square/>
         <diskOffset untilVersion="2" x="3.0" y="3.0"/>
@@ -5651,7 +5691,12 @@
             </menuNodeInst>
         </menuBox>
         <menuBox>
-            <menuNode>Inductor</menuNode>
+            <menuNodeInst protoName="Inductor" function="INDUCT">
+                <menuNodeText text="Induct"/>
+            </menuNodeInst>
+            <menuNodeInst protoName="Josephson-Junction" function="JOSEPHSON">
+                <menuNodeText text="JJ"/>
+            </menuNodeInst>
         </menuBox>
 
         <menuBox>

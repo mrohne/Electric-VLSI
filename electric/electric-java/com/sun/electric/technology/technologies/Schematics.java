@@ -267,6 +267,8 @@ public class Schematics extends Technology {
     public final PrimitiveNode diodeNode;
     /** inductor */
     public final PrimitiveNode inductorNode;
+    /** Josephson Junction */
+    public final PrimitiveNode josephsonNode;
     /** meter */
     public final PrimitiveNode meterNode;
     /** well */
@@ -687,6 +689,7 @@ public class Schematics extends Technology {
 //        capacitorNode = findNodeProto("Capacitor");
 //        diodeNode = findNodeProto("Diode");
 //        inductorNode = findNodeProto("Inductor");
+//        josephsonNode = findNodeProto("Josephson-Junction");
 //        meterNode = findNodeProto("Meter");
 //        wellNode = findNodeProto("Well");
 //        substrateNode = findNodeProto("Substrate");
@@ -1634,6 +1637,41 @@ public class Schematics extends Technology {
                 PrimitivePort.newInstance(inductorNode, new ArcProto[]{wire_arc}, "b", 270, 90, 1, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.b(-2), EdgeH.c(0), EdgeV.b(-2)));
         inductorNode.setFunction(PrimitiveNode.Function.INDUCT);
+
+        /** Josephson Junction */
+        josephsonNode = PrimitiveNode.newInstance("Josephson-Junction", this, 6.0, 6.0,
+            new Technology.NodeLayer[]{
+                new Technology.NodeLayer(node_lay, 0, Poly.Type.OPENED, Technology.NodeLayer.POINTS,
+                    new Technology.TechPoint[]{
+                	    new Technology.TechPoint(EdgeH.c(0), EdgeV.t(3)),
+                        new Technology.TechPoint(EdgeH.c(0), EdgeV.b(-3))
+                    }
+                ),
+                new Technology.NodeLayer(node_lay, 0, Poly.Type.OPENED, Technology.NodeLayer.POINTS,
+                    new Technology.TechPoint[]{
+                    	new Technology.TechPoint(EdgeH.l(2), EdgeV.t(2)),
+                        new Technology.TechPoint(EdgeH.r(-2), EdgeV.b(-2))
+                    }
+                ),
+                new Technology.NodeLayer(node_lay, 0, Poly.Type.OPENED, Technology.NodeLayer.POINTS,
+                    new Technology.TechPoint[]{
+                    	new Technology.TechPoint(EdgeH.l(2), EdgeV.b(-2)),
+                        new Technology.TechPoint(EdgeH.r(-2), EdgeV.t(2))
+                    }
+                ),
+                new Technology.NodeLayer(node_lay, 0, Poly.Type.CIRCLE, Technology.NodeLayer.POINTS,
+                    new Technology.TechPoint[]{
+                    	new Technology.TechPoint(EdgeH.c(1), EdgeV.t(2.25)),
+                        new Technology.TechPoint(EdgeH.c(1.25), EdgeV.t(2.25))
+                    }
+                )
+            });
+        josephsonNode.addPrimitivePorts(
+            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "a", 90, 90, 0, PortCharacteristic.UNKNOWN,
+            EdgeH.c(0), EdgeV.t(-3), EdgeH.c(0), EdgeV.t(-3)),
+            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "b", 270, 90, 1, PortCharacteristic.UNKNOWN,
+            EdgeH.c(0), EdgeV.b(3), EdgeH.c(0), EdgeV.b(3)));
+        josephsonNode.setFunction(PrimitiveNode.Function.JOSEPHSON);
 
         /** meter */
         Technology.NodeLayer meterLetterV = new Technology.NodeLayer(node_lay, 0, Poly.Type.TEXTBOX, Technology.NodeLayer.POINTS, new Technology.TechPoint[]{

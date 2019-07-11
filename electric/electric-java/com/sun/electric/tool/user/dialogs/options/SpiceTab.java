@@ -81,6 +81,7 @@ public class SpiceTab extends PreferencePanel
 		spiceEnginePopup.addItem(SimulationTool.SpiceEngine.SPICE_ENGINE_XYCE);
 		spiceEnginePopup.addItem(SimulationTool.SpiceEngine.SPICE_ENGINE_H_ASSURA);
 		spiceEnginePopup.addItem(SimulationTool.SpiceEngine.SPICE_ENGINE_H_CALIBRE);
+		spiceEnginePopup.addItem(SimulationTool.SpiceEngine.SPICE_ENGINE_JO);
 		spiceEnginePopup.setSelectedItem(SimulationTool.getSpiceEngine());
 
 		spiceLevelPopup.addItem("1");

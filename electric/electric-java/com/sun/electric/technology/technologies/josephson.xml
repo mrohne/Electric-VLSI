@@ -1,0 +1,1457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ *
+ * Electric(tm) VLSI Design System
+ *
+ * File: josephson.xml
+ * Josephson Junction technology description
+ *
+ * Copyright (c) 2018, Static Free Software. All rights reserved.
+ *
+ * Electric(tm) is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Electric(tm) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+
+<technology name="josephson"
+     xmlns="http://electric.sun.com/Technology"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://electric.sun.com/Technology ../../technology/Technology.xsd">
+
+    <shortName>josephson</shortName>
+    <description>Josephson Junction</description>
+    <version tech="1" electric="8.05g"/>
+    <numMetals min="9" max="9" default="9"/>
+    <scale value="100.0" relevant="true"/>
+    <defaultFoundry value="NONE"/>
+    <minResistance value="0.0"/>
+    <minCapacitance value="0.0"/>
+
+    <!-- Transparent layers -->
+    <transparentLayer transparent="1">
+        <r>175</r>
+        <g>200</g>
+        <b>255</b>
+    </transparentLayer>
+    <transparentLayer transparent="2">
+        <r>175</r>
+        <g>75</g>
+        <b>0</b>
+    </transparentLayer>
+    <transparentLayer transparent="3">
+        <r>0</r>
+        <g>100</g>
+        <b>0</b>
+    </transparentLayer>
+    <transparentLayer transparent="4">
+        <r>225</r>
+        <g>225</g>
+        <b>0</b>
+    </transparentLayer>
+    <transparentLayer transparent="5">
+        <r>0</r>
+        <g>225</g>
+        <b>225</b>
+    </transparentLayer>
+
+    <!-- **************************************** LAYERS **************************************** -->
+
+    <layer name="Metal-0" fun="METAL1">
+        <opaqueColor r="150" g="0" b="200"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <outlined>PAT_S</outlined>
+        <opacity>0.4</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="6" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CMP"/>
+        <pureLayerNode name="Metal-0-Node" port="metal-9">
+            <lambda>4.0</lambda>
+            <portArc>Metal_0</portArc>
+        </pureLayerNode>
+    </layer>
+    
+    <layer name="Metal-1" fun="METAL2">
+        <transparentColor transparent="1"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <outlined>NOPAT</outlined>
+        <opacity>0.8</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="10" mode="NONE" factor="0.0"/>
+        <cifLayer cif="CMF"/>
+        <pureLayerNode name="Metal-1-Node" port="metal-1">
+            <lambda>4.0</lambda>
+            <portArc>Metal_1</portArc>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Metal-2" fun="METAL3">
+        <transparentColor transparent="4"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>   X       X    </pattern>
+        <pattern>  X       X     </pattern>
+        <pattern> X       X      </pattern>
+        <pattern>X       X       </pattern>
+        <pattern>       X       X</pattern>
+        <pattern>      X       X </pattern>
+        <pattern>     X       X  </pattern>
+        <pattern>    X       X   </pattern>
+        <pattern>   X       X    </pattern>
+        <pattern>  X       X     </pattern>
+        <pattern> X       X      </pattern>
+        <pattern>X       X       </pattern>
+        <pattern>       X       X</pattern>
+        <pattern>      X       X </pattern>
+        <pattern>     X       X  </pattern>
+        <pattern>    X       X   </pattern>
+        <outlined>NOPAT</outlined>
+        <opacity>0.7</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="14" mode="NONE" factor="0.0"/>
+        <cifLayer cif="CMS"/>
+        <pureLayerNode name="Metal-2-Node" port="metal-2">
+            <lambda>4.0</lambda>
+            <portArc>Metal_2</portArc>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Metal-3" fun="METAL4">
+        <opaqueColor r="0" g="0" b="150"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>  X   X   X   X </pattern>
+        <pattern>                </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>                </pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern>                </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>                </pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern>                </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>                </pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern>                </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>                </pattern>
+        <outlined>NOPAT</outlined>
+        <opacity>0.6</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="18" mode="NONE" factor="0.0"/>
+        <cifLayer cif="CMT"/>
+        <pureLayerNode name="Metal-3-Node" port="metal-3">
+            <lambda>5.0</lambda>
+            <portArc>Metal_3</portArc>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Metal-4" fun="METAL5">
+        <opaqueColor r="225" g="0" b="225"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <pattern>XXXXXXXXXXXXXXXX</pattern>
+        <pattern>                </pattern>
+        <outlined>NOPAT</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="22" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CMQ"/>
+        <pureLayerNode name="Metal-4-Node" port="metal-4">
+            <lambda>5.0</lambda>
+            <portArc>Metal_4</portArc>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Metal-5" fun="METAL6">
+        <transparentColor transparent="2"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <outlined>PAT_S</outlined>
+        <opacity>0.4</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="26" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CMP"/>
+        <pureLayerNode name="Metal-5-Node" port="metal-5">
+            <lambda>6.0</lambda>
+            <portArc>Metal_5</portArc>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Metal-6" fun="METAL7">
+        <transparentColor transparent="3"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <outlined>PAT_S</outlined>
+        <opacity>0.4</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="30" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CMP"/>
+        <pureLayerNode name="Metal-6-Node" port="metal-6">
+            <lambda>6.0</lambda>
+            <portArc>Metal_6</portArc>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Metal-7" fun="METAL8">
+        <opaqueColor r="100" g="100" b="100"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <outlined>PAT_S</outlined>
+        <opacity>0.4</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="34" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CMP"/>
+        <pureLayerNode name="Metal-7-Node" port="metal-7">
+            <lambda>6.0</lambda>
+            <portArc>Metal_7</portArc>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Metal-8" fun="METAL9">
+        <opaqueColor r="255" g="175" b="200"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <pattern>X   X   X   X   </pattern>
+        <pattern>   X   X   X   X</pattern>
+        <pattern>  X   X   X   X </pattern>
+        <pattern> X   X   X   X  </pattern>
+        <outlined>PAT_S</outlined>
+        <opacity>0.4</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="38" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CMP"/>
+        <pureLayerNode name="Metal-8-Node" port="metal-8">
+            <lambda>6.0</lambda>
+            <portArc>Metal_8</portArc>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Res" fun="RESISTOR">
+        <opaqueColor r="225" g="0" b="0"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>    X       X   </pattern>
+        <pattern>     X       X  </pattern>
+        <pattern>      X       X </pattern>
+        <pattern>       X       X</pattern>
+        <pattern>X       X       </pattern>
+        <pattern> X       X      </pattern>
+        <pattern>  X       X     </pattern>
+        <pattern>   X       X    </pattern>
+        <pattern>    X       X   </pattern>
+        <pattern>     X       X  </pattern>
+        <pattern>      X       X </pattern>
+        <pattern>       X       X</pattern>
+        <pattern>X       X       </pattern>
+        <pattern> X       X      </pattern>
+        <pattern>  X       X     </pattern>
+        <pattern>   X       X    </pattern>
+        <outlined>NOPAT</outlined>
+        <opacity>0.8</opacity>
+        <foreground>true</foreground>
+        <display3D thick="1.5" height="28" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CPG"/>
+        <pureLayerNode name="Resist-Node" port="res">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="ResVia" fun="CONTACT10">
+        <opaqueColor r="100" g="100" b="100"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>    X       X   </pattern>
+        <pattern>     X       X  </pattern>
+        <pattern>      X       X </pattern>
+        <pattern>       X       X</pattern>
+        <pattern>X       X       </pattern>
+        <pattern> X       X      </pattern>
+        <pattern>  X       X     </pattern>
+        <pattern>   X       X    </pattern>
+        <pattern>    X       X   </pattern>
+        <pattern>     X       X  </pattern>
+        <pattern>      X       X </pattern>
+        <pattern>       X       X</pattern>
+        <pattern>X       X       </pattern>
+        <pattern> X       X      </pattern>
+        <pattern>  X       X     </pattern>
+        <pattern>   X       X    </pattern>
+        <outlined>NOPAT</outlined>
+        <opacity>0.8</opacity>
+        <foreground>true</foreground>
+        <display3D thick="0.5" height="29.5" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CPG"/>
+        <pureLayerNode name="ResVia-Node" port="res">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Via0" fun="CONTACT1">
+        <opaqueColor r="175" g="200" b="255"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <outlined>PAT_T1</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="8" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CVA"/>
+        <pureLayerNode name="Via0-Node" port="active">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Via1" fun="CONTACT2">
+        <opaqueColor r="225" g="225" b="0"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <outlined>PAT_T1</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="12" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CVA"/>
+        <pureLayerNode name="Via1-Node" port="active">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Via2" fun="CONTACT3">
+        <opaqueColor r="0" g="0" b="150"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <outlined>PAT_T1</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="16" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CVA"/>
+        <pureLayerNode name="Via2-Node" port="active">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Via3" fun="CONTACT4">
+        <opaqueColor r="225" g="0" b="225"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <outlined>PAT_T1</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="20" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CVA"/>
+        <pureLayerNode name="Via3-Node" port="active">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Via4" fun="CONTACT5">
+        <opaqueColor r="175" g="75" b="0"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <outlined>PAT_T1</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="24" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CVA"/>
+        <pureLayerNode name="Via4-Node" port="active">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Via5" fun="CONTACT6">
+        <opaqueColor r="0" g="100" b="0"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <outlined>PAT_T1</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="28" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CVA"/>
+        <pureLayerNode name="Via5-Node" port="active">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Via6" fun="CONTACT7">
+        <opaqueColor r="100" g="100" b="100"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <outlined>PAT_T1</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="32" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CVA"/>
+        <pureLayerNode name="Via6-Node" port="active">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="Via7" fun="CONTACT8">
+        <opaqueColor r="255" g="175" b="200"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <outlined>PAT_T1</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="2" height="36" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CVA"/>
+        <pureLayerNode name="Via7-Node" port="active">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="ViaJ" fun="CONTACT9">
+        <transparentColor transparent="5"/>
+        <patternedOnDisplay>false</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>                </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern> X  X    X  X   </pattern>
+        <pattern>      XX      XX</pattern>
+        <pattern>                </pattern>
+        <pattern>  XX      XX    </pattern>
+        <pattern>X    X  X    X  </pattern>
+        <pattern>  XX      XX    </pattern>
+        <outlined>PAT_T1</outlined>
+        <opacity>0.5</opacity>
+        <foreground>true</foreground>
+        <display3D thick="1.5" height="28.5" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CVA"/>
+        <pureLayerNode name="ViaJ-Node" port="active">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <layer name="AlO2" fun="SUBSTRATE">
+        <opaqueColor r="100" g="100" b="100"/>
+        <patternedOnDisplay>true</patternedOnDisplay>
+        <patternedOnPrinter>true</patternedOnPrinter>
+        <pattern>    X       X   </pattern>
+        <pattern>     X       X  </pattern>
+        <pattern>      X       X </pattern>
+        <pattern>       X       X</pattern>
+        <pattern>X       X       </pattern>
+        <pattern> X       X      </pattern>
+        <pattern>  X       X     </pattern>
+        <pattern>   X       X    </pattern>
+        <pattern>    X       X   </pattern>
+        <pattern>     X       X  </pattern>
+        <pattern>      X       X </pattern>
+        <pattern>       X       X</pattern>
+        <pattern>X       X       </pattern>
+        <pattern> X       X      </pattern>
+        <pattern>  X       X     </pattern>
+        <pattern>   X       X    </pattern>
+        <outlined>NOPAT</outlined>
+        <opacity>0.8</opacity>
+        <foreground>true</foreground>
+        <display3D thick="0.5" height="28" mode="NONE" factor="0.2"/>
+        <cifLayer cif="CPG"/>
+        <pureLayerNode name="AlO2-Node" port="alo2">
+            <lambda>4.0</lambda>
+        </pureLayerNode>
+    </layer>
+
+    <!-- ******************** ARCS ******************** -->
+    <arcProto name="Metal_0" fun="METAL1">
+        <wipable/>
+        <extended>true</extended>
+        <fixedAngle>true</fixedAngle>
+        <angleIncrement>90</angleIncrement>
+        <antennaRatio>400.0</antennaRatio>
+        <diskOffset untilVersion="2" width="1.0"/>
+        <arcLayer layer="Metal-0" style="FILLED">
+            <lambda>2.5</lambda>
+        </arcLayer>
+    </arcProto>
+
+    <arcProto name="Metal_1" fun="METAL2">
+        <wipable/>
+        <extended>true</extended>
+        <fixedAngle>true</fixedAngle>
+        <angleIncrement>90</angleIncrement>
+        <antennaRatio>400.0</antennaRatio>
+        <diskOffset untilVersion="2" width="1.0"/>
+        <arcLayer layer="Metal-1" style="FILLED">
+            <lambda>2.5</lambda>
+        </arcLayer>
+    </arcProto>
+
+    <arcProto name="Metal_2" fun="METAL3">
+        <wipable/>
+        <extended>true</extended>
+        <fixedAngle>true</fixedAngle>
+        <angleIncrement>90</angleIncrement>
+        <antennaRatio>400.0</antennaRatio>
+        <diskOffset untilVersion="2" width="1.0"/>
+        <arcLayer layer="Metal-2" style="FILLED">
+            <lambda>2.5</lambda>
+        </arcLayer>
+    </arcProto>
+
+    <arcProto name="Metal_3" fun="METAL4">
+        <wipable/>
+        <extended>true</extended>
+        <fixedAngle>true</fixedAngle>
+        <angleIncrement>90</angleIncrement>
+        <antennaRatio>400.0</antennaRatio>
+        <diskOffset untilVersion="2" width="1.0"/>
+        <arcLayer layer="Metal-3" style="FILLED">
+            <lambda>2.5</lambda>
+        </arcLayer>
+    </arcProto>
+
+    <arcProto name="Metal_4" fun="METAL5">
+        <wipable/>
+        <extended>true</extended>
+        <fixedAngle>true</fixedAngle>
+        <angleIncrement>90</angleIncrement>
+        <antennaRatio>400.0</antennaRatio>
+        <diskOffset untilVersion="2" width="1.0"/>
+        <arcLayer layer="Metal-4" style="FILLED">
+            <lambda>2.5</lambda>
+        </arcLayer>
+    </arcProto>
+
+    <arcProto name="Metal_5" fun="METAL6">
+        <wipable/>
+        <extended>true</extended>
+        <fixedAngle>true</fixedAngle>
+        <angleIncrement>90</angleIncrement>
+        <antennaRatio>400.0</antennaRatio>
+        <diskOffset untilVersion="2" width="1.0"/>
+        <arcLayer layer="Metal-5" style="FILLED">
+            <lambda>3.5</lambda>
+        </arcLayer>
+    </arcProto>
+
+    <arcProto name="Metal_6" fun="METAL7">
+        <wipable/>
+        <extended>true</extended>
+        <fixedAngle>true</fixedAngle>
+        <angleIncrement>90</angleIncrement>
+        <antennaRatio>400.0</antennaRatio>
+        <diskOffset untilVersion="2" width="1.0"/>
+        <arcLayer layer="Metal-6" style="FILLED">
+            <lambda>2.5</lambda>
+        </arcLayer>
+    </arcProto>
+
+    <arcProto name="Metal_7" fun="METAL8">
+        <wipable/>
+        <extended>true</extended>
+        <fixedAngle>true</fixedAngle>
+        <angleIncrement>90</angleIncrement>
+        <antennaRatio>400.0</antennaRatio>
+        <diskOffset untilVersion="2" width="1.0"/>
+        <arcLayer layer="Metal-7" style="FILLED">
+            <lambda>2.5</lambda>
+        </arcLayer>
+    </arcProto>
+
+    <arcProto name="Metal_8" fun="METAL9">
+        <wipable/>
+        <extended>true</extended>
+        <fixedAngle>true</fixedAngle>
+        <angleIncrement>90</angleIncrement>
+        <antennaRatio>400.0</antennaRatio>
+        <diskOffset untilVersion="2" width="1.0"/>
+        <arcLayer layer="Metal-8" style="FILLED">
+            <lambda>10</lambda>
+        </arcLayer>
+    </arcProto>
+
+    <!-- ******************** NODES ******************** -->
+
+    <primitiveNode name="Metal-0-Pin" fun="PIN">
+        <shrinkArcs/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-0" style="CROSSED">
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-0">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_0</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-1-Pin" fun="PIN">
+        <shrinkArcs/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-1" style="CROSSED">
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-1">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_1</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-2-Pin" fun="PIN">
+        <shrinkArcs/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-2" style="CROSSED">
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-2">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_2</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-3-Pin" fun="PIN">
+        <shrinkArcs/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-3" style="CROSSED">
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-3">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_3</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-4-Pin" fun="PIN">
+        <shrinkArcs/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-4" style="CROSSED">
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-4">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_4</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-5-Pin" fun="PIN">
+        <shrinkArcs/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-5" style="CROSSED">
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-5">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_5</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-6-Pin" fun="PIN">
+        <shrinkArcs/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-6" style="CROSSED">
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-6">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-7-Pin" fun="PIN">
+        <shrinkArcs/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-7" style="CROSSED">
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-7">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_7</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-8-Pin" fun="PIN">
+        <shrinkArcs/>
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-8" style="CROSSED">
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-8">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_8</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-0-Metal-1-Con" fun="CONTACT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-0" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-1" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Via0" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.0" khx="2.0" kly="-2.0" khy="2.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-0-metal-1">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+            <portArc>Metal_0</portArc>
+            <portArc>Metal_1</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-1-Metal-2-Con" fun="CONTACT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-1" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-2" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Via1" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.0" khx="2.0" kly="-2.0" khy="2.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-1-metal-2">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+            <portArc>Metal_1</portArc>
+            <portArc>Metal_2</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-2-Metal-3-Con" fun="CONTACT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-2" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-3" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Via2" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.0" khx="2.0" kly="-2.0" khy="2.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-2-metal-3">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+            <portArc>Metal_2</portArc>
+            <portArc>Metal_3</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-3-Metal-4-Con" fun="CONTACT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-3" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-4" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Via3" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.0" khx="2.0" kly="-2.0" khy="2.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-3-metal-4">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+            <portArc>Metal_3</portArc>
+            <portArc>Metal_4</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-4-Metal-5-Con" fun="CONTACT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-4" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-5" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Via4" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.0" khx="2.0" kly="-2.0" khy="2.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-4-metal-5">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+            <portArc>Metal_4</portArc>
+            <portArc>Metal_5</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-5-Metal-6-Con" fun="CONTACT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-5" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-6" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Via5" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.0" khx="2.0" kly="-2.0" khy="2.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-5-metal-6">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+            <portArc>Metal_5</portArc>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-6-Metal-7-Con" fun="CONTACT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-6" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-7" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Via6" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.0" khx="2.0" kly="-2.0" khy="2.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-6-metal-7">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+            <portArc>Metal_6</portArc>
+            <portArc>Metal_7</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-7-Metal-8-Con" fun="CONTACT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-10" khx="10" kly="-10" khy="10"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-7" style="FILLED">
+            <box>
+                <lambdaBox klx="-10" khx="10" kly="-10" khy="10"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-8" style="FILLED">
+            <box>
+                <lambdaBox klx="-10" khx="10" kly="-10" khy="10"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Via7" style="FILLED">
+            <box>
+                <lambdaBox klx="-8.0" khx="8.0" kly="-8.0" khy="8.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="metal-7-metal-8">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="-1.0" khx="1.0" kly="-1.0" khy="1.0"/>
+            </box>
+            <portArc>Metal_7</portArc>
+            <portArc>Metal_8</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Junction" fun="JOSEPHSON">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-5" style="FILLED">
+            <box>
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-6" style="FILLED" portNum="1">
+            <box kly="1.0">
+                <lambdaBox klx="-3.5" khx="3.5" kly="-3.5" khy="3.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="ViaJ" style="DISC">
+            <points/>
+            <techPoint xm="0.0" xa="0.0" ym="0.0" ya="0.0"/>
+            <techPoint xm="0.0" xa="2.5" ym="0.0" ya="0.0"/>
+        </nodeLayer>
+        <nodeLayer layer="AlO2" style="DISC">
+            <points/>
+            <techPoint xm="0.0" xa="0.0" ym="0.0" ya="0.0"/>
+            <techPoint xm="0.0" xa="2.5" ym="0.0" ya="0.0"/>
+        </nodeLayer>
+        <primitivePort name="jj-m5">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box khx="-1.0">
+                <lambdaBox klx="0" khx="0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_5</portArc>
+        </primitivePort>
+        <primitivePort name="jj-m6-t">
+            <portAngle primary="0" range="180"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="1.0" khy="1.0"/>
+            </box>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+        <primitivePort name="jj-m6-b">
+            <portAngle primary="0" range="180"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-1.0" khy="-1.0"/>
+            </box>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+        <primitivePort name="jj-m6-l">
+            <portAngle primary="0" range="180"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="-1.0" khx="-1.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+        <primitivePort name="jj-m6-r">
+            <portAngle primary="0" range="180"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="1.0" khx="1.0" kly="0.0" khy="0.0"/>
+            </box>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Resistor" fun="RESIST">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-6.0" khx="6.0" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-6" style="FILLED">
+            <box khx="-1.0">
+                <lambdaBox klx="-6.0" khx="-1.0" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Metal-6" style="FILLED">
+            <box klx="1.0">
+                <lambdaBox klx="1.0" khx="6.0" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="ResVia" style="FILLED">
+            <box>
+                <lambdaBox klx="-6.0" khx="-1.0" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="ResVia" style="FILLED">
+            <box>
+                <lambdaBox klx="1.0" khx="6.0" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <nodeLayer layer="Res" style="FILLED">
+            <box>
+                <lambdaBox klx="-6.0" khx="6.0" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="r1">
+            <portAngle primary="0" range="180"/>
+            <portTopology>0</portTopology>
+            <box khx="-1" kly="0" khy="0">
+                <lambdaBox klx="-3.5" khx="-3.5" kly="0" khy="0"/>
+            </box>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+        <primitivePort name="r2">
+            <portAngle primary="0" range="180"/>
+            <portTopology>1</portTopology>
+            <box klx="1" kly="0" khy="0">
+                <lambdaBox klx="3.5" khx="3.5" kly="0" khy="0"/>
+            </box>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <menuPalette numColumns="3">
+        <menuBox><menuArc>Metal_0</menuArc></menuBox>
+        <menuBox><menuNode>Metal-0-Pin</menuNode></menuBox>
+        <menuBox><menuNode>Metal-0-Metal-1-Con</menuNode></menuBox>
+
+        <menuBox><menuArc>Metal_1</menuArc></menuBox>
+        <menuBox><menuNode>Metal-1-Pin</menuNode></menuBox>
+        <menuBox><menuNode>Metal-1-Metal-2-Con</menuNode></menuBox>
+
+        <menuBox><menuArc>Metal_2</menuArc></menuBox>
+        <menuBox><menuNode>Metal-2-Pin</menuNode></menuBox>
+        <menuBox><menuNode>Metal-2-Metal-3-Con</menuNode></menuBox>
+
+        <menuBox><menuArc>Metal_3</menuArc></menuBox>
+        <menuBox><menuNode>Metal-3-Pin</menuNode></menuBox>
+        <menuBox><menuNode>Metal-3-Metal-4-Con</menuNode></menuBox>
+
+        <menuBox><menuArc>Metal_4</menuArc></menuBox>
+        <menuBox><menuNode>Metal-4-Pin</menuNode></menuBox>
+        <menuBox><menuNode>Metal-4-Metal-5-Con</menuNode></menuBox>
+
+        <menuBox><menuArc>Metal_5</menuArc></menuBox>
+        <menuBox><menuNode>Metal-5-Pin</menuNode></menuBox>
+        <menuBox><menuNode>Metal-5-Metal-6-Con</menuNode></menuBox>
+
+        <menuBox><menuArc>Metal_6</menuArc></menuBox>
+        <menuBox><menuNode>Metal-6-Pin</menuNode></menuBox>
+        <menuBox><menuNode>Metal-6-Metal-7-Con</menuNode></menuBox>
+
+        <menuBox><menuArc>Metal_7</menuArc></menuBox>
+        <menuBox><menuNode>Metal-7-Pin</menuNode></menuBox>
+        <menuBox><menuNode>Metal-7-Metal-8-Con</menuNode></menuBox>
+
+        <menuBox><menuArc>Metal_8</menuArc></menuBox>
+        <menuBox><menuNode>Metal-8-Pin</menuNode></menuBox>
+        <menuBox><menuNode>Junction</menuNode></menuBox>
+
+        <menuBox></menuBox>
+        <menuBox></menuBox>
+        <menuBox><menuNode>Resistor</menuNode></menuBox>
+
+        <menuBox>
+            <menuText>Pure</menuText>
+        </menuBox>
+        <menuBox>
+            <menuText>Cell</menuText>
+        </menuBox>
+        <menuBox>
+            <menuText>Misc.</menuText>
+        </menuBox>
+
+    </menuPalette>
+
+    <Foundry name="NONE">
+        <layerGds layer="Metal-1" gds="49"/>
+        <layerGds layer="Metal-2" gds="51"/>
+        <layerGds layer="Via1" gds="50"/>
+
+        <LayerRule ruleName="1.1" layerName="Metal-1" type="MINWID" when="ALL" value="2.0"/>
+        <LayersRule ruleName="1.2" layerNames="{Metal-1,Metal-1}" type="UCONSPA" when="ALL" value="2.0"/>
+        <LayerRule ruleName="4.1" layerName="Via1" type="MINWID" when="ALL" value="2.0"/>
+        <LayersRule ruleName="4.2" layerNames="{Via1,Via1}" type="UCONSPA" when="ALL" value="2.0"/>
+        <LayerRule ruleName="5.1" layerName="Metal-2" type="MINWID" when="ALL" value="2.0"/>
+        <LayersRule ruleName="5.2" layerNames="{Metal-2,Metal-2}" type="UCONSPA" when="ALL" value="1.0"/>
+    </Foundry>
+</technology>
+

@@ -4,6 +4,10 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-a: ******************************
 
+IMP/MAN: (7/11/19, SMR): Added "JOSEPHSON" node proto type for Josephson junction transistors.
+     Added JoSIM SPICE simulation engine.
+     Added command: "Tools / Simulation (Spice) / Set JoSIM Template"
+
 IMP: (1/21/19, SMR) Modified ClickZoomWireListener.wireTo() to handle technologies with no
      poly and a metal-0 when typing keys to shift layers.
 

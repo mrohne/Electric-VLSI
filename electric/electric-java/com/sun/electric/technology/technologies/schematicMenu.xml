@@ -107,7 +107,12 @@
             </menuNodeInst>
         </menuBox>
         <menuBox>
-            <menuNode>Inductor</menuNode>
+            <menuNodeInst protoName="Inductor" function="INDUCT">
+                <menuNodeText text="Induct" size="0"/>
+            </menuNodeInst>
+            <menuNodeInst protoName="Josephson-Junction" function="JOSEPHSON">
+                <menuNodeText text="JJ" size="0"/>
+            </menuNodeInst>
         </menuBox>
 
         <menuBox>

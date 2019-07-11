@@ -66,6 +66,8 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
      * Function is a typesafe enum class that describes the function of a NodeProto.
      * Functions are technology-independent and include different types of transistors,
      * contacts, and other circuit elements.
+     *
+     * When adding a function, also add it to com.sun.electric.technology.Technology.xsd
      */
     public static enum Function {
 
@@ -285,6 +287,8 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
          * It has gate on the first port, source on the second port, drain on the third port, and substrate on the fourth port.
          * The specific transistor type can be determined by examining the value from the NodeInst's "getTechSpecific" method. */
         TRANS4("4-port-transistor", "trans-4", true, false),
+        /** Describes a Josephson Junction transistor. */
+        JOSEPHSON("josephson-junction-transistor", "josephson", false, false),
         /** Describes a resistor. */
         RESIST("resistor", "res", false, false),
         /** Describes a poly resistor. */

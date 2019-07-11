@@ -166,6 +166,7 @@ public abstract class TechFactory {
         r(m, "cmos", "technology/technologies/cmos.xml", false);
         r(m, "efido", "technology/technologies/efido.xml", false);
         c(m, "gem", "com.sun.electric.technology.technologies.GEM");
+        r(m, "josephson", "technology/technologies/josephson.xml", false);
         r(m, "pcb", "technology/technologies/pcb.xml", false);
         r(m, "rcmos", "technology/technologies/rcmos.xml", false);
         p(m, "mocmos", "com.sun.electric.technology.technologies.MoCMOS", false);

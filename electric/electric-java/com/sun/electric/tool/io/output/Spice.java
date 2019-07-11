@@ -112,6 +112,7 @@ public class Spice extends Topology
 	/** key of Variable holding Assure templates. */		    public static final Variable.Key SPICE_A_TEMPLATE_KEY = Variable.newKey("ATTR_SPICE_template_assura");
 	/** key of Variable holding Calibre templates. */		    public static final Variable.Key SPICE_C_TEMPLATE_KEY = Variable.newKey("ATTR_SPICE_template_calibre");
 	/** key of Variable holding Ngspice templates. */		    public static final Variable.Key SPICE_NG_TEMPLATE_KEY = Variable.newKey("ATTR_SPICE_template_ngspice");
+	/** key of Variable holding JoSIM templates. */			    public static final Variable.Key SPICE_JO_TEMPLATE_KEY = Variable.newKey("ATTR_SPICE_template_josim");
 	/** key of Variable holding Spice model file. */		    public static final Variable.Key SPICE_NETLIST_FILE_KEY = Variable.newKey("ATTR_SPICE_netlist_file");
 	/** key of Variable holding SPICE code. */					public static final Variable.Key SPICE_CARD_KEY = Variable.newKey("SIM_spice_card");
 	/** key of Variable holding SPICE declaration. */			public static final Variable.Key SPICE_DECLARATION_KEY = Variable.newKey("SIM_spice_declaration");
@@ -397,6 +398,7 @@ public class Spice extends Topology
 			case SPICE_ENGINE_H_ASSURA:  preferedEngineTemplateKey = SPICE_A_TEMPLATE_KEY;  assuraHSpice = true; break;
 			case SPICE_ENGINE_H_CALIBRE: preferedEngineTemplateKey = SPICE_C_TEMPLATE_KEY;  assuraHSpice = true; break;
             case SPICE_ENGINE_NG:        preferedEngineTemplateKey = SPICE_NG_TEMPLATE_KEY;   break;
+            case SPICE_ENGINE_JO:        preferedEngineTemplateKey = SPICE_JO_TEMPLATE_KEY;   break;
 		}
         if (useCDL) {
             preferedEngineTemplateKey = CDL_TEMPLATE_KEY;
@@ -454,6 +456,10 @@ public class Spice extends Topology
 		} else
 		{
 			writeHeader(topCell);
+	        if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_JO)
+	        {
+				multiLinePrint(true, ".model jmitll jj(rtype=1, vg=2.8mV, cap=0.07pF, r0=160, rN=16, icrit=0.1mA)\n");
+	        }
             spiceCodeFlat = new FlatSpiceCodeVisitor(filePath+".flatcode", this);
             HierarchyEnumerator.enumerateCell(topCell, VarContext.globalContext, spiceCodeFlat, getShortResistorsFlat());
             spiceCodeFlat.close();
@@ -721,6 +727,8 @@ public class Spice extends Topology
                             	firstParam = false;
                             }
                             break;
+						default:
+							break;
                     }
 //                    if ((spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_O || spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_XYCE) &&
 //                    	firstParam)
@@ -978,11 +986,12 @@ public class Spice extends Topology
 				continue;
 			}
 
-			// handle resistors, inductors, capacitors, and diodes
+			// handle resistors, inductors, capacitors, diodes, and Josephson Junctions
 			PrimitiveNode.Function fun = ni.getFunction();
 			if (fun.isResistor() || fun.isCapacitor() ||
                 fun == PrimitiveNode.Function.INDUCT ||
-				fun == PrimitiveNode.Function.DIODE || fun == PrimitiveNode.Function.DIODEZ)
+				fun == PrimitiveNode.Function.DIODE || fun == PrimitiveNode.Function.DIODEZ ||
+                fun == PrimitiveNode.Function.JOSEPHSON)
 			{
 				if (fun.isResistor())
 				{
@@ -1113,6 +1122,12 @@ public class Spice extends Topology
 						extra = diodeVar.describe(context, ni);
 					if (extra.length() == 0) extra = "DIODE";
 					writeTwoPort(ni, "D", extra, cni, netList, context, segmentedNets);
+				} else if (fun == PrimitiveNode.Function.JOSEPHSON)
+				{
+					String extra = "jmitll";
+					double area = ni.getLambdaBaseXSize() * Math.PI / 10.0;
+					extra += " area=" + TextUtils.formatDouble(area);
+					writeTwoPort(ni, "B", extra, cni, netList, context, segmentedNets);
 				}
 				continue;
 			}
@@ -3095,6 +3110,8 @@ public class Spice extends Topology
             case SPICE_ENGINE_P:
                 legalSpiceChars = PSPICELEGALCHARS;
                 break;
+			default:
+				break;
         }
 //        if (engine == SimulationTool.SpiceEngine.SPICE_ENGINE_P)
 //            legalSpiceChars = PSPICELEGALCHARS;
@@ -3265,6 +3282,8 @@ public class Spice extends Topology
             case SPICE_ENGINE_P:
     			multiLinePrint(false, ".INC " + fileName + "\n");
                 break;
+			default:
+				break;
         }
 //		if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_2 || spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_3 ||
 //			spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_G || spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_S)
@@ -3307,6 +3326,8 @@ public class Spice extends Topology
             case SPICE_ENGINE_O:
             	str = str.replaceAll("@", "_");
                 break;
+			default:
+				break;
         }
 //        if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_O)
 //        	str = str.replaceAll("@", "_");

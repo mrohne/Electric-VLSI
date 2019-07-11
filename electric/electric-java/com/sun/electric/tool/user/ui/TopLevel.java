@@ -47,6 +47,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -69,7 +70,7 @@ import javax.swing.UIManager;
  */
 public class TopLevel extends JFrame
 {
-    /** true to resize initial MDI window forces redraw) */	private static final boolean MDIINITIALRESIZE = true;
+    /** True to resize initial MDI window (forces redraw) */ private static final boolean MDIINITIALRESIZE = true;
     /** True if in MDI mode, otherwise SDI. */				private static UserInterfaceMain.Mode mode;
 	/** The desktop pane (if MDI). */						private static JDesktopPane desktop = null;
 	/** The main frame (if MDI). */							private static TopLevel topLevel = null;
@@ -91,6 +92,32 @@ public class TopLevel extends JFrame
 	public TopLevel(String name, Rectangle bound, WindowFrame frame, GraphicsConfiguration gc, boolean createStructure)
 	{
 		super(name, gc);
+
+		// make sure screen is visible
+		GraphicsDevice [] gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+		Rectangle[] screenSizes = new Rectangle[gs.length];
+		double[] screenScales = new double[gs.length];
+		int biggest = -1;
+		boolean found = false;
+		for (int i=0; i<gs.length; i++)
+		{
+			GraphicsConfiguration gc2 = gs[i].getDefaultConfiguration();
+			AffineTransform at = gc2.getDefaultTransform();
+			screenSizes[i] = gc2.getBounds();
+			if (screenSizes[i].getMinX() <= bound.x &&
+				screenSizes[i].getMaxX() >= bound.x+bound.width &&
+				screenSizes[i].getMinY() <= bound.y &&
+				screenSizes[i].getMaxY() >= bound.y+bound.height) found = true;
+			screenScales[i] = at.getScaleX();
+			int pixels = screenSizes[i].width * screenSizes[i].height;
+			if (biggest < 0 || (screenSizes[biggest].width*screenSizes[biggest].height < pixels))
+				biggest = i;
+		}
+		if (!found)
+		{
+			bound = screenSizes[biggest];
+		}
+
 		setLocation(bound.x, bound.y);
 		setSize(bound.width, bound.height);
 		getContentPane().setLayout(new BorderLayout());

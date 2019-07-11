@@ -613,6 +613,7 @@
             <xsd:enumeration value="TRA4DMES"/>
             <xsd:enumeration value="TRA4EMES"/>
             <xsd:enumeration value="TRANS4"/>
+            <xsd:enumeration value="JOSEPHSON"/>
             <xsd:enumeration value="RESIST"/>
             <!-- @Deprecated xsd:enumeration value="PRESIST"/-->
             <xsd:enumeration value="RESNPOLY"/>

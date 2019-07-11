@@ -1146,7 +1146,8 @@ public class SimulationTool extends Tool
 		/** HSpice engine for Calibre. */	SPICE_ENGINE_H_CALIBRE(7, "HSpice for Calibre"),
 		/** Xyce Spice engine. */			SPICE_ENGINE_XYCE(8, "Xyce"),
 		/** Spice Opus engine. */			SPICE_ENGINE_O(9, "Spice Opus"),
-        /** Ngspice engine. */              SPICE_ENGINE_NG(10, "Ngspice");
+        /** Ngspice engine. */              SPICE_ENGINE_NG(10, "Ngspice"),
+        /** JoSIM engine. */                SPICE_ENGINE_JO(11, "JoSIM");
 
 		private int code;
 		private String name;
@@ -1177,6 +1178,7 @@ public class SimulationTool extends Tool
 	 * SpiceEngine.SPICE_ENGINE_H_ASSURA for HSpice for Assura.<BR>
 	 * SpiceEngine.SPICE_ENGINE_H_CALIBRE for HSpice for Calibre.<BR>
 	 * SpiceEngine.SPICE_ENGINE_NG for Ngspice.<BR>
+	 * SpiceEngine.SPICE_ENGINE_JO for JoSIM.<BR>
 	 * Where SpiceEngine.SPICE_ENGINE_3 is the default.
 	 */
 	public static SpiceEngine getSpiceEngine()
@@ -1204,7 +1206,8 @@ public class SimulationTool extends Tool
 	 * SpiceEngine.SPICE_ENGINE_XYCE for Xyce.<BR>
 	 * SpiceEngine.SPICE_ENGINE_H_ASSURA for HSpice for Assura.<BR>
 	 * SpiceEngine.SPICE_ENGINE_H_CALIBRE for HSpice for Calibre.<BR>
-	 * SpiceEngine.SPICE_ENGINE_NG for Ngspice.
+	 * SpiceEngine.SPICE_ENGINE_NG for Ngspice.<BR>
+	 * SpiceEngine.SPICE_ENGINE_JO for JoSIM.
 	 */
 	public static void setSpiceEngine(SpiceEngine engine) { cacheSpiceEngine.setInt(engine.code()); }
 	/**
@@ -1222,7 +1225,9 @@ public class SimulationTool extends Tool
 	 * SpiceEngine.SPICE_ENGINE_O for Spice Opus.<BR>
 	 * SpiceEngine.SPICE_ENGINE_XYCE for Xyce.<BR>
 	 * SpiceEngine.SPICE_ENGINE_H_ASSURA for HSpice for Assura.<BR>
-	 * SpiceEngine.SPICE_ENGINE_H_CALIBRE for HSpice for Calibre.
+	 * SpiceEngine.SPICE_ENGINE_H_CALIBRE for HSpice for Calibre.<BR>
+	 * SpiceEngine.SPICE_ENGINE_NG for Ngspice.<BR>
+	 * SpiceEngine.SPICE_ENGINE_JO for JoSIM.
 	 */
 	public static SpiceEngine getFactorySpiceEngine()
 	{

@@ -332,7 +332,7 @@ public class ToolMenu {
 				}),
 
 			// ------------------- Simulation (SPICE)
-			// mnemonic keys available: B  JK QR VWXYZ
+			// mnemonic keys available: B   K QR VWXYZ
 			new EMenu("Simulation (_Spice)",
 				new EMenuItem("Write Spice _Deck...") {
 					public void run() { FileMenu.exportCommand(FileType.SPICE, true); }
@@ -401,6 +401,9 @@ public class ToolMenu {
 				},
 				new EMenuItem("Set _Xyce Template") {
 					public void run() { makeTemplate(Spice.SPICE_XYCE_TEMPLATE_KEY, false); }
+				},
+				new EMenuItem("Set _JoSIM Template") {
+					public void run() { makeTemplate(Spice.SPICE_JO_TEMPLATE_KEY, false); }
 				}
 				),
 
