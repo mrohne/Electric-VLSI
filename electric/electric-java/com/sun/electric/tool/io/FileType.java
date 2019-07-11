@@ -50,6 +50,7 @@ public class FileType implements Serializable {
 	/** Describes Calibre DESIGNrev.*/		public static final FileType CALIBREDRV   = makeFileType("CALIBREDRV", new String[] {"tcl"}, "CALIBREDRV Deck (tcl)", FileTypeGroup.EXPORTIMPORTGRP);
 	/** Describes CDL decks.*/				public static final FileType CDL          = makeFileType("CDL", new String[] {"cdl"}, "CDL Deck (cdl)", FileTypeGroup.SPICESIMGRP);
 	/** Describes CIF files. */				public static final FileType CIF          = makeFileType("CIF", new String[] {"cif"}, "CIF File (cif)", FileTypeGroup.EXPORTIMPORTGRP);
+	/** Describes CIR files. */				public static final FileType CIR          = makeFileType("CIR", new String[] {"cir"}, "CIR File (cir)", FileTypeGroup.SPICESIMGRP);
 	/** Describes COSMOS output. */			public static final FileType COSMOS       = makeFileType("COSMOS", new String[] {"sim"}, "COSMOS File (sim)", FileTypeGroup.OTHERSIMGRP);
 	/** Describes Dais input. */			public static final FileType DAIS         = makeFileType("Dais", new String[] {""}, "Dais Workspace (ends in _ws)", FileTypeGroup.EXPORTIMPORTGRP);
     /** Describes Calibre DRC Error files. */public static final FileType DB          = makeFileType("DB", new String[] {"db"}, "Calibre DRC Error File (db)", FileTypeGroup.EXPORTIMPORTGRP);

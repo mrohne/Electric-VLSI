@@ -68,6 +68,7 @@ import com.sun.electric.tool.project.HistoryDialog;
 import com.sun.electric.tool.project.LibraryDialog;
 import com.sun.electric.tool.project.UpdateJob;
 import com.sun.electric.tool.simulation.SimulationTool;
+import com.sun.electric.tool.simulation.SimulationTool.SpiceEngine;
 import com.sun.electric.tool.user.*;
 import com.sun.electric.tool.user.dialogs.ChangeCurrentLib;
 import com.sun.electric.tool.user.dialogs.OpenFile;
@@ -1463,34 +1464,40 @@ public class FileMenu {
 			}
         }
 
-//		String [] extensions = type.getExtensions();
-        // In case of GDS, it would be better to name the ouputfile with the library name rather than cell name
+        // In case of GDS, it would be better to name the output file with the library name rather than cell name
         // when all cells are included in the export.
         String rootName = (type == FileType.GDS && IOTool.isGDSWritesEntireLibrary()) ? cell.getLibrary().getName() : cell.getName();
         String filePath = rootName + "." + type.getFirstExtension();
 
         // special case for spice
-        if (type == FileType.SPICE &&
-			!SimulationTool.getSpiceRunChoice().equals(SimulationTool.spiceRunChoiceDontRun))
+        if (type == FileType.SPICE)
         {
-            // check if user specified working dir
-            if (SimulationTool.getSpiceUseRunDir())
-                filePath = SimulationTool.getSpiceRunDir() + File.separator + filePath;
-            else
-                filePath = User.getWorkingDirectory() + File.separator + filePath;
-            // check for automatic overwrite
-            if (User.isShowFileSelectionForNetlists() && !SimulationTool.getSpiceOutputOverwrite()) {
-                String saveDir = User.getWorkingDirectory();
-                filePath = OpenFile.chooseOutputFile(type, null, filePath);
-                User.setWorkingDirectory(saveDir);
-                if (filePath == null) return;
-            }
+        	if (SimulationTool.getSpiceEngine() == SpiceEngine.SPICE_ENGINE_JO)
+        	{
+        		type = FileType.CIR;
+                filePath = rootName + "." + type.getFirstExtension();
+        	}
+        	if (!SimulationTool.getSpiceRunChoice().equals(SimulationTool.spiceRunChoiceDontRun))
+	        {
+	            // check if user specified working directory
+	            if (SimulationTool.getSpiceUseRunDir())
+	                filePath = SimulationTool.getSpiceRunDir() + File.separator + filePath;
+	            else
+	                filePath = User.getWorkingDirectory() + File.separator + filePath;
+	            // check for automatic overwrite
+	            if (User.isShowFileSelectionForNetlists() && !SimulationTool.getSpiceOutputOverwrite()) {
+	                String saveDir = User.getWorkingDirectory();
+	                filePath = OpenFile.chooseOutputFile(type, null, filePath);
+	                User.setWorkingDirectory(saveDir);
+	                if (filePath == null) return;
+	            }
 
-            Output.exportCellCommand(cell, context, filePath, type, override);
-            return;
+	            Output.exportCellCommand(cell, context, filePath, type, override);
+	            return;
+	        }
         }
 
-     // Special case for Telesis format: all cells are written in different files
+        // Special case for Telesis format: all cells are written in different files
         if (type == FileType.TELESIS)
         {
         	filePath = OpenFile.chooseDirectory("Telesis Output");

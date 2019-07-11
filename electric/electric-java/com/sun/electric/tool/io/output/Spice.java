@@ -427,9 +427,6 @@ public class Spice extends Topology
                 legalSpiceChars = SPICELEGALCHARS;
                 break;
         }
-//		legalSpiceChars = SPICELEGALCHARS;
-//		if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_P ||
-//			spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_G) legalSpiceChars = PSPICELEGALCHARS;
 
 		// start writing the spice deck
 		if (useCDL)
@@ -516,11 +513,6 @@ public class Spice extends Topology
                             infstr.append("\n.global");
                             break;
                     }
-//                    if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_XYCE) {
-//                    	infstr.append("\n*** Globals\n");
-//                    } else {
-//                    	infstr.append("\n.global");
-//                    }
                     for(int i=0; i<globalSize; i++)
                     {
                         Global global = globals.get(i);
@@ -536,11 +528,6 @@ public class Spice extends Topology
                             	infstr.append(" " + name);
                                 break;
                         }
-//                        if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_XYCE) {
-//                        	infstr.append(" $" + name);
-//                        } else {
-//                        	infstr.append(" " + name);
-//                        }
                     }
                     infstr.append("\n");
                     multiLinePrint(false, infstr.toString());
@@ -730,12 +717,6 @@ public class Spice extends Topology
 						default:
 							break;
                     }
-//                    if ((spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_O || spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_XYCE) &&
-//                    	firstParam)
-//                    {
-//                        infstr.append(" param:");
-//                    	firstParam = false;
-//                    }
                     infstr.append(" " + paramVar.getTrueName() + "=" + value);
 				}
 			}
@@ -1345,8 +1326,11 @@ public class Spice extends Topology
                     case SPICE_ENGINE_NG:
                         spiceH = true;
                         break;
+					default:
+						break;
                 }
-            	// write the length
+
+                // write the length
             	Double foundLen = null;
                 Variable varLen = ni.getVar(Schematics.ATTR_LENGTH);
                 if (varLen != null && varLen.getCode() == CodeExpression.Code.SPICE &&
@@ -1670,7 +1654,8 @@ public class Spice extends Topology
         }
         StringBuilder uniqueCellName = new StringBuilder(uniqueName);
 
-        if (uniquifyCells.get(cell) != null && modelOverrides.get(cell) == null) {
+        if (uniquifyCells.get(cell) != null && modelOverrides.get(cell) == null)
+        {
             // if this cell is marked to be make unique, make a unique name out of the var context
             VarContext vc = context.push(no);
             uniqueCellName.append("_"+vc.getInstPath("."));
@@ -1681,7 +1666,6 @@ public class Spice extends Topology
                 // if there are parameters, append them to this name
                 Set<Variable.Key> spiceParams = detectSpiceParams(cell);
                 List<Variable> paramValues = new ArrayList<Variable>();
-//              for(Iterator<Variable> it = no.getDefinedParameters(); it.hasNext(); )
                 for(Iterator<Variable> it = no.getParameters(); it.hasNext(); )
                 {
                     Variable var = it.next();
@@ -1744,7 +1728,6 @@ public class Spice extends Topology
             }
             int numOfCharactersToDelete = uniqueCellName.length() - limit + 10;
             uniqueCellName = uniqueCellName.delete(0, numOfCharactersToDelete);
-//            uniqueCellName = uniqueCellName.delete(limit-10, uniqueCellName.length());
             uniqueCellName.append("-ID"+i);
         }
         return uniqueCellName;
@@ -2411,10 +2394,9 @@ public class Spice extends Topology
             case SPICE_ENGINE_P:
             case SPICE_ENGINE_G:
                 return "0";
+			default:
+				break;
         }
-//		if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_2 ||
-//			spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_P ||
-//			spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_G) return "0";
 
 		if (net != null)
 		{
@@ -3113,8 +3095,6 @@ public class Spice extends Topology
 			default:
 				break;
         }
-//        if (engine == SimulationTool.SpiceEngine.SPICE_ENGINE_P)
-//            legalSpiceChars = PSPICELEGALCHARS;
         return getSafeNetName(name, legalSpiceChars, engine);
     }
 
@@ -3167,14 +3147,10 @@ public class Spice extends Topology
             default:
                 if (TextUtils.isDigit(name.charAt(0)))
                 {
-                    sb.append(' ');
+                    sb.append('_');
                 }
                 break;
         }
-//		if (TextUtils.isDigit(name.charAt(0)) &&
-//			spiceEngine != SimulationTool.SpiceEngine.SPICE_ENGINE_G &&
-//			spiceEngine != SimulationTool.SpiceEngine.SPICE_ENGINE_P &&
-//			spiceEngine != SimulationTool.SpiceEngine.SPICE_ENGINE_2) sb.append('_');
 		for(int t=0; t<name.length(); t++)
 		{
 			char chr = name.charAt(t);
@@ -3233,11 +3209,6 @@ public class Spice extends Topology
                     value = "'" + value + "'";
                     break;
             }
-//			if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_2 ||
-//				spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_3) return value;
-//	        if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_O)
-//	        	value = "{" + value + "}"; else
-//	        		value = "'" + value + "'";
 		}
         return value;
     }
@@ -3285,18 +3256,6 @@ public class Spice extends Topology
 			default:
 				break;
         }
-//		if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_2 || spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_3 ||
-//			spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_G || spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_S)
-//		{
-//			multiLinePrint(false, ".include " + fileName + "\n");
-//		} else if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_H || spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_H_ASSURA ||
-//                   spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_H_CALIBRE)
-//		{
-//			multiLinePrint(false, ".include '" + fileName + "'\n");
-//		} else if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_P)
-//		{
-//			multiLinePrint(false, ".INC " + fileName + "\n");
-//		}
 	}
 
 	/**
@@ -3329,8 +3288,6 @@ public class Spice extends Topology
 			default:
 				break;
         }
-//        if (spiceEngine == SimulationTool.SpiceEngine.SPICE_ENGINE_O)
-//        	str = str.replaceAll("@", "_");
 
         // put in line continuations, if over the limit of chars per line
 		String contChar = "+";
