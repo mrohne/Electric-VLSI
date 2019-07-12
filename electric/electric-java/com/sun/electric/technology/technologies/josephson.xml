@@ -1015,6 +1015,267 @@
         </primitivePort>
     </primitiveNode>
 
+    <primitiveNode name="Metal-0-Inductor" fun="INDUCT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-0" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="2.5" khy="2.5"/>
+            </box>
+            <portArc>Metal_0</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-2.5" khy="-2.5"/>
+            </box>
+            <portArc>Metal_0</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-1-Inductor" fun="INDUCT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-1" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="2.5" khy="2.5"/>
+            </box>
+            <portArc>Metal_1</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-2.5" khy="-2.5"/>
+            </box>
+            <portArc>Metal_1</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-2-Inductor" fun="INDUCT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-2" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="2.5" khy="2.5"/>
+            </box>
+            <portArc>Metal_2</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-2.5" khy="-2.5"/>
+            </box>
+            <portArc>Metal_2</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-3-Inductor" fun="INDUCT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-3" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="2.5" khy="2.5"/>
+            </box>
+            <portArc>Metal_3</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-2.5" khy="-2.5"/>
+            </box>
+            <portArc>Metal_3</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-4-Inductor" fun="INDUCT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-4" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="2.5" khy="2.5"/>
+            </box>
+            <portArc>Metal_4</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-2.5" khy="-2.5"/>
+            </box>
+            <portArc>Metal_4</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-5-Inductor" fun="INDUCT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-5" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="2.5" khy="2.5"/>
+            </box>
+            <portArc>Metal_5</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-2.5" khy="-2.5"/>
+            </box>
+            <portArc>Metal_5</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-6-Inductor" fun="INDUCT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-6" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="2.5" khy="2.5"/>
+            </box>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-2.5" khy="-2.5"/>
+            </box>
+            <portArc>Metal_6</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-7-Inductor" fun="INDUCT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-7" style="FILLED">
+            <box>
+                <lambdaBox klx="-2.5" khx="2.5" kly="-2.5" khy="2.5"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="2.5" khy="2.5"/>
+            </box>
+            <portArc>Metal_7</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-2.5" khy="-2.5"/>
+            </box>
+            <portArc>Metal_7</portArc>
+        </primitivePort>
+    </primitiveNode>
+
+    <primitiveNode name="Metal-8-Inductor" fun="INDUCT">
+        <nodeBase>
+            <box>
+                <lambdaBox klx="-10.0" khx="10.0" kly="-10.0" khy="10.0"/>
+            </box>
+        </nodeBase>
+        <nodeLayer layer="Metal-8" style="FILLED">
+            <box>
+                <lambdaBox klx="-10.0" khx="10.0" kly="-10.0" khy="10.0"/>
+            </box>
+        </nodeLayer>
+        <primitivePort name="a">
+            <portAngle primary="90" range="90"/>
+            <portTopology>0</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="10.0" khy="10.0"/>
+            </box>
+            <portArc>Metal_8</portArc>
+        </primitivePort>
+        <primitivePort name="b">
+            <portAngle primary="270" range="90"/>
+            <portTopology>1</portTopology>
+            <box>
+                <lambdaBox klx="0.0" khx="0.0" kly="-10.0" khy="-10.0"/>
+            </box>
+            <portArc>Metal_8</portArc>
+        </primitivePort>
+    </primitiveNode>
+
     <primitiveNode name="Metal-0-Metal-1-Con" fun="CONTACT">
         <nodeBase>
             <box>
@@ -1388,46 +1649,51 @@
         </primitivePort>
     </primitiveNode>
 
-    <menuPalette numColumns="3">
+    <menuPalette numColumns="4">
         <menuBox><menuArc>Metal_0</menuArc></menuBox>
         <menuBox><menuNode>Metal-0-Pin</menuNode></menuBox>
         <menuBox><menuNode>Metal-0-Metal-1-Con</menuNode></menuBox>
+        <menuBox><menuNode>Metal-0-Inductor</menuNode></menuBox>
 
         <menuBox><menuArc>Metal_1</menuArc></menuBox>
         <menuBox><menuNode>Metal-1-Pin</menuNode></menuBox>
         <menuBox><menuNode>Metal-1-Metal-2-Con</menuNode></menuBox>
+        <menuBox><menuNode>Metal-1-Inductor</menuNode></menuBox>
 
         <menuBox><menuArc>Metal_2</menuArc></menuBox>
         <menuBox><menuNode>Metal-2-Pin</menuNode></menuBox>
         <menuBox><menuNode>Metal-2-Metal-3-Con</menuNode></menuBox>
+        <menuBox><menuNode>Metal-2-Inductor</menuNode></menuBox>
 
         <menuBox><menuArc>Metal_3</menuArc></menuBox>
         <menuBox><menuNode>Metal-3-Pin</menuNode></menuBox>
         <menuBox><menuNode>Metal-3-Metal-4-Con</menuNode></menuBox>
+        <menuBox><menuNode>Metal-3-Inductor</menuNode></menuBox>
 
         <menuBox><menuArc>Metal_4</menuArc></menuBox>
         <menuBox><menuNode>Metal-4-Pin</menuNode></menuBox>
         <menuBox><menuNode>Metal-4-Metal-5-Con</menuNode></menuBox>
+        <menuBox><menuNode>Metal-4-Inductor</menuNode></menuBox>
 
         <menuBox><menuArc>Metal_5</menuArc></menuBox>
         <menuBox><menuNode>Metal-5-Pin</menuNode></menuBox>
         <menuBox><menuNode>Metal-5-Metal-6-Con</menuNode></menuBox>
+        <menuBox><menuNode>Metal-5-Inductor</menuNode></menuBox>
 
         <menuBox><menuArc>Metal_6</menuArc></menuBox>
         <menuBox><menuNode>Metal-6-Pin</menuNode></menuBox>
         <menuBox><menuNode>Metal-6-Metal-7-Con</menuNode></menuBox>
+        <menuBox><menuNode>Metal-6-Inductor</menuNode></menuBox>
 
         <menuBox><menuArc>Metal_7</menuArc></menuBox>
         <menuBox><menuNode>Metal-7-Pin</menuNode></menuBox>
         <menuBox><menuNode>Metal-7-Metal-8-Con</menuNode></menuBox>
+        <menuBox><menuNode>Metal-7-Inductor</menuNode></menuBox>
 
         <menuBox><menuArc>Metal_8</menuArc></menuBox>
         <menuBox><menuNode>Metal-8-Pin</menuNode></menuBox>
         <menuBox><menuNode>Junction</menuNode></menuBox>
-
-        <menuBox></menuBox>
-        <menuBox></menuBox>
-        <menuBox><menuNode>Resistor</menuNode></menuBox>
+        <menuBox><menuNode>Metal-8-Inductor</menuNode></menuBox>
 
         <menuBox>
             <menuText>Pure</menuText>
@@ -1438,6 +1704,7 @@
         <menuBox>
             <menuText>Misc.</menuText>
         </menuBox>
+        <menuBox><menuNode>Resistor</menuNode></menuBox>
 
     </menuPalette>
 
