@@ -634,6 +634,9 @@ public class PaletteFrame implements MouseListener
 				} else if (np == Schematics.tech().diodeNode)
 				{
 					newNi.newDisplayVar(Schematics.SCHEM_DIODE, "10", ep);
+				} else if (np == Schematics.tech().josephsonNode)
+				{
+					newNi.newDisplayVar(Schematics.ATTR_AREA, "2", ep);
 				} else if (np == Schematics.tech().transistorNode || np == Schematics.tech().transistor4Node)
 				{
 					if (newNi.getFunction().isFET())

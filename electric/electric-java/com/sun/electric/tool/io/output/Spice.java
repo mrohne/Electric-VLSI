@@ -1107,6 +1107,13 @@ public class Spice extends Topology
 				{
 					String extra = "jmitll";
 					double area = ni.getLambdaBaseXSize() * Math.PI / 10.0;
+
+					// get the area for schematic JJs
+					if (!ni.getProto().getTechnology().isLayout())
+					{
+			            Object areaObj = context.evalVar(ni.getVar(Schematics.ATTR_AREA));
+			            area = VarContext.objectToDouble(areaObj, -1);
+					}
 					extra += " area=" + TextUtils.formatDouble(area);
 					writeTwoPort(ni, "B", extra, cni, netList, context, segmentedNets);
 				}
@@ -3201,6 +3208,7 @@ public class Spice extends Topology
             {
                 case SPICE_ENGINE_2:
                 case SPICE_ENGINE_3:
+                case SPICE_ENGINE_JO:
                     return value;
                 case SPICE_ENGINE_O:
                 	value = "{" + value + "}";
