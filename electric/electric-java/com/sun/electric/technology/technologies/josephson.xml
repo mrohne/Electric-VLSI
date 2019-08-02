@@ -1709,9 +1709,27 @@
     </menuPalette>
 
     <Foundry name="NONE">
-        <layerGds layer="Metal-1" gds="49"/>
-        <layerGds layer="Metal-2" gds="51"/>
-        <layerGds layer="Via1" gds="50"/>
+        <layerGds layer="Metal-0" gds="1"/>
+        <layerGds layer="Via0"    gds="2"/>
+        <layerGds layer="Metal-1" gds="10"/>
+        <layerGds layer="Via1"    gds="11"/>
+        <layerGds layer="Metal-2" gds="20"/>
+        <layerGds layer="Via2"    gds="21"/>
+        <layerGds layer="Metal-3" gds="30"/>
+        <layerGds layer="Via3"    gds="31"/>
+        <layerGds layer="Metal-4" gds="40"/>
+        <layerGds layer="Via4"    gds="41"/>
+        <layerGds layer="Metal-5" gds="50"/>
+        <layerGds layer="Via5"    gds="54"/>
+        <layerGds layer="Metal-6" gds="60"/>
+        <layerGds layer="Via6"    gds="61"/>
+        <layerGds layer="Metal-7" gds="70"/>
+        <layerGds layer="Via7"    gds="71"/>
+        <layerGds layer="Metal-8" gds="80"/>
+        <layerGds layer="Res"     gds="55"/>
+        <layerGds layer="ResVia"  gds="56"/>
+        <layerGds layer="ViaJ"    gds="51"/>
+        <layerGds layer="AlO2"    gds="52"/>
 
         <LayerRule ruleName="1.1" layerName="Metal-1" type="MINWID" when="ALL" value="2.0"/>
         <LayersRule ruleName="1.2" layerNames="{Metal-1,Metal-1}" type="UCONSPA" when="ALL" value="2.0"/>
