@@ -89,7 +89,7 @@ public class ERCTest extends AbstractTest
 	{
 		createMessageOutput();
 		Boolean passed = Boolean.TRUE;
-		if (!basicERCAntennaTest(getRegressionPath() + "/data/muddChip", "MIPS.jelib", "chip", "", 1039)) passed = Boolean.FALSE;
+		if (!basicERCAntennaTest(getRegressionPath() + "/data/muddChip", "MIPS.jelib", "chip", "", 1037)) passed = Boolean.FALSE;
 		return passed;
 	}
 

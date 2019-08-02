@@ -77,63 +77,69 @@ import java.util.prefs.Preferences;
 public class ERCAntenna
 {
 	public static class AntennaPreferences extends PrefPackage
-    {
-        // In TECH_NODE
-        private static final String KEY_ANTENNA_RATIO = "DefaultAntennaRatio";
+	{
+		// In TECH_NODE
+		private static final String KEY_ANTENNA_RATIO = "DefaultAntennaRatio";
 
-        private transient final TechPool techPool;
-        public Map<ArcProtoId,Double> antennaRatio = new HashMap<ArcProtoId,Double>();
-        public boolean disablePopups = false;
+		private transient final TechPool techPool;
+		public Map<ArcProtoId,Double> antennaRatio = new HashMap<ArcProtoId,Double>();
+		public boolean disablePopups = false;
 
-        public AntennaPreferences(boolean factory, TechPool techPool)
-        {
-            super(factory);
-            this.techPool = techPool;
-            if (factory) return;
+		public AntennaPreferences(boolean factory, TechPool techPool)
+		{
+			super(factory);
+			this.techPool = techPool;
+			if (factory) return;
 
-            Preferences techPrefs = getPrefRoot().node(TECH_NODE);
-            for (Technology tech: techPool.values()) {
-                for (Iterator<ArcProto> it = tech.getArcs(); it.hasNext(); ) {
-                    ArcProto ap = it.next();
-                    ArcProtoId apId = ap.getId();
-                    double factoryValue = ap.getFactoryAntennaRatio();
-                    double value = techPrefs.getDouble(getKey(KEY_ANTENNA_RATIO, apId), factoryValue);
-                    if (value == factoryValue) continue;
-                    antennaRatio.put(apId, Double.valueOf(value));
-                }
-            }
-        }
+			Preferences techPrefs = getPrefRoot().node(TECH_NODE);
+			for (Technology tech: techPool.values())
+			{
+				for (Iterator<ArcProto> it = tech.getArcs(); it.hasNext(); )
+				{
+					ArcProto ap = it.next();
+					ArcProtoId apId = ap.getId();
+					double factoryValue = ap.getFactoryAntennaRatio();
+					double value = techPrefs.getDouble(getKey(KEY_ANTENNA_RATIO, apId), factoryValue);
+					if (value == factoryValue) continue;
+					antennaRatio.put(apId, Double.valueOf(value));
+				}
+			}
+		}
 
-        /**
-         * Store annotated option fields of the subclass into the specified Preferences subtree.
-         * @param prefRoot the root of the Preferences subtree.
-         * @param removeDefaults remove from the Preferences subtree options which have factory default value.
-         */
-        @Override
-        public void putPrefs(Preferences prefRoot, boolean removeDefaults) {
-            super.putPrefs(prefRoot, removeDefaults);
-            Preferences techPrefs = prefRoot.node(TECH_NODE);
-            for (Technology tech: techPool.values()) {
-                for (Iterator<ArcProto> it = tech.getArcs(); it.hasNext(); ) {
-                    ArcProto ap = it.next();
-                    ArcProtoId apId = ap.getId();
-                    String key = getKey(KEY_ANTENNA_RATIO, apId);
-                    double factoryValue = ap.getFactoryAntennaRatio();
-                    Double valueObj = antennaRatio.get(apId);
-                    double value = valueObj != null ? valueObj.doubleValue() : factoryValue;
-                    if (removeDefaults && value == factoryValue)
-                        techPrefs.remove(key);
-                    else
-                        techPrefs.putDouble(key, value);
-                }
-            }
-        }
+		/**
+		 * Store annotated option fields of the subclass into the specified Preferences subtree.
+		 * @param prefRoot the root of the Preferences subtree.
+		 * @param removeDefaults remove from the Preferences subtree options which have factory default value.
+		 */
+		@Override
+		public void putPrefs(Preferences prefRoot, boolean removeDefaults)
+		{
+			super.putPrefs(prefRoot, removeDefaults);
+			Preferences techPrefs = prefRoot.node(TECH_NODE);
+			for (Technology tech: techPool.values())
+			{
+				for (Iterator<ArcProto> it = tech.getArcs(); it.hasNext(); )
+				{
+					ArcProto ap = it.next();
+					ArcProtoId apId = ap.getId();
+					String key = getKey(KEY_ANTENNA_RATIO, apId);
+					double factoryValue = ap.getFactoryAntennaRatio();
+					Double valueObj = antennaRatio.get(apId);
+					double value = valueObj != null ? valueObj.doubleValue() : factoryValue;
+					if (removeDefaults && value == factoryValue)
+						techPrefs.remove(key);
+					else
+						techPrefs.putDouble(key, value);
+				}
+			}
+		}
 
-        public double getAntennaRatio(ArcProto ap) {
-            Double valueObj = antennaRatio.get(ap.getId());
-            return valueObj != null ? valueObj.doubleValue() : ap.getFactoryAntennaRatio();
-        }
-    }
+		public double getAntennaRatio(ArcProto ap)
+		{
+			Double valueObj = antennaRatio.get(ap.getId());
+			return valueObj != null ? valueObj.doubleValue() : ap.getFactoryAntennaRatio();
+		}
+	}
 
 	private static class AntennaObject
 	{
@@ -172,16 +178,18 @@ public class ERCAntenna
 	/** A list of AntennaObjects to process. */				private List<AntennaObject>     pathList;
 	/** Map from ArcProtos to Layers. */					private Map<ArcProto,Layer>     arcProtoToLayer;
 	/** Map from Layers to ArcProtos. */					private Map<Layer,ArcProto>     layerToArcProto;
-	/** Map for marking ArcInsts and NodeInsts. */			private Set<Geometric>          fsGeom;
+	/** Map for marking NodeInsts. */						private Set<NodeInst>           niGeom;
+	/** Map for marking ArcInsts. */						private Map<ArcInst,AntennaObject> aiGeom;
 	/** Map for marking Cells. */							private Set<Cell>               fsCell;
 	/** for storing errors */								private ErrorLogger             errorLogger;
-	/** preferences */                                      private AntennaPreferences      antennaPrefs;
+	/** preferences */										private AntennaPreferences      antennaPrefs;
 
 	/************************ CONTROL ***********************/
 
-	private ERCAntenna(AntennaPreferences antennaPrefs) {
-        this.antennaPrefs = antennaPrefs;
-    }
+	private ERCAntenna(AntennaPreferences antennaPrefs)
+	{
+		this.antennaPrefs = antennaPrefs;
+	}
 
 	/**
 	 * The main entry point for Antenna checking.
@@ -195,21 +203,21 @@ public class ERCAntenna
 		new AntennaCheckJob(cell);
 	}
 
-    /**
-     * For test/regression/internal run
-     */
-    public static int checkERCAntenna(Cell cell, AntennaPreferences prefs, Job job)
-    {
-        ERCAntenna handler = new ERCAntenna(prefs);
-        return handler.doCheck(job, cell);
-    }
+	/**
+	 * For test/regression/internal run
+	 */
+	public static int checkERCAntenna(Cell cell, AntennaPreferences prefs, Job job)
+	{
+		ERCAntenna handler = new ERCAntenna(prefs);
+		return handler.doCheck(job, cell);
+	}
 
-    /**
+	/**
 	 * Class to do antenna checking in a new thread.
 	 */
 	private static class AntennaCheckJob extends Job
 	{
-        private AntennaPreferences antennaPrefs = new AntennaPreferences(false, getTechPool());
+		private AntennaPreferences antennaPrefs = new AntennaPreferences(false, getTechPool());
 		private Cell cell;
 
 		private AntennaCheckJob(Cell cell)
@@ -221,8 +229,8 @@ public class ERCAntenna
 
 		public boolean doIt() throws JobException
 		{
-            checkERCAntenna(cell, antennaPrefs, this);
-            return true;
+			checkERCAntenna(cell, antennaPrefs, this);
+			return true;
 		}
 	}
 
@@ -234,7 +242,8 @@ public class ERCAntenna
 		curTech = topCell.getTechnology();
 
 		// maps for marking nodes and arcs, and also for marking cells
-		fsGeom = new HashSet<Geometric>();
+		niGeom = new HashSet<NodeInst>();
+		aiGeom = new HashMap<ArcInst,AntennaObject>();
 		fsCell = new HashSet<Cell>();
 
 		// create mappings between ArcProtos and Layers
@@ -294,8 +303,8 @@ public class ERCAntenna
 		}
 		if (antennaPrefs.disablePopups) errorLogger.disablePopups();
 		errorLogger.termLogging(true);
-        return errorCount;
-    }
+		return errorCount;
+	}
 
 	/**
 	 * Method to check the contents of a cell.
@@ -306,15 +315,16 @@ public class ERCAntenna
 	private boolean checkThisCell(Cell cell, Layer lay, Job job)
 	{
 		// examine every node and follow all relevant arcs
-		fsGeom.clear();
+		niGeom.clear();
+		aiGeom.clear();
 
 		for(Iterator<NodeInst> it = cell.getNodes(); it.hasNext(); )
 		{
 			if (job != null && job.checkAbort()) return true;
 
 			NodeInst ni = it.next();
-			if (fsGeom.contains(ni)) continue;
-			fsGeom.add(ni);
+			if (niGeom.contains(ni)) continue;
+			niGeom.add(ni);
 
 			// check every connection on the node
 			for(Iterator<PortInst> pIt = ni.getPortInsts(); pIt.hasNext(); )
@@ -327,7 +337,7 @@ public class ERCAntenna
 				{
 					Connection con = cIt.next();
 					ArcInst ai = con.getArc();
-					if (fsGeom.contains(ai)) { seen = true;   break; }
+					if (aiGeom.get(ai) != null) { seen = true;   break; }
 				}
 				if (seen) continue;
 
@@ -464,7 +474,6 @@ public class ERCAntenna
 	private int followNode(NodeInst ni, PortProto pp, Layer lay, FixpTransform trans, Job job)
 	{
 		// presume that nothing was found
-		int ret = ERCANTPATHNULL;
 		firstSpreadAntennaObj = new ArrayList<AntennaObject>();
 		NodeInst [] antstack = new NodeInst[200];
 		int depth = 0;
@@ -475,7 +484,7 @@ public class ERCAntenna
 			if (job != null && job.checkAbort()) return ERCABORTED;
 
 			// if this is a subcell, recurse on it
-			fsGeom.add(ni);
+			niGeom.add(ni);
 			NodeInst thisni = ni;
 			while (thisni.isCellInstance())
 			{
@@ -495,28 +504,26 @@ public class ERCAntenna
 				{
 					TransistorSize dim = thisni.getTransistorSize(VarContext.globalContext);
 					totalGateArea += dim.getDoubleLength() * dim.getDoubleWidth();
-					ret = ERCANTPATHGATE;
-				} else
-				{
-					// diffusion or bias port: stop tracing
-					return ERCANTPATHACTIVE;
+					return ERCANTPATHGATE;
 				}
+
+				// diffusion or bias port: stop tracing
+				return ERCANTPATHACTIVE;
+			}
+
+			// normal primitive: propagate
+			if (hasDiffusion(thisni)) return ERCANTPATHACTIVE;
+			AntennaObject ao = new AntennaObject(ni);
+			ao.loadAntennaObject(antstack, depth);
+
+			if (haveAntennaObject(ao))
+			{
+				// already in the list
+				seen = true;
 			} else
 			{
-				// normal primitive: propagate
-				if (hasDiffusion(thisni)) return ERCANTPATHACTIVE;
-				AntennaObject ao = new AntennaObject(ni);
-				ao.loadAntennaObject(antstack, depth);
-
-				if (haveAntennaObject(ao))
-				{
-					// already in the list
-					seen = true;
-				} else
-				{
-					// not in the list: add it
-					addAntennaObject(ao);
-				}
+				// not in the list: add it
+				addAntennaObject(ao);
 			}
 
 			// look at all arcs on the node
@@ -533,7 +540,7 @@ public class ERCAntenna
 
 			// look for an unspread antenna object and keep walking
 			if (firstSpreadAntennaObj.size() == 0) break;
-			AntennaObject ao = firstSpreadAntennaObj.get(0);
+			ao = firstSpreadAntennaObj.get(0);
 			firstSpreadAntennaObj.remove(0);
 
 			ArcInst ai = (ArcInst)ao.geom;
@@ -543,7 +550,7 @@ public class ERCAntenna
 			for(int i=0; i<depth; i++)
 				antstack[i] = ao.hierstack[i];
 		}
-		return ret;
+		return ERCANTPATHNULL;
 	}
 
 	/**
@@ -585,8 +592,8 @@ public class ERCAntenna
 			if (ai.getProto().getFunction().getLevel() > aLayer.getFunction().getLevel()) continue;
 
 			// make an antenna object for this arc
-			fsGeom.add(ai);
-			AntennaObject ao = new AntennaObject(ai);
+			AntennaObject ao = aiGeom.get(ai);
+			if (ao == null) aiGeom.put(ai, ao = new AntennaObject(ai));
 
 			if (haveAntennaObject(ao)) continue;
 			ao.loadAntennaObject(antstack, depth);
