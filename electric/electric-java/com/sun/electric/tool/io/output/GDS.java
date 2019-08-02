@@ -24,6 +24,7 @@
  */
 package com.sun.electric.tool.io.output;
 
+import com.sun.electric.database.geometry.EPoint;
 import com.sun.electric.database.geometry.Poly;
 import com.sun.electric.database.geometry.PolyBase;
 import com.sun.electric.database.hierarchy.Cell;
@@ -96,6 +97,7 @@ public class GDS extends Geometry
 	/** old key of Variable with GDS text text. */		public static final Variable.Key OLD_GDS_TEXT_KEY = Variable.newKey("GDS_text");
 
 	private static final int GDSVERSION        =      3;
+	private static final int ROUNDSEGMENTS     =    100;
 	private static final int BYTEMASK          =   0xFF;
 	private static final int DSIZE             =    512;		/* data block */
 	private static final int EXPORTPRESENTATION=      0;		/* centered (was 8 for bottom-left) */
@@ -150,7 +152,7 @@ public class GDS extends Geometry
 	/** Position of next byte in the buffer */	private static int bufferPosition;
 	/** Number data buffers output so far */	private static int blockCount;
 	/** constant for GDS units */				private double scaleFactor;
-	/** true if rounding caused inaccuracies */	private int inaccurate;
+	/** nonzero if rounding caused errors */	private double inaccurate;
 	/** cell naming map */						private Map<Cell,String> cellNames;
 	/** cells that have been written */			private Set<Cell> writtenCells;
 	/** cell names that have been written */	private Set<String> writtenCellNames;
@@ -974,7 +976,27 @@ public class GDS extends Geometry
 			// Make a square of the size of the diameter
 			double r = points[0].distance(points[1]);
 			if (r <= 0) return;
-			Poly newPoly = new Poly(points[0].getX(), points[0].getY(), r*2, r*2);
+
+			// write round geometry by approximating with lines
+			EPoint[] roundPoints = new EPoint[ROUNDSEGMENTS+1];
+			double offsetX = points[0].getX();
+			double offsetY = points[0].getY();
+			for(int i=0; i<ROUNDSEGMENTS; i++)
+			{
+				int p = 3600*i/ROUNDSEGMENTS;
+				double x = r * DBMath.cos(p) + offsetX;
+				double y = r * DBMath.sin(p) + offsetY;
+
+				// round to nearest nanometer
+				double unitX = Math.round(scaleFactor*x) / scaleFactor;
+				double unitY = Math.round(scaleFactor*y) / scaleFactor;
+               roundPoints[i] = EPoint.fromLambda(unitX, unitY);
+			}
+	        roundPoints[ROUNDSEGMENTS] = EPoint.fromLambda(roundPoints[0].getX(), roundPoints[0].getY());
+			Poly newPoly = new Poly(roundPoints);
+
+			// the old way: just write rectangle
+//			Poly newPoly = new Poly(points[0].getX(), points[0].getY(), r*2, r*2);
 			outputBoundary(newPoly, layerNumber, layerType);
 			return;
 		}
@@ -1604,9 +1626,9 @@ public class GDS extends Geometry
 
 		// round to nearest nanometer
 		int unit = (int)Math.round(scaled);
-		if (unit != scaled)
+		if (!DBMath.areEquals(unit, scaled))
 		{
-			int accurateScale = 10;
+			double accurateScale = 10;
 			for(int i=0; i<10; i++)
 			{
 				double scaledScale = scaled * accurateScale;
