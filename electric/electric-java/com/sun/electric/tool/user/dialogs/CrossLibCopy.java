@@ -701,7 +701,7 @@ public class CrossLibCopy extends EDialog
 	private void copyRightActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_copyRightActionPerformed
 	{//GEN-HEADEREND:event_copyRightActionPerformed
 		List<Cell> fromCells = new ArrayList<Cell>();
-        for (Object cellObj : listLeft.getSelectedValues())
+        for (Object cellObj : listLeft.getSelectedValuesList())
         {
             String cellName = ((String)cellObj).trim();
             if (cellName.length() == 0) continue;
@@ -721,7 +721,7 @@ public class CrossLibCopy extends EDialog
 	private void copyLeftActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_copyLeftActionPerformed
 	{//GEN-HEADEREND:event_copyLeftActionPerformed
 		List<Cell> fromCells = new ArrayList<Cell>();
-        for (Object cellObj : listRight.getSelectedValues())
+        for (Object cellObj : listRight.getSelectedValuesList())
         {
             String cellName = ((String)cellObj).trim();
             if (cellName.length() == 0) continue;

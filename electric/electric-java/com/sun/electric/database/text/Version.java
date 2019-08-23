@@ -52,8 +52,8 @@ import com.sun.electric.tool.user.ActivityLogger;
  *    "8.01"      major=8, minor=1, detail=999     (a release)
  *    "8.01.1"    major=8, minor=1, detail=1001    (a post-release update)
  */
-public class Version implements Comparable<Version>, Serializable {
-
+public class Version implements Comparable<Version>, Serializable
+{
     /**
      * This is the current version of Electric
      *
@@ -61,7 +61,7 @@ public class Version implements Comparable<Version>, Serializable {
      * THE TEXT ON THAT LINE IS PARSED BY the Ant file (packaging/build.xml)
      * AND THE PARSING MAY FAIL IF THE LINE IS ALTERED.
      */
-	public static final String ELECTRIC_VERSION = "9.08a";
+	public static final String ELECTRIC_VERSION = "9.08b";
 
     private final String version;
     private final String oldStyle;
@@ -78,46 +78,53 @@ public class Version implements Comparable<Version>, Serializable {
      * The detail version number can be letters.  If it is omitted, it is
      * assumed to be 999.  If it is a number, it is beyond 1000.
      */
-    private Version(String version) {
+    private Version(String version)
+    {
         int major = 0;
         int minor = 0;
         int details = 0;
 
         /* parse the version fields */
         int dot = version.indexOf('.');
-        if (dot == -1) {
+        if (dot == -1)
+        {
             // no "." in the string: version should be a pure number
             major = Integer.parseInt(version);
-        } else {
+        } else
+        {
             // found the "." so parse the major version number (to the left of the ".")
             String majorString = version.substring(0, dot);
             String restOfString = version.substring(dot + 1);
             major = Integer.parseInt(majorString);
 
             int letters;
-            for (letters = 0; letters < restOfString.length(); letters++) {
-                if (!Character.isDigit(restOfString.charAt(letters))) {
-                    break;
-                }
+            for (letters = 0; letters < restOfString.length(); letters++)
+            {
+                if (!Character.isDigit(restOfString.charAt(letters))) break;
             }
             String minorString = restOfString.substring(0, letters);
             minor = Integer.parseInt(minorString);
             restOfString = restOfString.substring(letters);
 
             // see what else follows the minor version number
-            if (restOfString.length() == 0) {
+            if (restOfString.length() == 0)
+            {
                 details = 999;
-            } else if (restOfString.charAt(0) == '.') {
+            } else if (restOfString.charAt(0) == '.')
+            {
                 details = 1000 + Integer.parseInt(restOfString.substring(1));
-            } else {
+            } else
+            {
                 if (restOfString.startsWith("-"))
                     restOfString = restOfString.substring(1);
                 while (restOfString.length() > 0
-                        && Character.isLetter(restOfString.charAt(0))) {
+                        && Character.isLetter(restOfString.charAt(0)))
+                {
                     details = (details * 26) + Character.toLowerCase(restOfString.charAt(0)) - 'a' + 1;
                     restOfString = restOfString.substring(1);
                 }
-                if (restOfString.length() > 0) {
+                if (restOfString.length() > 0)
+                {
                     System.out.println("Invalid version string " + version);
                 }
             }
@@ -143,7 +150,8 @@ public class Version implements Comparable<Version>, Serializable {
      * Method to return official name of Electric
      * @return the official name
      */
-    public static String getApplicationInformation() {
+    public static String getApplicationInformation()
+    {
         return "The Electric VLSI Design System";
     }
 
@@ -151,15 +159,17 @@ public class Version implements Comparable<Version>, Serializable {
      * Method to return copyright information
      * @return copyright.
      */
-    public static String getCopyrightInformation() {
-        return "Copyright (c) 2016, Static Free Software. All rights reserved.";
+    public static String getCopyrightInformation()
+    {
+        return "Copyright (c) 2019, Static Free Software. All rights reserved.";
     }
 
     /**
      * Method to return a short description of warranty
      * @return short description of warranty
      */
-    public static String getWarrantyInformation() {
+    public static String getWarrantyInformation()
+    {
         return "Electric comes with ABSOLUTELY NO WARRANTY";
     }
 
@@ -167,10 +177,12 @@ public class Version implements Comparable<Version>, Serializable {
      * Method to return version and compilation date if available
      * @return string containing version number and date of jar file
      */
-    public static String getVersionInformation() {
+    public static String getVersionInformation()
+    {
         String versionText = "Version " + getVersion();
         String buildText = getBuildDate();
-        if (buildText != null) {
+        if (buildText != null)
+        {
             versionText += " (built on " + buildText + ")";
         }
         return (versionText);
@@ -180,7 +192,8 @@ public class Version implements Comparable<Version>, Serializable {
      * Method to return the current Electric version.
      * @return the current Electric version.
      */
-    public static Version getVersion() {
+    public static Version getVersion()
+    {
         return current;
     }
 
@@ -188,35 +201,17 @@ public class Version implements Comparable<Version>, Serializable {
      * Method to return build date of main jar file
      * @return string containing the date in short format
      */
-    public static String getBuildDate() {
-//        // Might need to adjust token delim depending on operating system
-//        StringTokenizer parse = new StringTokenizer(System.getProperty("java.class.path"));
-//        String delim = System.getProperty("path.separator");
-//        try {
-//            while (parse.hasMoreElements()) {
-//                String val = parse.nextToken(delim);
-//                // Find path for main jar
-//                String filename = "electric.jar";
-//                System.out.println("PAth " + val);
-//                if (val.lastIndexOf(filename) != -1) {
-//                    File electricJar = new File(val);
-//                    long date = electricJar.lastModified();
-//                    Date d = new Date(date);
-//                    return (DateFormat.getDateInstance().format(d));
-//                }
-//            }
-//        } catch (Exception e) {
-//            ActivityLogger.logException(e);
-//        }
+    public static String getBuildDate()
+    {
         return buildDate;
-//        return (null);
     }
 
     /**
      * Method to return the major part of a parsed Version number.
      * @return the major part of a parsed Version number.
      */
-    public int getMajor() {
+    public int getMajor()
+    {
         return major;
     }
 
@@ -224,7 +219,8 @@ public class Version implements Comparable<Version>, Serializable {
      * Method to return the minor part of a parsed Version number.
      * @return the minor part of a parsed Version number.
      */
-    public int getMinor() {
+    public int getMinor()
+    {
         return minor;
     }
 
@@ -232,7 +228,8 @@ public class Version implements Comparable<Version>, Serializable {
      * Method to return the details part of a parsed Version number.
      * @return the details part of a parsed Version number.
      */
-    public int getDetail() {
+    public int getDetail()
+    {
         return details;
     }
 
@@ -240,7 +237,8 @@ public class Version implements Comparable<Version>, Serializable {
      * Returns a hash code for this <code>Version</code>.
      * @return  a hash code value for this Version.
      */
-    public int hashCode() {
+    public int hashCode()
+    {
         return major * 1000000 + minor * 10000 + details;
     }
 
@@ -254,8 +252,10 @@ public class Version implements Comparable<Version>, Serializable {
      * @return  <code>true</code> if the objects are the same;
      *          <code>false</code> otherwise.
      */
-    public boolean equals(Object obj) {
-        if (obj instanceof Version) {
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof Version)
+        {
             Version v = (Version) obj;
             return major == v.major && minor == v.minor && details == v.details;
         }
@@ -268,28 +268,16 @@ public class Version implements Comparable<Version>, Serializable {
      * @param v the object to be compared.
      * @return the result of comparison.
      */
-    public int compareTo(Version v) {
+    public int compareTo(Version v)
+    {
+        if (major < v.major) return -1;
+        if (major > v.major) return 1;
 
-        if (major < v.major) {
-            return -1;
-        }
-        if (major > v.major) {
-            return 1;
-        }
+        if (minor < v.minor) return -1;
+        if (minor > v.minor) return 1;
 
-        if (minor < v.minor) {
-            return -1;
-        }
-        if (minor > v.minor) {
-            return 1;
-        }
-
-        if (details < v.details) {
-            return -1;
-        }
-        if (details > v.details) {
-            return 1;
-        }
+        if (details < v.details) return -1;
+        if (details > v.details) return 1;
 
         return 0;
     }
@@ -298,7 +286,8 @@ public class Version implements Comparable<Version>, Serializable {
      * Returns a <code>String</code> object representing this Version.
      * @return  a string representation of this Version
      */
-    public String toString() {
+    public String toString()
+    {
         return version;
     }
     
@@ -307,7 +296,8 @@ public class Version implements Comparable<Version>, Serializable {
      * The dash symbol is stripped, so that old Jelib readers could read it. 
      * @return  a string representation of this Version
      */
-    public String toOldStyleString() {
+    public String toOldStyleString()
+    {
         return oldStyle;
     }
 
@@ -316,11 +306,13 @@ public class Version implements Comparable<Version>, Serializable {
      * @param version the version of Electric.
      * @return a Version object with the fields parsed.
      */
-    public static Version parseVersion(String version) {
+    public static Version parseVersion(String version)
+    {
         return new Version(version);
     }
     
-    private static Version loadVersionProperties() {
+    private static Version loadVersionProperties()
+    {
 //   Old Maven code for getting the version from the POM files
 //
 //        Properties props = new Properties();

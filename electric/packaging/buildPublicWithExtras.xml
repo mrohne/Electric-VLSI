@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- -*- tab-width: 4 -*-  -->
+
+<!-- Electric(tm) VLSI Design System -->
+
+<!-- File: buildPublicWithExtras.xml -->
+
+<!-- Copyright (c) 2019, Static Free Software. All rights reserved. -->
+
+<!-- Electric(tm) is free software; you can redistribute it and/or modify -->
+<!-- it under the terms of the GNU General Public License as published by -->
+<!-- the Free Software Foundation; either version 3 of the License, or -->
+<!-- (at your option) any later version. -->
+
+<!-- Electric(tm) is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with this program.  If not, see http://www.gnu.org/licenses/ -->
+
+<project basedir=".." default="jarPublicWithExtras" name="electric">
+
+	<!-- *********************************** MAIN TARGETS *********************************** -->
+
+	<target name="jarPublicWithExtras" depends="initialize" description="Make binary JAR file with all extras">
+		<property name="jarname" value="electricBinary-${version}.jar" />
+		<echo message="Building ${jarname}" />
+		<antcall target="createBuildDirectory" />
+		<antcall target="commpileCode" />
+		<antcall target="copyExternalJARs" />
+		<antcall target="createJARFile"/>
+		<antcall target="deleteBuildDirectory" />
+	</target>
+
+	<!-- *********************************** SUPPORT TARGETS *********************************** -->
+
+	<target name="initialize" description="Initiaize file locations, JAR locations, and the Electric version">
+		<property name="packaging"          value="packaging" />
+		<property name="antBuild"           value="${packaging}/antBuild" />
+		<property name="ElectricJavaLoc"    value="${user.dir}/../electric-java" />
+		<property name="ElectricScalaLoc"   value="${user.dir}/../electric-scala" />
+
+		<!-- the location of various JAR files -->
+		<property name="beanshell"          value="${packaging}/bsh-2.0b4.jar" />
+		<property name="jython"             value="${packaging}/jython.jar" />
+		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions-1.4.jar" />
+		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.7.jar" />
+		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.7.jar" />
+		<property name="junit"              value="${packaging}/junit-4.10.jar" />
+		<property name="vecmath"            value="${packaging}/vecmath.jar" />
+		<property name="j3dcore"            value="${packaging}/j3dcore.jar" />
+		<property name="j3dutils"           value="${packaging}/j3dutils.jar" />
+		<property name="jmf"                value="${packaging}/jmf.jar" />
+		<property name="scala-compiler"     value="${packaging}/scala-compiler-2.11.7.jar" />
+		<property name="scala-reflect"      value="${packaging}/scala-reflect-2.11.7.jar" />
+		<property name="scala-library"      value="${packaging}/scala-library-2.11.7.jar" />
+
+		<!-- get the Electric version -->
+		<loadfile srcFile="${ElectricJavaLoc}/com/sun/electric/database/text/Version.java" property="version">
+			<filterchain>
+				<linecontains> <contains value="ELECTRIC_VERSION = "/> </linecontains>
+				<tokenfilter>
+					<replacestring from="public static final String ELECTRIC_VERSION = &quot;" to=""/>
+					<replacestring from="&quot;;" to=""/>
+					<deletecharacters chars="\t "/>
+				</tokenfilter>
+				<striplinebreaks/>
+			</filterchain>
+		</loadfile>
+	</target>
+
+	<target name="commpileCode" description="Compile the public part of Electric">
+		<!-- deprecation flag: deprecation="true" -->
+		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m"
+		       encoding="UTF-8" source="1.8" target="1.8">
+			<classpath>
+				<pathelement location="${slf4j-api}" />
+				<pathelement location="${slf4j-jdk}" />
+                <pathelement location="${scala-library}" />
+				<pathelement location="${beanshell}" />
+				<pathelement location="${jython}" />
+				<pathelement location="${AppleJava}" />
+				<pathelement location="${junit}" />
+				<pathelement location="${j3dcore}" />
+				<pathelement location="${j3dutils}" />
+				<pathelement location="${vecmath}" />
+				<pathelement location="${jmf}" />
+			</classpath>
+		</javac>
+		<copy todir="${antBuild}/com">
+			<fileset dir="${ElectricJavaLoc}/com"
+                includes="**/*.jelib,**/*.prm,**/*.xml,**/*.dtd,**/*.xsd,**/*.gif,**/*.html,**/*.png,**/toc.txt,**/*.wav,**/*.j3d,**/*.dat" />
+		</copy>
+
+		<taskdef resource="scala/tools/ant/antlib.xml">
+			<classpath>
+				<pathelement location="${scala-compiler}" />
+				<pathelement location="${scala-library}" />
+				<pathelement location="${scala-reflect}" />
+			</classpath>
+		</taskdef>
+		<scalac destdir="${antBuild}" srcdir="${ElectricScalaLoc}" deprecation="on" addparams="-feature">
+			<classpath>
+				<pathelement location="${antBuild}" />
+				<pathelement location="${scala-library}" />
+				<pathelement location="${slf4j-api}" />
+				<pathelement location="${slf4j-jdk}" />
+			</classpath>
+		</scalac>
+	</target>
+
+	<target name="copyExternalJARs" description="Copy Jar files for logging and Scala">
+		<unjar src="${slf4j-api}" dest="${antBuild}">
+			<patternset> <include name="org/"/> </patternset>
+		</unjar>
+		<unjar src="${slf4j-jdk}" dest="${antBuild}">
+			<patternset> <include name="org/"/> </patternset>
+		</unjar>
+		<unjar src="${scala-library}" dest="${antBuild}">
+			<patternset> <include name="scala/"/> </patternset>
+		</unjar>
+		<copy todir="${antBuild}/META-INF">
+			<fileset dir="${ElectricScalaLoc}/META-INF" />
+		</copy>
+		<unjar dest="${antBuild}" src="${AppleJava}">
+			<patternset> <include name="com/"/> </patternset>
+		</unjar>
+		<unjar dest="${antBuild}" src="${beanshell}">
+			<patternset> <include name="bsh/"/> </patternset>
+		</unjar>
+		<unjar dest="${antBuild}" src="${jython}" />
+	</target>
+
+	<target name="createJARFile" description="Make the JAR file">
+		<jar basedir="${antBuild}" compress="true" jarfile="${packaging}/${jarname}" manifest="${packaging}/electric.mf" />
+	</target>
+
+	<target name="createBuildDirectory" description="Create temporary build directory">
+		<delete dir="${antBuild}" />
+		<mkdir dir="${antBuild}"/>
+	</target>
+	
+	<target name="deleteBuildDirectory" description="Delete temporary build directory">
+		<delete dir="${antBuild}" />
+	</target>
+
+	<target name="clean" depends="initialize" description="Clean all build products">
+		<delete dir="${antBuild}" />
+		<delete quiet="false">
+			<fileset dir=".">
+				<include name="electric*.jar" />
+				<include name="Electric*.img" />
+			</fileset>
+		</delete>
+		<delete dir="Release${version}" />
+	</target>
+
+</project>
