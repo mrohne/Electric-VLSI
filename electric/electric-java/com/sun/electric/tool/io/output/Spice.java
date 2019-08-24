@@ -786,8 +786,9 @@ public class Spice extends Topology
 					{
 						String line = varTemplate.getObject().toString();
 						if (varTemplate.isCode())
-							line = varTemplate.describe(-1, context.push(no), subCell);
+							line = varTemplate.withDispPart(TextDescriptor.DispPos.VALUE).describe(-1, context.push(no), subCell);
 						StringBuilder infstr = replacePortsAndVars(line, no, context, cni, segmentedNets, info, false, forceEval);
+
 	                    // Writing MFactor if available. Not sure here
 						writeMFactor(context, no, infstr);
 
