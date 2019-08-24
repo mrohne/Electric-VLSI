@@ -2,7 +2,13 @@
 
 NOTE: Please place changes under the version that will be released next.
 
+************************* Version 9.08-b: ******************************
+
 ************************* Version 9.08-a: ******************************
+
+BUG: (8/20/2019, SMR) Spice Templates cannot be Java code.
+FIX: In tool.io.output.Spice.java, method writeCellTopology(), after calling getEngineTemplate(),
+     must test if Variable is Code and handle it.
 
 IMP/MAN: (7/11/19, SMR): Added "JOSEPHSON" node proto type for Josephson junction transistors.
      Added JoSIM SPICE simulation engine.
