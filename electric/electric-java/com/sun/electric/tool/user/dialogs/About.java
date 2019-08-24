@@ -72,7 +72,7 @@ public class About extends EDialog
 		private CastOfThousands(String name, String work) { this.name = name;   this.work = work; }
 
 		static CastOfThousands [] javaTeam = new CastOfThousands[]
-		                                                         {
+		{
 			new CastOfThousands("Iskandar Abudiab",			"Placement tool (Simulated Annealing 1)"),
 			new CastOfThousands("Dennis Appelt",			"Routing tool (Lee/Moore 3)"),
 			new CastOfThousands("Jake Baker",				"Thin Film technology"),
@@ -117,11 +117,11 @@ public class About extends EDialog
 			new CastOfThousands("Andrew West",				"Technology Creation Wizard"),
 			new CastOfThousands("Christian Wittner",		"Placement tool (Genetic 1)"),
 			new CastOfThousands("Min Hao Zhu",				"VerilogA output")
-		                                                         };
+		};
 		static CastOfThousands [] cTeam = new CastOfThousands[]
-		                                                      {
+		{
 			new CastOfThousands("Philip Attfield", 			"Box merging"),
-			new CastOfThousands("Brett Bissinger", 		    "Node extraction"),
+			new CastOfThousands("Brett Bissinger", 			"Node extraction"),
 			new CastOfThousands("Ron Bolton", 				"Mathematical help"),
 			new CastOfThousands("Robert Bosnyak", 			"Pads library"),
 			new CastOfThousands("Mark Brinsmead", 			"Mathematical help"),
@@ -131,8 +131,8 @@ public class About extends EDialog
 			new CastOfThousands("R. Brian Gardiner", 		"Electric lifeline"),
 			new CastOfThousands("T. J. Goodman", 			"Texsim output"),
 			new CastOfThousands("Gerrit Groenewold", 		"SPICE parts"),
-			new CastOfThousands("David Groulx", 		    "Node extraction"),
-			new CastOfThousands("D. Guptill", 			    "X-window help"),
+			new CastOfThousands("David Groulx", 			"Node extraction"),
+			new CastOfThousands("D. Guptill", 				"X-window help"),
 			new CastOfThousands("David Harris", 			"ROM generator, Color printing"),
 			new CastOfThousands("Robert Hon", 				"CIF input parser"),
 			new CastOfThousands("Jason Imada", 				"ROM generator"),
@@ -152,7 +152,7 @@ public class About extends EDialog
 			new CastOfThousands("Mark Moraes", 				"Hierarchical DRC, X-window help"),
 			new CastOfThousands("Sid Penstone", 			"SPICE, SILOS, GDS, Box merging, technologies"),
 			new CastOfThousands("J. P. Polonovski", 		"Memory allocation help"),
-			new CastOfThousands("Kevin Ryan", 			    "X-window help"),
+			new CastOfThousands("Kevin Ryan", 				"X-window help"),
 			new CastOfThousands("Nora Ryan", 				"Compaction, technology conversion"),
 			new CastOfThousands("Miguel Saro", 				"French translation"),
 			new CastOfThousands("Brent Serbin", 			"ALS simulator"),
@@ -164,7 +164,7 @@ public class About extends EDialog
 			new CastOfThousands("Rob Winstanley", 			"CIF input, RNL output"),
 			new CastOfThousands("Russell Wright", 			"SDF input, miscellaneous help"),
 			new CastOfThousands("David J. Yurach",			"VHDL help")
-		                                                      };
+		};
 	}
 
 	/** Creates the About dialog. */
@@ -1197,8 +1197,6 @@ public class About extends EDialog
 	private void plugins(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dump
 		model.clear();
 		model.addElement("Java: version " + System.getProperty("java.version"));
-        model.addElement("CellRevisionPrivider: " + CellRevision.getProvider().getClass().getSimpleName());
-        model.addElement("LayoutMergerFactory: " + LayoutMergerFactory.getInstance().getClass().getSimpleName());
 
         Object java3DVersion = get3DVersion();
         if (java3DVersion != null) {
@@ -1211,7 +1209,6 @@ public class About extends EDialog
 		model.addElement("Jython: " + (EvalJython.hasJython() ? "installed" : "not installed"));
         StringBuilder minAreaPlugins = new StringBuilder();
         minAreaPlugins.append("MinAreaCheckers:");
-        
         try
         {
 	        ServiceLoader<MinAreaChecker> minareaServiceLoader = ServiceLoader.load(MinAreaChecker.class);
@@ -1222,28 +1219,32 @@ public class About extends EDialog
 	        }
         } catch (Error e)
         {
-        	System.out.println("Error loading MinAreaChecker classes via ServiceLoader");
-    		if (Job.getDebug())
-    			e.printStackTrace();
+        	minAreaPlugins.append(" None found (could not load MinAreaChecker classes via ServiceLoader");
         }
         model.addElement(minAreaPlugins);
 		Set<String> missingComponents = TextUtils.getMissingComponentNames();
-		for(String str : missingComponents) model.addElement("Missing: " + str);
+		for(String str : missingComponents) model.addElement(str + ": not installed");
+        model.addElement("CellRevisionPrivider: " + CellRevision.getProvider().getClass().getSimpleName());
+        model.addElement("LayoutMergerFactory: " + LayoutMergerFactory.getInstance().getClass().getSimpleName());
         if (Job.getDebug())
         {
 			Set<String> missingPrivComponents = TextUtils.getMissingPrivateComponentNames();
-			for(String str : missingPrivComponents) model.addElement("Missing private: " + str);
+			for(String str : missingPrivComponents) model.addElement(str + ": not installed");
         }
-		try {
+		try
+		{
 			URLClassLoader cl = (URLClassLoader)Launcher.class.getClassLoader();
-			while (cl != null) {
-				model.addElement("ClassLoader " + cl.getClass());
-				for (URL url: cl.getURLs()) {
-					model.addElement("  " + url.toString());
-				}
-				cl = (URLClassLoader)cl.getParent();
+			while (cl != null)
+			{
+				model.addElement("ClassLoader: " + cl.getClass());
+//				for (URL url: cl.getURLs())
+//					model.addElement("  " + url.toString());
+				URLClassLoader nextCl =(URLClassLoader)cl.getParent();
+				try { cl.close(); } catch (IOException e) {}
+				cl = nextCl;
 			}
-		} catch (ClassCastException e) {
+		} catch (ClassCastException e)
+		{
 			model.addElement("Error detecting ClassLoader");
 		}
 		String cp = System.getProperty("java.class.path");
@@ -1252,13 +1253,14 @@ public class About extends EDialog
 		for(String cpe : cps) model.addElement("    " + cpe);
 		showingCast = null;
         
-//        for (Enumeration en = model.elements(); en.hasMoreElements(); ) {
-//            System.out.println(en.nextElement());
-//        };
+//		for (Enumeration en = model.elements(); en.hasMoreElements(); )
+//			System.out.println(en.nextElement());
 	}//GEN-LAST:event_dump
 
-    private static Object get3DVersion() {
-        try {
+    private static Object get3DVersion()
+    {
+        try
+        {
             Class<?> cls = Class.forName("javax.media.j3d.VirtualUniverse");
             Object objVu = cls.newInstance();
             Method getProperties = objVu.getClass().getMethod("getProperties");
