@@ -1419,8 +1419,9 @@ public abstract class LibraryFiles extends Input
     	String parseExceptionDesc = var.describeParseException(eObj);
     	if (parseExceptionDesc != null)
     	{
-            System.out.println("WARNING: " + parseExceptionDesc);
-            logWarning("WARNING: " + parseExceptionDesc);
+    		// ignore parse warnings for code
+    		if (!var.isCode())
+    			logWarning("WARNING: " + parseExceptionDesc);
     	}
 
         if (eObj.isDeprecatedVariable(var.getKey())) {
