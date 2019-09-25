@@ -4,6 +4,9 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-b: ******************************
 
+IMP: (9/24/2019) JoSIM spice output now writes unique cell names according to parameter values.
+     JoSIM output (CSV) files now read properly.
+     
 ************************* Version 9.08-a: ******************************
 
 BUG: (8/20/2019, SMR) Spice Templates cannot be Java code.

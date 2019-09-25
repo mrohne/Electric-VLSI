@@ -52,6 +52,7 @@ public class FileType implements Serializable {
 	/** Describes CIF files. */				public static final FileType CIF          = makeFileType("CIF", new String[] {"cif"}, "CIF File (cif)", FileTypeGroup.EXPORTIMPORTGRP);
 	/** Describes CIR files. */				public static final FileType CIR          = makeFileType("CIR", new String[] {"cir"}, "CIR File (cir)", FileTypeGroup.SPICESIMGRP);
 	/** Describes COSMOS output. */			public static final FileType COSMOS       = makeFileType("COSMOS", new String[] {"sim"}, "COSMOS File (sim)", FileTypeGroup.OTHERSIMGRP);
+	/** Describes CSV files. */				public static final FileType CSV          = makeFileType("CSV", new String[] {"csv"}, "CSV File (csv)", FileTypeGroup.SPICESIMGRP);
 	/** Describes Dais input. */			public static final FileType DAIS         = makeFileType("Dais", new String[] {""}, "Dais Workspace (ends in _ws)", FileTypeGroup.EXPORTIMPORTGRP);
     /** Describes Calibre DRC Error files. */public static final FileType DB          = makeFileType("DB", new String[] {"db"}, "Calibre DRC Error File (db)", FileTypeGroup.EXPORTIMPORTGRP);
 	/** Describes DEF output. */			public static final FileType DEF          = makeFileType("DEF", new String[] {"def"}, "DEF File (def)", FileTypeGroup.EXPORTIMPORTGRP);

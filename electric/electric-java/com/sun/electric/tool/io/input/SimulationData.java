@@ -107,6 +107,7 @@ public final class SimulationData {
         if (extension.equals("txt")) return new PSpiceOut();
         if (extension.equals("raw")) return new RawSpiceOut();
         if (extension.equals("spo")) return new SpiceOut();
+        if (extension.equals("csv")) return new JoSimOut();
         if (extension.equals("out")) return new EpicOut();
         if (extension.startsWith("tr") || extension.startsWith("sw") || extension.startsWith("ic") ||
             extension.startsWith("ac") || extension.startsWith("mt") || extension.startsWith("pa"))

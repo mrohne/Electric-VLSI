@@ -1646,76 +1646,83 @@ public class Spice extends Topology
 
     /****************************** PARAMETERS ******************************/
 
-    /**
-     * Method to create a parameterized name for nodable.
-     * If the node is not parameterized, returns zero.
-     * If it returns a name, that name must be deallocated when done.
-     */
-    protected String parameterizedName(Nodable no, VarContext context)
-    {
-        Cell cell = (Cell)no.getProto();
-        String uniqueName = getUniqueCellName(cell);
-        if (uniqueName == null)
-        {
-            uniqueName = cell.getName();
-            String msg = "Cell " + cell.describe(true) + " is missing information. Corresponding schematic might be missing";
-            msg += " Taking '" + uniqueName + "' now.";
-            dumpMessage(msg, true);
-        }
-        StringBuilder uniqueCellName = new StringBuilder(uniqueName);
+	/**
+	 * Method to create a parameterized name for nodable.
+	 * If the node is not parameterized, returns zero.
+	 * If it returns a name, that name must be deallocated when done.
+	 */
+	protected String parameterizedName(Nodable no, VarContext context)
+	{
+		Cell cell = (Cell)no.getProto();
+		String uniqueName = getUniqueCellName(cell);
+		if (uniqueName == null)
+		{
+			uniqueName = cell.getName();
+			String msg = "Cell " + cell.describe(true) + " is missing information. Corresponding schematic might be missing";
+			msg += " Taking '" + uniqueName + "' now.";
+			dumpMessage(msg, true);
+		}
+		StringBuilder uniqueCellName = new StringBuilder(uniqueName);
 
-        if (uniquifyCells.get(cell) != null && modelOverrides.get(cell) == null)
-        {
-            // if this cell is marked to be make unique, make a unique name out of the var context
-            VarContext vc = context.push(no);
-            uniqueCellName.append("_"+vc.getInstPath("."));
-        } else {
-            boolean useCellParams = !useCDL && localPrefs.useCellParameters;
-            if (canParameterizeNames() && no.isCellInstance() && !SCLibraryGen.isStandardCell(cell))
-            {
-                // if there are parameters, append them to this name
-                Set<Variable.Key> spiceParams = detectSpiceParams(cell);
-                List<Variable> paramValues = new ArrayList<Variable>();
-                for(Iterator<Variable> it = no.getParameters(); it.hasNext(); )
-                {
-                    Variable var = it.next();
-                    if (DETECT_SPICE_PARAMS && !spiceParams.contains(var.getKey())) continue;
-                    if (USE_JAVA_CODE) {
-                        if (useCellParams && !spiceParams.contains(null)) continue;
-                    } else {
-                        if (useCellParams && !var.isJava()) continue;
-                    }
-                    paramValues.add(var);
-                }
-                for(Variable var : paramValues)
-                {
-                    String eval = var.describe(context, no);
-                    if (eval == null) continue;
-                    uniqueCellName.append("-" + eval.toString());
-                }
-            }
-        }
+		if (spiceEngine != SimulationTool.SpiceEngine.SPICE_ENGINE_JO &&
+			uniquifyCells.get(cell) != null && modelOverrides.get(cell) == null)
+		{
+			// if this cell is marked to be make unique, make a unique name out of the var context
+			VarContext vc = context.push(no);
+			uniqueCellName.append("_"+vc.getInstPath("."));
+		} else
+		{
+			boolean useCellParams = !useCDL && localPrefs.useCellParameters;
+			if (canParameterizeNames() && no.isCellInstance() && !SCLibraryGen.isStandardCell(cell))
+			{
+				// if there are parameters, append them to this name
+				Set<Variable.Key> spiceParams = detectSpiceParams(cell);
+				List<Variable> paramValues = new ArrayList<Variable>();
+				for(Iterator<Variable> it = no.getParameters(); it.hasNext(); )
+				{
+					Variable var = it.next();
+					if (spiceEngine != SimulationTool.SpiceEngine.SPICE_ENGINE_JO)
+					{
+						if (DETECT_SPICE_PARAMS && !spiceParams.contains(var.getKey())) continue;
+						if (USE_JAVA_CODE)
+						{
+							if (useCellParams && !spiceParams.contains(null)) continue;
+						} else
+						{
+							if (useCellParams && !var.isJava()) continue;
+						}
+					}
+					paramValues.add(var);
+				}
+				for(Variable var : paramValues)
+				{
+					String eval = var.describe(context, no);
+					if (eval == null) continue;
+					uniqueCellName.append("-" + eval.toString());
+				}
+			}
+		}
 
-        uniqueCellName = getUniqueCellName(uniqueCellName);
-//        // if it is over the length limit, truncate it
-//        int limit = maxNameLength();
-//        if (limit > 0 && uniqueCellName.length() > limit)
-//        {
-//            Integer i = uniqueNames.get(uniqueCellName.toString());
-//            if (i == null) {
-//                i = new Integer(uniqueID);
-//                uniqueID++;
-//                uniqueNames.put(uniqueCellName.toString(), i);
-//            }
-//            int numOfCharactersToDelete = uniqueCellName.length() - limit + 10;
-//            StringBuilder uniqueCellName2 = new StringBuilder(uniqueCellName.delete(0, numOfCharactersToDelete));
-//            uniqueCellName = uniqueCellName.delete(limit-10, uniqueCellName.length());
-//            uniqueCellName.append("-ID"+i);
-//        }
+		uniqueCellName = getUniqueCellName(uniqueCellName);
+//		// if it is over the length limit, truncate it
+//		int limit = maxNameLength();
+//		if (limit > 0 && uniqueCellName.length() > limit)
+//		{
+//			Integer i = uniqueNames.get(uniqueCellName.toString());
+//			if (i == null) {
+//				i = new Integer(uniqueID);
+//				uniqueID++;
+//				uniqueNames.put(uniqueCellName.toString(), i);
+//			}
+//			int numOfCharactersToDelete = uniqueCellName.length() - limit + 10;
+//			StringBuilder uniqueCellName2 = new StringBuilder(uniqueCellName.delete(0, numOfCharactersToDelete));
+//			uniqueCellName = uniqueCellName.delete(limit-10, uniqueCellName.length());
+//			uniqueCellName.append("-ID"+i);
+//		}
 
-        // make it safe
-        return getSafeCellName(uniqueCellName.toString());
-    }
+		// make it safe
+		return getSafeCellName(uniqueCellName.toString());
+	}
 
     /**
      * Method to determine if the cell name must be truncated due to character limit.
