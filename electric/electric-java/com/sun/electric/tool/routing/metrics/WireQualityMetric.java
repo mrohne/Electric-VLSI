@@ -230,8 +230,8 @@ public class WireQualityMetric extends RoutingMetric<QualityResults> {
 	{
 		if (printWriter != null)
 			printWriter.println(data);
-		if (Job.getDebug())
-			logger.info(data);
+//		if (Job.getDebug())
+//			logger.info(data);
 	}
 	
 	public void setOutput(PrintStream out)

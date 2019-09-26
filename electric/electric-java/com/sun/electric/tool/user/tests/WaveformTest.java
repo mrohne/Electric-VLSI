@@ -142,6 +142,7 @@ public class WaveformTest extends AbstractGUITest
 		this.cmdFileExtension = cmdFileExtension;
 		this.panelSpecs = panelSpecs;
 	}
+	//new WaveformTest("JoSIM", testName:"JoSIM-1", cellName:"JoSIM-1{lay}", StimulationExtension:".csv", locked:true, Engine:-1, cmdFileExtension: null,
 
 	public static List<AbstractTest> getTests()
 	{
@@ -156,6 +157,9 @@ public class WaveformTest extends AbstractGUITest
 			list.add(new WaveformTest("IRSIM2", "IRSIM-2", "IRSIM-2{lay}", null, true, SimulationTool.IRSIM_ENGINE, ".cmd"));
 			list.add(new WaveformTest("IRSIM3", "IRSIM-3", "IRSIM-3{lay}", ".sim", true, SimulationTool.IRSIM_ENGINE, ".cmd"));
 		}
+		list.add(new WaveformTest("JoSIM", "JoSIM-1", "JoSIM-1{lay}", ".csv", true, -1, null,
+			new PanelSpec(null, "rrbeg"),
+			new PanelSpec(null, "rrenda", "rrendb")));
 		list.add(new WaveformTest("Spice2", "Spice2-1", "Spice2-1{sch}", ".spo", true, -1, null,
 			new PanelSpec(null, "signal 1", "signal 2")));
 		list.add(new WaveformTest("HSpice1", "SpiceH-1", "SpiceH-1{sch}", ".tr0", true, -1, null,
