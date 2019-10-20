@@ -78,7 +78,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -444,8 +448,7 @@ public class Spice extends Topology
                 File test = new File(fileName);
                 if (test.exists())
                 {
-                    multiLinePrint(true, "* Primitives described in this file:\n");
-                    addIncludeFile(filePart, false);
+                    addIncludeFile(filePart, "Primitives", false);
                 } else {
                     reportWarning("Warning: CDL Include file not found: "+fileName);
                 }
@@ -2546,8 +2549,7 @@ public class Spice extends Topology
                     multiLinePrint(true, "\n* " + cell + " is described in this file:\n");
                     multiLinePrint(true, "* "+fileName+" (already included) \n");
                 } else {
-                    multiLinePrint(true, "\n* " + cell + " is described in this file:\n");
-                    addIncludeFile(fileName, isVerilog);
+                    addIncludeFile(fileName, cell.describe(false), isVerilog);
                 }
                 modelOverrides.put(cell, absFileName);
             }
@@ -2744,8 +2746,7 @@ public class Spice extends Topology
 				File test = new File(fileName);
 				if (test.exists())
 				{
-					multiLinePrint(true, "* Model cards are described in this file:\n");
-					addIncludeFile(filePart, false);
+					addIncludeFile(filePart, "Model cards", false);
                     System.out.println("Spice Header Card '" + fileName + "' is included");
                     return;
 				}
@@ -2756,8 +2757,7 @@ public class Spice extends Topology
 				File test = new File(headerFile);
 				if (!test.exists())
 					reportWarning("Warning: cannot find model file '" + headerFile + "'");
-				multiLinePrint(true, "* Model cards are described in this file:\n");
-				addIncludeFile(headerFile, false);
+				addIncludeFile(headerFile, "Model cards", false);
 				return;
 			}
 		}
@@ -2801,8 +2801,7 @@ public class Spice extends Topology
 				File test = new File(fileName);
 				if (test.exists())
 				{
-					multiLinePrint(true, "* Trailer cards are described in this file:\n");
-					addIncludeFile(filePart, false);
+					addIncludeFile(filePart, "Trailer cards", false);
                     System.out.println("Spice Trailer Card '" + fileName + "' is included");
 				}
                 else
@@ -2812,8 +2811,7 @@ public class Spice extends Topology
 			} else
 			{
 				// normal trailer file specified
-				multiLinePrint(true, "* Trailer cards are described in this file:\n");
-				addIncludeFile(trailerFile, false);
+				addIncludeFile(trailerFile, "Trailer cards", false);
                 System.out.println("Spice Trailer Card '" + trailerFile + "' is included");
 			}
 		}
@@ -3242,14 +3240,17 @@ public class Spice extends Topology
 	/**
 	 * Method to insert an "include" of file "filename" into the stream.
 	 */
-	private void addIncludeFile(String fileName, boolean verilog)
+	private void addIncludeFile(String fileName, String description, boolean verilog)
 	{
 		if (verilog)
 		{
+            multiLinePrint(true, "* " + description + " described in this file:\n");
             multiLinePrint(false, ".hdl "+ fileName + "\n");
             return;
 		}
-        if (useCDL) {
+        if (useCDL)
+        {
+            multiLinePrint(true, "* " + description + " described in this file:\n");
             multiLinePrint(false, ".include "+ fileName + "\n");
             return;
         }
@@ -3260,17 +3261,43 @@ public class Spice extends Topology
             case SPICE_ENGINE_3:
             case SPICE_ENGINE_G:
             case SPICE_ENGINE_S:
+                multiLinePrint(true, "* " + description + " described in this file:\n");
     			multiLinePrint(false, ".include " + fileName + "\n");
                 break;
             case SPICE_ENGINE_H:
             case SPICE_ENGINE_H_ASSURA:
             case SPICE_ENGINE_H_CALIBRE:
             case SPICE_ENGINE_NG:
+                multiLinePrint(true, "* " + description + " described in this file:\n");
     			multiLinePrint(false, ".include '" + fileName + "'\n");
                 break;
             case SPICE_ENGINE_P:
+                multiLinePrint(true, "* " + description + " described in this file:\n");
     			multiLinePrint(false, ".INC " + fileName + "\n");
                 break;
+            case SPICE_ENGINE_JO:
+            	// must copy file
+                multiLinePrint(true, "* " + description + " copied from file: " + fileName + "\n");
+            	URL url = TextUtils.makeURLToFile(fileName);
+            	try
+            	{
+            		URLConnection urlCon = url.openConnection();
+            		InputStreamReader is = new InputStreamReader(urlCon.getInputStream());
+            		LineNumberReader lineReader = new LineNumberReader(is);
+            		for(;;)
+            		{
+            			String buf = lineReader.readLine();
+            			if (buf == null) break;
+            			multiLinePrint(false, buf + "\n");
+            		}
+            		lineReader.close();
+            	} catch (IOException e)
+            	{
+            		System.out.println("Error reading " + fileName);
+            		return;
+            	}
+                multiLinePrint(true, "* End of " + description + " copied from file: " + fileName + "\n");
+            	break;
 			default:
 				break;
         }
