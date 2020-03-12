@@ -32,166 +32,233 @@ import com.sun.electric.tool.io.FileType;
 import com.sun.electric.tool.io.input.verilog.VerilogOut;
 import com.sun.electric.tool.simulation.SimulationTool;
 import com.sun.electric.tool.simulation.Stimuli;
+import com.sun.electric.tool.user.waveform.Panel;
 import com.sun.electric.tool.user.waveform.WaveformWindow;
 import com.sun.electric.util.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 
 /**
  * This class reads simulation output files and plots them.
  */
-public final class SimulationData {
-
+public final class SimulationData
+{
 	private SimulationData() {}
 
-    private static final String[] known_extensions = new String[]
-        { 
+	private static final String[] known_extensions = new String[]
+	{ 
+		// Steve has specifically requested that tr0/ac0 files have top
+		// priority (Bug #2815)
+		"tr0", "ac0", 
 
-          // Steve has specifically requested that tr0/ac0 files have top
-          // priority (Bug #2815)
-          "tr0", "ac0", 
-          
-          "vcd", "raw", "dump", "spo",
+		"vcd", "raw", "dump", "spo",
 
-          // it's important that "out" and "txt" appear last because
-          // they sometimes are present yet do not contain simulation
-          // data (although in such situations the user should not
-          // be using "plot from guessed" anyways)
-          "out", "txt",
-          "out.gz" };
+		// it's important that "out" and "txt" appear last because
+		// they sometimes are present yet do not contain simulation
+		// data (although in such situations the user should not
+		// be using "plot from guessed" anyways)
+		"out", "txt",
+		"out.gz"
+	};
 
-    public static boolean isKnownSimulationFormatExtension(String extension) {
-        return getInputForExtension(extension)!=null;
-    }
+	public static boolean isKnownSimulationFormatExtension(String extension)
+	{
+		return getInputForExtension(extension) != null;
+	}
 
 	/**
 	 * Based on the provided cell, make an educated guess
 	 * about which simulation file the user has in mind, and plot
 	 * that.  If WaveformWindow is null, one will be created.
 	 */
-	public static void plotGuessed(Cell cell, WaveformWindow ww) {
-        if (cell==null) return;
-        String[] paths = new String[] {
-            FileType.SPICE.getGroupPath(),
-            TextUtils.getFilePath(cell.getLibrary().getLibFile())
-        };
-        for (String path : paths)
-            for (String ext : known_extensions)
-                if (new File(path, cell.getName()+'.'+ext).exists()) {
-                    plot(cell, TextUtils.makeURLToFile(new File(path, cell.getName()+'.'+ext).getPath()), ww);
-                    return;
-                }
-        System.out.println("unable to guess any simulation file with a known extension; the following directories were checked: ");
-        for(String path : paths)
-            System.out.println("  " + path);
+	public static void plotGuessed(Cell cell, WaveformWindow ww)
+	{
+		if (cell==null) return;
+		String[] paths = new String[] {
+			FileType.SPICE.getGroupPath(),
+			TextUtils.getFilePath(cell.getLibrary().getLibFile())
+		};
+		for (String path : paths)
+		{
+			for (String ext : known_extensions)
+			{
+				if (new File(path, cell.getName()+'.'+ext).exists())
+				{
+					plot(cell, TextUtils.makeURLToFile(new File(path, cell.getName()+'.'+ext).getPath()), ww);
+					return;
+				}
+			}
+		}
+		System.out.println("unable to guess any simulation file with a known extension; the following directories were checked: ");
+		for(String path : paths)
+			System.out.println("  " + path);
 	}
 
 	/**
-	 * Plot the simulation data for cell found at url in ww.
-     * If cell is null, no cell will be associated with the simulation data (crossprobing disabled).
-     * If ww is null, a waveform window will be created.
+	 * Plot the simulation data for cell.
+	 * @param cell the Cell being simulated (if null, no cell will be associated with the simulation data and crossprobing is disabled).
+	 * @param url the file with the simulation data.
+	 * @param ww the waveform window (if null, one is created).
 	 */
-	public static void plot(Cell cell, URL url, WaveformWindow ww) {
-        new ReadSimulationOutput(cell, url, ww).start();
-    }
+	public static void plot(Cell cell, URL url, WaveformWindow ww)
+	{
+		new ReadSimulationOutput(cell, url, ww, null, 0).start();
+	}
 
-    private static Input<Stimuli> getInputForExtension(String extension) {
-        if (extension.endsWith(".out.gz")) return new EpicOut();
-        if (extension.indexOf('.') != -1)
-            extension = extension.substring(extension.lastIndexOf('.')+1);
-        if (extension.equals("dump") || extension.equals("vcd")) return new VerilogOut();
-        if (extension.equals("txt")) return new PSpiceOut();
-        if (extension.equals("raw")) return new RawSpiceOut();
-        if (extension.equals("spo")) return new SpiceOut();
-        if (extension.equals("csv")) return new JoSimOut();
-        if (extension.equals("out")) return new EpicOut();
-        if (extension.startsWith("tr") || extension.startsWith("sw") || extension.startsWith("ic") ||
-            extension.startsWith("ac") || extension.startsWith("mt") || extension.startsWith("pa"))
-            	return new HSpiceOut();
-        return null;
-    }
+	/**
+	 * Plot the simulation data for cell.
+	 * @param cell the Cell being simulated (if null, no cell will be associated with the simulation data and crossprobing is disabled).
+	 * @param url the file with the simulation data.
+	 * @param ww the waveform window (if null, one is created).
+	 * @param signals (the signals to put in the waveform window, can be null).
+	 * @param rowHeight the height of a waveform panel.
+	 */
+	public static void plot(Cell cell, URL url, WaveformWindow ww, List<String> signals, int rowHeight)
+	{
+		new ReadSimulationOutput(cell, url, ww, signals, rowHeight).start();
+	}
+
+	private static Input<Stimuli> getInputForExtension(String extension)
+	{
+		if (extension.endsWith(".out.gz")) return new EpicOut();
+		if (extension.indexOf('.') != -1)
+			extension = extension.substring(extension.lastIndexOf('.')+1);
+		if (extension.equals("dump") || extension.equals("vcd")) return new VerilogOut();
+		if (extension.equals("txt")) return new PSpiceOut();
+		if (extension.equals("raw")) return new RawSpiceOut();
+		if (extension.equals("spo")) return new SpiceOut();
+		if (extension.equals("csv")) return new JoSimOut();
+		if (extension.equals("out")) return new EpicOut();
+		if (extension.startsWith("tr") || extension.startsWith("sw") || extension.startsWith("ic") ||
+			extension.startsWith("ac") || extension.startsWith("mt") || extension.startsWith("pa"))
+				return new HSpiceOut();
+		return null;
+	}
 
 	/**
 	 * Class to read simulation output in a new thread.
 	 */
-	private static class ReadSimulationOutput extends Thread {
+	private static class ReadSimulationOutput extends Thread
+	{
 		private Input<Stimuli> is;
 		private URL fileURL;
 		private Cell cell;
 		private WaveformWindow ww;
-        private Stimuli sd;
-        private final Environment launcherEnvironment;
-        private final UserInterfaceExec userInterface;
-        private String netDelimeter;
+		private List<String> signals;
+		private int panelHeight;
+		private Stimuli sd;
+		private final Environment launcherEnvironment;
+		private final UserInterfaceExec userInterface;
+		private String netDelimeter;
 
-		private ReadSimulationOutput(Cell cell, URL fileURL, WaveformWindow ww) {
+		private ReadSimulationOutput(Cell cell, URL fileURL, WaveformWindow ww, List<String> signals, int panelHeight)
+		{
 			this.fileURL = fileURL;
 			this.cell = cell;
 			this.ww = ww;
-            this.is = getInputForExtension(fileURL.getPath());
-            this.netDelimeter = SimulationTool.getSpiceExtractedNetDelimiter();
-            if (this.is==null) throw new RuntimeException("unable to detect type");
+			this.signals = signals;
+			this.panelHeight = panelHeight;
+			this.is = getInputForExtension(fileURL.getPath());
+			this.netDelimeter = SimulationTool.getSpiceExtractedNetDelimiter();
+			if (this.is == null) throw new RuntimeException("unable to detect type");
 
-            launcherEnvironment = Environment.getThreadEnvironment();
-            userInterface = new UserInterfaceExec();
+			launcherEnvironment = Environment.getThreadEnvironment();
+			userInterface = new UserInterfaceExec();
 		}
 
-		public void run() {
-            if (is == null) return;
-            if (Thread.currentThread() == this) {
-                Environment.setThreadEnvironment(launcherEnvironment);
-                Job.setUserInterface(userInterface);
-            }
-			try {
+		public void run()
+		{
+			if (is == null) return;
+			if (Thread.currentThread() == this)
+			{
+				Environment.setThreadEnvironment(launcherEnvironment);
+				Job.setUserInterface(userInterface);
+			}
+			try
+			{
 				sd = new Stimuli();
 				sd.setNetDelimiter(netDelimeter);
 				sd.setCell(cell);
-                try {
-                    sd = is.processInput(fileURL, cell, sd);
-                } catch (java.io.EOFException ee) {
-                    System.out.println("Warning: EOF encountered in data; displaying partial results: " + ee);
-                    is.stopProgressDialog();
-                }
+				try
+				{
+					sd = is.processInput(fileURL, cell, sd);
+				} catch (java.io.EOFException ee)
+				{
+					System.out.println("Warning: EOF encountered in data; displaying partial results: " + ee);
+					Input.stopProgressDialog();
+				}
 				if (sd == null) return;
-                sd.setFileURL(fileURL);
-                final Stimuli sdx = sd;
-                assert cell.getDatabase() == EDatabase.clientDatabase();
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        if (ww == null)
-                            WaveformWindow.showSimulationDataInNewWindow(sdx);
-                        else
-                            WaveformWindow.refreshSimulationData(sdx, ReadSimulationOutput.this.ww);
-                    }});
-			} catch (IOException e) {
-                e.printStackTrace();
+				sd.setFileURL(fileURL);
+				final Stimuli sdx = sd;
+				assert cell.getDatabase() == EDatabase.clientDatabase();
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						if (ww == null)
+							WaveformWindow.showSimulationDataInNewWindow(sdx);
+						else
+							WaveformWindow.refreshSimulationData(sdx, ReadSimulationOutput.this.ww);
+					}
+				});
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+
+			// reload window if signals are specified
+			if (signals != null)
+			{
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						// wipe out everything in the window
+						for(int i=ww.getNumPanels()-1; i>=0; i--)
+						{
+							Panel wp = ww.getPanel(i);
+							wp.removeAllSignals();
+							ww.closePanel(wp);
+						}
+
+						// now restore previous signals
+						ww.restoreSignals(signals, panelHeight);
+						ww.rebuildPanelList();
+						ww.redrawAllPanels();
+					}
+				});
 			}
 		}
 	}
 
-	public static Stimuli processInput(Cell cell, URL url) {
-        ReadSimulationOutput job = new ReadSimulationOutput(cell, url, null);
-        job.run();
-        return job.sd;
-    }
+	public static Stimuli processInput(Cell cell, URL url)
+	{
+		ReadSimulationOutput job = new ReadSimulationOutput(cell, url, null, null, 0);
+		job.run();
+		return job.sd;
+	}
 
-	public static Stimuli processInput(Cell cell, URL url, String netDelimeter) {
+	public static Stimuli processInput(Cell cell, URL url, String netDelimeter)
+	{
  		Input<Stimuli> is = getInputForExtension(url.getPath());
-        if (is==null) throw new RuntimeException("unable to detect type");
-        Stimuli sd = new Stimuli();
-        sd.setNetDelimiter(netDelimeter);
-        sd.setCell(cell);
-        try {
-            is.processInput(url, cell, sd);
-        } catch (IOException e) {
+		if (is==null) throw new RuntimeException("unable to detect type");
+		Stimuli sd = new Stimuli();
+		sd.setNetDelimiter(netDelimeter);
+		sd.setCell(cell);
+		try
+		{
+			is.processInput(url, cell, sd);
+		} catch (IOException e)
+		{
 			System.out.println("End of file reached while reading " + url);
-            return null;
-        }
-        sd.setFileURL(url);
-        return sd;
-    }
+			return null;
+		}
+		sd.setFileURL(url);
+		return sd;
+	}
 }

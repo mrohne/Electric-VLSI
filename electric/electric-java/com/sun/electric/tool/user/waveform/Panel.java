@@ -343,8 +343,8 @@ public class Panel extends JPanel
 		waveWindow.getWaveformTable().updateUI();
 
 		// rebuild list of panels
-		waveWindow.rebuildPanelList();
-		waveWindow.redrawAllPanels();
+//		waveWindow.rebuildPanelList();
+//		waveWindow.redrawAllPanels();
 	}
 
 	// ************************************* MISCELLANEOUS *************************************
