@@ -2,6 +2,11 @@
 
 NOTE: Please place changes under the version that will be released next.
 
+************************* Version 9.08-c: ******************************
+
+BUG: (3/5/2020, SMR) Simulation window doesn't redraw waveforms when data is reloaded.
+FIX: In SimulationData.ReadSimulationOutput.run() take previous data and reuse it.
+
 ************************* Version 9.08-b: ******************************
 
 IMP: (9/24/2019) JoSIM spice output now writes unique cell names according to parameter values.
