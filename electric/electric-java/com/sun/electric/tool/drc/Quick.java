@@ -2408,7 +2408,7 @@ public class Quick
         }
 
         DRCTemplate minWidthRuleCond = DRC.getMinValue(layer, DRCTemplate.DRCRuleType.MINWIDCOND);
-        // No appropiate overlapping condition
+        // No appropriate overlapping condition
         if (minWidthRuleCond == null || !minWidthRuleCond.condition.startsWith("overlap("))
         {
             // Now the error is reporte. Not very efficient
