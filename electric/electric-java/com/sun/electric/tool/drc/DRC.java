@@ -524,7 +524,7 @@ public class DRC extends Listener
         Rectangle2D bounds = poly.getBox();
 
         // only in case of flat elements represented by a line
-        // most likely an flat arc, vertical or horizontal.
+        // most likely a flat arc, vertical or horizontal.
         // It doesn't consider arbitrary angled lines.
         // If bounds is null, it might have area if it is non-Manhattan
         boolean flatPoly = ((bounds == null && GenMath.doublesEqual(poly.getArea(), 0)));
