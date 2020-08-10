@@ -4370,7 +4370,7 @@ public class Technology implements Comparable<Technology>, Serializable {
                 }
                 if (fun.isContact() || fun == PrimitiveNode.Function.CONNECT || fun == PrimitiveNode.Function.WELL) {
                     // check validity of contact nodes
-                    Set<ArcProto.Function> neededArcFunctions = new HashSet<ArcProto.Function>();
+                    Map<ArcProto.Function,Layer> neededArcFunctions = new HashMap<ArcProto.Function,Layer>();
                     NodeLayer[] nodeLayers = np.getNodeLayers();
                     for (int i = 0; i < nodeLayers.length; i++) {
                         Layer lay = nodeLayers[i].layer;
@@ -4381,7 +4381,7 @@ public class Technology implements Comparable<Technology>, Serializable {
                             continue;
                         }
                         if (aFun != null) {
-                            neededArcFunctions.add(aFun);
+                            neededArcFunctions.put(aFun, lay);
                         }
                     }
                     Set<ArcProto.Function> foundArcFunctions = new HashSet<ArcProto.Function>();
@@ -4397,7 +4397,7 @@ public class Technology implements Comparable<Technology>, Serializable {
                             if (aFun.isDiffusion()) {
                                 aFun = ArcProto.Function.DIFF;
                             }
-                            if (ap.getTechnology() != this || neededArcFunctions.contains(aFun)) {
+                            if (ap.getTechnology() != this || neededArcFunctions.get(aFun) != null) {
                                 foundArcFunctions.add(aFun);
                                 continue;
                             }
@@ -4410,7 +4410,7 @@ public class Technology implements Comparable<Technology>, Serializable {
                                     + " connects to " + ap.getName() + " but probably should not because that layer is not in the node");
                         }
                     }
-                    for (ArcProto.Function aFun : neededArcFunctions) {
+                    for (ArcProto.Function aFun : neededArcFunctions.keySet()) {
                         if (foundArcFunctions.contains(aFun)) {
                             continue;
                         }
@@ -4435,7 +4435,7 @@ public class Technology implements Comparable<Technology>, Serializable {
                             }
                         }
                         System.out.println("WARNING: Technology " + getTechName() + ", node " + np.getName()
-                                + " should connect to " + aFun + " because that layer is in the node");
+                                + " should connect to layer " + neededArcFunctions.get(aFun) + " because that layer is in the node");
                     }
                 } else if (fun.isCapacitor()) {
                     if (np.getNumPorts() < 2) {
