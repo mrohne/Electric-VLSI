@@ -598,6 +598,7 @@ public class GraphicsPreferences extends PrefPackage {
 
     private TechData getTechData(Technology tech) {
         TechData td = techData[tech.getId().techIndex];
+if (td.tech != tech) System.out.println("ERROR: Technology "+tech.getTechName()+" HAS INDEX "+tech.getId().techIndex+" WHICH IS TECHNOLOGY "+td.tech.getTechName());
         assert td.tech == tech;
         return td;
     }

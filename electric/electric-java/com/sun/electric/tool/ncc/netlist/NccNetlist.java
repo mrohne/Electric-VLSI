@@ -43,6 +43,7 @@ import com.sun.electric.database.topology.NodeInst;
 import com.sun.electric.database.topology.PortInst;
 import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.database.variable.Variable;
+import com.sun.electric.technology.PrimitiveNode;
 import com.sun.electric.technology.Technology;
 import com.sun.electric.technology.TransistorSize;
 import com.sun.electric.technology.PrimitiveNode.Function;
@@ -510,7 +511,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 	}
 	private void buildTransistor(NodeInst ni, NccCellInfo info) {
 		Function f = ni.getFunction();
-		if (f.isFET()) {
+		if (f.isFET() || f == PrimitiveNode.Function.JOSEPHSON) {		// SMR hack to make Josephson Junction transistors look like FETs
 			buildMos(ni, info);
 		} else if (f.isBipolar()) {
 			buildBipolar(ni, info);

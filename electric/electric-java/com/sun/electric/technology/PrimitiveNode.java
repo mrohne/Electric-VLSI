@@ -288,7 +288,7 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
          * The specific transistor type can be determined by examining the value from the NodeInst's "getTechSpecific" method. */
         TRANS4("4-port-transistor", "trans-4", true, false),
         /** Describes a Josephson Junction transistor. */
-        JOSEPHSON("josephson-junction-transistor", "josephson", false, false),
+        JOSEPHSON("josephson-junction-transistor", "josephson", true, false),
         /** Describes a resistor. */
         RESIST("resistor", "res", false, false),
         /** Describes a poly resistor. */
@@ -579,7 +579,8 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
                     || this == TRANMOSNTHV2 || this == TRA4NMOSNTHV2 || this == TRAPMOSNTHV2 || this == TRA4PMOSNTHV2
                     || this == TRANMOSNTHV3 || this == TRA4NMOSNTHV3 || this == TRAPMOSNTHV3 || this == TRA4PMOSNTHV3
                     || this == TRANJFET || this == TRA4NJFET || this == TRAPJFET || this == TRA4PJFET
-                    || this == TRADMES || this == TRA4DMES || this == TRAEMES || this == TRA4EMES) {
+                    || this == TRADMES || this == TRA4DMES || this == TRAEMES || this == TRA4EMES)
+            {
                 return true;
             }
             return false;

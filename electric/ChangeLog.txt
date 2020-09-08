@@ -2,6 +2,11 @@
 
 NOTE: Please place changes under the version that will be released next.
 
+************************* Version 9.08-d: ******************************
+
+BUG: (9/8/2020, SMR) Josephson Junctions don't NCC right.
+FIX: In PrimitiveNode, make them transistors, in schematics, give them 3 ports, in NccNetlist, treat them like FETs
+
 ************************* Version 9.08-c: ******************************
 
 BUG: (3/5/2020, SMR) Simulation window doesn't redraw waveforms when data is reloaded.

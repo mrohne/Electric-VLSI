@@ -3141,19 +3141,32 @@
             <techPoint xm="0.0" xa="0.0" ym="0.5" ya="0.0"/>
             <techPoint xm="0.0" xa="0.0" ym="-0.5" ya="0.0"/>
         </nodeLayer>
-        <primitivePort name="a">
+        <nodeLayer layer="Node" style="CIRCLE">
+            <points/>
+            <techPoint xm="0.0" xa="1.0" ym="0.0" ya="2.25"/>
+            <techPoint xm="0.0" xa="1.25" ym="0.0" ya="2.25"/>
+        </nodeLayer>
+        <primitivePort name="g">
             <portAngle primary="90" range="90"/>
             <portTopology>0</portTopology>
-            <box klx="0.0" khx="0.0" kly="1.0">
-                <lambdaBox klx="0.0" khx="0.0" kly="2.0" khy="2.0"/>
+            <box klx="0.0" khx="0.0" kly="-1.0">
+                <lambdaBox klx="0.0" khx="0.0" kly="-3.0" khy="-3.0"/>
             </box>
             <portArc>wire</portArc>
         </primitivePort>
-        <primitivePort name="b">
+        <primitivePort name="s">
             <portAngle primary="270" range="90"/>
             <portTopology>1</portTopology>
-            <box klx="0.0" khx="0.0" khy="-1.0">
-                <lambdaBox klx="0.0" khx="0.0" kly="-2.0" khy="-2.0"/>
+            <box klx="0.0" khx="0.0" khy="1.0">
+                <lambdaBox klx="0.0" khx="0.0" kly="3.0" khy="3.0"/>
+            </box>
+            <portArc>wire</portArc>
+        </primitivePort>
+        <primitivePort name="d">
+            <portAngle primary="0" range="180"/>
+            <portTopology>2</portTopology>
+            <box>
+                <lambdaBox klx="1.0" khx="1.0" kly="2.25" khy="2.25"/>
             </box>
             <portArc>wire</portArc>
         </primitivePort>
