@@ -2399,7 +2399,7 @@ public class Schematics extends Technology {
      */
     @Override
     public TransistorSize getTransistorSize(NodeInst ni, VarContext context) {
-        if (ni.getFunction().isFET()) {
+        if (ni.getFunction().isFET() || ni.getProto() == josephsonNode) {
             Object lengthObj = null;
             Variable var = ni.getVar(ATTR_LENGTH);
             if (var != null) {
