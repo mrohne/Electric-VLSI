@@ -47,6 +47,7 @@ import com.sun.electric.technology.PrimitiveNode;
 import com.sun.electric.technology.Technology;
 import com.sun.electric.technology.TransistorSize;
 import com.sun.electric.technology.PrimitiveNode.Function;
+import com.sun.electric.technology.technologies.Schematics;
 import com.sun.electric.tool.ncc.NccGlobals;
 import com.sun.electric.tool.ncc.basic.NccCellAnnotations;
 import com.sun.electric.tool.ncc.basic.NccUtils;
@@ -598,6 +599,32 @@ class Visitor extends HierarchyEnumerator.Visitor {
 			parts.add(t);
 		}
 	}
+	private double[] getInductorSize(NodeInst ni, VarContext context) {
+		double w=0, l=0;
+		if (isSchematicPrimitive(ni)) {
+			w = getDoubleVariableValue("SCHEM_inductance", ni, context);
+		} else {
+			w = ni.getLambdaBaseXSize();
+		}
+		return new double[] {w, l};
+	}
+	private void buildInductor(NodeInst ni, NccCellInfo info) {
+		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
+		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
+		double width=0, length=0;
+		if (globals.getOptions().checkSizes) {
+			double[] dim = getInductorSize(ni, info.getContext());
+			width = dim[0];
+			length = dim[1];
+		}
+		Wire[] wires = getResistorWires(ni, info);
+		Function type = ni.getFunction();	// getResistorType(ni, info);
+		// if unrecognized resistor type then ignore 
+		if (type!=null) {
+			Part t = new Inductor(type, name, width, length, wires[0], wires[1]);
+			parts.add(t);
+		}
+	}
 	private void doPrimitiveNode(NodeInst ni, NccCellInfo info) {
 		Function f = ni.getFunction();
 		
@@ -608,6 +635,8 @@ class Visitor extends HierarchyEnumerator.Visitor {
 			// We use normal resistors to model parasitic wire resistance.
 			// NCC considers them to be "short circuits" and discards them. 
 			buildResistor(ni, info);
+		} else if (f == Function.INDUCT) {
+			buildInductor(ni, info);
 		}
 	}
 	

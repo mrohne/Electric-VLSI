@@ -33,6 +33,7 @@ import com.sun.electric.tool.ncc.NccGlobals;
 import com.sun.electric.tool.ncc.NccOptions;
 import com.sun.electric.tool.ncc.basic.NccUtils;
 import com.sun.electric.tool.ncc.lists.LeafList;
+import com.sun.electric.tool.ncc.netlist.Inductor;
 import com.sun.electric.tool.ncc.netlist.Mos;
 import com.sun.electric.tool.ncc.netlist.NetObject;
 import com.sun.electric.tool.ncc.netlist.Part;
@@ -91,13 +92,17 @@ public class StratCheckSizes extends Strategy {
 	private boolean matches() {return mismatches.size()==0;}
 
 	private double getWidth(Part p) {
-    	return (p instanceof Mos) ? ((Mos)p).getWidth()
-    						      : ((Resistor)p).getWidth();
+		if (p instanceof Mos) return ((Mos)p).getWidth();
+		if (p instanceof Resistor) return ((Resistor)p).getWidth();
+		if (p instanceof Inductor) return ((Inductor)p).getWidth();
+    	return 0;
     }
     
     private double getLength(Part p) {
-    	return (p instanceof Mos) ? ((Mos)p).getLength()
-    						      : ((Resistor)p).getLength();
+		if (p instanceof Mos) return ((Mos)p).getLength();
+		if (p instanceof Resistor) return ((Resistor)p).getLength();
+		if (p instanceof Inductor) return ((Inductor)p).getLength();
+    	return 0;
     }
 
 	public LeafList doFor(EquivRecord j) {
@@ -128,7 +133,8 @@ public class StratCheckSizes extends Strategy {
 			minWidth = maxWidth = minLength = maxLength = 1;
 		} else {
 			globals.error(!(p instanceof Mos) &&
-					      !(p instanceof Resistor), "part with no width & length");
+					      !(p instanceof Resistor) &&
+					      !(p instanceof Inductor), "part with no width & length");
 			double w = getWidth(p);
 			if (w<minWidth) {minWidth=w;  minWidPart=p; minWidNdx=cktNdx;}
 			if (w>maxWidth) {maxWidth=w;  maxWidPart=p; maxWidNdx=cktNdx;}

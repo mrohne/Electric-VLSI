@@ -34,16 +34,17 @@ public class PartReport extends NetObjReport {
 		String typeString();
 		boolean isMos();
 		boolean isResistor();
+		boolean isInductor();
 		double getWidth();
 		double getLength();
 	}
 	
 	private final PartNameProxy nameProxy;
 	private final String typeString;
-	private boolean isMos, isResistor;
+	private boolean isMos, isResistor, isInductor;
 	private double width, length;
 	private void checkLenWidValid() {
-		Job.error(!isMos && !isResistor,
+		Job.error(!isMos && !isResistor && !isInductor,
 				        "PartReport has no width or length");
 	}
 	public PartReport(PartReportable p) {
@@ -52,7 +53,8 @@ public class PartReport extends NetObjReport {
 		typeString = p.typeString();
 		isMos = p.isMos();
 		isResistor = p.isResistor();
-		if (isMos || isResistor) {
+		isInductor = p.isInductor();
+		if (isMos || isResistor || isInductor) {
 			width = p.getWidth();
 			length = p.getLength();
 		}
@@ -61,6 +63,7 @@ public class PartReport extends NetObjReport {
 	public PartNameProxy getNameProxy() {return nameProxy;}
 	public boolean isMos() {return isMos;}
 	public boolean isResistor() {return isResistor;}
+	public boolean isInductor() {return isInductor;}
 	public double getWidth() {
 		checkLenWidValid();
 		return width;
