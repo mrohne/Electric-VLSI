@@ -53,13 +53,12 @@ public class Inductor extends Part {
                                                     new InductorPinTypeCache();
     private static final int PIN_COEFFS[] = 
     	{Primes.get(1), Primes.get(1)}; //inductors are symmetric
-    private final double width, length;
+    private final double length;
 
     // ---------- public methods ----------
 	public Inductor(Function type, PartNameProxy name, 
-			        double width, double length, Wire w1, Wire w2) {
+			        double length, Wire w1, Wire w2) {
 		super(name, type, new Wire[]{w1, w2});
-		this.width = width;
 		this.length = length;
 	}
 
@@ -68,7 +67,7 @@ public class Inductor extends Part {
     public int[] getPinCoeffs(){return PIN_COEFFS;}
 	@Override
 	public String valueDescription(){
-		String sz= "W= "+width+" L="+length;
+		String sz= "IND="+length;
 		return sz;
 	}
 	@Override
@@ -79,8 +78,8 @@ public class Inductor extends Part {
 	}
 
     // ---------- public methods ----------
-	@Override
-    public double getWidth() {return width;}
+//	@Override
+//    public double getWidth() {return width;}
 	@Override
     public double getLength() {return length;}
 
@@ -111,8 +110,8 @@ public class Inductor extends Part {
 //    }
     /** Never perform series/parallel combination of inductors. For layout
      * inductors, inductance is 
-     * a vendor dependent function of inductor width and length. We'll simply
-     * annotate inductor width and length and compare these between schematic
+     * a vendor dependent function of inductor length. We'll simply
+     * annotate inductor length and compare these between schematic
      * and layout. See Jon Lexau for rationale. */
 	@Override
     public boolean parallelMerge(Part p, NccOptions nccOpt) {return false;}

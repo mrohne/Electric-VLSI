@@ -278,9 +278,9 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
         // drop "Cell instance:" info
         int ind = name.indexOf(" Cell instance:");
         if (ind > 0) name = name.substring(0, ind).trim();
-        // drop {sch} or {lay} suffices
-        if (name.endsWith("{sch}") || name.endsWith("{lay}"))
-            name = name.substring(0, name.length()-5);
+//        // drop {sch} or {lay} suffices
+//        if (name.endsWith("{sch}") || name.endsWith("{lay}"))
+//            name = name.substring(0, name.length()-5);
         
         text.append(href + (rowNdx*10+lineNdx) +"\">"+ name +"</a>");
         text.append("</font></html>");

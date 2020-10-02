@@ -628,7 +628,7 @@ public class PaletteFrame implements MouseListener
 				} else if (np == Schematics.tech().capacitorNode)
 				{
 					newNi.newDisplayVar(Schematics.SCHEM_CAPACITANCE, "100m", ep);
-				} else if (np == Schematics.tech().inductorNode)
+				} else if (np == Schematics.tech().inductorNode || np.getFunction() == PrimitiveNode.Function.INDUCT)
 				{
 					newNi.newDisplayVar(Schematics.SCHEM_INDUCTANCE, "100", ep);
 				} else if (np == Schematics.tech().diodeNode)
@@ -636,16 +636,8 @@ public class PaletteFrame implements MouseListener
 					newNi.newDisplayVar(Schematics.SCHEM_DIODE, "10", ep);
 				} else if (np == Schematics.tech().josephsonNode)
 				{
-					TextDescriptor td = ep.getNodeTextDescriptor().withOff(0, 1);
-					newNi.newVar(Schematics.ATTR_WIDTH, "5", td);
-
-					td = ep.getNodeTextDescriptor();
-					if (td.getSize().isAbsolute())
-						td = td.withAbsSize((int)(td.getSize().getSize() - 2));
-					else
-						td = td.withRelSize(td.getSize().getSize() - 0.5);
-					td = td.withOff(0, -1);
-					newNi.newVar(Schematics.ATTR_LENGTH, "5", td);
+					TextDescriptor td = ep.getNodeTextDescriptor();
+					newNi.newVar(Schematics.ATTR_AREA, "5", td);
 				} else if (np == Schematics.tech().transistorNode || np == Schematics.tech().transistor4Node)
 				{
 					if (newNi.getFunction().isFET())

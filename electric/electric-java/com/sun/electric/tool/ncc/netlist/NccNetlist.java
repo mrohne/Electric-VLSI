@@ -469,11 +469,25 @@ class Visitor extends HierarchyEnumerator.Visitor {
 	private void buildMos(NodeInst ni, NccCellInfo info) {
 		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
 		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
-		double width=0, length=0, mfactor=1;
+		double width=0, length=0;
 		if (globals.getOptions().checkSizes) {
-			TransistorSize dim = ni.getTransistorSize(info.getContext());
-			width = dim.getDoubleWidth() * dim.getMFactor();
-			length = dim.getDoubleLength();
+			if (ni.getFunction() == PrimitiveNode.Function.JOSEPHSON) {
+				if (ni.getParent().isLayout()) {
+					TransistorSize dim = ni.getTransistorSize(info.getContext());
+					length = dim.getDoubleLength() * Math.PI;
+				} else {
+		            Variable var = ni.getVar(Schematics.ATTR_AREA);
+		    		if (var != null) {
+			    		Object obj = info.getContext()==null ? var.getObject() : info.getContext().evalVar(var, ni);
+			    		length = VarContext.objectToDouble(obj, 0);
+		    		}
+				}
+			} else
+			{
+				TransistorSize dim = ni.getTransistorSize(info.getContext());
+				width = dim.getDoubleWidth() * dim.getMFactor();
+				length = dim.getDoubleLength();
+			}
 		}
 		Wire s = getWireForPortInst(ni.getTransistorSourcePort(), info);
 		Wire g = getWireForPortInst(ni.getTransistorGatePort(), info);
@@ -599,29 +613,32 @@ class Visitor extends HierarchyEnumerator.Visitor {
 			parts.add(t);
 		}
 	}
-	private double[] getInductorSize(NodeInst ni, VarContext context) {
-		double w=0, l=0;
-		if (isSchematicPrimitive(ni)) {
-			w = getDoubleVariableValue("SCHEM_inductance", ni, context);
-		} else {
-			w = ni.getLambdaBaseXSize();
+	private double getInductorSize(NodeInst ni, VarContext context) {
+		double l=0;
+		Variable var = ni.getParameterOrVariable("SCHEM_inductance");
+		if (var!=null)
+		{
+			Object obj = context==null ? var.getObject() : context.evalVar(var, ni);
+			l = VarContext.objectToDouble(obj, 0);
+		} else
+		{		
+			if (!isSchematicPrimitive(ni))
+				l = ni.getLambdaBaseXSize();
 		}
-		return new double[] {w, l};
+		return l;
 	}
 	private void buildInductor(NodeInst ni, NccCellInfo info) {
 		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
 		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
-		double width=0, length=0;
+		double length=0;
 		if (globals.getOptions().checkSizes) {
-			double[] dim = getInductorSize(ni, info.getContext());
-			width = dim[0];
-			length = dim[1];
+			length = getInductorSize(ni, info.getContext());
 		}
 		Wire[] wires = getResistorWires(ni, info);
 		Function type = ni.getFunction();	// getResistorType(ni, info);
 		// if unrecognized resistor type then ignore 
 		if (type!=null) {
-			Part t = new Inductor(type, name, width, length, wires[0], wires[1]);
+			Part t = new Inductor(type, name, length, wires[0], wires[1]);
 			parts.add(t);
 		}
 	}

@@ -54,8 +54,11 @@ public class PartReport extends NetObjReport {
 		isMos = p.isMos();
 		isResistor = p.isResistor();
 		isInductor = p.isInductor();
-		if (isMos || isResistor || isInductor) {
+		if (isMos || isResistor) {
 			width = p.getWidth();
+			length = p.getLength();
+		}
+		if (isInductor) {
 			length = p.getLength();
 		}
 	}

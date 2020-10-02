@@ -94,7 +94,6 @@ public class StratCheckSizes extends Strategy {
 	private double getWidth(Part p) {
 		if (p instanceof Mos) return ((Mos)p).getWidth();
 		if (p instanceof Resistor) return ((Resistor)p).getWidth();
-		if (p instanceof Inductor) return ((Inductor)p).getWidth();
     	return 0;
     }
     
