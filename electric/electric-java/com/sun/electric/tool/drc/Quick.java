@@ -4835,8 +4835,9 @@ public class Quick
             {
                 Poly [] list = tech.getShapeOfNode(ni, false, true, activeLayers);
                 boolean isCBTransistor = pNp.getFunction().isCNTransistor();
-                if (!isCBTransistor) assert(list.length == 1);
-                activePoly = list[0];
+                boolean isScalableTransistor = pNp.getName().endsWith("-Transistor-Scalable");		// "mocmos" technology special nodes
+                if (!isCBTransistor && !isScalableTransistor) assert(list.length == 1);
+                if (isScalableTransistor) activePoly = list[list.length-1]; else activePoly = list[0];
             }
             // Don't get electric layers in case of transistors otherwise it is hard to detect ports
             Poly [] nodeInstPolyList = tech.getShapeOfNode(ni, true, true, null);
