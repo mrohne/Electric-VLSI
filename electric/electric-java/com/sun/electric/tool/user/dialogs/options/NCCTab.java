@@ -264,8 +264,8 @@ public class NCCTab extends PreferencePanel
         sizeChecking.setBorder(javax.swing.BorderFactory.createTitledBorder("Size Checking"));
         sizeChecking.setLayout(new java.awt.GridBagLayout());
 
-        enableSizeChecking.setText("Check transistor sizes");
-        enableSizeChecking.setActionCommand("Check Transistor Sizes");
+        enableSizeChecking.setText("Check component sizes");
+        enableSizeChecking.setActionCommand("Check Component Sizes");
         enableSizeChecking.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

@@ -117,8 +117,8 @@
           <SubComponents>
             <Component class="javax.swing.JCheckBox" name="enableSizeChecking">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Check transistor sizes"/>
-                <Property name="actionCommand" type="java.lang.String" value="Check Transistor Sizes"/>
+                <Property name="text" type="java.lang.String" value="Check component sizes"/>
+                <Property name="actionCommand" type="java.lang.String" value="Check component Sizes"/>
                 <Property name="horizontalTextPosition" type="int" value="10"/>
               </Properties>
               <Constraints>
