@@ -474,7 +474,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 			if (ni.getFunction() == PrimitiveNode.Function.JOSEPHSON) {
 				if (ni.getParent().isLayout()) {
 					TransistorSize dim = ni.getTransistorSize(info.getContext());
-					length = dim.getDoubleLength() * Math.PI;
+					length = dim.getDoubleLength() / 2.0 * Math.PI * Math.PI;
 				} else {
 		            Variable var = ni.getVar(Schematics.ATTR_AREA);
 		    		if (var != null) {
