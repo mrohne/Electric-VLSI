@@ -1667,12 +1667,12 @@ public class Schematics extends Technology {
                 )
             });
         josephsonNode.addPrimitivePorts(
-            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "g", 90, 90, 0, PortCharacteristic.UNKNOWN,
-            EdgeH.c(0), EdgeV.t(-3), EdgeH.c(0), EdgeV.t(-3)),
-            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "s", 270, 90, 1, PortCharacteristic.UNKNOWN,
-            EdgeH.c(0), EdgeV.b(3), EdgeH.c(0), EdgeV.b(3)),
-            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "d", 45, 90, 2, PortCharacteristic.UNKNOWN,
-            EdgeH.c(1), EdgeV.c(2.25), EdgeH.c(1), EdgeV.c(2.25)));
+            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "g", 45, 90, 0, PortCharacteristic.UNKNOWN,
+            	EdgeH.c(1), EdgeV.c(2.25), EdgeH.c(1), EdgeV.c(2.25)),
+            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "s", 90, 180, 1, PortCharacteristic.UNKNOWN,
+            	EdgeH.c(0), EdgeV.b(3), EdgeH.c(0), EdgeV.b(3)),
+            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "d", 270, 180, 2, PortCharacteristic.UNKNOWN,
+                EdgeH.c(0), EdgeV.t(-3), EdgeH.c(0), EdgeV.t(-3)));
         josephsonNode.setFunction(PrimitiveNode.Function.JOSEPHSON);
 
         /** meter */
