@@ -122,19 +122,22 @@ public class TechConversionResult implements Serializable
 			return;
 		}
 
+		String msg = getErrorMessage();
 		if (cell != null)
 		{
-			Job.getUserInterface().displayCell(cell);
-    		EditWindow_ wnd = Job.getUserInterface().getCurrentEditWindow_();
-    		if (wnd != null && ni != null)
-    		{
-    			wnd.clearHighlighting();
-    			wnd.addElectricObject(ni, cell);
-    			wnd.finishedHighlighting();
-    		}
+			if (Job.getRunningJob().isExamine())
+			{
+				Job.getUserInterface().displayCell(cell);
+	    		EditWindow_ wnd = Job.getUserInterface().getCurrentEditWindow_();
+	    		if (wnd != null && ni != null)
+	    		{
+	    			wnd.clearHighlighting();
+	    			wnd.addElectricObject(ni, cell);
+	    			wnd.finishedHighlighting();
+	    		}
+			}
+			Job.getUserInterface().showErrorMessage(msg, "Analysis Failure");
 		}
-		String msg = getErrorMessage();
-		Job.getUserInterface().showErrorMessage(msg, "Analysis Failure");
 		System.out.println(msg);
 	}
 
