@@ -3146,17 +3146,9 @@
             <techPoint xm="0.0" xa="1.0" ym="0.0" ya="2.25"/>
             <techPoint xm="0.0" xa="1.25" ym="0.0" ya="2.25"/>
         </nodeLayer>
-        <primitivePort name="g">
-            <portAngle primary="45" range="90"/>
-            <portTopology>0</portTopology>
-            <box>
-                <lambdaBox klx="1.0" khx="1.0" kly="2.25" khy="2.25"/>
-            </box>
-            <portArc>wire</portArc>
-        </primitivePort>
         <primitivePort name="s">
             <portAngle primary="90" range="180"/>
-            <portTopology>1</portTopology>
+            <portTopology>0</portTopology>
             <box klx="0.0" khx="0.0" khy="1.0">
                 <lambdaBox klx="0.0" khx="0.0" kly="3.0" khy="3.0"/>
             </box>
@@ -3164,7 +3156,7 @@
         </primitivePort>
         <primitivePort name="d">
             <portAngle primary="270" range="180"/>
-            <portTopology>2</portTopology>
+            <portTopology>1</portTopology>
             <box klx="0.0" khx="0.0" kly="-1.0">
                 <lambdaBox klx="0.0" khx="0.0" kly="-3.0" khy="-3.0"/>
             </box>

@@ -451,83 +451,15 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		                    new UnrecognizedPart(ni.getParent(), info.getContext(), typeNm, ni));
 				}
 			}
-		} /* else {
-			// This is a workaround until we update the Technologies to utilize 
-			// NodeProto.Function.
-			if (func==Function.TRANMOS || func==Function.TRAPMOS) {
-				String protoNm = ni.getProto().getName();
-				Function funcOverride = PrimitiveNameToFunction.nameToFunction(protoNm);
-				if (funcOverride!=null)  func=funcOverride;
-			}
-		}*/
+		}
 		
 		func = fourToThree.translate(func);
-		
 		return func;
 	}
 
-	private void buildMos(NodeInst ni, NccCellInfo info) {
-		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
-		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
-		double width=0, length=0;
-		if (globals.getOptions().checkSizes) {
-			if (ni.getFunction() == PrimitiveNode.Function.JOSEPHSON) {
-				if (ni.getParent().isLayout()) {
-					TransistorSize dim = ni.getTransistorSize(info.getContext());
-					double r = dim.getDoubleLength() / 2.0;
-					length = r * r * Math.PI;		// area of circle
-				} else {
-		            Variable var = ni.getVar(Schematics.ATTR_AREA);
-		    		if (var != null) {
-			    		Object obj = info.getContext()==null ? var.getObject() : info.getContext().evalVar(var, ni);
-			    		length = VarContext.objectToDouble(obj, 0);
-		    		}
-				}
-			} else
-			{
-				TransistorSize dim = ni.getTransistorSize(info.getContext());
-				width = dim.getDoubleWidth() * dim.getMFactor();
-				length = dim.getDoubleLength();
-			}
-		}
-		Wire s = getWireForPortInst(ni.getTransistorSourcePort(), info);
-		Wire g = getWireForPortInst(ni.getTransistorGatePort(), info);
-		Wire d = getWireForPortInst(ni.getTransistorDrainPort(), info);
-		PortInst biasPi = ni.getTransistorBiasPort();
-		Wire w = globals.getOptions().checkBody && biasPi!=null ? ( 
-			getWireForPortInst(biasPi, info)
-		) : (
-			null
-		);
-		Function type = getMosType(ni, info);
-		// if unrecognized transistor type then ignore MOS
-		if (type==null) return;
-		
-		Part t = w!=null ? (
-			new Mos(type, name, width, length, s, g, d, w)
-		) : (
-			new Mos(type, name, width, length, s, g, d)
-		);
-		parts.add(t);
-	}
-	private void buildBipolar(NodeInst ni, NccCellInfo info) {
-		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
-		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
-		double area=0;
-		if (globals.getOptions().checkSizes) {
-			TransistorSize dim = ni.getTransistorSize(info.getContext());
-			area = dim!=null ? dim.getDoubleArea() : 0;
-		}
-		Wire e = getWireForPortInst(ni.getTransistorEmitterPort(), info);
-		Wire b = getWireForPortInst(ni.getTransistorBasePort(), info);
-		Wire c = getWireForPortInst(ni.getTransistorCollectorPort(), info);
-		Function f = ni.getFunction();
-		Part t = new Bipolar(f, name, area, e, b, c);
-		parts.add(t);								 
-	}
 	private void buildTransistor(NodeInst ni, NccCellInfo info) {
 		Function f = ni.getFunction();
-		if (f.isFET() || f == PrimitiveNode.Function.JOSEPHSON) {		// SMR hack to make Josephson Junction transistors look like FETs
+		if (f.isFET()) {
 			buildMos(ni, info);
 		} else if (f.isBipolar()) {
 			buildBipolar(ni, info);
@@ -535,12 +467,12 @@ class Visitor extends HierarchyEnumerator.Visitor {
 			globals.error(true, "Unrecognized primitive transistor: "+f.getShortName());
 		}
 	}
+
 	private Function getResistorType(NodeInst ni, NccCellInfo info) {
 		Function f = ni.getFunction();
 		Cell parent = ni.getParent();
 		if (isSchematicPrimitive(ni)) {
-			// This is a work-around to allow compatibility with older
-			// regressions.
+			// This is a work-around to allow compatibility with older regressions.
 			// Designer convention:
 			// Cell containing a schematic transistor primitive may have an  
 			// NCC declaration "resistorType" with Primitive Node name.
@@ -572,41 +504,67 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		}
 		return f;
 	}
-	private Wire[] getResistorWires(NodeInst ni, NccCellInfo info) {
-		Wire a = getWireForPortInst(ni.getPortInst(0), info);
-		Wire b = getWireForPortInst(ni.getPortInst(1), info);
-		return new Wire[] {a, b};
-	}
-	private double getDoubleVariableValue(String varName, NodeInst ni, VarContext context) {
-		Variable var = ni.getParameterOrVariable(varName);
-		if (var==null) return 0;
-		Object obj = context==null ? var.getObject() : context.evalVar(var, ni);
-		return VarContext.objectToDouble(obj, 0);
-	}
-	private double[] getResistorSize(NodeInst ni, VarContext context) {
-		double w=0, l=0;
-		if (isSchematicPrimitive(ni)) {
-			w = getDoubleVariableValue("ATTR_width", ni, context);
-			l = getDoubleVariableValue("ATTR_length", ni, context);
-		} else {
-			w = ni.getLambdaBaseYSize();
-			l = ni.getLambdaBaseXSize();
-//			SizeOffset so = ni.getSizeOffset();
-//			w = ni.getYSize() - so.getLowYOffset() - so.getHighYOffset();
-//			l = ni.getXSize() - so.getLowXOffset() - so.getHighXOffset();
+
+	private void buildMos(NodeInst ni, NccCellInfo info) {
+		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
+		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
+		double width=0, length=0;
+		if (globals.getOptions().checkSizes) {
+			TransistorSize dim = ni.getTransistorSize(info.getContext());
+			width = dim.getDoubleWidth() * dim.getMFactor();
+			length = dim.getDoubleLength();
 		}
-		return new double[] {w, l};
+		Wire s = getWireForPortInst(ni.getTransistorSourcePort(), info);
+		Wire g = getWireForPortInst(ni.getTransistorGatePort(), info);
+		Wire d = getWireForPortInst(ni.getTransistorDrainPort(), info);
+		PortInst biasPi = ni.getTransistorBiasPort();
+		Wire w = globals.getOptions().checkBody && biasPi!=null ? ( 
+			getWireForPortInst(biasPi, info)
+		) : (
+			null
+		);
+		Function type = getMosType(ni, info);
+		// if unrecognized transistor type then ignore MOS
+		if (type==null) return;
+		
+		Part t = w!=null ? (
+			new Mos(type, name, width, length, s, g, d, w)
+		) : (
+			new Mos(type, name, width, length, s, g, d)
+		);
+		parts.add(t);
 	}
+
+	private void buildBipolar(NodeInst ni, NccCellInfo info) {
+		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
+		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
+		double area=0;
+		if (globals.getOptions().checkSizes) {
+			TransistorSize dim = ni.getTransistorSize(info.getContext());
+			area = dim!=null ? dim.getDoubleArea() : 0;
+		}
+		Wire e = getWireForPortInst(ni.getTransistorEmitterPort(), info);
+		Wire b = getWireForPortInst(ni.getTransistorBasePort(), info);
+		Wire c = getWireForPortInst(ni.getTransistorCollectorPort(), info);
+		Function f = ni.getFunction();
+		Part t = new Bipolar(f, name, area, e, b, c);
+		parts.add(t);								 
+	}
+
 	private void buildResistor(NodeInst ni, NccCellInfo info) {
 		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
 		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
 		double width=0, length=0;
 		if (globals.getOptions().checkSizes) {
-			double[] dim = getResistorSize(ni, info.getContext());
-			width = dim[0];
-			length = dim[1];
+			if (isSchematicPrimitive(ni)) {
+				width = getDoubleVariableValue("ATTR_width", ni, info.getContext());
+				length = getDoubleVariableValue("ATTR_length", ni, info.getContext());
+			} else {
+				width = ni.getLambdaBaseYSize();
+				length = ni.getLambdaBaseXSize();
+			}
 		}
-		Wire[] wires = getResistorWires(ni, info);
+		Wire[] wires = getTwoWires(ni, info);
 		Function type = getResistorType(ni, info);
 		// if unrecognized resistor type then ignore 
 		if (type!=null) {
@@ -614,39 +572,73 @@ class Visitor extends HierarchyEnumerator.Visitor {
 			parts.add(t);
 		}
 	}
-	private double getInductorSize(NodeInst ni, VarContext context) {
-		double l=0;
-		Variable var = ni.getParameterOrVariable("SCHEM_inductance");
-		if (var!=null)
-		{
-			Object obj = context==null ? var.getObject() : context.evalVar(var, ni);
-			l = VarContext.objectToDouble(obj, 0);
-		} else
-		{		
-			if (!isSchematicPrimitive(ni))
-				l = ni.getLambdaBaseXSize();
-		}
-		return l;
-	}
+
 	private void buildInductor(NodeInst ni, NccCellInfo info) {
 		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
 		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
 		double length=0;
 		if (globals.getOptions().checkSizes) {
-			length = getInductorSize(ni, info.getContext());
+			Variable var = ni.getParameterOrVariable("SCHEM_inductance");
+			if (var!=null)
+			{
+				Object obj = info.getContext()==null ? var.getObject() : info.getContext().evalVar(var, ni);
+				length = VarContext.objectToDouble(obj, 0);
+			} else
+			{		
+				if (!isSchematicPrimitive(ni))
+					length = ni.getLambdaBaseXSize();
+			}
 		}
-		Wire[] wires = getResistorWires(ni, info);
-		Function type = ni.getFunction();	// getResistorType(ni, info);
-		// if unrecognized resistor type then ignore 
+		Wire[] wires = getTwoWires(ni, info);
+		Function type = ni.getFunction();
+		// if unrecognized type then ignore 
 		if (type!=null) {
 			Part t = new Inductor(type, name, length, wires[0], wires[1]);
 			parts.add(t);
 		}
 	}
+
+	private void buildJosephson(NodeInst ni, NccCellInfo info) {
+		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
+		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
+		double area=0;
+		if (globals.getOptions().checkSizes) {
+			if (ni.getParent().isLayout()) {
+				double diameter = ni.getLambdaBaseXSize();
+				double r = diameter / 2.0;
+				area = r * r * Math.PI;		// area of circle
+			} else {
+	            Variable var = ni.getVar(Schematics.ATTR_AREA);
+	    		if (var != null) {
+		    		Object obj = info.getContext()==null ? var.getObject() : info.getContext().evalVar(var, ni);
+		    		area = VarContext.objectToDouble(obj, 0);
+	    		}
+			}
+		}
+		Wire[] wires = getTwoWires(ni, info);
+		Function type = ni.getFunction();
+		// if unrecognized type then ignore 
+		if (type!=null) {
+			Part t = new Josephson(type, name, area, wires[0], wires[1]);
+			parts.add(t);
+		}
+	}
+
+	private Wire[] getTwoWires(NodeInst ni, NccCellInfo info) {
+		Wire a = getWireForPortInst(ni.getPortInst(0), info);
+		Wire b = getWireForPortInst(ni.getPortInst(1), info);
+		return new Wire[] {a, b};
+	}
+
+	private double getDoubleVariableValue(String varName, NodeInst ni, VarContext context) {
+		Variable var = ni.getParameterOrVariable(varName);
+		if (var==null) return 0;
+		Object obj = context==null ? var.getObject() : context.evalVar(var, ni);
+		return VarContext.objectToDouble(obj, 0);
+	}
+
 	private void doPrimitiveNode(NodeInst ni, NccCellInfo info) {
 		Function f = ni.getFunction();
-		
-		
 		if (f.isTransistor()) {
 			buildTransistor(ni, info);
 		} else if (f.isResistor() && f!=Function.RESIST) {
@@ -655,6 +647,8 @@ class Visitor extends HierarchyEnumerator.Visitor {
 			buildResistor(ni, info);
 		} else if (f == Function.INDUCT) {
 			buildInductor(ni, info);
+		} else if (f == Function.JOSEPHSON) {
+			buildJosephson(ni, info);
 		}
 	}
 	

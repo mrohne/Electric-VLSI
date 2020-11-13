@@ -34,6 +34,7 @@ import com.sun.electric.tool.ncc.NccOptions;
 import com.sun.electric.tool.ncc.basic.NccUtils;
 import com.sun.electric.tool.ncc.lists.LeafList;
 import com.sun.electric.tool.ncc.netlist.Inductor;
+import com.sun.electric.tool.ncc.netlist.Josephson;
 import com.sun.electric.tool.ncc.netlist.Mos;
 import com.sun.electric.tool.ncc.netlist.NetObject;
 import com.sun.electric.tool.ncc.netlist.Part;
@@ -101,6 +102,7 @@ public class StratCheckSizes extends Strategy {
 		if (p instanceof Mos) return ((Mos)p).getLength();
 		if (p instanceof Resistor) return ((Resistor)p).getLength();
 		if (p instanceof Inductor) return ((Inductor)p).getLength();
+		if (p instanceof Josephson) return ((Josephson)p).getLength();
     	return 0;
     }
 
@@ -133,7 +135,8 @@ public class StratCheckSizes extends Strategy {
 		} else {
 			globals.error(!(p instanceof Mos) &&
 					      !(p instanceof Resistor) &&
-					      !(p instanceof Inductor), "part with no width & length");
+					      !(p instanceof Inductor) &&
+					      !(p instanceof Josephson), "part with no width & length");
 			double w = getWidth(p);
 			if (w<minWidth) {minWidth=w;  minWidPart=p; minWidNdx=cktNdx;}
 			if (w>maxWidth) {maxWidth=w;  maxWidPart=p; maxWidNdx=cktNdx;}

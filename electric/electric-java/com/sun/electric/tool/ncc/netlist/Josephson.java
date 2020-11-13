@@ -49,17 +49,14 @@ public class Josephson extends Part {
 	}
 
     // ---------- private data -------------
-	private static final JosephsonPinTypeCache TYPE_TO_PINTYPE = 
-                                                    new JosephsonPinTypeCache();
-    private static final int PIN_COEFFS[] = 
-    	{Primes.get(1), Primes.get(1)}; //Josephsons are symmetric
-    private final double length;
+	private static final JosephsonPinTypeCache TYPE_TO_PINTYPE = new JosephsonPinTypeCache();
+    private static final int PIN_COEFFS[] = {Primes.get(1), Primes.get(1)}; // Josephsons are symmetric
+    private final double area;
 
     // ---------- public methods ----------
-	public Josephson(Function type, PartNameProxy name, 
-			        double length, Wire w1, Wire w2) {
+	public Josephson(Function type, PartNameProxy name, double area, Wire w1, Wire w2) {
 		super(name, type, new Wire[]{w1, w2});
-		this.length = length;
+		this.area = area;
 	}
 
     // ---------- abstract commitment ----------
@@ -67,7 +64,7 @@ public class Josephson extends Part {
     public int[] getPinCoeffs(){return PIN_COEFFS;}
 	@Override
 	public String valueDescription(){
-		String sz= "IND="+length;
+		String sz= "JJ="+area;
 		return sz;
 	}
 	@Override
@@ -79,9 +76,9 @@ public class Josephson extends Part {
 
     // ---------- public methods ----------
 //	@Override
-//    public double getWidth() {return width;}
+//    public double getWidth() {return area;}
 	@Override
-    public double getLength() {return length;}
+    public double getLength() {return area;}
 
     public void connect(Wire ss, Wire ee){
         pins[0] = ss;
@@ -108,11 +105,11 @@ public class Josephson extends Part {
 //        r.setDeleted();
 //        return true; //return true if merged
 //    }
-    /** Never perform series/parallel combination of Josephsons. For layout
-     * Josephsons, inductance is 
-     * a vendor dependent function of Josephson length. We'll simply
-     * annotate Josephson length and compare these between schematic
-     * and layout. */
+
+    /** Never perform series/parallel combination of Josephsons. For layout Josephsons, inductance is 
+     * a vendor dependent function of Josephson area. We'll simply annotate Josephson area
+     * and compare these between schematic and layout.
+     */
 	@Override
     public boolean parallelMerge(Part p, NccOptions nccOpt) {return false;}
 

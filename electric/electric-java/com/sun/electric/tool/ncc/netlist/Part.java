@@ -202,6 +202,7 @@ public abstract class Part extends NetObject implements PartReportable {
 	public boolean isMos() {return this instanceof Mos;}
 	public boolean isResistor() {return this instanceof Resistor;}
 	public boolean isInductor() {return this instanceof Inductor;}
+	public boolean isJosephson() {return this instanceof Josephson;}
 	public double getWidth() {
         Job.error(true, "Part has no width"); return 0;}
 	public double getLength() {

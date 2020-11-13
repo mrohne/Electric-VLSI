@@ -298,6 +298,17 @@ public class Mos extends Part {
 
 	/** @return true if Mos is a capacitor. That is both diffusions are connected */
 	public boolean isCapacitor() {return pins[0]==pins[nbGateDiffPins()-1];}
+//	public boolean isCapacitor()			// TODO: debug
+//	{
+//		boolean answer = pins[0]==pins[nbGateDiffPins()-1];
+//		if (answer)
+//		{
+//			String msg = "A CAPACITOR WITH " + pins.length + " PINS:";
+//			for(int i=0; i<pins.length; i++) msg += " "+pins[i].getName();
+//			System.out.println(msg);
+//		}
+//		return answer;
+//	}
 
 	@Override
 	public Integer hashCodeForParallelMerge() {
