@@ -55,6 +55,7 @@ public class NccOptions implements Serializable {
 	
 	/** enable size checking */
 	public boolean checkSizes = false;
+	public boolean checkResistors = false;
 	public double absoluteSizeTolerance;
 	public double relativeSizeTolerance;
 
@@ -97,6 +98,7 @@ public class NccOptions implements Serializable {
 	public NccOptions(NccOptions o) {
 		operation = o.operation;
 		checkSizes = o.checkSizes;
+		checkResistors = o.checkResistors;
 		absoluteSizeTolerance = o.absoluteSizeTolerance;
 		relativeSizeTolerance = o.relativeSizeTolerance;
 		skipPassed = o.skipPassed;
@@ -120,6 +122,7 @@ public class NccOptions implements Serializable {
 		options.operation = NccPreferences.getOperation();
 
 		options.checkSizes = NccPreferences.getCheckSizes();
+		options.checkResistors = NccPreferences.getCheckResistors();
 		// convert percent to fraction
 		options.relativeSizeTolerance = NccPreferences.getRelativeSizeTolerance()/100;
 		options.absoluteSizeTolerance = NccPreferences.getAbsoluteSizeTolerance();

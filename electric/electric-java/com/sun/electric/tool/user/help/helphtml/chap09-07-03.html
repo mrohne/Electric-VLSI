@@ -31,6 +31,10 @@ This will report transistor size mismatches.
 The "Size Checking" section controls how NCC compares component sizes, width and length for transistors,
 area for inductors and resistors. This section affects two distinct NCC phases: 
 netlist comparison and series / parallel combination.
+When sizes are being checked, you can require absolute or relative size differences.
+Also, resistors are not checked by default because they are often placed to model parasitics,
+and so NCC should treat them as "short circuits".
+If, however, you want resistor sizes checked, you can request that here.
 </p>
 
 <h5>Netlist comparison</h5>

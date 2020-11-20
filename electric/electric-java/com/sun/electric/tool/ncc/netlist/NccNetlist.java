@@ -49,6 +49,7 @@ import com.sun.electric.technology.TransistorSize;
 import com.sun.electric.technology.PrimitiveNode.Function;
 import com.sun.electric.technology.technologies.Schematics;
 import com.sun.electric.tool.ncc.NccGlobals;
+import com.sun.electric.tool.ncc.NccPreferences;
 import com.sun.electric.tool.ncc.basic.NccCellAnnotations;
 import com.sun.electric.tool.ncc.basic.NccUtils;
 import com.sun.electric.tool.ncc.basic.TransitiveRelation;
@@ -556,12 +557,20 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
 		double width=0, length=0;
 		if (globals.getOptions().checkSizes) {
-			if (isSchematicPrimitive(ni)) {
-				width = getDoubleVariableValue("ATTR_width", ni, info.getContext());
-				length = getDoubleVariableValue("ATTR_length", ni, info.getContext());
-			} else {
-				width = ni.getLambdaBaseYSize();
-				length = ni.getLambdaBaseXSize();
+			Variable var = ni.getParameterOrVariable("SCHEM_resistance");
+			if (var!=null)
+			{
+				Object obj = info.getContext()==null ? var.getObject() : info.getContext().evalVar(var, ni);
+				length = VarContext.objectToDouble(obj, 0);
+			} else
+			{
+				if (isSchematicPrimitive(ni)) {
+					width = getDoubleVariableValue("ATTR_width", ni, info.getContext());
+					length = getDoubleVariableValue("ATTR_length", ni, info.getContext());
+				} else {
+					width = ni.getLambdaBaseYSize();
+					length = ni.getLambdaBaseXSize();
+				}
 			}
 		}
 		Wire[] wires = getTwoWires(ni, info);
@@ -584,7 +593,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 				Object obj = info.getContext()==null ? var.getObject() : info.getContext().evalVar(var, ni);
 				length = VarContext.objectToDouble(obj, 0);
 			} else
-			{		
+			{
 				if (!isSchematicPrimitive(ni))
 					length = ni.getLambdaBaseXSize();
 			}
@@ -641,10 +650,12 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		Function f = ni.getFunction();
 		if (f.isTransistor()) {
 			buildTransistor(ni, info);
-		} else if (f.isResistor() && f!=Function.RESIST) {
+		} else if (f.isResistor()) {
 			// We use normal resistors to model parasitic wire resistance.
-			// NCC considers them to be "short circuits" and discards them. 
-			buildResistor(ni, info);
+			// NCC normally considers them to be "short circuits" and discards them.
+			// But in special cases, when the user wants them checked, they are
+			if (globals.getOptions().checkResistors)
+				buildResistor(ni, info);
 		} else if (f == Function.INDUCT) {
 			buildInductor(ni, info);
 		} else if (f == Function.JOSEPHSON) {

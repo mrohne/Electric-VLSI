@@ -602,7 +602,7 @@ public class PaletteFrame implements MouseListener
 //				{
 //					newNi.newVar(NodeLayer.METAL_OFFSETS, surroundOffsets);
 //				} else
-				if (np == Schematics.tech().resistorNode)
+				if (np == Schematics.tech().resistorNode || np.getFunction() == PrimitiveNode.Function.RESIST)
 				{
 					newNi.newDisplayVar(Schematics.SCHEM_RESISTANCE, "100", ep);
                     // Adding two extra variables: length and width

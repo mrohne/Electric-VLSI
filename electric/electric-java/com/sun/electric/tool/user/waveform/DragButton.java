@@ -22,6 +22,7 @@
 package com.sun.electric.tool.user.waveform;
 
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -43,10 +44,13 @@ public class DragButton extends JButton implements DragGestureListener, DragSour
 {
 	private DragSource dragSource;
 	private int panelNumber;
+	private static Font textFont = null;
 
 	public DragButton(String s, int panelNumber)
 	{
 		super(s);
+		if (textFont == null) textFont = new Font(getFont().getFamily(), Font.PLAIN, 20); 
+		setFont(textFont);
 		this.panelNumber = panelNumber;
 		setBorderPainted(false);
 		dragSource = DragSource.getDefaultDragSource();

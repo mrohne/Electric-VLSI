@@ -4,6 +4,12 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-d: ******************************
 
+IMP: (11/20/2020, SMR) NCC can now be forced to check resistors.
+
+IMP: (11/13/2020, SMR) Josephson junctions are now 2-port objects like inductors.
+
+IMP: (10/13/2020, SMR) NCC size checking now applies to all components, not just transistors.
+
 BUG: (9/8/2020, SMR) Josephson Junctions don't NCC right.
 FIX: In PrimitiveNode, make them transistors, in schematics, give them 3 ports, in NccNetlist, treat them like FETs
 
@@ -23,7 +29,7 @@ BUG: (8/20/2019, SMR) Spice Templates cannot be Java code.
 FIX: In tool.io.output.Spice.java, method writeCellTopology(), after calling getEngineTemplate(),
      must test if Variable is Code and handle it.
 
-IMP/MAN: (7/11/19, SMR): Added "JOSEPHSON" node proto type for Josephson junction transistors.
+IMP: (7/11/19, SMR): Added "JOSEPHSON" node proto type for Josephson junction transistors.
      Added JoSIM SPICE simulation engine.
      Added command: "Tools / Simulation (Spice) / Set JoSIM Template"
 

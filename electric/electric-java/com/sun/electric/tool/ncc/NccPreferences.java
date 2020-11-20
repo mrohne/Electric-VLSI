@@ -57,6 +57,18 @@ public class NccPreferences {
 		return checkSizes.getBooleanFactoryValue(); 
 	}
 
+	private static Pref checkResistors = 
+		Pref.makeBooleanPref("CheckResistors", NccPreferences.tool.prefs, false);
+	public static boolean getCheckResistors() {
+		return checkResistors.getBoolean(); 
+	}
+	public static void setCheckResistors(boolean on) { 
+		checkResistors.setBoolean(on); 
+	}
+	public static boolean getFactoryCheckResistors() {
+		return checkResistors.getBooleanFactoryValue(); 
+	}
+
 	private static Pref relativeSizeTolerance = 
 		Pref.makeDoublePref("RelativeSizeTolerance", NccPreferences.tool.prefs, 0.0);
 	public static double getRelativeSizeTolerance() {
