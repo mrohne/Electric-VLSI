@@ -26,6 +26,7 @@ package com.sun.electric.tool.user.tecEdit;
 import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.topology.NodeInst;
 import com.sun.electric.database.variable.EditWindow_;
+import com.sun.electric.database.variable.UserInterface;
 import com.sun.electric.tool.Job;
 import com.sun.electric.util.TextUtils;
 
@@ -125,10 +126,12 @@ public class TechConversionResult implements Serializable
 		String msg = getErrorMessage();
 		if (cell != null)
 		{
-			if (Job.getRunningJob().isExamine())
+			UserInterface ui = Job.getUserInterface();
+//			Job j = Job.getRunningJob();
+//			if (j != null && j.isExamine())
 			{
-				Job.getUserInterface().displayCell(cell);
-	    		EditWindow_ wnd = Job.getUserInterface().getCurrentEditWindow_();
+				ui.displayCell(cell);
+	    		EditWindow_ wnd = ui.getCurrentEditWindow_();
 	    		if (wnd != null && ni != null)
 	    		{
 	    			wnd.clearHighlighting();
@@ -136,7 +139,7 @@ public class TechConversionResult implements Serializable
 	    			wnd.finishedHighlighting();
 	    		}
 			}
-			Job.getUserInterface().showErrorMessage(msg, "Analysis Failure");
+			ui.showErrorMessage(msg, "Analysis Failure");
 		}
 		System.out.println(msg);
 	}

@@ -4,6 +4,9 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-d: ******************************
 
+BUG: (11/30/2020, SMR) Technology edit crashes when trying to display errors.
+FIX: In TechConversionResult.showError() must use proper display code.
+
 IMP: (11/20/2020, SMR) NCC can now be forced to check resistors.
 
 IMP: (11/13/2020, SMR) Josephson junctions are now 2-port objects like inductors.
