@@ -600,7 +600,7 @@ public class Topology {
      * Method to add a new ArcInst to the cell.
      * @param ai the ArcInst to be included in the cell.
      */
-    void addArc(ArcInst ai) {
+    public void addArc(ArcInst ai) {
         cell.setTopologyModified();
         validArcBounds = false;
         unfreshRTree();
