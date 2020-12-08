@@ -107,11 +107,14 @@ public class GDSTab extends PreferencePanel
 		gdsInputMergesBoxes.setSelected(IOTool.isGDSInMergesBoxes());
 		gdsInputExpandsCells.setSelected(IOTool.isGDSInExpandsCells());
         gdsSimplifyCells.setSelected(IOTool.isGDSInSimplifyCells());
-		gdsInputInstantiatesArrays.setSelected(IOTool.isGDSInInstantiatesArrays());
         gdsArraySimplification.addItem("None");
         gdsArraySimplification.addItem("Merge individual arrays");
         gdsArraySimplification.addItem("Merge all arrays");
         gdsArraySimplification.setSelectedIndex(IOTool.getGDSArraySimplification());
+        gdsArrayInstantiation.addItem("Simple");
+        gdsArrayInstantiation.addItem("Bisection");
+        gdsArrayInstantiation.addItem("Annotation");
+        gdsArrayInstantiation.setSelectedIndex(IOTool.getGDSArrayInstantiation());
         gdsUnknownLayers.addItem("Ignore");
         gdsUnknownLayers.addItem("Convert to DRC Exclusion layer");
         gdsUnknownLayers.addItem("Convert to random layer");
@@ -207,12 +210,12 @@ public class GDSTab extends PreferencePanel
         currentValue = gdsSimplifyCells.isSelected();
         if (currentValue != IOTool.isGDSInSimplifyCells())
 			IOTool.setGDSInSimplifyCells(currentValue);
-		currentValue = gdsInputInstantiatesArrays.isSelected();
-		if (currentValue != IOTool.isGDSInInstantiatesArrays())
-			IOTool.setGDSInInstantiatesArrays(currentValue);
 		int currentI = gdsArraySimplification.getSelectedIndex();
         if (currentI != IOTool.getGDSArraySimplification())
         	IOTool.setGDSArraySimplification(currentI);
+		currentI = gdsArrayInstantiation.getSelectedIndex();
+        if (currentI != IOTool.getGDSArrayInstantiation())
+        	IOTool.setGDSArrayInstantiation(currentI);
 		currentI = gdsUnknownLayers.getSelectedIndex();
 		if (currentI != IOTool.getGDSInUnknownLayerHandling())
 			IOTool.setGDSInUnknownLayerHandling(currentI);
@@ -270,10 +273,10 @@ public class GDSTab extends PreferencePanel
 			IOTool.setGDSInExpandsCells(IOTool.isFactoryGDSInExpandsCells());
 		if (IOTool.isFactoryGDSInSimplifyCells() != IOTool.isGDSInSimplifyCells())
 			IOTool.setGDSInSimplifyCells(IOTool.isFactoryGDSInSimplifyCells());
-		if (IOTool.isFactoryGDSInInstantiatesArrays() != IOTool.isGDSInInstantiatesArrays())
-			IOTool.setGDSInInstantiatesArrays(IOTool.isFactoryGDSInInstantiatesArrays());
 		if (IOTool.getFactoryGDSArraySimplification() != IOTool.getGDSArraySimplification())
 			IOTool.setGDSArraySimplification(IOTool.getFactoryGDSArraySimplification());
+		if (IOTool.getFactoryGDSArrayInstantiation() != IOTool.getGDSArrayInstantiation())
+			IOTool.setGDSArrayInstantiation(IOTool.getFactoryGDSArrayInstantiation());
 		if (IOTool.getFactoryGDSInUnknownLayerHandling() != IOTool.getGDSInUnknownLayerHandling())
 			IOTool.setGDSInUnknownLayerHandling(IOTool.getFactoryGDSInUnknownLayerHandling());
 		if (IOTool.isFactoryGDSCadenceCompatibility() != IOTool.isGDSCadenceCompatibility())
@@ -573,10 +576,11 @@ public class GDSTab extends PreferencePanel
         Import = new javax.swing.JPanel();
         gdsInputMergesBoxes = new javax.swing.JCheckBox();
         gdsInputExpandsCells = new javax.swing.JCheckBox();
-        gdsInputInstantiatesArrays = new javax.swing.JCheckBox();
         gdsSimplifyCells = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         gdsArraySimplification = new javax.swing.JComboBox();
+        jLabel19 = new javax.swing.JLabel();
+        gdsArrayInstantiation = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         gdsUnknownLayers = new javax.swing.JComboBox();
         gdsCadenceCompatibility = new javax.swing.JCheckBox();
@@ -663,15 +667,6 @@ public class GDSTab extends PreferencePanel
         gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
         Import.add(gdsInputExpandsCells, gridBagConstraints);
 
-        gdsInputInstantiatesArrays.setText("Instantiate arrays");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
-        Import.add(gdsInputInstantiatesArrays, gridBagConstraints);
-
         gdsSimplifyCells.setText("Simplify contact vias");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -696,17 +691,32 @@ public class GDSTab extends PreferencePanel
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 4);
         Import.add(gdsArraySimplification, gridBagConstraints);
 
-        jLabel1.setText("Unknown layers:");
+        jLabel19.setText("Array instantiation:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
+        Import.add(jLabel19, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 4);
+        Import.add(gdsArrayInstantiation, gridBagConstraints);
+
+        jLabel1.setText("Unknown layers:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
         Import.add(jLabel1, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 4);
         Import.add(gdsUnknownLayers, gridBagConstraints);
@@ -714,7 +724,7 @@ public class GDSTab extends PreferencePanel
         gdsCadenceCompatibility.setText("Cadence compatibility");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
@@ -1158,6 +1168,7 @@ public class GDSTab extends PreferencePanel
     private javax.swing.JPanel exportImport;
     private javax.swing.JComboBox foundrySelection;
     private javax.swing.JComboBox gdsArraySimplification;
+    private javax.swing.JComboBox gdsArrayInstantiation;
     private javax.swing.JCheckBox gdsCadenceCompatibility;
     private javax.swing.JTextField gdsCellNameLenMax;
     private javax.swing.JCheckBox gdsConvertNCCExportsConnectedByParentPins;
@@ -1170,7 +1181,6 @@ public class GDSTab extends PreferencePanel
     private javax.swing.JTextField gdsHighVType;
     private javax.swing.JCheckBox gdsIncludesText;
     private javax.swing.JCheckBox gdsInputExpandsCells;
-    private javax.swing.JCheckBox gdsInputInstantiatesArrays;
     private javax.swing.JCheckBox gdsInputMergesBoxes;
     private javax.swing.JTextField gdsInputScale;
     private javax.swing.JScrollPane gdsLayerList;
@@ -1201,6 +1211,7 @@ public class GDSTab extends PreferencePanel
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
