@@ -42,6 +42,7 @@ public class GeneralInfo extends Info
 	/** the scale factor of the technology */		double   scale;
     /** is scale factor relvant */                  boolean  scaleRelevant;
     /** factory resolution */                       double   resolution;
+    /** factory angle step */                       double   angleStep;
     /** default foundry name of the technology */   String   defaultFoundry;
     /** default number of metals */                 int      defaultNumMetals;
 	/** the full description of the technology */	String   description;
@@ -91,6 +92,7 @@ public class GeneralInfo extends Info
 		loadTableEntry(genTextTable, TECHSHORTNAME, shortName);
 		loadTableEntry(genTextTable, TECHSCALE, Double.valueOf(scale));
         loadTableEntry(genTextTable, TECHRESOLUTION, Double.valueOf(resolution));
+        loadTableEntry(genTextTable, TECHANGLESTEP, Double.valueOf(angleStep));
         loadTableEntry(genTextTable, TECHFOUNDRY, defaultFoundry);
         loadTableEntry(genTextTable, TECHDEFMETALS, Integer.valueOf(defaultNumMetals));
 		loadTableEntry(genTextTable, TECHDESCRIPT, description);
