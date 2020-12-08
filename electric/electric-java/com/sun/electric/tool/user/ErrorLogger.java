@@ -837,6 +837,26 @@ public class ErrorLogger implements Serializable
     	logAWarning(message, cell, sortKey, h);
     }
 
+    /**
+     * Factory method to log a warning message.
+     * @param message the string to display.
+     * @param poly the polygon to display
+     * @param cell the cell in which this message applies.
+     * @param sortKey the sorting order of this message.
+     */
+    public synchronized void logWarning(String message, PolyBase poly, Cell cell, int sortKey)
+    {
+    	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
+        Point2D [] points = poly.getPoints();
+        for(int i=0; i<points.length; i++)
+        {
+            int prev = i-1;
+            if (i == 0) prev = points.length-1;
+            h.add(ErrorHighlight.newInstance(cell, points[prev], points[i]));
+        }
+    	logAWarning(message, cell, sortKey, h);
+    }
+
     public synchronized int getNumMessages(Cell cell, boolean searchInError) {
         int numErrors = 0;
 
