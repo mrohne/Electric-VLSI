@@ -1655,6 +1655,14 @@ public class SimulationTool extends Tool
 	public static void setSpiceWriteEmptySubckts(boolean b) { cacheSpiceWriteEmptySubckts.setBoolean(b); }
 	public static boolean isFactorySpiceWriteEmptySubckts() { return cacheSpiceWriteEmptySubckts.getBooleanFactoryValue(); }
 
+	private static Pref cacheSpiceUseNewerLTSpice = Pref.makeBooleanPref("SpiceUseNewerLTSpice", tool.prefs, false);
+	/** Get whether or not to use the newer LTSpice XVII when reading raw output */
+	public static boolean isSpiceUseNewerLTSpice() { return cacheSpiceUseNewerLTSpice.getBoolean(); }
+	/** Set whether or not to use the newer LTSpice XVII when reading raw output */
+	public static void setSpiceUseNewerLTSpice(boolean b) { cacheSpiceUseNewerLTSpice.setBoolean(b); }
+	/** Get whether or not to use the newer LTSpice XVII when reading raw output, by default */
+	public static boolean isFactorySpiceUseNewerLTSpice() { return cacheSpiceUseNewerLTSpice.getBooleanFactoryValue(); }
+
 	private static Pref cacheSpiceWriteFinalDotEnd = Pref.makeBooleanPref("SpiceWriteFinalDotEnd", tool.prefs, true);
 	public static boolean isSpiceWriteFinalDotEnd() { return cacheSpiceWriteFinalDotEnd.getBoolean(); }
 	public static void setSpiceWriteFinalDotEnd(boolean b) { cacheSpiceWriteFinalDotEnd.setBoolean(b); }

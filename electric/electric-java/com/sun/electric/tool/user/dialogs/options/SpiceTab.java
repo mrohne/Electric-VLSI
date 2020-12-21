@@ -116,6 +116,7 @@ public class SpiceTab extends PreferencePanel
 		spiceWriteSubcktTopCell.setSelected(SimulationTool.isSpiceWriteSubcktTopCell());
 		spiceWriteEndStatement.setSelected(SimulationTool.isSpiceWriteFinalDotEnd());
 		spiceWriteEmptySubcircuits.setSelected(SimulationTool.isSpiceWriteEmptySubckts());
+		spiceUseNewerLTSpice.setSelected(SimulationTool.isSpiceUseNewerLTSpice());
 
 		// bottom of the top section: header and trailer cards
 		String spiceHeaderCardInitial = SimulationTool.getSpiceHeaderCardInfo();
@@ -250,6 +251,9 @@ public class SpiceTab extends PreferencePanel
 		booleanNow = spiceWriteEmptySubcircuits.isSelected();
 		if (SimulationTool.isSpiceWriteEmptySubckts() != booleanNow) SimulationTool.setSpiceWriteEmptySubckts(booleanNow);
 
+		booleanNow = spiceUseNewerLTSpice.isSelected();
+		if (SimulationTool.isSpiceUseNewerLTSpice() != booleanNow) SimulationTool.setSpiceUseNewerLTSpice(booleanNow);
+
 		// bottom of the top section: header and trailer cards
 		String header = Spice.SPICE_NOEXTENSION_PREFIX;
 		if (spiceHeaderCardExtension.getText().length() > 0)
@@ -341,6 +345,8 @@ public class SpiceTab extends PreferencePanel
 			SimulationTool.setSpiceWriteFinalDotEnd(SimulationTool.isFactorySpiceWriteFinalDotEnd());
 		if (SimulationTool.isFactorySpiceWriteEmptySubckts() != SimulationTool.isSpiceWriteEmptySubckts())
 			SimulationTool.setSpiceWriteEmptySubckts(SimulationTool.isFactorySpiceWriteEmptySubckts());
+		if (SimulationTool.isFactorySpiceUseNewerLTSpice() != SimulationTool.isSpiceUseNewerLTSpice())
+			SimulationTool.setSpiceUseNewerLTSpice(SimulationTool.isFactorySpiceUseNewerLTSpice());
 
 		if (!SimulationTool.getFactorySpiceHeaderCardInfo().equals(SimulationTool.getSpiceHeaderCardInfo()))
 			SimulationTool.setSpiceHeaderCardInfo(SimulationTool.getFactorySpiceHeaderCardInfo());
@@ -433,6 +439,7 @@ public class SpiceTab extends PreferencePanel
         spiceWriteSubcktTopCell = new javax.swing.JCheckBox();
         spiceWritePwrGndSubcircuit = new javax.swing.JCheckBox();
         spiceWriteEmptySubcircuits = new javax.swing.JCheckBox();
+        spiceUseNewerLTSpice = new javax.swing.JCheckBox();
         modelCards = new javax.swing.JPanel();
         spiceHeaderCardExtension = new javax.swing.JTextField();
         spiceNoHeaderCards = new javax.swing.JRadioButton();
@@ -764,6 +771,14 @@ public class SpiceTab extends PreferencePanel
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         upperRight.add(spiceWriteEmptySubcircuits, gridBagConstraints);
 
+        spiceUseNewerLTSpice.setText("Use newer LTSpice XVII");
+        spiceUseNewerLTSpice.setToolTipText("");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        upperRight.add(spiceUseNewerLTSpice, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -1030,6 +1045,7 @@ public class SpiceTab extends PreferencePanel
     private javax.swing.JRadioButton spiceTrailerCardsFromFile;
     private javax.swing.JRadioButton spiceTrailerCardsWithExtension;
     private javax.swing.JCheckBox spiceUseCellParameters;
+    private javax.swing.JCheckBox spiceUseNewerLTSpice;
     private javax.swing.JCheckBox spiceWriteEmptySubcircuits;
     private javax.swing.JCheckBox spiceWriteEndStatement;
     private javax.swing.JCheckBox spiceWritePwrGndSubcircuit;

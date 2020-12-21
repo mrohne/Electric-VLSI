@@ -6,7 +6,7 @@
  * Input/output tool: reader for Raw Spice output (.raw)
  * Written by Steven M. Rubin.
  *
- * Copyright (c) 2004, Static Free Software. All rights reserved.
+ * Copyright (c) 2020, Static Free Software. All rights reserved.
  *
  * Electric(tm) is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,15 +28,16 @@ import com.sun.electric.tool.simulation.MutableSignal;
 import com.sun.electric.tool.simulation.ScalarSample;
 import com.sun.electric.tool.simulation.Signal;
 import com.sun.electric.tool.simulation.SignalCollection;
+import com.sun.electric.tool.simulation.SimulationTool;
 import com.sun.electric.tool.simulation.Stimuli;
 import com.sun.electric.tool.simulation.SweptSample;
 import com.sun.electric.util.TextUtils;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.ByteOrder;
 import java.net.URL;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -64,12 +65,15 @@ public class RawSpiceOut extends Input<Stimuli>
 		// open the file
 		if (openBinaryInput(fileURL)) return sd;
 
+        // see if using newer or older versions of raw LTSpice
+		boolean newRawLTspice = SimulationTool.isSpiceUseNewerLTSpice();
+
 		// show progress reading .raw file
-		System.out.println("Reading Spice3/NGSpice/LTSpice/SmartSpice raw output file: " + fileURL.getFile());
+		System.out.println("Reading Spice3/NGSpice/" + (newRawLTspice ? "LTSpiceXVII" : "LTSpiceIV") + "/SmartSpice raw output file: " + fileURL.getFile());
 		startProgressDialog("LTSpice output", fileURL.getFile());
 
-		// read the actual signal data from the .raw file
-		sd = readRawSpice3File(cell, sd);
+        // read the actual signal data from the .raw file
+		sd = readRawSpice3File(cell, sd, newRawLTspice);
 
 		// stop progress dialog, close the file
 		stopProgressDialog();
@@ -77,7 +81,7 @@ public class RawSpiceOut extends Input<Stimuli>
         return sd;
 	}
 
-	private Stimuli readRawSpice3File(Cell cell, Stimuli sd)
+	private Stimuli readRawSpice3File(Cell cell, Stimuli sd, boolean newRawLTspice)
 		throws IOException
 	{
 		complexValues = false;
@@ -98,6 +102,7 @@ public class RawSpiceOut extends Input<Stimuli>
 			String line = getLineFromBinary();
 			if (line == null) break;
 			updateProgressDialog(line.length());
+			if (newRawLTspice) line = new String(line.getBytes(), "UTF-16");
 
 			// make sure this isn't an HSPICE deck (check first line)
 			if (first)
@@ -344,6 +349,7 @@ if (OLD) firstFieldIsTime = true;
                         restOfLine = getLineFromBinary();
                         if (restOfLine == null) break;
                         updateProgressDialog(restOfLine.length());
+                        if (newRawLTspice) restOfLine = new String(restOfLine.getBytes(), "UTF-16");
                         restOfLine = restOfLine.trim();
                         int indexOnLine = TextUtils.atoi(restOfLine);
                         if (indexOnLine != i)
@@ -395,6 +401,13 @@ if (OLD) continue;
                         System.out.println(signalCount+" VARIABLES, "+rowCount+" SAMPLES");
                         for(int i=0; i<signalCount; i++)
                             System.out.println("VARIABLE "+i+" IS "+signalNames[i]);
+                    }
+
+                    if (newRawLTspice)
+                    {
+                    	// remove a character (2 bytes) at end of header to make alignment for reading binary block
+                    	int c = dataInputStream.read();
+                    	updateProgressDialog(Integer.toString(c).length());
                     }
 
                     // read all of the data in the RAW file

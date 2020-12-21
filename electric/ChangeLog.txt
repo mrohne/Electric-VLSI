@@ -4,7 +4,9 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-d: ******************************
 
-BUG: (12/10/2020, SMR) MOSIS CMOS capacitors short connections, do not connect to poly-2
+IMP: (12/21/2020, GA) Added code to handle newer LTSpice raw output.
+
+BUG: (12/10/2020, SMR) MOSIS CMOS capacitors short connections, do not connect to poly-2.
 FIX: Edited "mocmos.xml" to implement this.
 
 BUG: (11/30/2020, SMR) Technology edit crashes when trying to display errors.
