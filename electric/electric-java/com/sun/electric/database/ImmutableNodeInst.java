@@ -477,7 +477,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
             throw new NullPointerException("orient");
         }
         if (getTrace() != null) {
-            throw new IllegalArgumentException();
+            return this;
         }
         if (isCellCenter(protoId)) {
             return this;
