@@ -46,8 +46,8 @@ import javax.swing.SwingUtilities;
  *
  */
 class ClientJobManager {
-    /** stream for cleint read Snapshots. */    private final IdReader reader;
-    /** stream for cleint to send Jobs. */      private final DataOutputStream clientOutputStream;
+    /** stream for client read Snapshots. */    private final IdReader reader;
+    /** stream for client to send Jobs. */      private final DataOutputStream clientOutputStream;
     /** Process that launched this. */          private final Process process;
 
     private EditingPreferences currentEp = new EditingPreferences(true, IdManager.stdIdManager.getInitialTechPool());
