@@ -173,6 +173,7 @@ public class Quick
 
         // caching bits
         System.out.println("Running DRC with " + DRC.explainBits(reportInfo.activeSpacingBits, dp));
+        System.out.println("Number of geometries: " + count);
 
 		// Nothing to check for this particular technology
 		if (rules == null || rules.getNumberOfRules() == 0)
@@ -200,6 +201,7 @@ public class Quick
 	    // No incremental neither per Cell
 	    if (!dp.ignoreAreaCheck && reportInfo.errorTypeSearch != DRC.DRCCheckMode.ERROR_CHECK_CELL)
 	    {
+			System.out.println("No incremental, looping over layers of '" + tech.getTechName() + "'");
 		    for(Iterator<Layer> it = tech.getLayers(); it.hasNext(); )
 			{
 				Layer layer = it.next();
@@ -598,6 +600,21 @@ public class Quick
 	}
 
     /**
+     * Check ArcInst for angular step
+     * @param ai
+     * @param cell
+     * @param geom
+     * @return true if an error was found.
+     */
+    private boolean checkAngleStep(ArcInst ai)
+	{
+        int minAllowedAngleStep = (int)(10*reportInfo.minAllowedAngleStep);
+        if (minAllowedAngleStep == 0) return false;
+		int arcAngle = ai.getAngle();
+        return ((arcAngle % minAllowedAngleStep) != 0);
+	}
+
+    /**
      * Check Poly for CIF Resolution Errors
      * @param poly
      * @param cell
@@ -691,14 +708,7 @@ public class Quick
 		FixpTransform trans = ni.rotateOut();
 		boolean errorsFound = false;
 
-		// Skipping special nodes
-		if (NodeInst.isSpecialNode(ni)) return false; // Oct 5;
-
-        if (!np.getTechnology().isLayout())
-            return (false); // only layout nodes
-
-        assert(!np.getFunction().isPin()); // np.getFunction().isPin() is covered by NodeInst.isSpecialNode(ni)
-//        if (np.getFunction().isPin()) return false; // Sept 30
+        if (!np.getTechnology().isLayout()) return (false); // only layout nodes
 
         if (coverByExclusion(ni)) return false; // no errors
 
@@ -712,19 +722,6 @@ public class Quick
             if (reportInfo.errorTypeSearch == DRC.DRCCheckMode.ERROR_CHECK_CELL) return true;
             errorsFound = true;
         }
-//        if (np instanceof PrimitiveNode)
-//        {
-//            DRCTemplate forbidRule =
-//            DRC.isForbiddenNode(((PrimitiveNode)np).getPrimNodeIndexInTech(), -1,
-//                DRCTemplate.DRCRuleType.FORBIDDEN, tech);
-//            if (forbidRule != null)
-//            {
-//                DRC.createDRCErrorLogger(reportInfo, DRC.DRCErrorType.FORBIDDEN, " is not allowed by selected foundry", cell,
-//                    -1, -1, forbidRule.nodeName, null, ni, null, null, null, null);
-//                if (reportInfo.errorTypeSearch == DRC.DRCCheckMode.ERROR_CHECK_CELL) return true;
-//                errorsFound = true;
-//            }
-//        }
 
         // get layers from the NodeInst. Not a cell at this point.
         // get all of the polygons on this node
@@ -782,9 +779,7 @@ public class Quick
 				errorsFound = true;
 			}
 			// Check select over transistor poly
-			// Assumes polys on transistors fulfill condition by construction
-//			ret = !isTransistor && checkSelectOverPolysilicon(ni, layer, poly, cell);
-            ret = !isTransistor && checkExtensionRules(ni, layer, poly, cell);
+            ret = checkExtensionRules(ni, layer, poly, cell);
             if (ret)
 			{
 				if (reportInfo.errorTypeSearch == DRC.DRCCheckMode.ERROR_CHECK_CELL) return true;
@@ -833,6 +828,7 @@ public class Quick
         Point2D from = ai.getHeadLocation();
         Point2D to = ai.getTailLocation();
 
+	if (checkAngleStep(ai)) 
         if (!DBMath.areEquals(from.getX(), to.getX()) && !DBMath.areEquals(from.getY(), to.getY()))
         {
             DRC.createDRCErrorLogger(reportInfo, DRC.DRCErrorType.CROOKEDERROR, null, ai.getParent(),
@@ -895,7 +891,6 @@ public class Quick
 				errorsFound = true;
 			}
 			// Check select over transistor poly
-//			ret = checkSelectOverPolysilicon(ai, layer, poly, ai.getParent());
             ret = checkExtensionRules(ai, layer, poly, ai.getParent());
             if (ret)
 			{
@@ -3668,7 +3663,6 @@ public class Quick
     private boolean checkExtensionRules(Geometric geom, Layer layer, Poly poly, Cell cell)
     {
         if(dp.ignoreExtensionRuleChecking) return false;
-
         List<DRCTemplate> rules = DRC.getRules(layer, DRCTemplate.DRCRuleType.SURROUND);
 
         //A              AB               B
@@ -3681,7 +3675,6 @@ public class Quick
         // +----------------------------+
         //D              DC               C
         Point2D[] basePts = new Point2D[4];
-//        boolean[] baseFound = new boolean[4];  // all false at the beginning
         // NOTE: Enough to find a point matching 1 rule to be OK.
         Rectangle2D polyBnd = poly.getBounds2D();
         basePts[0] = new Point2D.Double(polyBnd.getMinX(), polyBnd.getMinY());
@@ -3692,14 +3685,9 @@ public class Quick
         for (DRCTemplate rule : rules)
         {
             if (rule.nodeName != null) continue; // ignore these ones, only use to resize primitives
-            if (rule.condition == null) continue; // must be conditional
             if (!rule.name1.equals(layer.getName())) continue; // it has to be the first name
-            String[] layersS = TextUtils.parseString(rule.condition.substring(2), "(,)"); // 2 to skip "or"
-            Layer[] layers = new Layer[layersS.length];
-            for (int i = 0; i < layersS.length; i++)
-            {
-                layers[i] = layer.getTechnology().findLayer(layersS[i]);
-            }
+            if (rule.name2 == null) continue; // must have two layers
+            Layer layer2 = layer.getTechnology().findLayer(rule.name2);
 
             for (int j = 0; j < 4; j++)
             {
@@ -3712,15 +3700,9 @@ public class Quick
                                 DBMath.round(basicPts[0].getY()- DRC.TINYDELTA),
                                 2*(DRC.TINYDELTA), 2*(DRC.TINYDELTA));
                 boolean f = false;
-                for (int i = 0; i < layers.length; i++)
-                {
-                    f = lookForLayerWithPoints(geom, poly, null, null, cell, layers[i], DBMath.MATID, basicBnd,
-                            basicPts, basicFound, 1, true);
-                    if (f)
-                        break; // found
-                }
-                if (!f)
-                    continue; // no point in layers found
+				f = lookForLayerWithPoints(geom, poly, null, null, cell, layer2, DBMath.MATID, basicBnd,
+										   basicPts, basicFound, 1, true);
+                if (!f) continue; // no point in layers found
 
                 // now testing the rule
                 basicFound[0] = basicFound[1] = basicFound[2] = false;
@@ -3766,19 +3748,14 @@ public class Quick
                                 DBMath.round(basicBndPoint.getY()- DRC.TINYDELTA),
                                 DBMath.round(xValue+2*(DRC.TINYDELTA)), DBMath.round(yValue+2*(DRC.TINYDELTA)));
 
-                for (int i = 0; i < layers.length; i++)
-                {
-                    f = lookForLayerWithPoints(geom, poly, null, null, cell, layers[i], DBMath.MATID, basicBnd,
-                            basicPts, basicFound, 3, true);
-                    if (f)
-                        break; // found
-                }
+				f = lookForLayerWithPoints(geom, poly, null, null, cell, layer2, DBMath.MATID, basicBnd,
+										   basicPts, basicFound, 3, true);
 
                 if (!f)
                 {
                     DRC.createDRCErrorLogger(reportInfo, DRC.DRCErrorType.LAYERSURROUNDERROR,
-                        "Not enough surround of " + rule.condition + ", ",
-                        geom.getParent(), rule.getValue(0), -1, rule.ruleName, poly, geom, layer, null, null, null);
+                        "Not enough surround of " + rule.name2 + ", ",
+                        geom.getParent(), rule.getValue(0), -1, rule.ruleName, poly, geom, layer, null, null, layer2);
                     if (reportInfo.errorTypeSearch != DRC.DRCCheckMode.ERROR_CHECK_EXHAUSTIVE) return true; // no need of checking other combinations
                     break; // with next rule
                 }
