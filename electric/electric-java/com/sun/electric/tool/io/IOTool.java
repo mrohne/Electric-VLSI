@@ -1201,27 +1201,6 @@ public class IOTool extends Tool
 	 */
 	public static boolean isFactoryGDSInExpandsCells() { return cacheGDSInExpandsCells.getBooleanFactoryValue(); }
 
-	private static Pref cacheGDSInInstantiatesArrays = Pref.makeBooleanPref("GDSInInstantiatesArrays", IOTool.tool.prefs, true);
-	/**
-	 * Method to tell whether GDS Input instantiates arrays.
-	 * The default is "true".
-	 * When false, only the edges of arrays are instantiated, not those entries in the center.
-	 * @return true if GDS Input instantiates arrays.
-	 */
-	public static boolean isGDSInInstantiatesArrays() { return cacheGDSInInstantiatesArrays.getBoolean(); }
-	/**
-	 * Method to set whether GDS Input instantiates arrays.
-	 * When false, only the edges of arrays are instantiated, not those entries in the center.
-	 * @param on true if GDS Input instantiates arrays.
-	 */
-	public static void setGDSInInstantiatesArrays(boolean on) { cacheGDSInInstantiatesArrays.setBoolean(on); }
-	/**
-	 * Method to tell whether GDS Input instantiates arrays, by default.
-	 * When false, only the edges of arrays are instantiated, not those entries in the center.
-	 * @return true if GDS Input instantiates arrays, by default.
-	 */
-	public static boolean isFactoryGDSInInstantiatesArrays() { return cacheGDSInInstantiatesArrays.getBooleanFactoryValue(); }
-
 	public static final int GDSUNKNOWNLAYERIGNORE    = 0;
 	public static final int GDSUNKNOWNLAYERUSEDRC    = 1;
 	public static final int GDSUNKNOWNLAYERUSERANDOM = 2;
@@ -1337,6 +1316,30 @@ public class IOTool extends Tool
 	 * @return how GDS input should simplify array references (AREFs), by default.
 	 */
 	public static int getFactoryGDSArraySimplification() { return cacheGDSArraySimplification.getIntFactoryValue(); }
+
+	public static final int GDSINSTANTIATEARRAYSIMPLE    = 0;
+	public static final int GDSINSTANTIATEARRAYBISECTION = 1;
+	public static final int GDSINSTANTIATEARRAYANNOTATE  = 2;
+
+	private static Pref cacheGDSArrayInstantiation = Pref.makeIntPref("cacheGDSArrayInstantiation", IOTool.tool.prefs, 0);
+	/**
+	 * Method to tell how GDS input should simplify array references (AREFs).
+	 * Choices are: 0=none (default), 1=merge each AREF, 2=merge all AREFs in a cell
+	 * @return how GDS input should simplify array references (AREFs).
+	 */
+	public static int getGDSArrayInstantiation() { return cacheGDSArrayInstantiation.getInt(); }
+	/**
+	 * Method to set how GDS input should simplify array references (AREFs).
+	 * Choices are: 0=none (default), 1=merge each AREF, 2=merge all AREFs in a cell
+	 * @param on how GDS input should simplify array references (AREFs).
+	 */
+	public static void setGDSArrayInstantiation(int on) { cacheGDSArrayInstantiation.setInt(on); }
+	/**
+	 * Method to tell how GDS input should simplify array references (AREFs), by default.
+	 * Choices are: 0=none (default), 1=merge each AREF, 2=merge all AREFs in a cell
+	 * @return how GDS input should simplify array references (AREFs), by default.
+	 */
+	public static int getFactoryGDSArrayInstantiation() { return cacheGDSArrayInstantiation.getIntFactoryValue(); }
 
 	private static Pref cacheGDSCadenceCompatibility = Pref.makeBooleanPref("GDSCadenceCompatibility", IOTool.tool.prefs, true);
 	/**
