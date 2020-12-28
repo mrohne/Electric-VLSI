@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
 public class EvalABCL {
 
     private static boolean abclChecked = false;
-    private static ScriptEngineFactory abclFactory;
+    private static ScriptEngineFactory abclFactory = null;
     private static final Logger logger = LoggerFactory.getLogger(EvalABCL.class);
 
     public static boolean hasABCL() {
@@ -79,17 +79,18 @@ public class EvalABCL {
 			System.out.println("Scanning scriptFactories for ABCL Script");
 			for (ScriptEngineFactory factory: mgr.getEngineFactories()) {
 				System.out.println("getEngineName(): "+factory.getEngineName());
-				if (factory.getEngineName().equals("ABCL Script") &&
-					factory.getEngineVersion().equals("0.1")) {
+				if (factory.getEngineName().equals("ABCL Script")) {
 					abclFactory = factory;
 				}
 			}
-			System.out.println("Found ABCL Script: "+abclFactory);
-			ScriptContext ctx = abclFactory.getScriptEngine().getContext();
-			ctx.setReader(new InputStreamReader(System.in));
-			ctx.setWriter(new OutputStreamWriter(System.out));
-			ctx.setErrorWriter(new PrintWriter(System.out, true));
-			abclFactory.getScriptEngine().setContext(ctx);
+			if (abclFactory != null) {
+				System.out.println("Found ABCL Script: "+abclFactory);
+				ScriptContext ctx = abclFactory.getScriptEngine().getContext();
+				ctx.setReader(new InputStreamReader(System.in));
+				ctx.setWriter(new OutputStreamWriter(System.out));
+				ctx.setErrorWriter(new PrintWriter(System.out, true));
+				abclFactory.getScriptEngine().setContext(ctx);
+			}
         }
         // if already initialized, return state
         return abclFactory != null;
