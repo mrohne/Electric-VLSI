@@ -576,7 +576,7 @@ public class ErrorLogger implements Serializable
     {
         Cell cell = pp.getParent();
     	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
-        h.add(new ErrorHighExport(null, pp));
+        h.add(ErrorHighlight.newInstance(pp));
     	logAnError(message, cell, sortKey, h);
     }
 
@@ -590,7 +590,7 @@ public class ErrorLogger implements Serializable
     public synchronized void logError(String message, EPoint pt, Cell cell, int sortKey)
     {
     	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
-        h.add(new ErrorHighPoint(cell, pt));
+        h.add(ErrorHighlight.newInstance(cell, pt));
     	logAnError(message, cell, sortKey, h);
     }
 
@@ -655,11 +655,11 @@ public class ErrorLogger implements Serializable
                 }
                 else if (obj instanceof Export)
                 {
-                    h.add(new ErrorHighExport(null, (Export)obj));
+                    h.add(ErrorHighlight.newInstance((Export)obj));
                 }
                 else if (obj instanceof EPoint)
                 {
-                    h.add(new ErrorHighPoint(cell, (EPoint)obj));
+                    h.add(ErrorHighlight.newInstance(cell, (EPoint)obj));
                 }
                 else if (obj instanceof Rectangle2D)
                 {
@@ -671,13 +671,13 @@ public class ErrorLogger implements Serializable
                 	EPoint p3 = EPoint.fromLambda(rect.getMaxX(), rect.getMaxY());
                 	EPoint p4 = EPoint.fromLambda(rect.getMaxX(), rect.getY());
                 	//  p1-p2
-                	l.add(new ErrorHighLine(cell, p1, p2, true));
+                	l.add(ErrorHighlight.newInstance(cell, p1, p2));
                 	//  p2-p3
-                	l.add(new ErrorHighLine(cell, p2, p3, true));
+                	l.add(ErrorHighlight.newInstance(cell, p2, p3));
                 	//  p3-p4
-                	l.add(new ErrorHighLine(cell, p3, p4, true));
+                	l.add(ErrorHighlight.newInstance(cell, p3, p4));
                 	//  p4-p1
-                	l.add(new ErrorHighLine(cell, p4, p1, true));
+                	l.add(ErrorHighlight.newInstance(cell, p4, p1));
                 	h.add(new ErrorHighPoly(cell, null, l));
                 }
                 else if (obj instanceof PolyBase)
@@ -690,8 +690,9 @@ public class ErrorLogger implements Serializable
                     {
                         int prev = i-1;
                         if (i == 0) prev = points.length-1;
-                        l.add(new ErrorHighLine(cell, EPoint.fromLambda(points[prev].getX(), points[prev].getY()),
-                        		EPoint.fromLambda(points[i].getX(), points[i].getY()), true));
+                        l.add(ErrorHighlight.newInstance(cell, 
+												EPoint.fromLambda(points[prev].getX(), points[prev].getY()),
+												EPoint.fromLambda(points[i].getX(), points[i].getY())));
                     }
                     h.add(new ErrorHighPoly(cell, null, l));
                 }
@@ -704,7 +705,7 @@ public class ErrorLogger implements Serializable
     		for(int i=0; i<lineList.size(); i += 2)
     		{
     			if (i < lineList.size() - 1)
-    				h.add(new ErrorHighLine(cell, lineList.get(i), lineList.get(i+1), true));
+    				h.add(ErrorHighlight.newInstance(cell, lineList.get(i), lineList.get(i+1)));
     			else
     				System.out.println("Out of range for lineList. Check this list with i=" + i + " size=" + lineList.size() 
     						+ " elements associated to message '" + message + "'.");
@@ -745,8 +746,9 @@ public class ErrorLogger implements Serializable
     	        {
     	            int prev = i-1;
     	            if (i == 0) prev = points.length-1;
-    	            list.add(new ErrorHighLine(cell, EPoint.fromLambda(points[prev].getX(), points[prev].getY()),
-    	            		EPoint.fromLambda(points[i].getX(), points[i].getY()), true));
+    	            list.add(ErrorHighlight.newInstance(cell, 
+														EPoint.fromLambda(points[prev].getX(), points[prev].getY()),
+														EPoint.fromLambda(points[i].getX(), points[i].getY())));
                 }
                 h.add(new ErrorHighPoly(cell, null, list));
             }
@@ -833,7 +835,7 @@ public class ErrorLogger implements Serializable
     public synchronized void logWarning(String message, Export pp, Cell cell, VarContext context, int sortKey)
     {
     	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
-        h.add(new ErrorHighExport(context, pp));
+        h.add(ErrorHighlight.newInstance(pp));
     	logAWarning(message, cell, sortKey, h);
     }
 
