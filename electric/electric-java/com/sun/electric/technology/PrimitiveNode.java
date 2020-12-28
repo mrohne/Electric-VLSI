@@ -1009,19 +1009,6 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
                 gridCoords[3] = anchorY + hy;
                 return;
             }
-//            if (n.orient == Orientation.IDENT) {
-//                assert n.orient == Orientation.IDENT;
-//                long anchorX = n.anchor.getGridX();
-//                long anchorY = n.anchor.getGridY();
-//                long halfSizeX = n.size.getGridX() >> 1;
-//                long halfSizeY = n.size.getGridY() >> 1;
-//                gridCoords[0] = anchorX - halfSizeX;
-//                gridCoords[1] = anchorY - halfSizeY;
-//                gridCoords[2] = anchorX + halfSizeX;
-//                gridCoords[3] = anchorY + halfSizeY;
-//                return true;
-//            }
-//            assert n.getTrace() == null;
             super.genBounds(n, gridCoords);
         }
     }
