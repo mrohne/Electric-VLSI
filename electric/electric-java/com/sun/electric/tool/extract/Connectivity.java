@@ -122,12 +122,12 @@ public class Connectivity
 {
 	/** true to prevent objects smaller than minimum size */	private static final boolean ENFORCEMINIMUMSIZE = true;
 	/** true to prevent objects smaller than minimum size */	private static final boolean ENFORCEMANHATTAN = false;
-	/** true to debug geometry issues */         				private static final boolean DEBUGGEOMETRY = false;
-	/** true to debug centerline determination */				private static final boolean DEBUGCENTERLINES = false;
-	/** true to debug object creation */						private static final boolean DEBUGSTEPS = false;
-	/** true to debug contact extraction */						private static final boolean DEBUGCONTACTS = false;
-	/** true to debug nodes creation */						    private static final boolean DEBUGNODES = false;
-	/** true to debug nodes creation */						    private static final boolean DEBUGWIRES = false;
+	/** true to debug geometry issues */         				private static final boolean DEBUGGEOMETRY = true;
+	/** true to debug centerline determination */				private static final boolean DEBUGCENTERLINES = true;
+	/** true to debug object creation */						private static final boolean DEBUGSTEPS = true;
+	/** true to debug contact extraction */						private static final boolean DEBUGCONTACTS = true;
+	/** true to debug nodes creation */						    private static final boolean DEBUGNODES = true;
+	/** true to debug nodes creation */						    private static final boolean DEBUGWIRES = true;
 	/** amount to scale values before merging */				private static final double SCALEFACTOR = 1;
 
 	/** the current technology for extraction */				private Technology tech;
@@ -336,6 +336,15 @@ public class Connectivity
      * @param recursive run recursively
      * @param pats a List of cell name patterns that will be flattened.
      */
+	public Connectivity(Cell cell, Job j, EditingPreferences ep, ErrorLogger eLog, double smallestPolygonSize, int activeHandling,
+		boolean gridAlignExtraction, ECoord scaledResolution, boolean approximateCuts, boolean recursive,
+		List<Pattern> pats)
+	{
+		this(cell, j, ep, eLog, smallestPolygonSize, activeHandling,
+			 true, true, true, true, true, true,
+			 gridAlignExtraction, scaledResolution, approximateCuts, recursive,
+			 pats);
+	}
 	public Connectivity(Cell cell, Job j, EditingPreferences ep, ErrorLogger eLog, double smallestPolygonSize, int activeHandling,
 						boolean doVias, boolean doTransistors, boolean doWires, boolean doBridges, boolean doPureNodes, boolean doAutoStitch,
 						boolean gridAlignExtraction, ECoord scaledResolution, boolean approximateCuts, boolean recursive,
@@ -563,6 +572,17 @@ public class Connectivity
 	 * A new version of the cell is created that has real nodes (transistors, contacts) and arcs.
 	 * This cell should have pure-layer nodes which will be converted.
 	 */
+	public Cell doExtract(Cell oldCell, boolean recursive, List<Pattern> pats, boolean flattenPcells, boolean usePureLayerNodes,
+		boolean top, Job job, List<List<ERectangle>> addedBatchRectangles, List<List<ERectangle>> addedBatchLines, List<String> addedBatchNames)
+	{
+		return doExtract(oldCell, recursive, pats,
+						 flattenPcells, usePureLayerNodes,
+						 top, job,
+						 addedBatchRectangles, 
+						 addedBatchLines, 
+						 addedBatchNames,
+						 new ArrayList<Cell>());
+	}
 	public Cell doExtract(Cell oldCell, boolean recursive, List<Pattern> pats, 
 						  boolean flattenPcells, boolean usePureLayerNodes,
 						  boolean top, Job job, 
