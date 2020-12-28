@@ -134,6 +134,7 @@ public class GDS extends Input<Object>
 {
 	private static final boolean SHOWPROGRESS = false;			/* true for debugging */
 	private static final boolean TALLYCONTENTS = false;			/* true for debugging */
+	private static final boolean DEBUGREF = false;			    /* true for debugging */
 
 	/** key of Variable holding original GDS file. */		public static final Variable.Key SKELETON_ORIGIN = Variable.newKey("ATTR_GDS_original");
 	/** key of Variable holding original export name. */	public static final Variable.Key ORIGINAL_EXPORT_NAME = Variable.newKey("GDS_original_export_name");
@@ -353,14 +354,28 @@ public class GDS extends Input<Object>
         {
 	        Cell cell = theCell != null ? theCell.cell : null;
 	        String message = e.getMessage();
+			if (cell != null) {
+				System.out.println("**** Cell "+cell.describe(false));
+			}
+			System.out.println("gdsRead.getLastRecordType():     "+gdsRead.getLastRecordType());
+			System.out.println("gdsRead.getRemainingDataCount(): "+gdsRead.getRemainingDataCount());
+			System.out.println("gdsRead.getLastDataWord():       "+gdsRead.getLastDataWord());
+			System.out.println("gdsRead.getLastDataType():       "+gdsRead.getLastDataType());
 	        System.out.println(message);
-	        errorLogger.logError(message, cell, 0);
+			e.printStackTrace(System.out);
+			errorLogger.logError(message, cell, 0);
             return null;
         }
 	    catch (Exception e)
 		{
-            System.out.println("ERROR reading GDS file: check input file: " + e.getMessage());
+	        Cell cell = theCell != null ? theCell.cell : null;
+	        String message = e.getMessage();
+			if (cell != null) {
+				System.out.println("**** Cell "+cell.describe(false));
+			}
+	        System.out.println(message);
 			e.printStackTrace(System.out);
+			errorLogger.logError(message, cell, 0);
             return null;
         }
 
@@ -496,9 +511,10 @@ public class GDS extends Input<Object>
 		private GDSPreferences localPrefs;
 		private Technology tech;
 		private Cell cell;
+        private List<MakeArcPath> paths = new ArrayList<MakeArcPath>();
         private List<MakeInstance> insts = new ArrayList<MakeInstance>();
-        private Map<UnknownLayerMessage,List<MakeInstance>> allErrorInsts = new LinkedHashMap<UnknownLayerMessage,List<MakeInstance>>();
         private List<MakeInstanceArray> instArrays = new ArrayList<MakeInstanceArray>();
+        private Map<UnknownLayerMessage,List<MakeInstance>> allErrorInsts = new LinkedHashMap<UnknownLayerMessage,List<MakeInstance>>();
 
         private boolean topLevel;
         private int nodeId;
@@ -1502,20 +1518,33 @@ public class GDS extends Input<Object>
                 if (!validGdsNodeName(nodeName))
                 {
                     System.out.println("  Warning: Node name '" + nodeName + "' in cell " + cb.cell.describe(false) +
-                        " is bad (" + Name.checkName(nodeName.toString()) + ")...ignoring the name");
+									   " is bad (" + Name.checkName(nodeName.toString()) + ")...ignoring the name");
                 } else if (!cb.userNames.contains(nodeName.toString()))
                 {
                     cb.userNames.add(nodeName.toString());
-                    this.nodeName = nodeName;
-                    return;
-                }
+					this.nodeName = nodeName;
+					return;
+				}
             }
-            Name baseName;
-            if (proto instanceof Cell) baseName = ((Cell)proto).getBasename(); else
+            Name baseName = null;
+            if (proto instanceof Cell)
+			{
+				assert proto instanceof Cell;
+                Cell cell = (Cell)proto;
+				baseName = cell.getBasename();
+			}
+			else
             {
+				assert proto instanceof PrimitiveNode;
                 PrimitiveNode np = (PrimitiveNode)proto;
                 baseName = np.getFunction().getBasename();
             }
+			if (baseName == null) {
+				System.out.print("PATCH: proto " + proto + " baseName " + baseName);
+				baseName = ImmutableArcInst.BASENAME;
+				System.out.println(" -> " + ImmutableArcInst.BASENAME);				
+				assert baseName != null;
+			}
             String basenameString = baseName.toString();
             MutableInteger maxSuffix = cb.maxSuffixes.get(basenameString);
             if (maxSuffix == null)
@@ -1525,6 +1554,7 @@ public class GDS extends Input<Object>
             }
             maxSuffix.increment();
             this.nodeName = baseName.findSuffixed(maxSuffix.intValue());
+			return;
 		}
 
         private boolean validGdsNodeName(Name name)
@@ -1794,6 +1824,7 @@ public class GDS extends Input<Object>
 			shift *= 10;
 		}
 		roundedScale = DBMath.round(roundedScale) / shift;
+		meterUnit = roundedScale;
 
 		// compute the scale
 		double microScale = TextUtils.convertFromDistance(1, curTech, TextUtils.UnitScale.MICRO);
@@ -1896,14 +1927,13 @@ public class GDS extends Input<Object>
 		if (gdsRead.getTokenType() != GDSReader.GDS_IDENT) gdsRead.handleError("Structure name is missing");
 
 		// look for this nodeproto
-		String name = scaleName(gdsRead.getStringValue(), 1.0);
+		String name = gdsRead.getStringValue();
+		name = scaleName(name, 1.0);
 		if (localPrefs.dumpReadable)
 		{
 			printWriter.println();
 			printWriter.println("- Cell: " + name);
 		}
-		if (localPrefs.skeletonize) name += "{lay.sk}"; else
-			name += "{lay}";
 		Cell cell = findCell(name);
 		if (cell == null)
 		{
@@ -2004,7 +2034,8 @@ public class GDS extends Input<Object>
 		gdsRead.getToken();
 
 		// get this nodeproto
-		Cell np = getPrototype(gdsRead.getStringValue());
+		String name = gdsRead.getStringValue();
+		Cell np = getPrototype(name);
 		gdsRead.getToken();
 		int angle = 0;
 		boolean trans = false;
@@ -2105,7 +2136,8 @@ public class GDS extends Input<Object>
 		if (gdsRead.getTokenType() != GDSReader.GDS_SNAME) gdsRead.handleError("Structure reference name is missing");
 
 		gdsRead.getToken();
-		Cell np = getPrototype(gdsRead.getStringValue());
+		String name = gdsRead.getStringValue();
+		Cell np = getPrototype(name);
 		gdsRead.getToken();
 		int angle = 0;
 		boolean trans = false;
@@ -2155,11 +2187,11 @@ public class GDS extends Input<Object>
 		determineBoundary();
 		if (localPrefs.dumpReadable)
         {
-			double lx = theVertices[0].getX();
-			double hx = theVertices[0].getX();
-			double ly = theVertices[0].getY();
-			double hy = theVertices[0].getY();
-			for (int i=1; i<numVertices;i++)
+			double lx = +Double.MAX_VALUE;
+			double hx = -Double.MAX_VALUE;
+			double ly = +Double.MAX_VALUE;
+			double hy = -Double.MAX_VALUE;
+			for (int i=0; i<numVertices;i++)
 			{
 				if (lx > theVertices[i].getX()) lx = theVertices[i].getX();
 				if (hx < theVertices[i].getX()) hx = theVertices[i].getX();
@@ -2344,9 +2376,6 @@ public class GDS extends Input<Object>
 						numMatchedLayers++;
 						break;
 					}
-				} else
-				{
-					fextend = bgnextend;
 				}
 				if (numMatchedLayers != ap.getArcLayers().length) continue;
 				switch (endcode) {
@@ -2961,10 +2990,12 @@ public class GDS extends Input<Object>
 		name = scaleName(name, 1.0);
 		if (localPrefs.skeletonize) name += "{lay.sk}"; else
 			name += "{lay}";
+		name = scaleName(name, 1.0);
 		Cell np = findCell(name);
 		if (np == null)
 		{
 			// FILO order, create this nodeproto
+			if (SHOWPROGRESS) System.out.println("Creating cell: " + name);
 			np = Cell.newInstance(theLibrary, name);
 			if (np == null) gdsRead.handleError("Failed to create SREF proto");
 			setProgressValue(0);
@@ -2980,6 +3011,16 @@ public class GDS extends Input<Object>
 	private String scaleName(String name, double scale)
 	{
 		// name for scaled cell
+		if (name.contains("@")) {
+			System.out.print("PATCH: name " + name);
+			name = name.replace('@', '$');
+			System.out.println(" -> " + name);				
+		}
+		if (name.contains(":")) {
+			System.out.print("PATCH: name " + name);
+			name = name.replace(':', '%');
+			System.out.println(" -> " + name);				
+		}
 		String full = (scale == 1.0) ? name : name  + "$" + scaleFormat.format(scale);
 		View view = localPrefs.skeletonize ? View.LAYOUTSKEL : View.LAYOUT;
 		int version = 0;

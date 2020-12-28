@@ -160,25 +160,20 @@ public class GDSMap extends EDialog
 				buf = buf.trim();
 				if (buf.length() == 0) continue;
 				if (buf.charAt(0) == '#') continue;
-
+				
+				// Split string
+				String words[] = buf.split("\\s+");
+				if (words.length < 4) continue;
+				
 				// get the layer name
-				int spaPos = buf.indexOf(' ');
-				if (spaPos < 0) continue;
-				String layerName = buf.substring(0, spaPos);
-				buf = buf.substring(spaPos+1).trim();
+				String layerName = words[0];
 
 				// get the layer purpose
-				spaPos = buf.indexOf(' ');
-				if (spaPos < 0) continue;
-				String layerPurpose = buf.substring(0, spaPos);
-				buf = buf.substring(spaPos+1).trim();
+				String layerPurpose = words[1];
 
 				// get the GDS number and type
-				spaPos = buf.indexOf(' ');
-				if (spaPos < 0) continue;
-				int gdsNumber = TextUtils.atoi(buf.substring(0, spaPos));
-				buf = buf.substring(spaPos+1).trim();
-				int gdsType = TextUtils.atoi(buf);
+				int gdsNumber = TextUtils.atoi(words[2]);
+				int gdsType = TextUtils.atoi(words[3]);
 
 				// only want layers whose purpose is "drawing" or "pin"
 				if (!layerPurpose.equalsIgnoreCase("drawing") &&
