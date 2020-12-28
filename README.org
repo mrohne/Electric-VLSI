@@ -52,7 +52,7 @@
   | 5/tool/1/routing       |
   | 5/tool/1/user          |
 
-  The tracking of the upstream is automatized in [[./electric/packaging/rebaseh.sh]]
+  The tracking of the SVN upstream is semi-automatic, see [[./electric/packaging/rebaseh.sh]]
   #+begin_src shell
 git stash
 git checkout master
