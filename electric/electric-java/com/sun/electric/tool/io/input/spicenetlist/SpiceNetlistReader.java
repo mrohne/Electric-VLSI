@@ -273,6 +273,10 @@ public class SpiceNetlistReader {
         {
             SpiceInstance inst = parseSubcktInstance(tokens);
             addInstance(inst);
+        } else if (keyword.startsWith("d"))
+        {
+            SpiceInstance inst = parseDiode(tokens);
+            addInstance(inst);
         } else if (keyword.startsWith("r"))
         {
             SpiceInstance inst = parseResistor(tokens);
@@ -535,6 +539,23 @@ public class SpiceNetlistReader {
             currentSubckt.addInstance(inst);
         else
             topLevelInstances.add(inst);
+    }
+
+    private SpiceInstance parseDiode(String [] parts) {
+        if (parts.length < 4) {
+            prErr("Not enough arguments for diode");
+            return null;
+        }
+        SpiceInstance inst = new SpiceInstance(parts[0]);
+		int i=1;
+        for (; i<3; i++) {
+            inst.addNet(parts[i]);
+        }
+        String modelName = parts[i];
+        inst.addModName(modelName);
+        i++;
+        parseParams(inst.getParams(), i, parts);
+        return inst;
     }
 
     private SpiceInstance parseResistor(String [] parts) {
