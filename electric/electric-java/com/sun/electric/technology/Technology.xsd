@@ -820,6 +820,11 @@
                         <xsd:attribute name="value" type="xsd:double" use="required"/>
                     </xsd:complexType>
                 </xsd:element>
+                <xsd:element name="angleStep" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:attribute name="value" type="xsd:double" use="required"/>
+                    </xsd:complexType>
+                </xsd:element>
                 <xsd:element name="defaultFoundry">
                     <xsd:complexType>
                         <xsd:attribute name="value" type="tns:Foundry" use="required"/>

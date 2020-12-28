@@ -967,6 +967,8 @@ public class Technology implements Comparable<Technology>, Serializable {
     private String[] spiceHeaderLevel3;
     /** Factory resolution for this Technology */
     private ECoord factoryResolution = ECoord.ZERO;
+    /** factroy angleStep for this Technology */
+    private double factoryAngleStep;
     /** static list of all Manufacturers in Electric */
     protected final List<Foundry> foundries = new ArrayList<Foundry>();
     /** default foundry Setting for this Technology */
@@ -1140,6 +1142,7 @@ public class Technology implements Comparable<Technology>, Serializable {
         setTechDesc(t.description);
         setFactoryScale(t.scaleValue, t.scaleRelevant);
         setFactoryResolution(t.resolutionValue);
+		setFactoryAngleStep(t.angleStepValue);
         setFactoryParasitics(t.minResistance, t.minCapacitance);
         setFactoryLESettings(t.leGateCapacitance, t.leWireRatio, t.leDiffAlpha);
         if (!t.transparentLayers.isEmpty()) {
@@ -3707,6 +3710,25 @@ public class Technology implements Comparable<Technology>, Serializable {
      */
     public ECoord getFactoryResolution() {
         return factoryResolution;
+    }
+
+    /**
+    /**
+     * Method to set Technology angleStep in IO/DRC tools.
+     * This has to be stored per technology.
+     * @param factory factory value
+     */
+    protected void setFactoryAngleStep(double factory) {
+        factoryAngleStep = factory;
+    }
+
+    /**
+     * Method to retrieve the default angleStep associated to the technology.
+     * This is the minimum size unit that can be represented.
+     * @return the technology's default angleStep value.
+     */
+    public double getFactoryAngleStep() {
+        return factoryAngleStep;
     }
 
     /**
