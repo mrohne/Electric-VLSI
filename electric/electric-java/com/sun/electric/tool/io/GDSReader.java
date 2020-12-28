@@ -281,7 +281,7 @@ public class GDSReader
 		throws Exception
 	{
 		dataWord = (short)getWord();
-		recordCount = dataWord - 2;
+		recordCount = (dataWord & 0xFFFF) - 2;
 		recordType = (byte)(getByte() & 0xFF);
 		theToken = GSymbol.findSymbol(recordType);
 		dataType = getByte();
