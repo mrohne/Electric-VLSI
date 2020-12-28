@@ -247,37 +247,19 @@ public class GenMath {
      * @return the angle of a vector.
      */
     public static int figureAngle(double x, double y) {
-        int ang = 0;
         if (x == 0) {
             return y > 0 ? 900 : y < 0 ? 2700 : 0;
         }
         if (y == 0) {
-            return x < 0 ? 1800 : 0;
+            return x > 0 ? 0 : x < 0 ? 1800 : 0;
         }
-        if (y < 0) {
-            x = -x;
-            y = -y;
-            ang = 1800;
-        } else if (!(y > 0)) {
+        if (!(y < 0) && !(y > 0)) {
             return 0;
         }
-        if (x < 0) {
-            double t = x;
-            x = y;
-            y = -t;
-            ang += 900;
-        } else if (!(x > 0)) {
+        if (!(x < 0) && !(x > 0)) {
             return 0;
         }
-        assert x > 0 && y > 0;
-        if (x == y) {
-            return ang + 450;
-        }
-        ang += (int) (y < x ? 0.5 + Math.atan(y / x) * (1800 / Math.PI) : 900.5 - Math.atan(x / y) * (1800 / Math.PI));
-        if (ang >= 3600) {
-            ang -= 3600;
-        }
-        return ang;
+		return (int)(Math.atan2(y, x) * (1800 / Math.PI) + 3600.5) % 3600;
     }
 
     /**
@@ -317,6 +299,7 @@ public class GenMath {
      */
     public static double getAreaOfPoints(Point2D[] points) {
         double area = 0.0;
+		if (points.length < 3) return Math.abs(area);
         double x0 = points[0].getX();
         double y0 = points[0].getY();
         double y1 = 0;
