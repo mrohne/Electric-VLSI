@@ -1,5 +1,69 @@
 * Provenance
-  This repository is cloned with git-svn from 
+  This repository attempts to track Steven Rubin's brilliant
+  [[https://www.staticfreesoft.com/index.html][Electric VLSI]] using ~git svn clone
+  svn://svn.savannah.gnu.org/electric/trunk~. The original README.txt
+  is included below, and kept in [[./electric/README.txt]].
+
+  There are a few local additions:
+  - Common Lisp scripting with [[https://common-lisp.net/project/armedbear/index.shtml][Armed Bear Common Lisp (ABCL)]]
+  - Fixes to build with recent JDKs
+  - Fixes to build w/o the now-obsolete Apple Java Extension
+  - Build for macOS uses appbundler
+  - Attempted fixes to various tools and file I/O
+
+* Directory structure
+  The upstream SVN repository structure is kept as-is. There are some
+  otherwise unexpected features:
+  + The top-level directory is empty except for a single subdirectory [[electric/]]
+  + The Maven build (if it worked) is defined in  [[electric/pom.xml]]
+  + The Ant build is defined in [[electric/packaging/build.xml][build.xml]]
+  + A collection of JAR-file dependencies is found in [[electric/packaging/]]
+
+* SVN tracking and repository branches
+  The local patches are split across an ordered set of branches. The
+  idea of the splitting is to be able to use some fixes
+  e.g. 3/input/1/gds without buying the whole package, notably
+  1/lang/1/abcl. The system is neither perfect nor consistent, but is
+  has proven useful in maintaining local changes against a chainging
+  upstream.
+  | 0/build/0/git          |
+  | 0/build/1/osx          |
+  | 1/lang/1/abcl          |
+  | 1/util/0/math          |
+  | 2/database/0/geometry  |
+  | 2/database/1/topology  |
+  | 2/database/2/immutable |
+  | 2/database/3/hierarchy |
+  | 2/technology/0/core    |
+  | 3/input/1/dxf          |
+  | 3/input/1/gds          |
+  | 3/input/1/lef          |
+  | 3/input/1/spice        |
+  | 4/output/1/dxf         |
+  | 4/output/1/gds         |
+  | 4/output/1/spice       |
+  | 4/output/1/vhdl        |
+  | 5/tool/0/jobs          |
+  | 5/tool/0/techedit      |
+  | 5/tool/1/drc           |
+  | 5/tool/1/extract       |
+  | 5/tool/1/fill          |
+  | 5/tool/1/io            |
+  | 5/tool/1/routing       |
+  | 5/tool/1/user          |
+
+  The tracking of the upstream is automatized in [[./electric/packaging/rebaseh.sh]]
+  #+begin_src shell
+git stash
+git checkout master
+git svn rebase
+git branch | grep / | sort | while read b; do echo Rebasing $b; git rebase --onto master master $b || break; done
+git branch -D merged.old
+git branch -M merged merged.old
+git checkout -b merged master
+git branch | grep / | sort | while read b; do echo Merging $b; git merge $b || break; done
+git stash pop
+  #+end_src
   
 * This is Electric, Version 9.07
 
