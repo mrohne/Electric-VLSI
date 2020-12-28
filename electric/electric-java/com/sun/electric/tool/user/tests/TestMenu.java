@@ -56,14 +56,14 @@ public class TestMenu
   		items.add(testSubMenu("ERC", ERCTest.getTests(), ERCTest.getOutputDirectory()));
 		items.add(testSubMenu("Export", ExportForeignTest.getTests(), ExportForeignTest.getOutputDirectory()));
 		items.add(testSubMenu("Extraction", ExtractionTest.getTests(), ExtractionTest.getOutputDirectory()));
-		items.add(testSubMenu("Generation", GenerationTest.getTests(), GenerationTest.getOutputDirectory()));
+//		items.add(testSubMenu("Generation", GenerationTest.getTests(), GenerationTest.getOutputDirectory()));
 		items.add(testSubMenu("I-O", IOTest.getTests(), IOTest.getOutputDirectory()));
 		items.add(testSubMenu("Import", ImportForeignTest.getTests(), ImportForeignTest.getOutputDirectory()));
 		items.add(testSubMenu("Jobs", JobsTest.getTests(), JobsTest.getOutputDirectory()));
 		items.add(testSubMenu("Layer Coverage", LayerCoverageToolTest.getTests(), LayerCoverageToolTest.getOutputDirectory()));
 		items.add(testSubMenu("Logical Effort", LogicalEffortTest.getTests(), LogicalEffortTest.getOutputDirectory()));
 		items.add(testSubMenu("NCC", NCCTest.getTests(), NCCTest.getOutputDirectory()));
-		items.add(testSubMenu("Placement", PlacementTest.getTests(), PlacementTest.getOutputDirectory()));
+//		items.add(testSubMenu("Placement", PlacementTest.getTests(), PlacementTest.getOutputDirectory()));
 		items.add(testSubMenu("Preferences", PrefTest.getTests(), PrefTest.getOutputDirectory()));
 		items.add(testSubMenu("Routing", RoutingTest.getTests(), RoutingTest.getOutputDirectory()));
 		items.add(testSubMenu("Scripting", ScriptingTest.getTests(), ScriptingTest.getOutputDirectory()));

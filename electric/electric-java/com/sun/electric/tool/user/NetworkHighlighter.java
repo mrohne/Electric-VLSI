@@ -57,7 +57,7 @@ public class NetworkHighlighter extends HierarchyEnumerator.Visitor {
     private int startDepth;
     private int endDepth;
     private int currentDepth;
-    private List<Highlight> highlights = new ArrayList<Highlight>();
+    private Highlighter highlights = new Highlighter(0, null);
 
     private NetworkHighlighter(Cell cell, Netlist netlist, Set<Network> nets, int startDepth, int endDepth) {
         this.cell = cell;
@@ -87,7 +87,7 @@ public class NetworkHighlighter extends HierarchyEnumerator.Visitor {
 
         HierarchyEnumerator.enumerateCell(cell, VarContext.globalContext, networkHighlighter);
 
-        return networkHighlighter.highlights;
+        return networkHighlighter.highlights.getHighlights();
     }
 
     public boolean enterCell(HierarchyEnumerator.CellInfo info)
@@ -218,10 +218,10 @@ public class NetworkHighlighter extends HierarchyEnumerator.Visitor {
             Color color = !((eObj instanceof ArcInst)) ? nodeColor : null;
             if (eObj instanceof Export)
             {
-                highlights.add(new HighlightText(eObj, cell, Export.EXPORT_NAME));
+                highlights.addText(eObj, cell, Export.EXPORT_NAME);
             } else
             {
-                highlights.add(new HighlightEOBJ(eObj, cell, false, -1, color));
+                highlights.addElectricObject(eObj, cell, false, color);
             }
         }
     }
@@ -282,7 +282,7 @@ public class NetworkHighlighter extends HierarchyEnumerator.Visitor {
                 color = colorN;
             }
             poly.transform(trans);
-            highlights.add(new HighlightPoly(cell, poly, color));
+            highlights.addPoly(poly, cell, color);
         }
     }
 }
