@@ -65,6 +65,7 @@ public class TechEditWizardData
 	private int num_metal_layers;
 	private int stepsize;   // value in nm or < 1 in case of other formats
     private double resolution; // technology resolution for delta values (not in real scale)
+    private double angleStep; // technology angle step
     private boolean pSubstrateProcess = false; // to control if process is a pwell or psubstrate process or not. If true, Tech Creation Wizard will not create pwell layers
     private boolean horizontalFlag = true; // to control if transistor gates are aligned horizontally. True by default . If transistors are horizontal -> M1 is horizontal?
     // 0=Basic is only with metal info, 0=Standard is with info for mocmos, 1=Complex with extra elements like resistors
@@ -716,6 +717,9 @@ public class TechEditWizardData
     double getResolution() { return resolution; }
 	public void setResolution(double n) { resolution = n; }
 
+    double getAngleStep() { return angleStep; }
+	void setAngleStep(double n) { angleStep = n; }
+
     int getNumMetalLayers() { return num_metal_layers; }
 	public void setNumMetalLayers(int n)
 	{
@@ -1117,6 +1121,7 @@ public class TechEditWizardData
                 if (varName.equalsIgnoreCase("defaultsquarecontacts")) setDefaultSquareContactsFlag(Boolean.valueOf(varValue)); else
                 if (varName.equalsIgnoreCase("stepsize")) setStepSize(TextUtils.atoi(varValue)); else
                 if (varName.equalsIgnoreCase("resolution")) setResolution(TextUtils.atof(varValue)); else
+                if (varName.equalsIgnoreCase("anglestep")) setAngleStep(TextUtils.atof(varValue)); else
                 if (varName.equalsIgnoreCase("analog_elements")) setAnalogFlag(Boolean.valueOf(varValue)); else
                 if (varName.equalsIgnoreCase("second_poly")) setSecondPolyFlag(Boolean.valueOf(varValue)); else
 
@@ -3031,6 +3036,7 @@ public class TechEditWizardData
         t.scaleValue = getStepSize();
         t.scaleRelevant = true;
         t.resolutionValue = getResolution();
+        t.angleStepValue = getAngleStep();
 //        t.scaleRelevant = isScaleRelevant();
         t.defaultFoundry = "NONE";
         t.minResistance = 1.0;
