@@ -229,8 +229,58 @@ public abstract class AbstractShapeBuilder {
             if (skipLayer(layer)) continue;
 
             int representation = primLayer.getRepresentation();
-            if (representation == Technology.NodeLayer.BOX)
-            {
+			if (style == Poly.Type.DISC) {
+				style = Poly.Type.FILLED;
+				Technology.TechPoint[] points = primLayer.getPoints();
+				// Center and perimeter, radius
+ 				long x0 = points[0].getX().getGridValue(n.size);
+				long y0 = points[0].getY().getGridValue(n.size);
+				EPoint p0 = EPoint.fromGrid(x0, y0);
+				long x2 = points[1].getX().getGridValue(n.size);
+				long y2 = points[1].getY().getGridValue(n.size);
+				EPoint p2 = EPoint.fromGrid(x2, y2);
+				// Inner and outer radius
+				double r1 = p0.lambdaDistance(p2);
+				double r2 = p0.lambdaDistance(p2) / DBMath.cos(75);
+				// First quadrant points
+				long x1 = 10 * DBMath.lambdaToGrid(r2 * DBMath.cos(1*75) / 10);
+				long y1 = 10 * DBMath.lambdaToGrid(r2 * DBMath.sin(1*75) / 10);
+				EPoint p1 = EPoint.fromGrid(x1, y1);
+				long x3 = 10 * DBMath.lambdaToGrid(r2 * DBMath.cos(3*75) / 10);
+				long y3 = 10 * DBMath.lambdaToGrid(r2 * DBMath.sin(3*75) / 10);
+				EPoint p3 = EPoint.fromGrid(x3, y3);
+				long x5 = 10 * DBMath.lambdaToGrid(r2 * DBMath.cos(5*75) / 10);
+				long y5 = 10 * DBMath.lambdaToGrid(r2 * DBMath.sin(5*75) / 10);
+				EPoint p5 = EPoint.fromGrid(x5, y5);
+				// Q1
+				pushPoint(p0, +p1.getFixpX(), +p1.getFixpY());
+				pushPoint(p0, +p3.getFixpX(), +p3.getFixpY());
+				pushPoint(p0, +p5.getFixpX(), +p5.getFixpY());
+				pushPoint(p0, +p5.getFixpY(), +p5.getFixpX());
+				pushPoint(p0, +p3.getFixpY(), +p3.getFixpX());
+				pushPoint(p0, +p1.getFixpY(), +p1.getFixpX());
+				// Q2
+				pushPoint(p0, -p1.getFixpY(), +p1.getFixpX());
+				pushPoint(p0, -p3.getFixpY(), +p3.getFixpX());
+				pushPoint(p0, -p5.getFixpY(), +p5.getFixpX());
+				pushPoint(p0, -p5.getFixpX(), +p5.getFixpY());
+				pushPoint(p0, -p3.getFixpX(), +p3.getFixpY());
+				pushPoint(p0, -p1.getFixpX(), +p1.getFixpY());
+				// Q3
+				pushPoint(p0, -p1.getFixpX(), -p1.getFixpY());
+				pushPoint(p0, -p3.getFixpX(), -p3.getFixpY());
+				pushPoint(p0, -p5.getFixpX(), -p5.getFixpY());
+				pushPoint(p0, -p5.getFixpY(), -p5.getFixpX());
+				pushPoint(p0, -p3.getFixpY(), -p3.getFixpX());
+				pushPoint(p0, -p1.getFixpY(), -p1.getFixpX());
+				// Q5
+				pushPoint(p0, +p1.getFixpY(), -p1.getFixpX());
+				pushPoint(p0, +p3.getFixpY(), -p3.getFixpX());
+				pushPoint(p0, +p5.getFixpY(), -p5.getFixpX());
+				pushPoint(p0, +p5.getFixpX(), -p5.getFixpY());
+				pushPoint(p0, +p3.getFixpX(), -p3.getFixpY());
+				pushPoint(p0, +p1.getFixpX(), -p1.getFixpY());
+			}  else if (representation == Technology.NodeLayer.BOX) {
                 EdgeH leftEdge = primLayer.getLeftEdge();
                 EdgeH rightEdge = primLayer.getRightEdge();
                 EdgeV topEdge = primLayer.getTopEdge();
@@ -367,8 +417,8 @@ public abstract class AbstractShapeBuilder {
         }
 
         int angle = a.getDefinedAngle();
-        long w2x = (long) GenMath.rint(w2 * GenMath.cos(angle));
-        long w2y = (long) GenMath.rint(w2 * GenMath.sin(angle));
+        long w2x = 10 * (long) GenMath.rint(w2 / 10 * GenMath.cos(angle));
+        long w2y = 10 * (long) GenMath.rint(w2 / 10 * GenMath.sin(angle));
         long tx = 0;
         long ty = 0;
         if (shrinkT == Shrinkage.EXTEND_90) {
