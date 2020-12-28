@@ -747,10 +747,36 @@ public class Output
      * Method to report errors during the output process. It must be public
      * because it is used in parent package
      * @param msg
+     * @param poly the polygon to display
+     * @param cell the cell in which this message applies.
+     */
+    public void reportWarning(String msg, PolyBase poly, Cell cell)
+    {
+        errorLogger.logWarning(msg, poly, cell, -1);
+        System.out.println(msg);
+    }
+
+    /**
+     * Method to report errors during the output process. It must be public
+     * because it is used in parent package
+     * @param msg
      */
     public void reportError(String msg)
     {
         errorLogger.logError(msg, -1);
+        System.out.println(msg);
+    }
+
+    /**
+     * Method to report errors during the output process. It must be public
+     * because it is used in parent package
+     * @param msg
+     * @param poly the polygon to display
+     * @param cell the cell in which this message applies.
+     */
+    public void reportError(String msg, PolyBase poly, Cell cell)
+    {
+        errorLogger.logError(msg, poly, cell, -1);
         System.out.println(msg);
     }
 
