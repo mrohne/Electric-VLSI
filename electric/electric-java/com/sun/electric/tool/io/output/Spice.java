@@ -2486,8 +2486,11 @@ public class Spice extends Topology
 	{
 		// skip if there is a template
         Variable varTemplate = null;
-        varTemplate = getEngineTemplate(cell);
-        if (varTemplate != null) return true;
+		// I think both of these could be useful 
+		// SPICE_template determines how this file is instantiated
+		// SPICE_netlist_file overrides the netlist for the file
+        // varTemplate = getEngineTemplate(cell);
+        // if (varTemplate != null) return true;
 
 		// look for a model file for the current cell, can come from preference or on cell
         String fileName = null;
