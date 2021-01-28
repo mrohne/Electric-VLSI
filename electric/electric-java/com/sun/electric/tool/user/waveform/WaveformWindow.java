@@ -1188,7 +1188,7 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 				if (!wp.isSelected()) continue;
 				double low = wp.getYAxisLowValue() - vRange * distance;
 				double high = wp.getYAxisHighValue() - vRange * distance;
-				wp.setYAxisRange(low, high);
+				wp.setYAxisRange(low, high, wp.getYAxisScaleValue());
 			}
 			wp.repaintWithRulers();
 		}
@@ -2538,18 +2538,22 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 	 * Method to set the zoom extents for this waveform window.
 	 * @param lowVert the low value of the vertical axis (for the given panel only).
 	 * @param highVert the high value of the vertical axis (for the given panel only).
+	 * @param scaleVert the scale of the vertical axis (for the given panel only).
 	 * @param lowHoriz the low value of the horizontal axis (for the given panel only unless X axes are locked).
 	 * @param highHoriz the high value of the horizontal axis (for the given panel only unless X axes are locked).
 	 * @param thePanel the panel being zoomed.
 	 */
-	public void setZoomExtents(double lowVert, double highVert, double lowHoriz, double highHoriz, Panel thePanel)
+	public void setZoomExtents(double lowVert, double highVert, double scaleVert, boolean logVert,
+		double lowHoriz, double highHoriz, Panel thePanel)
 	{
 		for(Panel wp : wavePanels)
 		{
 			boolean changed = false;
 			if (wp == thePanel)
 			{
-				wp.setYAxisRange(lowVert, highVert);
+				wp.setYAxisRange(lowVert, highVert, scaleVert);
+				if (wp.isPanelLogarithmicVertically() != logVert)
+					wp.setPanelLogarithmicVertically(logVert);
 				changed = true;
 			}
 			if (xAxisLocked || wp == thePanel)
@@ -3588,7 +3592,7 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 					if (wp.isPanelLogarithmicVertically()) log += " ylog";
 					lines.add("panel" + collectionName + log);
 					lines.add("zoom " + wp.getYAxisLowValue() + " " + wp.getYAxisHighValue() +
-						" " + wp.getMinXAxis() + " " + wp.getMaxXAxis());
+						" " + wp.getMinXAxis() + " " + wp.getMaxXAxis() + " " + wp.getYAxisScaleValue());
 					Signal<?> signalInX = xAxisSignalAll;
 					if (!xAxisLocked) signalInX = wp.getXAxisSignal();
 					if (signalInX != null) lines.add("x-axis " + signalInX.getFullName());
@@ -3635,8 +3639,11 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 				double highYValue = TextUtils.atof(keywords[2]);
 				double lowXValue = TextUtils.atof(keywords[3]);
 				double highXValue = TextUtils.atof(keywords[4]);
+				double scaleYValue = 1.0;
+				if (keywords.length > 5)
+					scaleYValue = TextUtils.atof(keywords[5]);
 				curPanel.setXAxisRange(lowXValue, highXValue);
-				curPanel.setYAxisRange(lowYValue, highYValue);
+				curPanel.setYAxisRange(lowYValue, highYValue, scaleYValue);
 				continue;
 			}
 			if (keywords[0].equals("x-axis"))

@@ -36,6 +36,7 @@ import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.database.variable.Variable;
 import com.sun.electric.technology.Layer;
 import com.sun.electric.technology.Technology;
+import com.sun.electric.technology.technologies.Schematics;
 import com.sun.electric.tool.simulation.SimulationTool;
 
 import java.util.Date;
@@ -48,13 +49,6 @@ import java.util.Set;
  */
 public class FastHenry extends Output
 {
-	/** key of Variable holding group name. */			public static final Variable.Key GROUP_NAME_KEY = Variable.newKey("SIM_fasthenry_group_name");
-	/** key of Variable holding thickness. */			public static final Variable.Key THICKNESS_KEY = Variable.newKey("SIM_fasthenry_thickness");
-	/** key of Variable holding width subdivisions. */	public static final Variable.Key WIDTH_SUBDIVS_KEY = Variable.newKey("SIM_fasthenry_width_subdivs");
-	/** key of Variable holding height subdivisions. */	public static final Variable.Key HEIGHT_SUBDIVS_KEY = Variable.newKey("SIM_fasthenry_height_subdivs");
-	/** key of Variable holding the head Z value. */	public static final Variable.Key ZHEAD_KEY = Variable.newKey("SIM_fasthenry_z_head");
-	/** key of Variable holding the tail Z value. */	public static final Variable.Key ZTAIL_KEY = Variable.newKey("SIM_fasthenry_z_tail");
-
 	private FastHenryPreferences localPrefs;
 
 	/**
@@ -65,15 +59,14 @@ public class FastHenry extends Output
 		private String groupName;
 		private double thickness;
 		private int widthSubdivisions, heightSubdivisions;
-		private double zHead, zTail;
+		private double z;
 		private double zDefault;
 
 		public String getGroupName() { return groupName; }
 		public double getThickness() { return thickness; }
 		public int getWidthSubdivisions() { return widthSubdivisions; }
 		public int getHeightSubdivisions() { return heightSubdivisions; }
-		public double getZHead() { return zHead; }
-		public double getZTail() { return zTail; }
+		public double getZ() { return z; }
 		public double getZDefault() { return zDefault; }
 
 		public FastHenryArcInfo(ArcInst ai, FastHenryPreferences prefs)
@@ -82,12 +75,12 @@ public class FastHenry extends Output
 
 			// get the group membership
 			groupName = null;
-			Variable var = ai.getVar(GROUP_NAME_KEY);
+			Variable var = ai.getVar(Schematics.INDUCTOR_NAME);
 			if (var != null) groupName = var.getPureValue(-1);
 
 			// get the arc thickness
 			thickness = -1;
-			var = ai.getVar(THICKNESS_KEY);
+			var = ai.getVar(Schematics.INDUCTOR_THICKNESS);
 			if (var != null)
 			{
 				if (var.getObject() instanceof Integer) thickness = ((Integer)var.getObject()).intValue() / tech.getScale(); else
@@ -96,30 +89,21 @@ public class FastHenry extends Output
 
 			// get the width subdivisions
 			widthSubdivisions = -1;
-			var = ai.getVar(WIDTH_SUBDIVS_KEY);
+			var = ai.getVar(Schematics.INDUCTOR_WIDTH_SUBDIVS);
 			if (var != null) widthSubdivisions = TextUtils.atoi(var.getPureValue(-1));
 
 			// get the height subdivisions
 			heightSubdivisions = -1;
-			var = ai.getVar(HEIGHT_SUBDIVS_KEY);
+			var = ai.getVar(Schematics.INDUCTOR_HEIGHT_SUBDIVS);
 			if (var != null) heightSubdivisions = TextUtils.atoi(var.getPureValue(-1));
 
 			// get the Z height at the head of the arc
-			zHead = -1;
-			var = ai.getVar(ZHEAD_KEY);
+			z = -1;
+			var = ai.getVar(Schematics.INDUCTOR_Z);
 			if (var != null)
 			{
-				if (var.getObject() instanceof Integer) zHead = ((Integer)var.getObject()).intValue() / tech.getScale(); else
-					zHead = TextUtils.atof(var.getPureValue(-1));
-			}
-
-			// get the Z height at the tail of the arc
-			zTail = -1;
-			var = ai.getVar(ZTAIL_KEY);
-			if (var != null)
-			{
-				if (var.getObject() instanceof Integer) zTail = ((Integer)var.getObject()).intValue() / tech.getScale(); else
-					zTail = TextUtils.atof(var.getPureValue(-1));
+				if (var.getObject() instanceof Integer) z = ((Integer)var.getObject()).intValue() / tech.getScale(); else
+					z = TextUtils.atof(var.getPureValue(-1));
 			}
 
 			// get the default Z height
@@ -246,8 +230,7 @@ public class FastHenry extends Output
 				FastHenryArcInfo fhai = new FastHenryArcInfo(ai, localPrefs);
 				if (fhai.getGroupName() == null) continue;
 				double zVal = fhai.getZDefault();
-				if (con.getEndIndex() == ArcInst.HEADEND && fhai.getZHead() >= 0) zVal = fhai.getZHead();
-				if (con.getEndIndex() == ArcInst.TAILEND && fhai.getZTail() >= 0) zVal = fhai.getZTail();
+				if (fhai.getZ() >= 0) zVal = fhai.getZ();
 				if (found)
 				{
 					// "nodeZVal" used in proper order
@@ -327,12 +310,12 @@ public class FastHenry extends Output
 			for(Iterator<Connection> cIt = ni.getConnections(); cIt.hasNext(); )
 			{
 				con = cIt.next();
-				if (con.getArc().getVar(GROUP_NAME_KEY) != null) break;
+				if (con.getArc().getVar(Schematics.INDUCTOR_NAME) != null) break;
 				con = null;
 			}
 			if (con == null) continue;
 
-			// port "pp" is one end, now find the other
+			// connection is at one end, now find the other
             int thatEnd = 1 - con.getEndIndex();
 			Export oE = sim_fasthenryfindotherport(con.getArc(), thatEnd, arcsSeen);
 			if (oE == null)
@@ -351,7 +334,7 @@ public class FastHenry extends Output
 		{
 			ArcInst ai = it.next();
 			if (arcsSeen.contains(ai)) continue;
-			if (ai.getVar(GROUP_NAME_KEY) == null) continue;
+			if (ai.getVar(Schematics.INDUCTOR_NAME) == null) continue;
 			reportWarning("Warning: " + ai + " is not connected to an export");
 		}
 	}
@@ -367,7 +350,7 @@ public class FastHenry extends Output
 			Connection con = it.next();
 			ArcInst oAi = con.getArc();
 			if (oAi == ai) continue;
-			Variable var = ai.getVar(GROUP_NAME_KEY);
+			Variable var = ai.getVar(Schematics.INDUCTOR_NAME);
 			if (var == null) continue;
             int thatEnd = 1 - con.getEndIndex();
 			Export oE = sim_fasthenryfindotherport(oAi, thatEnd, arcsSeen);

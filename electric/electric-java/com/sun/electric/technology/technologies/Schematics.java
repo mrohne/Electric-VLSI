@@ -96,6 +96,17 @@ public class Schematics extends Technology {
     public static final Variable.Key ATTR_LENGTH = Variable.newKey("ATTR_length");
     /** key of Variable holding transistor area. */
     public static final Variable.Key ATTR_AREA = Variable.newKey("ATTR_area");
+    
+	/** key of Variable holding inductor name. */
+    public static final Variable.Key INDUCTOR_NAME = Variable.newKey("Inductor");
+	/** key of Variable holding inductor thickness. */
+    public static final Variable.Key INDUCTOR_THICKNESS = Variable.newKey("INDUCTOR_thickness");
+	/** key of Variable holding inductor width subdivisions. */
+    public static final Variable.Key INDUCTOR_WIDTH_SUBDIVS = Variable.newKey("INDUCTOR_width_subdivs");
+	/** key of Variable holding inductor height subdivisions. */
+    public static final Variable.Key INDUCTOR_HEIGHT_SUBDIVS = Variable.newKey("INDUCTOR_height_subdivs");
+	/** key of Variable holding inductor Z value. */
+    public static final Variable.Key INDUCTOR_Z = Variable.newKey("INDUCTOR_z");
 
     /** the Schematics Technology object. */
     public static Schematics tech() {

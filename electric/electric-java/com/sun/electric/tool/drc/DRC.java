@@ -519,9 +519,17 @@ public class DRC extends Listener
         Cell cell = geom.getParent();
         if (minWidthRule == null) return false;
 
+        // get polygon information
         double minWidthValue = minWidthRule.getValue(0);
-        // simpler analysis if Manhattan
         Rectangle2D bounds = poly.getBox();
+        Point2D [] points = poly.getPoints();
+
+        // handle round geometry
+        if (poly.getStyle() == Poly.Type.DISC)
+        {
+        	bounds = poly.getBounds2D();
+        	points = Poly.makePoints(bounds.getMinX(), bounds.getMaxX(), bounds.getMinY(), bounds.getMaxY());
+        }
 
         // only in case of flat elements represented by a line
         // most likely a flat arc, vertical or horizontal.
@@ -530,7 +538,6 @@ public class DRC extends Listener
         boolean flatPoly = ((bounds == null && GenMath.doublesEqual(poly.getArea(), 0)));
         if (flatPoly)
         {
-            Point2D [] points = poly.getPoints();
             Point2D from = points[0];
             Point2D to = points[1];
 
@@ -562,7 +569,7 @@ public class DRC extends Listener
             pointsFound[0] = pointsFound[1] = pointsFound[2] = false;
             boolean found = lookForLayerCoverage(geom, poly, null, null, cell, layer, DBMath.MATID,  poly.getBounds2D(),
                 from, to, center, pointsFound, true, layerFunction, true, reportInfo.ignoreCenterCuts);
-            if (found) return false; // no error, flat element covered by othe elements.
+            if (found) return false; // no error, flat element covered by other elements.
 
             if (reportError)
                 createDRCErrorLogger(reportInfo, DRCErrorType.MINWIDTHERROR, null, cell, minWidthValue, 0, minWidthRule.ruleName,
@@ -570,6 +577,7 @@ public class DRC extends Listener
             return true;
         }
 
+        // simpler analysis if Manhattan
         if (bounds != null)
         {
             boolean tooSmallWidth = DBMath.isGreaterThan(minWidthValue, bounds.getWidth());
@@ -604,7 +612,6 @@ public class DRC extends Listener
         }
 
         // check distance of each line's midpoint to perpendicular opposite point
-        Point2D[] points = poly.getPoints();
         int count = points.length;
         for (int i = 0; i < count; i++)
         {

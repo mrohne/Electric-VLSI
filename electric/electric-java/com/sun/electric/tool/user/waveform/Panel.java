@@ -69,6 +69,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -120,6 +121,7 @@ public class Panel extends JPanel
 	/** displayed range along horizontal axis */			private double minXPosition, maxXPosition;
 	/** low value displayed in this panel (analog) */		private double analogLowValue;
 	/** high value displayed in this panel (analog) */		private double analogHighValue;
+	/** vertical scaled used in this panel (analog) */		private double analogScaleValue;
 	/** vertical range displayed in this panel (analog) */	private double analogRange;
 	/** true if an X axis cursor is being dragged */		private boolean draggingMain, draggingExt, draggingVertAxis;
 	/** true if an area is being dragged */					private boolean draggingArea;
@@ -713,7 +715,7 @@ public class Panel extends JPanel
         double range = highValue - lowValue;
         if (range == 0) range = 2;
         double rangeExtra = range / 10;
-        setYAxisRange(lowValue - rangeExtra, highValue + rangeExtra);
+        setYAxisRange(lowValue - rangeExtra, highValue + rangeExtra, analogScaleValue);
         makeSelectedPanel(-1, -1);
         repaintWithRulers();
 	}
@@ -723,7 +725,7 @@ public class Panel extends JPanel
 	 * @param low the low Y axis value.
 	 * @param high the high Y axis value.
 	 */
-	public void setYAxisRange(double low, double high)
+	public void setYAxisRange(double low, double high, double scale)
 	{
 		if (low == high)
 		{
@@ -732,6 +734,7 @@ public class Panel extends JPanel
 		}
 		analogLowValue = low;
 		analogHighValue = high;
+		analogScaleValue = (scale == 0 ? 1 : scale);
 		analogRange = analogHighValue - analogLowValue;
 	}
 
@@ -740,6 +743,8 @@ public class Panel extends JPanel
 	public double getYAxisLowValue() { return analogLowValue; }
 
 	public double getYAxisHighValue() { return analogHighValue; }
+
+	public double getYAxisScaleValue() { return analogScaleValue; }
 
 	/**
 	 * Method to scale a simulation X value to the X coordinate in this window.
@@ -822,7 +827,7 @@ public class Panel extends JPanel
 		}
 
 		// linear axes
-		double y = sz.height - 1 - (value - analogLowValue) / analogRange * (sz.height-1);
+		double y = sz.height - 1 - (value - analogLowValue) / analogRange /* * analogScaleValue */ * (sz.height-1);
 		return (int)y;
 	}
 
@@ -848,7 +853,7 @@ public class Panel extends JPanel
 
 		// linear axes
 		double value = 0;
-		if (sz.height > 1) value = analogLowValue - (y - sz.height + 1) * analogRange / (sz.height-1);
+		if (sz.height > 1) value = analogLowValue - (y - sz.height + 1) * analogRange /* / analogScaleValue */ / (sz.height-1);
 		return value;
 	}
 
@@ -1147,7 +1152,8 @@ public class Panel extends JPanel
 				}
 			}
 
-			ss = new StepSize(analogHighValue, analogLowValue, 5);
+			// draw the horizontal grid lines
+			ss = new StepSize(analogHighValue/analogScaleValue, analogLowValue/analogScaleValue, 5);
 			if (ss.getSeparation() != 0.0)
 			{
 				double value = ss.getLowValue();
@@ -1156,7 +1162,7 @@ public class Panel extends JPanel
 					if (value >= analogLowValue)
 					{
 						if (value > analogHighValue || value > ss.getHighValue()) break;
-						int y = convertYDataToScreen(value);
+						int y = convertYDataToScreen(value*analogScaleValue);
 						if (polys != null)
 						{
 							polys.add(new Poly(Poly.fromLambda(vertAxisPos, y), Poly.fromLambda(wid, y)));
@@ -1175,12 +1181,14 @@ public class Panel extends JPanel
 		}
 
 		// draw all of the signals
-		if (USE_ANTIALIASING && localGraphics != null) {
+		if (USE_ANTIALIASING && localGraphics != null)
+		{
 			Object oldAntialiasing = localGraphics.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 			localGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			processSignals(localGraphics, bounds, polys);
 			localGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialiasing);
-		} else {
+		} else
+		{
 			processSignals(localGraphics, bounds, polys);
 		}
 
@@ -1204,24 +1212,41 @@ public class Panel extends JPanel
 		}
 		if (isAnalog())
 		{
-			double displayedLow = convertYScreenToData(hei);
-			double displayedHigh = convertYScreenToData(0);
+			if (analogScaleValue != 1 || vertPanelLogarithmic)
+			{
+				// mention that the Y axis is scaled TODO: log too
+				String message = vertPanelLogarithmic ? "LOG" : "SCALED";
+				GlyphVector gv = waveWindow.getFont().createGlyphVector(waveWindow.getFontRenderContext(), message);
+				Rectangle2D glyphBounds = gv.getLogicalBounds();
+				int width = (int)glyphBounds.getWidth();
+				int height = (int)glyphBounds.getHeight();
+				int xPos = height;
+				int yPos = hei/2 + width/2;
+				AffineTransform save = localGraphics.getTransform();
+				localGraphics.rotate(-Math.PI/2);
+				localGraphics.translate(-yPos, xPos);
+				localGraphics.drawString(message, 0, 0);
+				localGraphics.setTransform(save);
+			}
+
+			double displayedLow = convertYScreenToData(hei)/analogScaleValue;
+			double displayedHigh = convertYScreenToData(0)/analogScaleValue;
 			StepSize ss = new StepSize(displayedHigh, displayedLow, 5);
 			if (ss.getSeparation() != 0.0)
 			{
 				double value = ss.getLowValue();
 				if (localGraphics != null) localGraphics.setFont(waveWindow.getFont());
 				int lastY = -1;
-				int ySeparation = convertYDataToScreen(value) - convertYDataToScreen(value+ss.getSeparation());
-				int textSkip = 100;
+				int ySeparation = convertYDataToScreen(value/analogScaleValue) - convertYDataToScreen(value/analogScaleValue+ss.getSeparation());
+				double textSkip = 100;
 				if (ySeparation > 0) textSkip = 20 / ySeparation;
-				int textSkipPos = 0;
+				double textSkipPos = 0;
 				for(;;)
 				{
 					if (value > displayedHigh) break;
 					if (value >= displayedLow)
 					{
-						int y = convertYDataToScreen(value);
+						int y = convertYDataToScreen(value*analogScaleValue);
 						if (lastY >= 0)
 						{
 							// add extra tick marks
@@ -1248,7 +1273,7 @@ public class Panel extends JPanel
 						}
 
 						// skip text if spaced too closely
-						textSkipPos--;
+						textSkipPos -= analogScaleValue;
 						if (textSkipPos <= 0)
 						{
 							textSkipPos = textSkip;
@@ -1609,7 +1634,8 @@ public class Panel extends JPanel
 
 		if (evt.getClickCount() == 2 && evt.getX() < vertAxisPos)
 		{
-			new WaveformZoom(TopLevel.getCurrentJFrame(), analogLowValue, analogHighValue, minXPosition, maxXPosition, waveWindow, this);
+			new WaveformZoom(TopLevel.getCurrentJFrame(), analogLowValue, analogHighValue, analogScaleValue, vertPanelLogarithmic,
+				minXPosition, maxXPosition, waveWindow, this);
 			return;
 		}
 		ToolBar.CursorMode mode = ToolBar.getCursorMode();
@@ -2306,7 +2332,7 @@ public class Panel extends JPanel
 				if (wp.getMinXAxis() > wp.getMaxXAxis()) wp.setXAxisRange(highXValue, lowXValue); else
 					wp.setXAxisRange(lowXValue, highXValue);
 				if (wp == this)
-					wp.setYAxisRange(lowValue, highValue);
+					wp.setYAxisRange(lowValue, highValue, wp.getYAxisScaleValue());
 			} else
 			{
 				// shift-click: zoom out
@@ -2317,7 +2343,7 @@ public class Panel extends JPanel
 					wp.setXAxisRange(min, max);
 				if (wp == this)
 					wp.setYAxisRange((lowValue + highValue) / 2 - wp.analogRange,
-						(lowValue + highValue) / 2 + wp.analogRange);
+						(lowValue + highValue) / 2 + wp.analogRange, wp.getYAxisScaleValue());
 			}
 			wp.repaintWithRulers();
 		}
@@ -2376,7 +2402,7 @@ public class Panel extends JPanel
 			if (!waveWindow.isXAxisLocked() && wp != this) continue;
 			wp.setXAxisRange(wp.minXPosition - dXValue, wp.maxXPosition - dXValue);
 			if (wp == this)
-				setYAxisRange(analogLowValue - dYValue, analogHighValue - dYValue);
+				setYAxisRange(analogLowValue - dYValue, analogHighValue - dYValue, analogScaleValue);
 			wp.repaintWithRulers();
 		}
 		dragStartXD = dragEndXD;

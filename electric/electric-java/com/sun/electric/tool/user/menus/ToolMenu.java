@@ -136,8 +136,8 @@ import com.sun.electric.tool.user.Highlighter;
 import com.sun.electric.tool.user.IconParameters;
 import com.sun.electric.tool.user.User;
 import com.sun.electric.tool.user.UserInterfaceMain;
+import com.sun.electric.tool.user.dialogs.ManageInductors;
 import com.sun.electric.tool.user.dialogs.CellBrowser;
-import com.sun.electric.tool.user.dialogs.FastHenryArc;
 import com.sun.electric.tool.user.dialogs.FillGenDialog;
 import com.sun.electric.tool.user.dialogs.LanguageScripts;
 import com.sun.electric.tool.user.dialogs.MultiFingerTransistor;
@@ -179,7 +179,7 @@ public class ToolMenu {
 	static EMenu makeMenu() {
 		/****************************** THE TOOLS MENU ******************************/
 
-		// mnemonic keys available: A CDEFGHI KLMNOPQR TUVWXYZ
+		// mnemonic keys available: A CDEFGH  KLMNOPQR TUVWXYZ
 		languageMenu = new EMenu("Lang_uages",
 			new EMenuItem("Run Java _Bean Shell Script...") {
 				public void run() { javaBshScriptCommand(); }
@@ -462,7 +462,7 @@ public class ToolMenu {
 				})),
 
 			// ------------------- Simulation (others)
-			// mnemonic keys available: B   G KL N Q UVWXYZ
+			// mnemonic keys available: B  FGHKL N Q UVWXYZ
 			new EMenu("Simulation (_Others)",
 				new EMenuItem("Write _Maxwell Deck...") {
 					public void run() { FileMenu.exportCommand(FileType.MAXWELL, true); }
@@ -496,15 +496,6 @@ public class ToolMenu {
 				},
 				new EMenuItem("Write M_OSSIM Deck...") {
 					public void run() { FileMenu.exportCommand(FileType.MOSSIM, true); }
-				},
-
-				SEPARATOR,
-
-				new EMenuItem("Write _FastHenry Deck...") {
-					public void run() { FileMenu.exportCommand(FileType.FASTHENRY, true); }
-				},
-				new EMenuItem("Fast_Henry Arc Properties...") {
-					public void run() { FastHenryArc.showFastHenryArcDialog(); }
 				}),
 
 			// ------------------- ERC
@@ -785,8 +776,18 @@ public class ToolMenu {
 					public void run() { Routing.pasteRoutingTopology(); }
 				}),
 
+			// ------------------- Inductance
+			// mnemonic keys available: ABCDE GHIJKL NOPQRSTUVWXYZ
+			new EMenu("_Inductors",
+				new EMenuItem("Inductor _Management...") {
+					public void run() { ManageInductors.showInductorManagementDialog(); }
+				},
+				new EMenuItem("Write _FastHenry Deck...") {
+					public void run() { FileMenu.exportCommand(FileType.FASTHENRY, true); }
+				}),
+			
 			// ------------------- Generation
-			// mnemonic keys available:  B DE  H JK N Q VWXYZ
+			// mnemonic keys available:  B DE  H JK  N  Q VWXYZ
 			new EMenu("_Generation",
 				new EMenuItem("_Coverage Implants Generator") {
 					public void run() { layerCoverageCommand(LayerCoverageTool.LCMode.IMPLANT, GeometryHandler.GHMode.ALGO_SWEEP); }
@@ -2170,9 +2171,8 @@ public class ToolMenu {
 	 * Method to create a new template in the current cell. Templates can be for
 	 * SPICE or Verilog, depending on the Variable name.
 	 *
-	 * @param templateKey
-	 *            the name of the variable to create.
-	 * @param selectKey TODO
+	 * @param templateKey the name of the variable to create.
+	 * @param selectKey true to allow a file to be selected from disk.
 	 */
 	public static void makeTemplate(Variable.Key templateKey, boolean selectKey) {
 

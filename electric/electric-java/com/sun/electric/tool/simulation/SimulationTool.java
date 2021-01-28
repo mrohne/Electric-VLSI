@@ -712,42 +712,6 @@ public class SimulationTool extends Tool
 	 */
 	public static int getFactoryFastHenryRunsPerDecade() { return cacheFastHenryRunsPerDecade.getIntFactoryValue(); }
 
-	private static Pref cacheFastHenryMultiPole = Pref.makeBooleanPref("FastHenryMultiPole", tool.prefs, false);
-	/**
-	 * Method to tell whether FastHenry deck generation should make a multipole subcircuit.
-	 * The default is false.
-	 * @return true if FastHenry deck generation should make a multipole subcircuit.
-	 */
-	public static boolean isFastHenryMultiPole() { return cacheFastHenryMultiPole.getBoolean(); }
-	/**
-	 * Method to set whether FastHenry deck generation should make a multipole subcircuit.
-	 * @param mp true if FastHenry deck generation should make a multipole subcircuit.
-	 */
-	public static void setFastHenryMultiPole(boolean mp) { cacheFastHenryMultiPole.setBoolean(mp); }
-	/**
-	 * Method to tell whether FastHenry deck generation should make a multipole subcircuit, by default.
-	 * @return true if FastHenry deck generation should make a multipole subcircuit, by default.
-	 */
-	public static boolean isFactoryFastHenryMultiPole() { return cacheFastHenryMultiPole.getBooleanFactoryValue(); }
-
-	private static Pref cacheFastHenryNumPoles = Pref.makeIntPref("FastHenryNumPoles", tool.prefs, 20);
-	/**
-	 * Method to return the number of poles for FastHenry deck generation.
-	 * The default is 20.
-	 * @return the number of poles for FastHenry deck generation.
-	 */
-	public static int getFastHenryNumPoles() { return cacheFastHenryNumPoles.getInt(); }
-	/**
-	 * Method to set the number of poles for FastHenry deck generation.
-	 * @param p the number of poles for FastHenry deck generation.
-	 */
-	public static void setFastHenryNumPoles(int p) { cacheFastHenryNumPoles.setInt(p); }
-	/**
-	 * Method to return the number of poles for FastHenry deck generation, by default.
-	 * @return the number of poles for FastHenry deck generation, by default.
-	 */
-	public static int getFactoryFastHenryNumPoles() { return cacheFastHenryNumPoles.getIntFactoryValue(); }
-
 	private static Pref cacheFastHenryDefThickness = Pref.makeDoublePref("FastHenryDefThickness", tool.prefs, 2);
 	/**
 	 * Method to return the FastHenry default wire thickness.

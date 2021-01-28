@@ -48,156 +48,146 @@ import java.util.HashMap;
  * <P>
  * This immutable class is thread-safe.
  */
-public class Variable implements Serializable {
+public class Variable implements Serializable
+{
+	/**
+	 * The Key class caches Variable names.
+	 */
+	public static class Key implements Comparable<Key>
+	{
+		private final String name;
 
-    /**
-     * The Key class caches Variable names.
-     */
-    public static class Key implements Comparable<Key> {
+		/**
+		 * Method to create a new Key object with the specified name.
+		 * @param name the name of the Variable.
+		 * @throws NullPointerException if name is null.
+		 */
+		private Key(String name)
+		{
+			if (name == null)
+			{
+				throw new NullPointerException();
+			}
+			this.name = name;
+		}
 
-        private final String name;
+		/**
+		 * Method to return the name of this Key object.
+		 * @return the name of this Key object.
+		 */
+		public String getName() { return name; }
 
-        /**
-         * Method to create a new Key object with the specified name.
-         * @param name the name of the Variable.
-         * @throws NullPointerException if name is null.
-         */
-        private Key(String name) {
-            if (name == null) {
-                throw new NullPointerException();
-            }
-            this.name = name;
-        }
+		/**
+		 * Method to return if this Variable.Key is a User Attribute.
+		 * @return true if this Variable.Key is an attribute, false otherwise.
+		 */
+		public boolean isAttribute() { return false; }
 
-        /**
-         * Method to return the name of this Key object.
-         * @return the name of this Key object.
-         */
-        public String getName() {
-            return name;
-        }
+		/**
+		 * Compares Variable Keys by their names.
+		 * @param that the other Variable Key.
+		 * @return a comparison between the Variable Keys.
+		 */
+		@Override
+		public int compareTo(Key that) { return TextUtils.STRING_NUMBER_ORDER.compare(name, that.name); }
 
-        /**
-         * Method to return if this Variable.Key is a User Attribute.
-         * @return true if this Variable.Key is an attribute, false otherwise.
-         */
-        public boolean isAttribute() {
-            return false;
-        }
+		/**
+		 * Returns a printable version of this Key.
+		 * @return a printable version of this Key.
+		 */
+		@Override
+		public String toString() { return name; }
 
-        /**
-         * Compares Variable Keys by their names.
-         * @param that the other Variable Key.
-         * @return a comparison between the Variable Keys.
-         */
-        @Override
-        public int compareTo(Key that) {
-            return TextUtils.STRING_NUMBER_ORDER.compare(name, that.name);
-        }
+		/**
+		 * Print statistics about Variable Keys.
+		 */
+		public static void printStatistics()
+		{
+			long keyLength = 0;
+			for (Key key : varKeys.values())
+			{
+				keyLength += key.getName().length();
+			}
+//			int canonicCount = 0;
+//			long canonicLength = 0;
+//			for (String canonic : varCanonicKeys.keySet()) {
+//				Key key = varCanonicKeys.get(canonic);
+//				if (key != null && key.getName() == canonic) {
+//					continue;
+//				}
+//				canonicCount++;
+//				canonicLength += canonic.length();
+//			}
+			System.out.println(varKeys.size() + " variable keys with " + keyLength + " chars.");
+//					+ " Canonic " + varCanonicKeys.size() + " entries " + canonicCount + " strings with " + canonicLength + " chars.");
+		}
+	}
 
-        /**
-         * Returns a printable version of this Key.
-         * @return a printable version of this Key.
-         */
-        @Override
-        public String toString() {
-            return name;
-        }
+	/**
+	 * The Key class caches attribute Variable names.
+	 */
+	public static class AttrKey extends Key
+	{
+		AttrKey(String name) { super(name); }
 
-        /**
-         * Print statistics about Variable Keys.
-         */
-        public static void printStatistics() {
-            long keyLength = 0;
-            for (Key key : varKeys.values()) {
-                keyLength += key.getName().length();
-            }
-//            int canonicCount = 0;
-//            long canonicLength = 0;
-//            for (String canonic : varCanonicKeys.keySet()) {
-//                Key key = varCanonicKeys.get(canonic);
-//                if (key != null && key.getName() == canonic) {
-//                    continue;
-//                }
-//                canonicCount++;
-//                canonicLength += canonic.length();
-//            }
-            System.out.println(varKeys.size() + " variable keys with " + keyLength + " chars.");
-//                    + " Canonic " + varCanonicKeys.size() + " entries " + canonicCount + " strings with " + canonicLength + " chars.");
-        }
-    }
+		/**
+		 * Method to return if this Variable.Key is a User Attribute.
+		 * @return true if this Variable.Key is an attribute, false otherwise.
+		 */
+		@Override
+		public boolean isAttribute() { return true; }
+	}
 
-    /**
-     * The Key class caches attribute Variable names.
-     */
-    public static class AttrKey extends Key {
+	/** a list of all variable keys */
+	private static final HashMap<String, Key> varKeys = new HashMap<String, Key>();
 
-        AttrKey(String name) {
-            super(name);
-        }
+//	/** all variable keys addressed by lower case name */
+//	private static final HashMap<String, Key> varCanonicKeys = new HashMap<String, Key>();
 
-        /**
-         * Method to return if this Variable.Key is a User Attribute.
-         * @return true if this Variable.Key is an attribute, false otherwise.
-         */
-        @Override
-        public boolean isAttribute() {
-            return true;
-        }
-    }
-    /** a list of all variable keys */
-    private static final HashMap<String, Key> varKeys = new HashMap<String, Key>();
-//    /** all variable keys addressed by lower case name */
-//    private static final HashMap<String, Key> varCanonicKeys = new HashMap<String, Key>();
+	/**
+	 * Method to return the Key object for a given Variable name.
+	 * Variable Key objects are caches of the actual string name of the Variable.
+	 * @return the Key object for a given Variable name.
+	 */
+	public static synchronized Key findKey(String name)
+	{
+		Key key = varKeys.get(name);
+		if (key != null) return key;
+//		if (varKeys.containsKey(name)) return null;
+//		name = name.intern();
+//		varKeys.put(name, null);
+//		String canonicName = TextUtils.canonicString(name);
+//		key = varCanonicKeys.get(canonicName);
+//		if (key != null) {
+//			String msg = "WARNING: Variable \"" + name + "\" not found though variable \"" + key.getName() + "\" exists";
+//			ActivityLogger.logMessage(msg);
+//			System.out.println(msg);
+//		}
+		return null;
+	}
 
-    /**
-     * Method to return the Key object for a given Variable name.
-     * Variable Key objects are caches of the actual string name of the Variable.
-     * @return the Key object for a given Variable name.
-     */
-    public static synchronized Key findKey(String name) {
-        Key key = varKeys.get(name);
-        if (key != null) {
-            return key;
-        }
-//        if (varKeys.containsKey(name)) {
-//            return null;
-//        }
-//        name = name.intern();
-//        varKeys.put(name, null);
-//        String canonicName = TextUtils.canonicString(name);
-//        key = varCanonicKeys.get(canonicName);
-//        if (key != null) {
-//            String msg = "WARNING: Variable \"" + name + "\" not found though variable \"" + key.getName() + "\" exists";
-//            ActivityLogger.logMessage(msg);
-//            System.out.println(msg);
-//        }
-        return null;
-    }
-
-    /**
-     * Method to find or create the Key object for a given Variable name.
-     * Variable Key objects are caches of the actual string name of the Variable.
-     * @param name given Variable name.
-     * @return the Key object for a given Variable name.
-     */
-    public static synchronized Key newKey(String name) {
-        Key key = varKeys.get(name);
-        if (key != null) {
-            return key;
-        }
-        name = name.intern();
-        key = name.startsWith("ATTR_") ? new AttrKey(name) : new Key(name);
-        varKeys.put(name, key);
-//        String canonicName = TextUtils.canonicString(name);
-//        Key key2 = varCanonicKeys.get(canonicName);
-//        if (key2 != null && parent != null) {
-//            // find examples of these two variables
-//            String ex = null;
-//            for (Library lib : Library.getVisibleLibraries()) {
-//                if (ex == null) {
-//                    ex = findVariable(lib, key2);
-//                }
+	/**
+	 * Method to find or create the Key object for a given Variable name.
+	 * Variable Key objects are caches of the actual string name of the Variable.
+	 * @param name given Variable name.
+	 * @return the Key object for a given Variable name.
+	 */
+	public static synchronized Key newKey(String name)
+	{
+		Key key = varKeys.get(name);
+		if (key != null) return key;
+		name = name.intern();
+		key = name.startsWith("ATTR_") ? new AttrKey(name) : new Key(name);
+		varKeys.put(name, key);
+//		String canonicName = TextUtils.canonicString(name);
+//		Key key2 = varCanonicKeys.get(canonicName);
+//		if (key2 != null && parent != null) {
+//			// find examples of these two variables
+//			String ex = null;
+//			for (Library lib : Library.getVisibleLibraries()) {
+//				if (ex == null) {
+//					ex = findVariable(lib, key2);
+//			    }
 //                for (Iterator<Cell> cIt = lib.getCells(); cIt.hasNext();) {
 //                    Cell cell = cIt.next();
 //                    if (ex == null) {
@@ -249,25 +239,17 @@ public class Variable implements Serializable {
 //    }
 //
 //    private static String getObjectName(ElectricObject eObj) {
-//        if (eObj instanceof Library) {
-//            return "Library " + ((Library) eObj).getName();
-//        }
-//        if (eObj instanceof Cell) {
-//            return "Cell " + ((Cell) eObj).describe(false);
-//        }
-//        if (eObj instanceof Export) {
-//            return "Export " + ((Export) eObj).getName() + " in Cell " + ((Export) eObj).getParent().describe(false);
-//        }
-//        if (eObj instanceof NodeInst) {
-//            return "Node " + ((NodeInst) eObj).describe(false) + " in Cell " + ((NodeInst) eObj).getParent().describe(false);
-//        }
-//        if (eObj instanceof ArcInst) {
-//            return "Arc " + ((ArcInst) eObj).describe(false) + " in Cell " + ((ArcInst) eObj).getParent().describe(false);
-//        }
+//        if (eObj instanceof Library) return "Library " + ((Library) eObj).getName();
+//        if (eObj instanceof Cell) return "Cell " + ((Cell) eObj).describe(false);
+//        if (eObj instanceof Export) return "Export " + ((Export) eObj).getName() + " in Cell " + ((Export) eObj).getParent().describe(false);
+//        if (eObj instanceof NodeInst) return "Node " + ((NodeInst) eObj).describe(false) + " in Cell " + ((NodeInst) eObj).getParent().describe(false);
+//        if (eObj instanceof ArcInst) return "Arc " + ((ArcInst) eObj).describe(false) + " in Cell " + ((ArcInst) eObj).getParent().describe(false);
 //        return eObj.toString();
 //    }
-    /** empty array of Variables. */
+
+	/** empty array of Variables. */
     public static final Variable[] NULL_ARRAY = {};
+
     /** type if value. */
     private final static byte ARRAY = 1;
     private final static byte LIBRARY = 2;
@@ -287,6 +269,7 @@ public class Variable implements Serializable {
     private final static byte TECHNOLOGY = 30;
     private final static byte PRIM_NODE = 32;
     private final static byte ARC_PROTO = 34;
+
     /** Valid type of value. */
     private static final HashMap<Class, Byte> validClasses = new HashMap<Class, Byte>();
 
@@ -324,7 +307,8 @@ public class Variable implements Serializable {
      * @param value value of this Variable.
      * @param type type of the value
      */
-    private Variable(Key key, Object value, TextDescriptor descriptor, byte type) {
+    private Variable(Key key, Object value, TextDescriptor descriptor, byte type)
+    {
         this.key = key;
         this.value = value;
         this.descriptor = descriptor;
@@ -341,20 +325,13 @@ public class Variable implements Serializable {
      * @throws NullPointerException if key, descriptor or value is null.
      * @throws IllegalArgumentException if value has invalid type
      */
-    public static Variable newInstance(Variable.Key key, Object value, TextDescriptor descriptor) {
-        if (key == null) {
-            throw new NullPointerException("key");
-        }
-        if (descriptor == null) {
-            throw new NullPointerException("descriptor");
-        }
-        if (!key.isAttribute()) {
-            descriptor = descriptor.withParam(false);
-        }
+    public static Variable newInstance(Variable.Key key, Object value, TextDescriptor descriptor)
+    {
+        if (key == null) throw new NullPointerException("key");
+        if (descriptor == null) throw new NullPointerException("descriptor");
+        if (!key.isAttribute()) descriptor = descriptor.withParam(false);
         byte type = getObjectType(value);
-        if ((type & ARRAY) != 0) {
-            value = ((Object[]) value).clone();
-        }
+        if ((type & ARRAY) != 0) value = ((Object[]) value).clone();
         return new Variable(key, value, descriptor, type);
     }
 
@@ -367,29 +344,27 @@ public class Variable implements Serializable {
      * @param code code of new Object.
      * @return Object of specified Code derived from specified Object
      */
-    public static Object withCode(Object value, CodeExpression.Code code) {
-        if (code == CodeExpression.Code.NONE) {
+    public static Object withCode(Object value, CodeExpression.Code code)
+    {
+        if (code == CodeExpression.Code.NONE)
             return value instanceof CodeExpression ? value.toString() : value;
-        }
 
-        if (value instanceof CodeExpression && ((CodeExpression) value).getCode() == code) {
+        if (value instanceof CodeExpression && ((CodeExpression) value).getCode() == code)
             return value;
-        }
 
         String expr;
-        if (value instanceof Object[]) {
+        if (value instanceof Object[])
+        {
             StringBuilder sb = new StringBuilder();
-            for (Object o : (Object[]) value) {
-                if (o == null) {
-                    continue;
-                }
-                if (sb.length() > 0) {
-                    sb.append(' ');
-                }
+            for (Object o : (Object[]) value)
+            {
+                if (o == null) continue;
+                if (sb.length() > 0) sb.append(' ');
                 sb.append(o.toString());
             }
             expr = sb.toString();
-        } else {
+        } else
+        {
             expr = value.toString();
         }
         return CodeExpression.valueOf(expr, code);
@@ -397,58 +372,51 @@ public class Variable implements Serializable {
 
     /**
      * Checks invariant of this Variable.
-     * @param paramAllowed true if paramerer flag is allowed on this Variable
+     * @param paramAllowed true if parameter flag is allowed on this Variable
      * @param inheritAllowed true if inherit flag is allowed on this Variable
      * @throws AssertionError or NullPointerException if invariant is broken.
      */
-    public void check(boolean paramAllowed, boolean inheritAllowed) {
+    public void check(boolean paramAllowed, boolean inheritAllowed)
+    {
         assert key != null;
         assert value != null;
         assert type == getObjectType(value);
         assert descriptor != null;
-        if (descriptor.isParam()) {
-            assert paramAllowed && isAttribute();
-        }
-        if (descriptor.isInherit()) {
-            assert inheritAllowed;
-        }
+        if (descriptor.isParam()) assert paramAllowed && isAttribute();
+        if (descriptor.isInherit()) assert inheritAllowed;
     }
 
-    private static byte getObjectType(Object value) {
+    private static byte getObjectType(Object value)
+    {
         byte type;
-        if (value instanceof Object[]) {
+        if (value instanceof Object[])
+        {
             Byte typeByte = validClasses.get(value.getClass().getComponentType());
-            if (typeByte == null) {
+            if (typeByte == null)
                 throw new IllegalArgumentException(value.getClass().toString());
-            }
             type = (byte) (typeByte.byteValue() | ARRAY);
-            if (!validValue(type, value)) {
+            if (!validValue(type, value))
                 throw new IllegalArgumentException(value.toString());
-            }
-        } else {
+        } else
+        {
             Byte typeByte = validClasses.get(value.getClass());
-            if (typeByte == null) {
+            if (typeByte == null)
                 throw new IllegalArgumentException(value.getClass().toString());
-            }
             type = typeByte.byteValue();
         }
         return type;
     }
 
-    private static boolean validValue(byte type, Object value) {
-        if ((type & ARRAY) == 0) {
-            return value != null;
-        }
+    private static boolean validValue(byte type, Object value)
+    {
+        if ((type & ARRAY) == 0) return value != null;
         type = (byte) (type & ~ARRAY);
-        if (type == CODE) {
-            return false;
-        }
+        if (type == CODE) return false;
         Object[] valueArr = (Object[]) value;
-        if (type >= STRING && type <= BOOLEAN) {
+        if (type >= STRING && type <= BOOLEAN)
+        {
             for (Object o : valueArr) {
-                if (o == null) {
-                    return false;
-                }
+                if (o == null) return false;
             }
         }
         return true;
@@ -458,32 +426,27 @@ public class Variable implements Serializable {
      * Returns true if the value is array,
      * @return true if the value is array,
      */
-    public boolean isArray() {
-        return (type & ARRAY) != 0;
-    }
+    public boolean isArray() { return (type & ARRAY) != 0; }
 
     /**
      * Get the number of entries stored in this Variable.
      * For non-arrayed Variables, this is 1.
      * @return the number of entries stored in this Variable.
      */
-    public int getLength() {
-        return isArray() ? ((Object[]) value).length : 1;
-    }
+    public int getLength() { return isArray() ? ((Object[]) value).length : 1; }
 
     /**
      * Returns thread-independent value of this Variable.
      * @return thread-independent value of this variable.
      */
-    public Object getObject() {
-        return isArray() ? ((Object[]) value).clone() : value;
-    }
+    public Object getObject() { return isArray() ? ((Object[]) value).clone() : value; }
 
     /**
      * Write this Variable to IdWriter.
      * @param writer where to write.
      */
-    public void write(IdWriter writer) throws IOException {
+    public void write(IdWriter writer) throws IOException
+    {
         writer.writeVariableKey(key);
         writer.writeTextDescriptor(descriptor);
         writeObject(writer, value, type);
@@ -495,28 +458,33 @@ public class Variable implements Serializable {
      * @param writer where to write.
      * @param obj
      */
-    public static void writeObject(IdWriter writer, Object obj) throws IOException {
+    public static void writeObject(IdWriter writer, Object obj) throws IOException
+    {
         writeObject(writer, obj, getObjectType(obj));
     }
 
-    private static void writeObject(IdWriter writer, Object obj, byte type) throws IOException {
+    private static void writeObject(IdWriter writer, Object obj, byte type) throws IOException
+    {
         writer.writeByte(type);
-        if (obj instanceof Object[]) {
+        if (obj instanceof Object[])
+        {
             Object[] array = (Object[]) obj;
             writer.writeInt(array.length);
-            for (Object o : array) {
+            for (Object o : array)
+            {
                 writer.writeBoolean(o != null);
-                if (o != null) {
-                    writeObj(writer, o, type);
-                }
+                if (o != null) writeObj(writer, o, type);
             }
-        } else {
+        } else
+        {
             writeObj(writer, obj, type);
         }
     }
 
-    private static void writeObj(IdWriter writer, Object obj, byte type) throws IOException {
-        switch (type & ~ARRAY) {
+    private static void writeObj(IdWriter writer, Object obj, byte type) throws IOException
+    {
+        switch (type & ~ARRAY)
+        {
             case LIBRARY:
                 writer.writeLibId((LibId) obj);
                 break;
@@ -576,7 +544,8 @@ public class Variable implements Serializable {
      * @param reader from to read.
      * @return Variable read
      */
-    public static Variable read(IdReader reader) throws IOException {
+    public static Variable read(IdReader reader) throws IOException
+    {
         Variable.Key varKey = reader.readVariableKey();
         TextDescriptor td = reader.readTextDescriptor();
         Object value = readObject(reader);
@@ -588,117 +557,72 @@ public class Variable implements Serializable {
      * @param reader from to read
      * @return Object read
      */
-    public static Object readObject(IdReader reader) throws IOException {
+    public static Object readObject(IdReader reader) throws IOException
+    {
         int type = reader.readByte();
         Object value;
-        if ((type & ARRAY) != 0) {
+        if ((type & ARRAY) != 0)
+        {
             int length = reader.readInt();
             type &= ~ARRAY;
             Object[] array;
-            switch (type) {
-                case LIBRARY:
-                    array = new LibId[length];
-                    break;
-                case CELL:
-                    array = new CellId[length];
-                    break;
-                case EXPORT:
-                    array = new ExportId[length];
-                    break;
-                case STRING:
-                    array = new String[length];
-                    break;
-                case DOUBLE:
-                    array = new Double[length];
-                    break;
-                case FLOAT:
-                    array = new Float[length];
-                    break;
-                case LONG:
-                    array = new Long[length];
-                    break;
-                case INTEGER:
-                    array = new Integer[length];
-                    break;
-                case SHORT:
-                    array = new Short[length];
-                    break;
-                case BYTE:
-                    array = new Byte[length];
-                    break;
-                case BOOLEAN:
-                    array = new Boolean[length];
-                    break;
-                case EPOINT:
-                    array = new EPoint[length];
-                    break;
-                case TOOL:
-                    array = new Tool[length];
-                    break;
-                case TECHNOLOGY:
-                    array = new TechId[length];
-                    break;
-                case PRIM_NODE:
-                    array = new PrimitiveNodeId[length];
-                    break;
-                case ARC_PROTO:
-                    array = new ArcProtoId[length];
-                    break;
+            switch (type) 
+            {
+                case LIBRARY:    array = new LibId[length];           break;
+                case CELL:       array = new CellId[length];          break;
+                case EXPORT:     array = new ExportId[length];        break;
+                case STRING:     array = new String[length];          break;
+                case DOUBLE:     array = new Double[length];          break;
+                case FLOAT:      array = new Float[length];           break;
+                case LONG:       array = new Long[length];            break;
+                case INTEGER:    array = new Integer[length];         break;
+                case SHORT:      array = new Short[length];           break;
+                case BYTE:       array = new Byte[length];            break;
+                case BOOLEAN:    array = new Boolean[length];         break;
+                case EPOINT:     array = new EPoint[length];          break;
+                case TOOL:       array = new Tool[length];            break;
+                case TECHNOLOGY: array = new TechId[length];          break;
+                case PRIM_NODE:  array = new PrimitiveNodeId[length]; break;
+                case ARC_PROTO:  array = new ArcProtoId[length];      break;
                 case CODE:
                 default:
                     throw new IOException("type");
             }
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < length; i++)
+            {
                 boolean hasElem = reader.readBoolean();
-                if (hasElem) {
-                    array[i] = readObj(reader, type);
-                }
+                if (hasElem) array[i] = readObj(reader, type);
             }
             value = array;
-        } else {
+        } else
+        {
             value = readObj(reader, type);
         }
         return value;
     }
 
-    private static Object readObj(IdReader reader, int type) throws IOException {
-        switch (type) {
-            case LIBRARY:
-                return reader.readLibId();
-            case CELL:
-                return reader.readNodeProtoId();
-            case EXPORT:
-                return reader.readPortProtoId();
-            case STRING:
-                return reader.readString();
-            case CODE:
-                return CodeExpression.read(reader);
-            case DOUBLE:
-                return Double.valueOf(reader.readDouble());
-            case FLOAT:
-                return Float.valueOf(reader.readFloat());
-            case LONG:
-                return Long.valueOf(reader.readLong());
-            case INTEGER:
-                return Integer.valueOf(reader.readInt());
-            case SHORT:
-                return Short.valueOf(reader.readShort());
-            case BYTE:
-                return Byte.valueOf(reader.readByte());
-            case BOOLEAN:
-                return Boolean.valueOf(reader.readBoolean());
-            case EPOINT:
-                return reader.readPoint();
-            case TOOL:
-                return reader.readTool();
-            case TECHNOLOGY:
-                return reader.readTechId();
-            case PRIM_NODE:
-                return reader.readNodeProtoId();
-            case ARC_PROTO:
-                return reader.readArcProtoId();
-            default:
-                throw new IllegalArgumentException();
+    private static Object readObj(IdReader reader, int type) throws IOException
+    {
+        switch (type)
+        {
+            case LIBRARY:    return reader.readLibId();
+            case CELL:       return reader.readNodeProtoId();
+            case EXPORT:     return reader.readPortProtoId();
+            case STRING:     return reader.readString();
+            case CODE:       return CodeExpression.read(reader);
+            case DOUBLE:     return Double.valueOf(reader.readDouble());
+            case FLOAT:      return Float.valueOf(reader.readFloat());
+            case LONG:       return Long.valueOf(reader.readLong());
+            case INTEGER:    return Integer.valueOf(reader.readInt());
+            case SHORT:      return Short.valueOf(reader.readShort());
+            case BYTE:       return Byte.valueOf(reader.readByte());
+            case BOOLEAN:    return Boolean.valueOf(reader.readBoolean());
+            case EPOINT:     return reader.readPoint();
+            case TOOL:       return reader.readTool();
+            case TECHNOLOGY: return reader.readTechId();
+            case PRIM_NODE:  return reader.readNodeProtoId();
+            case ARC_PROTO:  return reader.readArcProtoId();
+            default:         throw new IllegalArgumentException();
         }
     }
 
@@ -708,10 +632,9 @@ public class Variable implements Serializable {
      * @return Variable which differs from this Variable by key.
      * @throws NullPointerException if key is null.
      */
-    public Variable withVarKey(Variable.Key key) {
-        if (this.key == key) {
-            return this;
-        }
+    public Variable withVarKey(Variable.Key key)
+    {
+        if (this.key == key) return this;
         return newInstance(key, this.value, this.descriptor);
     }
 
@@ -722,13 +645,13 @@ public class Variable implements Serializable {
      * @throws NullPointerException if value is null.
      * @throws IllegalArgumentException if value has invalid type
      */
-    public Variable withObject(Object value) {
-        if (this.value.equals(value)) {
-            return this;
-        }
-        if ((type & ARRAY) != 0 && value instanceof Object[]
-                && Arrays.equals((Object[]) this.value, (Object[]) value)
-                && this.value.getClass().getComponentType() == value.getClass().getComponentType()) {
+    public Variable withObject(Object value)
+    {
+        if (this.value.equals(value)) return this;
+        if ((type & ARRAY) != 0 && value instanceof Object[] &&
+        	Arrays.equals((Object[]) this.value, (Object[]) value) &&
+                this.value.getClass().getComponentType() == value.getClass().getComponentType())
+        {
             return this;
         }
         return newInstance(this.key, value, this.descriptor);
@@ -736,23 +659,21 @@ public class Variable implements Serializable {
 
     /**
      * Returns Variable which differs from this Variable by text value.
-     * If this Variable is Code Varibale its Code type is preserved
+     * If this Variable is Code Variable its Code type is preserved
      * @param text text value of new Variable.
      * @return Variable which differs from this Variable by value.
      * @throws NullPointerException if value is null.
      * @throws IllegalArgumentException if value has invalid type
      */
-    public Variable withText(String text) {
-        if (value instanceof CodeExpression) {
+    public Variable withText(String text)
+    {
+        if (value instanceof CodeExpression)
+        {
             CodeExpression ce = (CodeExpression) value;
-            if (ce.getExpr().equals(text)) {
-                return this;
-            }
+            if (ce.getExpr().equals(text)) return this;
             return new Variable(this.key, CodeExpression.valueOf(text, ce.getCode()), this.descriptor, this.type);
         }
-        if (value.equals(text)) {
-            return this;
-        }
+        if (value.equals(text)) return this;
         return new Variable(this.key, text, this.descriptor, STRING);
     }
 
@@ -761,26 +682,28 @@ public class Variable implements Serializable {
      * @param code code of new Variable.
      * @return Variable which differs from this Variable by code
      */
-    public Variable withCode(CodeExpression.Code code) {
-        if (getCode() == code) {
-            return this;
-        }
+    public Variable withCode(CodeExpression.Code code)
+    {
+        if (getCode() == code) return this;
         return withObject(withCode(value, code));
     }
 
     /**
-     * Returns Variable which differs from this Variable by renamed Ids.
-     * @param idMapper a mapper from old Ids to new Ids.
-     * @return Variable which differs from this Variable by renamed Ids.
+     * Returns Variable which differs from this Variable by renamed IDs.
+     * @param idMapper a map from old IDs to new IDs.
+     * @return Variable which differs from this Variable by renamed IDs.
      */
-    public Variable withRenamedIds(IdMapper idMapper) {
+    public Variable withRenamedIds(IdMapper idMapper)
+    {
         Object newValue = withRenamedIds(idMapper, value, type);
         return newValue != value ? withObject(newValue) : this;
     }
 
-    private static Object withRenamedIds(IdMapper idMapper, Object value, byte type) {
+    private static Object withRenamedIds(IdMapper idMapper, Object value, byte type)
+    {
         Object newValue = value;
-        switch (type) {
+        switch (type)
+        {
             case LIBRARY:
                 newValue = idMapper.get((LibId) value);
                 break;
@@ -792,12 +715,12 @@ public class Variable implements Serializable {
                 break;
             case LIBRARY | ARRAY:
                 LibId[] libIds = (LibId[]) value;
-                for (int i = 0; i < libIds.length; i++) {
-                    if (libIds[i] == null) {
-                        continue;
-                    }
+                for (int i = 0; i < libIds.length; i++)
+                {
+                    if (libIds[i] == null) continue;
                     LibId libId = idMapper.get(libIds[i]);
-                    if (libId != libIds[i]) {
+                    if (libId != libIds[i])
+                    {
                         libIds[i] = libId;
                         newValue = libIds;
                     }
@@ -805,12 +728,12 @@ public class Variable implements Serializable {
                 break;
             case CELL | ARRAY:
                 CellId[] cellIds = (CellId[]) value;
-                for (int i = 0; i < cellIds.length; i++) {
-                    if (cellIds[i] == null) {
-                        continue;
-                    }
+                for (int i = 0; i < cellIds.length; i++)
+                {
+                    if (cellIds[i] == null) continue;
                     CellId cellId = idMapper.get(cellIds[i]);
-                    if (cellId != cellIds[i]) {
+                    if (cellId != cellIds[i])
+                    {
                         cellIds[i] = cellId;
                         newValue = cellIds;
                     }
@@ -818,12 +741,12 @@ public class Variable implements Serializable {
                 break;
             case EXPORT | ARRAY:
                 ExportId[] exportIds = (ExportId[]) value;
-                for (int i = 0; i < exportIds.length; i++) {
-                    if (exportIds[i] == null) {
-                        continue;
-                    }
+                for (int i = 0; i < exportIds.length; i++)
+                {
+                    if (exportIds[i] == null) continue;
                     ExportId exportId = idMapper.get(exportIds[i]);
-                    if (exportId != exportIds[i]) {
+                    if (exportId != exportIds[i])
+                    {
                         exportIds[i] = exportId;
                         newValue = exportIds;
                     }
@@ -839,10 +762,10 @@ public class Variable implements Serializable {
      * @return element of array value.
      * @throws ArrayIndexOutOfBoundsException if index is scalar of value is out of bounds.
      */
-    public Object getObject(int index) {
-        if ((type & ARRAY) == 0) {
+    public Object getObject(int index)
+    {
+        if ((type & ARRAY) == 0)
             throw new ArrayIndexOutOfBoundsException(index);
-        }
         return ((Object[]) value)[index];
     }
 
@@ -850,120 +773,63 @@ public class Variable implements Serializable {
      * Method to return the Variable Key associated with this Variable.
      * @return the Variable Key associated with this variable.
      */
-    public Key getKey() {
-        return key;
-    }
+    public Key getKey() { return key; }
 
-    /**
-     * Method to convert the standard Variable names to more readable strings.
-     * @param name the actual Variable name.
-     * @return a better name for it (returns the same name if no better one exists).
-     */
-    public static String betterVariableName(String name) {
-        // handle standard variable names
-        if (name.equals("ARC_name")) {
-            return "Arc Name";
-        }
-        if (name.equals("ARC_radius")) {
-            return "Arc Radius";
-        }
-        if (name.equals("ART_color")) {
-            return "Color";
-        }
-        if (name.equals("ART_degrees")) {
-            return "Number of Degrees";
-        }
-        if (name.equals("ART_message")) {
-            return "Annotation text";
-        }
-        if (name.equals("GDS_text")) {
-            return "Text for GDS output";
-        }
-        if (name.equals("GEN_routing_exclusion")) {
-            return "Routing exclusion layers";
-        }
-        if (name.equals("NET_ncc_match")) {
-            return "NCC equivalence";
-        }
-        if (name.equals("NET_ncc_forcedassociation")) {
-            return "NCC association";
-        }
-        if (name.equals("NODE_name")) {
-            return "Node Name";
-        }
-        if (name.equals("SCHEM_capacitance")) {
-            return "Capacitance";
-        }
-        if (name.equals("SCHEM_diode")) {
-            return "Diode Size";
-        }
-        if (name.equals("SCHEM_global_name")) {
-            return "Global Signal Name";
-        }
-        if (name.equals("SCHEM_inductance")) {
-            return "Inductance";
-        }
-        if (name.equals("SCHEM_resistance")) {
-            return "Resistance";
-        }
-        if (name.equals("SIM_fall_delay")) {
-            return "Fall Delay";
-        }
-        if (name.equals("SIM_fasthenry_group_name")) {
-            return "FastHenry Group";
-        }
-        if (name.equals("SIM_rise_delay")) {
-            return "Rise Delay";
-        }
-        if (name.equals("SIM_spice_card")) {
-            return "SPICE code";
-        }
-        if (name.equals("SIM_spice_declaration")) {
-            return "SPICE declaration";
-        }
-        if (name.equals("SIM_spice_model")) {
-            return "SPICE model";
-        }
-        if (name.equals("SIM_verilog_wire_type")) {
-            return "Verilog Wire type";
-        }
-        if (name.equals("SIM_weak_node")) {
-            return "Transistor Strength";
-        }
-        if (name.equals("transistor_width")) {
-            return "Transistor Width";
-        }
-        if (name.equals("VERILOG_code")) {
-            return "Verilog code";
-        }
-        if (name.equals("VERILOG_declaration")) {
-            return "Verilog declaration";
-        }
-        if (name.equals("VERILOG_parameter")) {
-            return "Verilog parameter";
-        }
-        if (name.equals("VERILOG_external_code")) {
-            return "Verilog external code";
-        }
-        return null;
-    }
+	/**
+	 * Method to convert the standard Variable names to more readable strings.
+	 * @param name the actual Variable name.
+	 * @return a better name for it (returns the same name if no better one exists).
+	 */
+	public static String betterVariableName(String name)
+	{
+		// handle standard variable names
+		if (name.equals("ARC_name"))                  return "Arc Name";
+		if (name.equals("ARC_radius"))                return "Arc Radius";
+		if (name.equals("ART_color"))                 return "Color";
+		if (name.equals("ART_degrees"))               return "Number of Degrees";
+		if (name.equals("ART_message"))               return "Annotation text";
+		if (name.equals("GDS_text"))                  return "Text for GDS output";
+		if (name.equals("GEN_routing_exclusion"))     return "Routing exclusion layers";
+		if (name.equals("NET_ncc_match"))             return "NCC equivalence";
+		if (name.equals("NET_ncc_forcedassociation")) return "NCC association";
+		if (name.equals("NODE_name"))                 return "Node Name";
+		if (name.equals("SCHEM_capacitance"))         return "Capacitance";
+		if (name.equals("SCHEM_diode"))               return "Diode Size";
+		if (name.equals("SCHEM_global_name"))         return "Global Signal Name";
+		if (name.equals("SCHEM_inductance"))          return "Inductance";
+		if (name.equals("SCHEM_resistance"))          return "Resistance";
+		if (name.equals("SIM_fall_delay"))            return "Fall Delay";
+		if (name.equals("SIM_fasthenry_group_name"))  return "FastHenry Group";
+		if (name.equals("SIM_rise_delay"))            return "Rise Delay";
+		if (name.equals("SIM_spice_card"))            return "SPICE code";
+		if (name.equals("SIM_spice_declaration"))     return "SPICE declaration";
+		if (name.equals("SIM_spice_model"))           return "SPICE model";
+		if (name.equals("SIM_verilog_wire_type"))     return "Verilog Wire type";
+		if (name.equals("SIM_weak_node"))             return "Transistor Strength";
+		if (name.equals("transistor_width"))          return "Transistor Width";
+		if (name.equals("VERILOG_code"))              return "Verilog code";
+		if (name.equals("VERILOG_declaration"))       return "Verilog declaration";
+		if (name.equals("VERILOG_parameter"))         return "Verilog parameter";
+		if (name.equals("VERILOG_external_code"))     return "Verilog external code";
+		return null;
+	}
 
-    /**
-     * Method to return the "true" name for this Variable.
-     * The method removes the "ATTR_" and "ATTRP_" prefixes.
-     * @return the "true" name for this Variable.
-     */
-    public String getTrueName() {
-        String name = getKey().getName();
-        if (name.startsWith("ATTR_")) {
-            return name.substring(5);
-        }
-        if (name.startsWith("ATTRP_")) {
-            int i = name.lastIndexOf('_');
-            return name.substring(i);
-        }
-        return name;
-    }
+	/**
+	 * Method to return the "true" name for this Variable.
+	 * The method removes the "ATTR_" and "ATTRP_" prefixes.
+	 * @return the "true" name for this Variable.
+	 */
+	public String getTrueName() {
+		String name = getKey().getName();
+		if (name.startsWith("ATTR_")) {
+			return name.substring(5);
+		}
+		if (name.startsWith("ATTRP_")) {
+			int i = name.lastIndexOf('_');
+			return name.substring(i);
+		}
+		return name;
+	}
 
     /**
      * Method to return a description of this Variable.
@@ -986,7 +852,7 @@ public class Variable implements Serializable {
      * @param aindex if negative, print the entire array.
      * @param context the VarContext for this Variable.
      * @param eobj the Object on which this Variable resides.
-     * @return a String desribing this Variable.
+     * @return a String describing this Variable.
      */
     public String describe(int aindex, VarContext context, Object eobj) {
         TextDescriptor.Unit units = getUnit();
@@ -1020,7 +886,7 @@ public class Variable implements Serializable {
     /**
      * Method to convert this Variable to a String without any evaluation of code.
      * @param aindex if negative, print the entire array.
-     * @return a String desribing this Variable.
+     * @return a String describing this Variable.
      */
     public String getPureValue(int aindex) {
         TextDescriptor.Unit units = getUnit();
@@ -1059,26 +925,20 @@ public class Variable implements Serializable {
     }
 
     /**
-     * Method to convert object "addr" to a string, given a set of units.
+     * Method to convert an object to a string, given a set of units.
      * For completion of the method, the units should be treated as in "makeStringVar()".
      */
     private String makeStringVar(Object addr, TextDescriptor.Unit units) {
-//		if (addr instanceof Integer)
-//		{
-//			return ((Integer)addr).toString();
-//		}
+//		if (addr instanceof Integer) return ((Integer)addr).toString();
         if (addr instanceof Float) {
             return TextUtils.makeUnits(((Float) addr).floatValue(), units);
         }
         if (addr instanceof Double) {
             return TextUtils.makeUnits(((Double) addr).doubleValue(), units);
         }
-//		if (addr instanceof Short)
-//			return ((Short)addr).toString();
-//		if (addr instanceof Byte)
-//			return ((Byte)addr).toString();
-//		if (addr instanceof String)
-//			return (String)addr;
+//		if (addr instanceof Short) return ((Short)addr).toString();
+//		if (addr instanceof Byte) return ((Byte)addr).toString();
+//		if (addr instanceof String) return (String)addr;
         if (addr instanceof Object[]) {
             StringBuffer buf = new StringBuffer();
             buf.append("[");
@@ -1106,7 +966,7 @@ public class Variable implements Serializable {
             return (true);
         }
 
-        // Better if compare classes? but it will crash with obj=null
+        // Better if compare classes? but it will crash with null object
         if (obj == null || getClass() != obj.getClass()) {
             return (false);
         }
@@ -1325,7 +1185,7 @@ public class Variable implements Serializable {
     /**
      * Method to find the true size in points for the Variable's TextDescriptor in a given EditWindow0.
      * If the TextDescriptor is already Absolute (in points) nothing needs to be done.
-     * Otherwise, the scale of the EditWindow0 is used to determine the acutal point size.
+     * Otherwise, the scale of the EditWindow0 is used to determine the actual point size.
      * @param wnd the EditWindow0 in which drawing will occur.
      * @return the point size of the text described by the Variable's TextDescriptor.
      */
@@ -1400,9 +1260,9 @@ public class Variable implements Serializable {
     }
 
     /**
-     * Returns Variable which differs from this Variable by dislay part.
+     * Returns Variable which differs from this Variable by display part.
      * @param dispPos the text display part of new Variable.
-     * @return Variable which differs from this Variable by dislay part.
+     * @return Variable which differs from this Variable by display part.
      * @throws NullPointerException if dispPos is null
      */
     public Variable withDispPart(TextDescriptor.DispPos dispPos) {
@@ -1505,12 +1365,12 @@ public class Variable implements Serializable {
     }
 
     /**
-     * Returns Variable which deffers from this Variable by parameter flag.
+     * Returns Variable which differs from this Variable by parameter flag.
      * Parameters are those Variables that have values on instances which are
      * passed down the hierarchy into the contents.
      * Parameters can only exist on Cell objects.
      * @param state true if new Variable is parameter.
-     * @return Variable which deffers from this Variable by parameter flag.
+     * @return Variable which differs from this Variable by parameter flag.
      */
     public Variable withParam(boolean state) {
         return withTextDescriptor(getTextDescriptor().withParam(state));
@@ -1549,7 +1409,7 @@ public class Variable implements Serializable {
      * Method to return the Unit of the Variable's TextDescriptor.
      * Unit describes the type of real-world unit to apply to the value.
      * For example, if this value is in volts, the Unit tells whether the value
-     * is volts, millivolts, microvolts, etc.
+     * is volts, milli-volts, micro-volts, etc.
      * @return the Unit of the Variable's TextDescriptor.
      */
     public TextDescriptor.Unit getUnit() {
@@ -1560,7 +1420,7 @@ public class Variable implements Serializable {
      * Returns Variable which differs from this Variable by unit.
      * Unit describe the type of real-world unit to apply to the value.
      * For example, if this value is in volts, the Unit tells whether the value
-     * is volts, millivolts, microvolts, etc.
+     * is volts, milli-volts, micro-volts, etc.
      * @param u the Unit of new Variable.
      * @return Variable which differs from this Variable by unit.
      */
