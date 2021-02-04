@@ -995,8 +995,8 @@ public class Panel extends JPanel
 			// show dimensions while dragging
 			double lowXValue = convertXScreenToData(lowX);
 			double highXValue = convertXScreenToData(highX);
-			double lowValue = convertYScreenToData(highY);
-			double highValue = convertYScreenToData(lowY);
+			double lowYValue = convertYScreenToData(lowY);
+			double highYValue = convertYScreenToData(highY);
 			g.setFont(waveWindow.getFont());
 
 			// show the low X value and arrow
@@ -1059,7 +1059,7 @@ public class Panel extends JPanel
 			if (isAnalog())
 			{
 				// show the low value
-				String lowValueString = TextUtils.convertToEngineeringNotation(highValue, null);
+				String lowValueString = TextUtils.convertToEngineeringNotation(lowYValue / analogScaleValue, null);
 				gv = waveWindow.getFont().createGlyphVector(waveWindow.getFontRenderContext(), lowValueString);
 				glyphBounds = gv.getLogicalBounds();
 				textWid = (int)glyphBounds.getWidth();
@@ -1072,7 +1072,7 @@ public class Panel extends JPanel
 				g.drawLine(xP, lowY-1, xP-4, lowY-5);
 
 				// show the high value
-				String highValueString = TextUtils.convertToEngineeringNotation(lowValue, null);
+				String highValueString = TextUtils.convertToEngineeringNotation(highYValue / analogScaleValue, null);
 				gv = waveWindow.getFont().createGlyphVector(waveWindow.getFontRenderContext(), highValueString);
 				glyphBounds = gv.getLogicalBounds();
 				textWid = (int)glyphBounds.getWidth();
@@ -1084,7 +1084,7 @@ public class Panel extends JPanel
 				g.drawLine(xP, highY+1, xP-4, highY+5);
 
 				// show the value difference
-				String valueDiffString = TextUtils.convertToEngineeringNotation(highValue - lowValue, null);
+				String valueDiffString = TextUtils.convertToEngineeringNotation((lowYValue - highYValue) / analogScaleValue, null);
 				gv = waveWindow.getFont().createGlyphVector(waveWindow.getFontRenderContext(), valueDiffString);
 				glyphBounds = gv.getLogicalBounds();
 				textWid = (int)glyphBounds.getWidth();

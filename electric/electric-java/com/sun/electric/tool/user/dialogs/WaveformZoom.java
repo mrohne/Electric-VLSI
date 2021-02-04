@@ -4,7 +4,7 @@
  *
  * File: WaveformZoom.java
  *
- * Copyright (c) 2004, Static Free Software. All rights reserved.
+ * Copyright (c) 2021, Static Free Software. All rights reserved.
  *
  * Electric(tm) is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,9 @@ import com.sun.electric.util.TextUtils;
 
 import java.awt.Frame;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 /**
  * Class to handle the dialog for precise control of Waveform window extents.
  */
@@ -34,9 +37,12 @@ public class WaveformZoom extends EDialog
 {
 	private Panel curPanel;
 	private WaveformWindow curWindow;
-	private double savedVerticalScale = 1;
+	private double trueLowY, trueHighY, trueScale = 1;
+	private boolean updatingTextFields = false;
 
-	/** Creates new form Waveform Zoom */
+	/**
+	 * Create a new Waveform Zoom dialog
+	 */
 	public WaveformZoom(Frame parent, double lowVert, double highVert, double scaleVert, boolean logVert,
 		double lowHoriz, double highHoriz, WaveformWindow curWindow, Panel curPanel)
 	{
@@ -44,53 +50,128 @@ public class WaveformZoom extends EDialog
 		this.curPanel = curPanel;
 		this.curWindow = curWindow;
 		initComponents();
-        getRootPane().setDefaultButton(ok);
+		getRootPane().setDefaultButton(ok);
 
 		// make all text fields select-all when entered
-	    EDialog.makeTextFieldSelectAllOnTab(verticalLow);
-	    EDialog.makeTextFieldSelectAllOnTab(verticalHigh);
-	    EDialog.makeTextFieldSelectAllOnTab(verticalScale);
-	    EDialog.makeTextFieldSelectAllOnTab(horizontalLow);
-	    EDialog.makeTextFieldSelectAllOnTab(horizontalHigh);
+		EDialog.makeTextFieldSelectAllOnTab(verticalLow);
+		EDialog.makeTextFieldSelectAllOnTab(verticalHigh);
+		EDialog.makeTextFieldSelectAllOnTab(verticalScale);
+		EDialog.makeTextFieldSelectAllOnTab(horizontalLow);
+		EDialog.makeTextFieldSelectAllOnTab(horizontalHigh);
+		YScaleListener valueListener = new YScaleListener(false);
+		YScaleListener scaleListener = new YScaleListener(true);
 
-	    verticalLow.setText(Double.toString(lowVert));
-        verticalHigh.setText(Double.toString(highVert));
-        verticalScale.setText(Double.toString(scaleVert));
-        horizontalLow.setText(Double.toString(lowHoriz));
-        horizontalHigh.setText(Double.toString(highHoriz));
-        if (logVert) verticalLogarithmic.setSelected(true); else
-        	verticalLinear.setSelected(true);
+		trueLowY = lowVert;   trueHighY = highVert;
+		if (scaleVert != 0 && !logVert) { lowVert /= scaleVert;   highVert /= scaleVert; }
+		verticalLow.setText(Double.toString(lowVert));
+		verticalHigh.setText(Double.toString(highVert));
+		verticalScale.setText(Double.toString(scaleVert));
+		horizontalLow.setText(Double.toString(lowHoriz));
+		horizontalHigh.setText(Double.toString(highHoriz));
+		if (logVert) verticalLogarithmic.setSelected(true); else
+			verticalLinear.setSelected(true);
+
+		verticalLow.getDocument().addDocumentListener(valueListener);
+		verticalHigh.getDocument().addDocumentListener(valueListener);
+		verticalScale.getDocument().addDocumentListener(scaleListener);
 
 		finishInitialization();
 		setVisible(true);
 	}
 
+	/**
+	 * Method called when the "Linear" or "Log" radio buttons are clicked.
+	 */
 	private void linearLogClicked()
 	{
+		double lowVert = trueLowY, highVert = trueHighY;
 		if (verticalLinear.isSelected())
 		{
 			// doing linear, enable scaling
 			verticalScaleLabel.setEnabled(true);
 			verticalScale.setEnabled(true);
 			setScaleTo2Pi.setEnabled(true);
-			verticalScale.setText(savedVerticalScale+"");
+			if (trueScale != 0) { lowVert /= trueScale;   highVert /= trueScale; }
 		} else
 		{
 			// doing logarithmic, disable scaling
 			verticalScaleLabel.setEnabled(false);
 			verticalScale.setEnabled(false);
 			setScaleTo2Pi.setEnabled(false);
-			savedVerticalScale = TextUtils.atof(verticalScale.getText());
 			verticalScale.setText("");
 		}
+		updatingTextFields = true;
+		verticalLow.setText(Double.toString(lowVert));
+		verticalHigh.setText(Double.toString(highVert));
+		verticalScale.setText(trueScale+"");
+		updatingTextFields = false;
 	}
 
+	/**
+	 * Method called when the "Scale to 2 Pi" is clicked.
+	 */
 	private void setScaleTo2Pi()
 	{
 		verticalScale.setText((Math.PI * 2) + "");
 	}
 
+	/**
+	 * Method called when "OK" is clicked to set the values.
+	 */
+	private void okayClicked()
+	{
+		double scaleVert = TextUtils.atof(verticalScale.getText());
+		double lowHoriz = TextUtils.atof(horizontalLow.getText());
+		double highHoriz = TextUtils.atof(horizontalHigh.getText());
+		boolean logVert = verticalLogarithmic.isSelected();
+		curWindow.setZoomExtents(trueLowY, trueHighY, scaleVert, logVert, lowHoriz, highHoriz, curPanel);
+		closeDialog(null);
+	}
+
 	protected void escapePressed() { cancel(null); }
+
+	/**
+	 * Class for handling changes to the Y axis text fields.
+	 */
+	class YScaleListener implements DocumentListener
+	{
+		private boolean scaleField;
+		public YScaleListener(boolean sf) { scaleField = sf; }
+
+		public void insertUpdate(DocumentEvent e) { updateYScale(); }
+
+		public void removeUpdate(DocumentEvent e) { updateYScale(); }
+
+		public void changedUpdate(DocumentEvent e) { updateYScale(); }
+
+		protected void updateYScale()
+		{
+			if (updatingTextFields) return;
+			if (scaleField)
+			{
+				trueScale = TextUtils.atof(verticalScale.getText());
+				if (trueScale == 0) trueScale = 1;
+				if (verticalLinear.isSelected())
+				{
+					updatingTextFields = true;
+					verticalLow.setText(Double.toString(trueLowY / trueScale));
+					verticalHigh.setText(Double.toString(trueHighY / trueScale));
+					updatingTextFields = false;
+				}
+			} else
+			{
+				double lowValue = TextUtils.atof(verticalLow.getText());
+				double highValue = TextUtils.atof(verticalHigh.getText());
+				if (trueScale != 0 && verticalLinear.isSelected())
+				{
+					lowValue *= trueScale;
+					highValue *= trueScale;
+				}
+				trueLowY = lowValue;
+				trueHighY = highValue;
+			}
+		}
+	};
 
 	/** This method is called from within the constructor to
 	 * initialize the form.
@@ -314,14 +395,7 @@ public class WaveformZoom extends EDialog
 
 	private void ok(java.awt.event.ActionEvent evt)//GEN-FIRST:event_ok
 	{//GEN-HEADEREND:event_ok
-        double lowVert = TextUtils.atof(verticalLow.getText());
-        double highVert = TextUtils.atof(verticalHigh.getText());
-        double scaleVert = TextUtils.atof(verticalScale.getText());
-        double lowHoriz = TextUtils.atof(horizontalLow.getText());
-        double highHoriz = TextUtils.atof(horizontalHigh.getText());
-        boolean logVert = verticalLogarithmic.isSelected();
-        curWindow.setZoomExtents(lowVert, highVert, scaleVert, logVert, lowHoriz, highHoriz, curPanel);
-		closeDialog(null);
+		okayClicked();
 	}//GEN-LAST:event_ok
 
 	/** Closes the dialog */

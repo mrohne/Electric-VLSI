@@ -1,0 +1,57 @@
+<!-- NEED 5in -->
+
+<!-- HEADER 9-14: Inductors -->
+
+<!-- COMMAND Tools/Inductors/Inductor Management... -->
+<!-- COMMAND Tools/Inductors/Write FastHenry Deck... -->
+<!-- PREFERENCE Tools/Fast Henry -->
+
+Inductors can span multiple arcs in Electric, and some technologies even have inductor nodes.
+All of this is managed with the <b>Manage Inductors...</b> command
+(in menu <b>Tools / Inductors</b>).
+Once inductors have been established, you can also write a deck for further analysis by FastHenry.
+<p>
+<TABLE><TR><TD>
+Inductor management lets you create inductor names in the current cell
+(with the "New..." button). You can also rename an inductor and can delete it.
+Note that if an inductor is listed because there is an inductor node with that name,
+you cannot delete the inductor in this dialog and must instead delete the inductor node.
+<br><br>
+Once inductors have been established, you can assign arcs to them.
+The "Compute" button tries to figure out which arcs are connected
+by following the inductor node through the circuit.
+If there is no inductor node present, this button does nothing.
+You can assign arcs manually by selecting them in the circuit and clicking the "Add" button.
+You can remove arcs from an inductor by selecting them in this dialog and clicking the "Remove" button.
+Note that this dialog cross-probes correctly between the list of arcs and the arcs in the circuit:
+clicking on either shows the other.
+<br><br>
+The middle section of the dialog lets you assign analysis factors for FastHenry.
+FastHenry is an inductance analysis tool (see the papers of <A HREF="http://rleweb.mit.edu/rlestaff/p-whit.htm">Jacob White</A>).
+You can set the thickness and Z height of this inductor,
+and you can set the number of subdivisions of the width and height.
+Note that default value are shown that will be used if no value is given in this dialog.
+<br><br>
+The bottom part of the dialog is able to do simple inductance computation.
+It uses a formula that depends on the number of "squares" in the inductor
+as well as a length and corner-turning factor.
+Click the "Analyze" button to show the computation of the current inductance value.
+Click the "Annotate" button to assign the computed inductance to the inductor node (if there is one).
+</TD><TD><CENTER><IMG SRC="fig09-06.png" ALT="Figure 9.6"></CENTER></TD></TR></TABLE>
+<P>
+After all of the inductors have been identified, you can generate a FastHenry deck with the
+<B>Write FastHenry Deck...</B> command (in menu <B>Tools / Inductors</B>).
+Before doing that, however, you can set other options for FastHenry deck generation.
+To do this, use the
+FastHenry Preferences (in menu <B>File / Preferences...</B>, "Tools" section, "FastHenry" tab).
+<P>
+<CENTER><IMG SRC="fig09-02.png" ALT="Figure 9.2"></CENTER>
+<P>
+This dialog allows you to set the type of frequency analysis
+(single frequency or a sequence specified by a start, end, and number of runs per decade).
+You can choose to use single or multiple-pole analysis
+(and if multiple, you can specify the number of poles).
+The FastHenry Preferences dialog also allows you to set defaults for the FastHenry factors.
+You can specify the default thickness, and the default number of subdivisions (in height and width).
+
+<!-- TRAILER -->
