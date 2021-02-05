@@ -62,10 +62,11 @@ public class WaveformZoom extends EDialog
 		YScaleListener scaleListener = new YScaleListener(true);
 
 		trueLowY = lowVert;   trueHighY = highVert;
-		if (scaleVert != 0 && !logVert) { lowVert /= scaleVert;   highVert /= scaleVert; }
+		trueScale = scaleVert;
+		if (trueScale != 0 && !logVert) { lowVert /= trueScale;   highVert /= trueScale; }
 		verticalLow.setText(Double.toString(lowVert));
 		verticalHigh.setText(Double.toString(highVert));
-		verticalScale.setText(Double.toString(scaleVert));
+		verticalScale.setText(Double.toString(trueScale));
 		horizontalLow.setText(Double.toString(lowHoriz));
 		horizontalHigh.setText(Double.toString(highHoriz));
 		if (logVert) verticalLogarithmic.setSelected(true); else
@@ -120,11 +121,10 @@ public class WaveformZoom extends EDialog
 	 */
 	private void okayClicked()
 	{
-		double scaleVert = TextUtils.atof(verticalScale.getText());
 		double lowHoriz = TextUtils.atof(horizontalLow.getText());
 		double highHoriz = TextUtils.atof(horizontalHigh.getText());
 		boolean logVert = verticalLogarithmic.isSelected();
-		curWindow.setZoomExtents(trueLowY, trueHighY, scaleVert, logVert, lowHoriz, highHoriz, curPanel);
+		curWindow.setZoomExtents(trueLowY, trueHighY, trueScale, logVert, lowHoriz, highHoriz, curPanel);
 		closeDialog(null);
 	}
 
