@@ -724,6 +724,7 @@ public class Panel extends JPanel
 	 * Method to set the Y axis range in this panel.
 	 * @param low the low Y axis value.
 	 * @param high the high Y axis value.
+	 * @param scale the Y axis scale value.
 	 */
 	public void setYAxisRange(double low, double high, double scale)
 	{
@@ -736,6 +737,15 @@ public class Panel extends JPanel
 		analogHighValue = high;
 		analogScaleValue = (scale == 0 ? 1 : scale);
 		analogRange = analogHighValue - analogLowValue;
+	}
+
+	/**
+	 * Method to set the Y axis scale in this panel.
+	 * @param scale the Y axis scale value.
+	 */
+	public void setYAxisScale(double scale)
+	{
+		analogScaleValue = (scale == 0 ? 1 : scale);
 	}
 
 	public double getYAxisRange() { return analogRange; }

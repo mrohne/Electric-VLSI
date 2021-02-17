@@ -2569,6 +2569,7 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 			}
 			if (changed) wp.repaintWithRulers();
 		}
+		saveSignalOrder();
 	}
 
 	/**
@@ -3806,6 +3807,8 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 					if (!xAxisLocked) signalInX = wp.getXAxisSignal();
 					first = false;
 					if (signalInX != null) sb.append("(" + signalInX.getFullName() + ")");
+					double yScale = wp.getYAxisScaleValue();
+					if (yScale != 1) sb.append("[" + yScale + "]");
 				}
 				sb.append("\t");
 				sb.append(sigName);
@@ -4728,14 +4731,37 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 			{
 				String signalName = signalNames[i];
 				Signal<?> xAxisSignal = null;
+				double yScale = 1;
 				int start = 0;
 				if (signalName.startsWith("\t"))
 				{
-					// has panel type and X axis information
-					int openPos = signalName.indexOf('(');
+					// has panel information: X axis signal and Y scale
 					int tabPos = signalName.indexOf('\t', 1);
 					start = tabPos+1;
-					if (openPos >= 0) tabPos = openPos;
+
+					// see if there is an X axis signal
+					int openParenPos = signalName.indexOf('(');
+					if (openParenPos > 0 && openParenPos < tabPos)
+					{
+						int closeParenPos = signalName.indexOf(")", openParenPos);
+						if (closeParenPos > 0 && closeParenPos < tabPos)
+						{
+							String xAxisSignalName = signalName.substring(openParenPos+1, closeParenPos);
+							xAxisSignal = findSignalForNetwork(sc, xAxisSignalName);
+						}
+					}
+
+					// see if there is a Y scale
+					int openSquarePos = signalName.indexOf('[');
+					if (openSquarePos > 0 && openSquarePos < tabPos)
+					{
+						int closeSquarePos = signalName.indexOf("]", openSquarePos);
+						if (closeSquarePos > 0 && closeSquarePos < tabPos)
+						{
+							String yScaleText = signalName.substring(openSquarePos+1, closeSquarePos);
+							yScale = TextUtils.atof(yScaleText);
+						}
+					}
 				}
 				Panel wp = null;
 				boolean firstSignal = true;
@@ -4772,6 +4798,8 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 							wp = new Panel(ww, height);
 							if (xAxisSignal != null)
 								wp.setXAxisSignal(xAxisSignal);
+							if (yScale != 1)
+								wp.setYAxisScale(yScale);
 							wp.makeSelectedPanel(-1, -1);
 							showedSomething = true;
 						}
