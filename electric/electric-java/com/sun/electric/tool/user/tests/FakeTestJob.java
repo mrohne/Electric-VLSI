@@ -62,7 +62,7 @@ public class FakeTestJob extends Job
 	private FakeTestJob(List<AbstractTest> list, int nextTest, int numPassed, int numFailed, String regressionPath, ErrorLogger errorLogs)
 	{
 		// does it have to be change?
-		super("Test " + (list.size() == 1 ? "" : (nextTest+1) + " of " + list.size() + ": ") + list.get(nextTest).getFullTestName(),
+		super("Test " + (list.size() == 1 ? "" : (nextTest+1) + " of " + list.size() + " (" + numPassed + " passed, " + numFailed + " failed): ") + list.get(nextTest).getFullTestName(),
 			User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
 		this.list = list;
 		this.numPassed = numPassed;

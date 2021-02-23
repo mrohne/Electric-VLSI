@@ -1321,7 +1321,10 @@ public class JelibParser
 							objectPos++;
 						}
 						Object oneObj = getVariableValue(piece.substring(start, objectPos), varType);
-						objList.add(oneObj);
+
+						// ignore empty array (null element and nothing else)
+						if (oneObj != null || objList.size() != 0 || piece.charAt(objectPos) != ']')		// TODO: debug
+							objList.add(oneObj);
 						if (piece.charAt(objectPos) == ']') break;
 						objectPos++;
 					}

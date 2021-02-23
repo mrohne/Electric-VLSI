@@ -325,12 +325,17 @@ public class StatusBar extends JPanel implements HighlightListener, DatabaseChan
      * Method to update the status bar from current values. Call this when any
      * of those values change.
      */
-    public static void updateStatusBar() {
-        if (TopLevel.isMDIMode()) {
+    public static void updateStatusBar()
+    {
+        if (TopLevel.isMDIMode())
+        {
             StatusBar sb = TopLevel.getCurrentJFrame().getStatusBar();
-            sb.redoStatusBar();
-        } else {
-            for (Iterator<WindowFrame> it = WindowFrame.getWindows(); it.hasNext();) {
+            if (sb != null)
+            	sb.redoStatusBar();
+        } else
+        {
+            for (Iterator<WindowFrame> it = WindowFrame.getWindows(); it.hasNext();)
+            {
                 WindowFrame wf = it.next();
                 StatusBar sb = wf.getFrame().getStatusBar();
                 if (sb != null)
