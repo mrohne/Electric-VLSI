@@ -891,7 +891,7 @@ public class Spice extends Topology
                     } else
                     {
                         String name = getPortName(cs);
-                        if (parasiticInfo != null)
+                        if (segmentedNets != null)
                         {
                             name = segmentedNets.getNetName(no.getNodeInst().findPortInstFromEquivalentProto(pp));
                         }
