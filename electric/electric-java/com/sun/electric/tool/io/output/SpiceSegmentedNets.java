@@ -151,21 +151,18 @@ class SpiceSegmentedNets
 	{
 		if (!segmentedNets.containsKey(p1))
 			putSegment(p1, 0);
-		if (!segmentedNets.containsKey(p2));
+		if (!segmentedNets.containsKey(p2))
 			putSegment(p2, 0);
 		NetInfo info1 = segmentedNets.get(p1);
 		NetInfo info2 = segmentedNets.get(p2);
 		if (info1 == info2) return;                     // already joined
 		// short
-		//System.out.println("Shorted together "+info1.netName+ " and "+info2.netName);
 		info1.joinedPorts.addAll(info2.joinedPorts);
 		info1.cap += info2.cap;
-		if (TextUtils.STRING_NUMBER_ORDER.compare(info2.netName, info1.netName) < 0)
+		if (info1.compareTo(info2) < 0)
 		{
-//			if (info2.netName.compareTo(info1.netName) < 0) {
 			info1.netName = info2.netName;
 		}
-		//info1.netName += info2.netName;
 		// replace info2 with info1, info2 is no longer used
 		// need to do for every portinst in merged segment
 		for (PortInst pi : info1.joinedPorts)
@@ -307,6 +304,8 @@ class SpiceSegmentedNets
 			NetInfo that = (NetInfo)obj;
 			if (this.joinedPorts.isEmpty()) return that.joinedPorts.isEmpty() ? 0 : -1;
 			if (that.joinedPorts.isEmpty()) return 1;
+			if (this.hasExport()) return that.hasExport() ? 0 : 1;
+			if (that.hasExport()) return -1;
 			return PORT_INST_COMPARATOR.compare(this.joinedPorts.first(), that.joinedPorts.first());
 		}
 
@@ -315,5 +314,13 @@ class SpiceSegmentedNets
 		public double getCap() { return cap; }
 
 		public String getName() { return netName; }
+
+  	    public boolean hasExport()
+	    {
+		  for (PortInst pt : joinedPorts)
+			if (pt.getExports().hasNext())
+			  return true;
+		  return false;
+		}
 	}
 }
