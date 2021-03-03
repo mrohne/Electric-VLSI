@@ -349,8 +349,7 @@ public class AutoStitch
 		// if creating exports, make first pass in which exports must be created
 		if (prefs.createExports)
 		{
-			if (showProgress) Job.getUserInterface().setProgressNote("Routing " + totalToStitch + 
-																	 " objects with export creation...");
+			if (showProgress) Job.getUserInterface().setProgressNote("Routing " + totalToStitch + " objects with export creation...");
 
             // make global network map
             GatherNetworksVisitor gatherNetworks = new GatherNetworksVisitor();
@@ -378,12 +377,13 @@ public class AutoStitch
 					Job.getUserInterface().setProgressValue(soFar * 100 / totalToStitch);
 				}
 
+				// only interested in arcs that are wider than their nodes (and have geometry that sticks out)
+				if (!arcTooWide(ai)) continue;
 				if (!ai.isLinked()) continue;
 				checkExportCreationStitching(ai, overlapMap, gatherNetworks);
 			}
 
-            if (showProgress) Job.getUserInterface().setProgressNote("Gathering " + totalToStitch + 
-																	 " objects for export creation...");
+            if (showProgress) Job.getUserInterface().setProgressNote("Gathering " + totalToStitch + " objects for export creation...");
 
             // check for existing exports, or make export if needed
             for (Long netID : overlapMap.keySet())
@@ -498,6 +498,9 @@ public class AutoStitch
 			}
 
 			if (!ai.isLinked()) continue;
+
+			// only interested in arcs that are wider than their nodes (and have geometry that sticks out)
+			if (!arcTooWide(ai)) continue;
 			checkStitching(ai, nodePortBounds, arcLayers, stayInside, top, limitBound, preferredArc);
 		}
 
@@ -799,8 +802,6 @@ name=null;
 		Cell cell = geom.getParent();
 		NodeInst ni = null;
 		if (geom instanceof NodeInst) ni = (NodeInst)geom;
-		ArcInst ai = null;
-		if (geom instanceof ArcInst) ai = (ArcInst)geom;
 
 		// make a list of other geometrics that touch or overlap this one (copy it because the main list will change)
 		List<Geometric> geomsInArea = new ArrayList<Geometric>();
@@ -823,8 +824,11 @@ name=null;
 
 				if (ni == null)
 				{
+					// only interested in arcs that are wider than their nodes (and have geometry that sticks out)
+					if (!arcTooWide(oAi)) continue;
+
 					// compare arc "geom" against arc "oAi"
-					compareTwoArcs(ai, oAi, stayInside, top);
+					compareTwoArcs((ArcInst)geom, oAi, stayInside, top);
 					continue;
 				}
 
@@ -852,10 +856,10 @@ name=null;
 					// compare arc "geom" against node "oNi"
 					if (oNi.isCellInstance())
 					{
-						compareNodeInstWithArc(oNi, ai, stayInside, top, nodePortBounds);
+						compareNodeInstWithArc(oNi, (ArcInst)geom, stayInside, top, nodePortBounds);
 					} else
 					{
-						compareNodePrimWithArc(oNi, ai, stayInside, top);
+						compareNodePrimWithArc(oNi, (ArcInst)geom, stayInside, top);
 					}
 					continue;
 				}
@@ -890,8 +894,7 @@ name=null;
 		{
 			// complex node instance: look at all ports near this bound
 			ObjectQTree oqt = nodePortBounds.get(ni);
-			Rectangle2D biggerBounds = new Rectangle2D.Double(oBounds.getMinX()-1, oBounds.getMinY()-1, 
-															  oBounds.getWidth()+2, oBounds.getHeight()+2);
+			Rectangle2D biggerBounds = new Rectangle2D.Double(oBounds.getMinX()-1, oBounds.getMinY()-1, oBounds.getWidth()+2, oBounds.getHeight()+2);
 			Set<?> set = oqt.find(biggerBounds);
 			if (set != null)
 			{
@@ -925,8 +928,7 @@ name=null;
 
 					// look at all polygons on this nodeinst
 					boolean usePortPoly = false;
-					Technology tech = rNi.getProto().getTechnology();
-					Poly [] nodePolys = tech.getShapeOfNode(rNi, true, true, null);
+					Poly [] nodePolys = shapeOfNode(rNi);
 					int tot = nodePolys.length;
 					if (tot == 0 || rNi.getProto() == Generic.tech().simProbeNode)
 					{
@@ -1027,6 +1029,7 @@ name=null;
 					for(Iterator<PortProto> pIt = ni.getProto().getPorts(); pIt.hasNext(); )
 					{
 						PortProto tPp = pIt.next();
+
 						// compute best distance to the other node
 						Poly portPoly = ni.getShapeOfPort(tPp);
 						Point2D portPt = portPoly.closestPoint(oNi.getAnchorCenter());
@@ -1144,14 +1147,10 @@ name=null;
 		Network net2 = top.getArcNetwork(ai2);
 		if (net1 == net2) return;
 
-		// gather geometry
+		// look at all polygons on the first arcinst
 		Poly [] polys1 = ai1.getProto().getTechnology().getShapeOfArc(ai1);
 		Poly [] polys2 = ai2.getProto().getTechnology().getShapeOfArc(ai2);
-
-		// look at all polygons on the first arcinst
 		for(Poly poly1 : polys1) {
-
-			// get arc layer and function 
 			Layer layer1 = poly1.getLayer();
 			Layer.Function fun = layer1.getFunction();
 			if (!fun.isMetal() && !fun.isDiff() && !fun.isPoly()) continue;
@@ -1192,7 +1191,7 @@ name=null;
 		Map<NodeInst,ObjectQTree> nodePortBounds)
 	{
 		Network arcNet = top.getArcNetwork(ai);
-		
+
 		// find all ports on the instance that are near the arc
 		ObjectQTree oqt = nodePortBounds.get(ni);
 		Rectangle2D aBounds = ai.getBounds();
@@ -1258,7 +1257,13 @@ name=null;
 					double aCY = arcBounds.getCenterY();
 					Point2D bend1 = new Point2D.Double(portCX, aCY);
 					Point2D bend2 = new Point2D.Double(aCX, portCY);					
-					if (!stayInside.contains(arcLayer, bend1)) bend1 = bend2;
+					if (stayInside != null)
+					{
+						if (!stayInside.contains(arcLayer, bend1)) bend1 = bend2;
+					} else
+					{
+						if (!arcPoly.contains(bend1)) bend1 = bend2;
+					}
 
 					// enforce minimum alignment
 					EDimension grid = alignment != null ? alignment : new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
@@ -1284,14 +1289,11 @@ name=null;
 		Network arcNet = top.getArcNetwork(ai);
 
 		// gather information about the node
-		Poly [] arcPolys = ai.getProto().getTechnology().getShapeOfArc(ai);
 		Poly [] nodePolys = shapeOfNode(ni);
-
-		// transform geometry relative to cell
-		FixpTransform trans = ni.rotateOut();		
-		for (Poly nodePoly : nodePolys) nodePoly.transform(trans);
+		FixpTransform trans = ni.rotateOut();
 
 		// look at all polygons on the arcinst
+		Poly [] arcPolys = ai.getProto().getTechnology().getShapeOfArc(ai);
 		for (Poly arcPoly : arcPolys) {
 
 			// get arc layer and function 
@@ -1299,8 +1301,8 @@ name=null;
 			Layer.Function arcLayerFun = arcLayer.getFunction();
 			if (!arcLayerFun.isMetal() && !arcLayerFun.isDiff() && !arcLayerFun.isPoly()) continue;
 			Rectangle2D arcBounds = arcPoly.getBounds2D();
-			double aCX = arcPoly.getCenterX();
-			double aCY = arcPoly.getCenterY();
+			double aCX = arcBounds.getCenterX();
+			double aCY = arcBounds.getCenterY();
 
 			// compare them against all of the polygons in the node
 			for(Poly nodePoly : nodePolys) {
@@ -1339,19 +1341,21 @@ name=null;
 				Poly portPoly = ni.getShapeOfPort(bestPp);
 				double portCX = portPoly.getCenterX();
 				double portCY = portPoly.getCenterY();
-				Point2D bend1 = new Point2D.Double(portCX, aCY);
-				Point2D bend2 = new Point2D.Double(aCX, portCY);
-
-				// enforce minimum alignment
-				EDimension grid = alignment != null ? alignment : new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
-				DBMath.gridAlign(bend1, grid);
-				DBMath.gridAlign(bend2, grid);
-				
 				Network nodeNet = top.getPortNetwork(pi);
 				if (arcNet == nodeNet) continue;
-				
-				if (!stayInside.contains(arcLayer, bend1)) bend1 = bend2;
-				// save and restore preferred arc here?
+				Point2D bend1 = new Point2D.Double(portCX, aCY);
+				Point2D bend2 = new Point2D.Double(aCX, portCY);
+				// enforce minimum alignment
+				EDimension grid = alignment != null ? alignment : new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
+				DBMath.gridAlign(bend1, grid);				
+				DBMath.gridAlign(bend2, grid);				
+				if (stayInside != null)
+				{
+					if (!stayInside.contains(arcLayer, bend1)) bend1 = bend2;
+				} else
+				{
+					if (!arcPoly.contains(bend1)) bend1 = bend2;
+				}
 				connectObjects(ai, arcNet, pi, nodeNet, ai.getParent(), bend1, stayInside, top);
 				return;
 			}
@@ -1465,9 +1469,8 @@ name=null;
                     }
 
 					// see how much geometry is on this node
-					Technology tech = rNi.getProto().getTechnology();
-					Poly [] nodePolys = tech.getShapeOfNode(rNi, true, true, null);
-					int tot = nodePolys.length;
+					Poly [] polys = shapeOfNode(rNi);
+					int tot = polys.length;
 					if (tot == 0)
 					{
 						// not a geometric primitive: look for ports that touch
@@ -1483,10 +1486,8 @@ name=null;
 					{
 						// a geometric primitive: look for ports on layers that touch
 						Netlist subNetlist = rNi.getParent().getNetlist();
-						for(int j=0; j<tot; j++)
+						for(Poly oPoly : polys)
 						{
-							Poly oPoly = nodePolys[j];
-
 							// only want electrically connected polygons
 							if (oPoly.getPort() == null) continue;
 
@@ -1655,6 +1656,19 @@ name=null;
 		Poly oPortPoly = oNi.getShapeOfPort(opp);
 		Point2D portPt = portPoly.closestPoint(oPortPoly.getCenter());
 		Point2D oPortPt = oPortPoly.closestPoint(portPt);
+
+		if (stayInside == null)
+		{
+			if (ni.isCellInstance() || oNi.isCellInstance())
+			{
+				Rectangle2D polyBounds = portPoly.getBounds2D();
+				Rectangle2D oPolyBounds = oPortPoly.getBounds2D();
+
+				// quit now if bounding boxes don't intersect
+				if ((polyBounds.getMinX() > oPolyBounds.getMaxX() || oPolyBounds.getMinX() > polyBounds.getMaxX()) &&
+					(polyBounds.getMinY() > oPolyBounds.getMaxY() || oPolyBounds.getMinY() > polyBounds.getMaxY())) return false;
+			}
+		}
 		double dist = portPt.distance(oPortPt);
 		for(Iterator<PortProto> aIt = ni.getProto().getPorts(); aIt.hasNext(); )	{
 			PortProto aPp = aIt.next();
@@ -1683,7 +1697,8 @@ name=null;
 		}		
 
 		// reject connection if it is out of the limit bounds
-		if (limitBound != null)	{
+		if (limitBound != null)	
+		{
 			if (!DBMath.pointInRect(portPt, limitBound) && !DBMath.pointInRect(oPortPt, limitBound))
 				return false;
 		}
@@ -1691,11 +1706,17 @@ name=null;
 		// find some dummy position to help run the arc
 		Point2D bend1 = new Point2D.Double(portPt.getX(), oPortPt.getY());
 		Point2D bend2 = new Point2D.Double(portPt.getY(), oPortPt.getX());
-		if (!stayInside.contains(poly.getLayer(), bend1)) bend1 = bend2;
-
 		// enforce minimum alignment
 		EDimension grid = alignment != null ? alignment : new EDimension(DBMath.getEpsilon(), DBMath.getEpsilon());
 		DBMath.gridAlign(bend1, grid);
+		DBMath.gridAlign(bend2, grid);
+		if (stayInside != null)
+		{
+		  if (!stayInside.contains(poly.getLayer(), bend1)) bend1 = bend2;
+		} else
+		{
+		  if (!poly.contains(bend1)) bend1 = bend2;
+		}
 		
 		// run the wire
 		PortInst pi = ni.findPortInstFromEquivalentProto(pp);
@@ -1773,8 +1794,7 @@ name=null;
 	 * Actual stitching is not done, but necessary exports are created.
 	 * @param geom the object to check for stitching.
 	 */
-	private void checkExportCreationStitching(Geometric geom, Map<Long,List<PolyConnection>> overlapMap, 
-											  GatherNetworksVisitor gatherNetworks)
+	private void checkExportCreationStitching(Geometric geom, Map<Long,List<PolyConnection>> overlapMap, GatherNetworksVisitor gatherNetworks)
 	{
 		Cell cell = geom.getParent();
 		NodeInst ni = null;
@@ -1788,13 +1808,16 @@ name=null;
 		double epsilon = DBMath.getEpsilon();
 		Rectangle2D searchBounds = new Rectangle2D.Double(geomBounds.getMinX()-epsilon, geomBounds.getMinY()-epsilon,
 			geomBounds.getWidth()+epsilon*2, geomBounds.getHeight()+epsilon*2);
-		for(Iterator<Geometric> it = cell.searchIterator(searchBounds); it.hasNext(); )	{
+		for(Iterator<Geometric> it = cell.searchIterator(searchBounds); it.hasNext(); )
+		{
 			Geometric oGeom = it.next();
 			if (oGeom != geom) geomsInArea.add(oGeom);
 		}
-		for(Geometric oGeom : geomsInArea) {
+		for(Geometric oGeom : geomsInArea)
+		{
 			// find another node in this area
-			if (oGeom instanceof ArcInst) {
+			if (oGeom instanceof ArcInst)
+			{
 				// other geometric is an ArcInst
 				ArcInst oAi = (ArcInst)oGeom;
 				if (ni != null && ni.isCellInstance()) {
@@ -2450,9 +2473,7 @@ name=null;
 						SubPolygon sp = sea.next();
 						if (sp.poly.getLayer() != poly.getLayer()) continue;
 						if (sp.poly.separation(poly) >= DBMath.getEpsilon()) continue;
-						PortProto pp = poly.getPort();
-						PortInst pi = ni.findPortInstFromEquivalentProto(pp);
-						int netID = gatherNetworks.getGlobalNetworkID(info.getContext(), pi);
+						int netID = gatherNetworks.getGlobalNetworkID(info.getContext(), ni.findPortInstFromEquivalentProto(poly.getPort()));
 						SubPolygon sp2 = new SubPolygon(poly, info.getContext(), netID, ni);
 						addConnection(sp, sp2);
 					}
