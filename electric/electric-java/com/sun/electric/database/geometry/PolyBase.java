@@ -2356,13 +2356,13 @@ public class PolyBase implements Shape, PolyNodeMerge {
         }
 		
         public boolean addTree(PolyBaseTree tree) {
-			if (poly.intersects(tree.poly)) System.out.print("*** INTERSECTING LOOPS "+poly+" "+tree.poly);
+     		if (poly.intersects(tree.poly)) System.out.println("*** INTERSECTING LOOPS "+poly.getLayer()+" "+tree.poly.getBounds2D());
 			if (tree.poly.getPoints().length == 0) return false;
 			if (!poly.contains(tree.poly.getPoints()[0])) return false;
 			for (PolyBaseTree son : sons) {
-				if (son.poly.intersects(tree.poly)) System.out.print("*** INTERSECTING HOLES "+son.poly+" "+tree.poly);
+				if (son.poly.intersects(tree.poly)) System.out.println("*** INTERSECTING HOLES "+son.poly.getLayer()+" "+son.poly.getBounds2D());
 				if (son.poly.contains(tree.poly.getPoints()[0])) return son.addTree(tree);
-				if (tree.poly.contains(son.poly.getPoints()[0])) System.out.print("*** INCONSISTENT HOLES "+son.poly+" "+tree.poly);
+				if (tree.poly.contains(son.poly.getPoints()[0])) System.out.println("*** INCONSISTENT HOLES "+son.poly.getLayer()+" "+son.poly.getBounds2D());
             }
 			sons.add(tree);
             return true;
