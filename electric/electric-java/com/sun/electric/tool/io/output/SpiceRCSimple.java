@@ -259,7 +259,8 @@ public class SpiceRCSimple extends SpiceParasiticsGeneral
 	 * @param cs the signal to emit
 	 * @param infstr the string buffer to fill with the emitted signal information.
 	 */
-	public void writeSubcircuitHeader(CellSignal cs, StringBuffer infstr)
+    @Override
+	public void writeSubcircuitHeader(CellSignal cs, StringBuilder infstr)
 	{
 		Network net = cs.getNetwork();
 		Map<String,List<String>> shortedExportsMap = new HashMap<String,List<String>>();
