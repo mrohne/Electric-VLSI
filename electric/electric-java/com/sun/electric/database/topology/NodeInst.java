@@ -2470,7 +2470,9 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
                     epoints[i] = (EPoint) p;
                 } else if (p != null) {
                     epoints[i] = EPoint.snap(p);
-                }
+                } else {
+					throw new IllegalArgumentException();
+				}
             }
         }
         setTrace(epoints);
@@ -2509,7 +2511,9 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
             for (int i = 0; i < points.length; i++) {
                 if (points[i] != null) {
                     orient.transform(0, 0, points, i, newPoints, i, 1);
-                }
+                } else {
+					throw new IllegalArgumentException();
+				}
             }
             points = newPoints;
         }
@@ -2624,8 +2628,11 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @throws IllegalArgumentException if PortProto doesn't belong to node's proto
      */
     public PortInst findPortInstFromProto(PortProto pp) {
-        if (pp instanceof Export && !((Export) pp).isLinked() || pp.getParent() != getProto()) {
-            throw new IllegalArgumentException();
+		if (pp == null) {
+			throw new IllegalArgumentException("Missing PortProto in findPortInstFromProto: " + this);
+		}
+        if (pp instanceof Export && !((Export) pp).isLinked()) {
+            throw new IllegalArgumentException("Export not linked: "+pp);
         }
         return portInsts[pp.getPortIndex()];
     }
@@ -2638,9 +2645,41 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @throws IllegalArgumentException if PortProto is not linked
      */
     public PortInst findPortInstFromEquivalentProto(PortProto pp) {
-        if (pp instanceof Export && ((Export) pp).isLinked() && pp.getParent() != getProto()) {
-            pp = ((Export) pp).findEquivalent((Cell) getProto());
-        }
+		if (pp == null) {
+			throw new IllegalArgumentException("Missing PortProto in findPortInstFromEquivalentProto: " + this);
+		}
+        return findPortInstFromProto(pp);
+    }
+
+    /**
+     * Method to return the Portinst on this NodeInst connected to an upper prototype.
+     * If portProto bewlongs to another view then try to use equivalent port.
+     * @param pp the PortProto to find.
+     * @return the selected PortInst.
+     * @throws IllegalArgumentException if PortProto is not linked
+     */
+    public PortInst findPortInstFromConnectedProto(PortProto pp) {
+		if (pp == null) {
+			throw new IllegalArgumentException("Missing PortProto in findPortInstFromEquivalentProto: " + this);
+		}
+		if (pp instanceof Export) {
+			Export ex = (Export) pp;
+			while (ex.isLinked()) {
+				if (isCellInstance()) {
+					Cell np = (Cell) getProto();
+					if (ex.getParent() == np) return findPortInstFromProto(ex);
+					Export eq = ex.findEquivalent(np);
+					if (eq != null)	return findPortInstFromProto(eq);
+				} else {
+					PortInst pi = ex.getOriginalPort();
+					if (pi.getNodeInst() == this) return pi;
+				}
+				PortProto px = ex.getOriginalPort().getPortProto();
+				if (px instanceof Export) ex = (Export) px;
+				else return null;
+			}
+			return null;
+		}
         return findPortInstFromProto(pp);
     }
 
