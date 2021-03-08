@@ -70,6 +70,12 @@ public class NetworkTab extends PreferencePanel
 			netDescending.setSelected(true);
 
 		// node extraction preferences
+		extractVias.setSelected(Extract.isViasExtraction());
+		extractTransistors.setSelected(Extract.isTransistorsExtraction());
+		extractWires.setSelected(Extract.isWiresExtraction());
+		extractBridges.setSelected(Extract.isBridgesExtraction());
+		extractPureNodes.setSelected(Extract.isPureNodesExtraction());
+		extractAutoStitch.setSelected(Extract.isAutoStitchExtraction());
 		extractGridAlign.setSelected(Extract.isGridAlignExtraction());
 		switch (Extract.getActiveHandling())
 		{
@@ -94,6 +100,24 @@ public class NetworkTab extends PreferencePanel
 		// user preferences
 		boolean nowBoolean = netAscending.isSelected();
 		if (NetworkTool.isBusAscending() != nowBoolean) NetworkTool.setBusAscending(nowBoolean);
+
+		nowBoolean = extractVias.isSelected();
+		if (Extract.isViasExtraction() != nowBoolean) Extract.setViasExtraction(nowBoolean);
+
+		nowBoolean = extractTransistors.isSelected();
+		if (Extract.isTransistorsExtraction() != nowBoolean) Extract.setTransistorsExtraction(nowBoolean);
+
+		nowBoolean = extractWires.isSelected();
+		if (Extract.isWiresExtraction() != nowBoolean) Extract.setWiresExtraction(nowBoolean);
+
+		nowBoolean = extractBridges.isSelected();
+		if (Extract.isBridgesExtraction() != nowBoolean) Extract.setBridgesExtraction(nowBoolean);
+
+		nowBoolean = extractPureNodes.isSelected();
+		if (Extract.isPureNodesExtraction() != nowBoolean) Extract.setPureNodesExtraction(nowBoolean);
+
+		nowBoolean = extractAutoStitch.isSelected();
+		if (Extract.isAutoStitchExtraction() != nowBoolean) Extract.setAutoStitchExtraction(nowBoolean);
 
 		nowBoolean = extractGridAlign.isSelected();
 		if (Extract.isGridAlignExtraction() != nowBoolean) Extract.setGridAlignExtraction(nowBoolean);
@@ -137,6 +161,18 @@ public class NetworkTab extends PreferencePanel
 			NetworkTool.setBusAscending(NetworkTool.isFactoryBusAscending());
 
 		// node extraction
+		if (Extract.isFactoryViasExtraction() != Extract.isViasExtraction())
+			Extract.setViasExtraction(Extract.isFactoryViasExtraction());
+		if (Extract.isFactoryTransistorsExtraction() != Extract.isTransistorsExtraction())
+			Extract.setTransistorsExtraction(Extract.isFactoryTransistorsExtraction());
+		if (Extract.isFactoryWiresExtraction() != Extract.isWiresExtraction())
+			Extract.setWiresExtraction(Extract.isFactoryWiresExtraction());
+		if (Extract.isFactoryBridgesExtraction() != Extract.isBridgesExtraction())
+			Extract.setBridgesExtraction(Extract.isFactoryBridgesExtraction());
+		if (Extract.isFactoryPureNodesExtraction() != Extract.isPureNodesExtraction())
+			Extract.setPureNodesExtraction(Extract.isFactoryPureNodesExtraction());
+		if (Extract.isFactoryAutoStitchExtraction() != Extract.isAutoStitchExtraction())
+			Extract.setAutoStitchExtraction(Extract.isFactoryAutoStitchExtraction());
 		if (Extract.isFactoryGridAlignExtraction() != Extract.isGridAlignExtraction())
 			Extract.setGridAlignExtraction(Extract.isFactoryGridAlignExtraction());
 		if (Extract.isFactoryApproximateCuts() != Extract.isApproximateCuts())
@@ -174,6 +210,13 @@ public class NetworkTab extends PreferencePanel
         netOrderingLabel = new javax.swing.JLabel();
         netAscending = new javax.swing.JRadioButton();
         netDescending = new javax.swing.JRadioButton();
+        extractionStepsPreferences = new javax.swing.JPanel();
+        extractVias = new javax.swing.JCheckBox();
+        extractTransistors = new javax.swing.JCheckBox();
+        extractWires = new javax.swing.JCheckBox();
+        extractBridges = new javax.swing.JCheckBox();
+        extractPureNodes = new javax.swing.JCheckBox();
+        extractAutoStitch = new javax.swing.JCheckBox();
         nodeExtractionPreferences = new javax.swing.JPanel();
         extractGridAlign = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
@@ -229,6 +272,71 @@ public class NetworkTab extends PreferencePanel
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
         preferences.add(netDescending, gridBagConstraints);
+
+        extractionStepsPreferences.setBorder(javax.swing.BorderFactory.createTitledBorder("Extraction Steps"));
+        extractionStepsPreferences.setLayout(new java.awt.GridBagLayout());
+
+        extractVias.setText("Vias");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 2, 4);
+        extractionStepsPreferences.add(extractVias, gridBagConstraints);
+
+        extractTransistors.setText("Transistors");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 2, 4);
+        extractionStepsPreferences.add(extractTransistors, gridBagConstraints);
+
+        extractWires.setText("Wires");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 2, 4);
+        extractionStepsPreferences.add(extractWires, gridBagConstraints);
+
+        extractBridges.setText("Bridges");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 2, 4);
+        extractionStepsPreferences.add(extractBridges, gridBagConstraints);
+
+        extractPureNodes.setText("Pure nodes");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 2, 4);
+        extractionStepsPreferences.add(extractPureNodes, gridBagConstraints);
+
+        extractAutoStitch.setText("AutoStitch");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 2, 4);
+        extractionStepsPreferences.add(extractAutoStitch, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        preferences.add(extractionStepsPreferences, gridBagConstraints);
 
         nodeExtractionPreferences.setBorder(javax.swing.BorderFactory.createTitledBorder("Node Extraction"));
         nodeExtractionPreferences.setLayout(new java.awt.GridBagLayout());
@@ -352,7 +460,7 @@ public class NetworkTab extends PreferencePanel
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
@@ -406,6 +514,12 @@ public class NetworkTab extends PreferencePanel
     private javax.swing.JCheckBox extractApproximateCuts;
     private javax.swing.JTextField extractCellPattern;
     private javax.swing.JCheckBox extractFlattenPCells;
+    private javax.swing.JCheckBox extractVias;
+    private javax.swing.JCheckBox extractTransistors;
+    private javax.swing.JCheckBox extractWires;
+    private javax.swing.JCheckBox extractBridges;
+    private javax.swing.JCheckBox extractPureNodes;
+    private javax.swing.JCheckBox extractAutoStitch;
     private javax.swing.JCheckBox extractGridAlign;
     private javax.swing.JCheckBox extractIgnoreTiny;
     private javax.swing.JRadioButton extractIgnoreWellSelect;
@@ -422,6 +536,7 @@ public class NetworkTab extends PreferencePanel
     private javax.swing.JRadioButton netDescending;
     private javax.swing.JCheckBox netIgnoreResistors;
     private javax.swing.JLabel netOrderingLabel;
+    private javax.swing.JPanel extractionStepsPreferences;
     private javax.swing.JPanel nodeExtractionPreferences;
     private javax.swing.JPanel preferences;
     private javax.swing.JPanel projectSettings;

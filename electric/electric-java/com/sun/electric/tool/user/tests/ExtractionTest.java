@@ -146,8 +146,9 @@ public class ExtractionTest extends AbstractTest
 
 		// run extraction
 		Connectivity c = new Connectivity(cell, null, ep, errorLogger, smallestPolygonSize, activeHandling,
-			gridAlignExtraction, scaledResolution, approximateCuts, recursive, pats);
-		Cell newCell = c.doExtract(cell, recursive, pats, flattenPcells, usePureLayerNodes, true, null, null, null, null);
+										  true, true, true, true, true, true,
+										  gridAlignExtraction, scaledResolution, approximateCuts, recursive, pats);
+		Cell newCell = c.doExtract(cell, recursive, pats, flattenPcells, usePureLayerNodes, true, null, null, null, null, null);
 
 		// analyze results
 		if (newCell == null)
