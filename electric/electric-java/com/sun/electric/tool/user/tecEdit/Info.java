@@ -318,6 +318,10 @@ public class Info
                 	table[i].ni.newDisplayVar(Artwork.ART_MESSAGE,
 						"ELIB width offset: " + ((Double)table[i].value).doubleValue(), ep);
                     break;
+                case ARCCURVABLE:
+                	table[i].ni.newDisplayVar(Artwork.ART_MESSAGE,
+						"Curvable: " + (((Boolean)table[i].value).booleanValue() ? "Yes" : "No"), ep);
+                    break;
 				case NODEFUNCTION:
 					table[i].ni.newDisplayVar(Artwork.ART_MESSAGE,
 						"Function: " + ((PrimitiveNode.Function)table[i].value).toString(), ep);
