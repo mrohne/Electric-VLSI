@@ -31,8 +31,8 @@ package com.sun.electric.tool.user;
  * See http://www.staticfreesoft.com/jmanual/mchap01-03.html for details.
  */
 import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationAdapter;
-import com.apple.eawt.ApplicationEvent;
+import com.apple.eawt.QuitResponse;
+import com.apple.eawt.AppEvent;
 import com.sun.electric.Main;
 import com.sun.electric.tool.user.dialogs.PreferencesFrame;
 import com.sun.electric.tool.user.menus.FileMenu;
@@ -40,11 +40,12 @@ import com.sun.electric.tool.user.menus.HelpMenu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
 
 /**
  * Class for initializing the Macintosh OS X world.
  */
-class MacOSXInterface extends ApplicationAdapter
+class MacOSXInterface
 {
 	private static MacOSXInterface adapter = null;
 	private static Application application = null;
@@ -60,66 +61,6 @@ class MacOSXInterface extends ApplicationAdapter
         argsList = list;
     }
 
-//	/**
-//	 * Class for informing the Mac OS/X interface of the initialization job.
-//	 * This is done to handle initial library requests at the proper time.
-//	 * @param ij the initializtion job.
-//	 */
-//	public static void setInitJob(Job ij) { adapter.initJob = ij; }
-
-	/**
-	 * Method called when the "About" item is selected in the Macintosh "Electric" menu.
-	 */
-	public void handleAbout(ApplicationEvent ae)
-	{
-		ae.setHandled(true);
-		HelpMenu.aboutCommand();
-	}
-
-	/**
-	 * Method called when the "Preferences" item is selected in the Macintosh "Electric" menu.
-	 */
-	public void handlePreferences(ApplicationEvent ae)
-	{
-		ae.setHandled(true);
-		PreferencesFrame.preferencesCommand();
-	}
-
-	/**
-	 * Method called when the "Quit" item is selected in the Macintosh "Electric" menu.
-	 */
-	public void handleQuit(ApplicationEvent ae)
-	{
-		ae.setHandled(false);
-		FileMenu.quitCommand();
-	}
-
-	/**
-	 * Method to handle open-file requests.
-	 */
-    public void handleOpenFile(ApplicationEvent ae)
-    {
-        ae.setHandled(true);
-        String filename = ae.getFilename();
-
-        // First open
-        if (!UserInterfaceMain.initializationFinished)
-        {
-            argsList.add(filename);
-        }
-        else
-        {
-            // Handle the rest of double-clicks on files.
-            List<String> list = new ArrayList<String>(1);
-            list.add(filename);
-            Main.openCommandLineLibs(list);
-        }
-        // Commented by DN 19-Jul-2013 Working directory have been set already in openCommandLineLibs 
-//        URL dirUrl = TextUtils.makeURLToFile(filename);
-//        String dirString = TextUtils.getFilePath(dirUrl);
-//        User.setWorkingDirectory(dirString);
-    }
-
 	/**
 	 * Method to initialize the Macintosh OS X environment.
 	 * @param argsList the arguments to the application.
@@ -130,14 +71,11 @@ class MacOSXInterface extends ApplicationAdapter
 		// tell it to use the system menubar
 		System.setProperty("com.apple.macos.useScreenMenuBar", "true");
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
-
-		// set the name of the leftmost pulldown menu (under the apple) to "Electric"
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Electric");
 
 		// create Mac objects for handling the "Electric" menu
 		if (application == null) application = new Application();
 		if (adapter == null) adapter = new MacOSXInterface(argsList);
-		application.addApplicationListener(adapter);
 		application.setEnabledPreferencesMenu(true);
 	}
 }

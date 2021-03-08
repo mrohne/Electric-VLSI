@@ -32,7 +32,7 @@
 	<target name="jarForPublicIncremental" depends="initialize" description="Make (incrementally) binary Jar file for public use">
 		<property name="jarname" value="electricPublic-${version}.jar" />
 		<echo message="Building ${jarname} incrementally" />
-		<mkdir dir="${antBuild}"/>
+		<antcall target="createBuildDirectory" />
 		<antcall target="compilePublic" />
 		<antcall target="incrementalJARs" />
 		<antcall target="createJARFile" />
@@ -48,7 +48,6 @@
 		<antcall target="createJARFile">
 			<param name="GNU" value="1"/>
 		</antcall>
-		<antcall target="deleteBuildDirectory" />
 	</target>
 
 	<target name="jarForGNUSource" depends="initialize" description="Make source Jar file for GNU">
@@ -62,7 +61,6 @@
 		<antcall target="createJARFile">
 			<param name="GNU" value="1"/>
 		</antcall>
-		<antcall target="deleteBuildDirectory" />
 	</target>
 
 	<target name="jarForSFSExtras" depends="initialize" description="Make SFS Extra Jar file for IRSIM, j3d, and JMF">
@@ -77,7 +75,6 @@
 			<include name="com/sun/electric/plugins/irsim/**" />
 			<include name="com/sun/electric/plugins/JMF/**" />
 		</zip>
-		<antcall target="deleteBuildDirectory" />
 	</target>
 
 	<target name="jarForOracle" depends="initialize" description="Make binary Jar file for Oracle internal use">
@@ -117,7 +114,7 @@
 
 	<target name="javadoc" depends="initialize" description="Create Javadoc">
 		<mkdir dir="apidoc" />
-		<javadoc destdir="apidoc" private="false" use="true" source="1.8" maxmemory="400m">
+		<javadoc destdir="apidoc" private="false" use="true" encoding="utf-8" source="15" maxmemory="400m" additionalparam="-Xdoclint:none">
 			<packageset dir="electric-java">
 				<include name="com/sun/electric/**" />
 				<exclude name="com/sun/electric/plugins/**" />
@@ -143,18 +140,27 @@
 
 		<!-- the location of various JAR files -->
 		<property name="beanshell"          value="${packaging}/bsh-2.0b4.jar" />
-		<property name="jython"             value="${packaging}/jython.jar" />
-		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions-1.4.jar" />
-		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.7.jar" />
-		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.7.jar" />
-		<property name="junit"              value="${packaging}/junit-4.10.jar" />
+		<property name="jython"             value="${packaging}/jython-standalone-2.7.0.jar" />
+		<property name="abcl"               value="${packaging}/abcl.jar" />
+		<property name="abcl-contrib"       value="${packaging}/abcl-contrib.jar" />
+		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions.jar" />
+		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.12.jar" />
+		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.12.jar" />
+		<property name="junit"              value="${packaging}/junit-4.12.jar" />
+		<property name="jogl-all"           value="${packaging}/jogl-all.jar" />
+		<property name="gluegen-rt"         value="${packaging}/gluegen-rt.jar" />
+		<property name="jogl-all-natives"   value="${packaging}/jogl-all-natives-macosx-universal.jar" />
+		<property name="gluegen-rt-natives" value="${packaging}/gluegen-rt-natives-macosx-universal.jar" />
 		<property name="vecmath"            value="${packaging}/vecmath.jar" />
 		<property name="j3dcore"            value="${packaging}/j3dcore.jar" />
 		<property name="j3dutils"           value="${packaging}/j3dutils.jar" />
 		<property name="jmf"                value="${packaging}/jmf.jar" />
-		<property name="scala-compiler"     value="${packaging}/scala-compiler-2.11.7.jar" />
-		<property name="scala-reflect"      value="${packaging}/scala-reflect-2.11.7.jar" />
-		<property name="scala-library"      value="${packaging}/scala-library-2.11.7.jar" />
+		<property name="scala-compiler"     value="${packaging}/scala-compiler-2.13.4.jar" />
+		<property name="scala-reflect"      value="${packaging}/scala-reflect-2.13.4.jar" />
+		<property name="scala-library"      value="${packaging}/scala-library-2.13.4.jar" />
+		<property name="scala-ant"          value="${packaging}/scala-ant-2.13.4.jar" />
+		<!-- <property name="jna"                value="${packaging}/jna-5.3.1.jar" /> -->
+		<!-- <property name="jline"              value="${packaging}/jline-3.16.0.jar" /> -->
 
 		<!-- does the build directory already exist? -->
 		<condition property="buildDirExists">
@@ -175,23 +181,30 @@
 		</loadfile>
 	</target>
 
-	<target name="compilePublic" description="Compile the public part of Electric">
+	<target name="compilePublic" depends="initialize" description="Compile the public part of Electric">
 		<!-- deprecation flag: deprecation="true" -->
 		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m"
-		       encoding="UTF-8" source="1.8" target="1.8">
-			<classpath>
-				<pathelement location="${slf4j-api}" />
-				<pathelement location="${slf4j-jdk}" />
-                                <pathelement location="${scala-library}" />
-				<pathelement location="${beanshell}" />
-				<pathelement location="${jython}" />
-				<pathelement location="${AppleJava}" />
-				<pathelement location="${junit}" />
-				<pathelement location="${j3dcore}" />
-				<pathelement location="${j3dutils}" />
-				<pathelement location="${vecmath}" />
-				<pathelement location="${jmf}" />
-			</classpath>
+		       deprecation="true"
+		       encoding="UTF-8" source="15">
+		  <compilerarg value="-Xlint:unchecked"/>
+		  <compilerarg value="-Xdiags:verbose"/>
+		  <compilerarg value="-g"/>
+		  <classpath>
+		    <pathelement location="${slf4j-api}" />
+		    <pathelement location="${slf4j-jdk}" />
+                    <pathelement location="${scala-library}" />
+                    <pathelement location="${scala-reflect}" />
+		    <pathelement location="${beanshell}" />
+		    <pathelement location="${jython}" />
+		    <pathelement location="${AppleJava}" />
+		    <pathelement location="${junit}" />
+		    <pathelement location="${jmf}" />
+		    <pathelement location="${j3dcore}" />
+		    <pathelement location="${j3dutils}" />
+		    <pathelement location="${vecmath}" />
+		  </classpath>
+		  <exclude name="com/sun/electric/plugins/irsim/" if="GNU" />
+		  <exclude name="com/sun/electric/plugins/JMF/" if="GNU" />
 		</javac>
 		<copy todir="${antBuild}/com">
 			<fileset dir="${ElectricJavaLoc}/com"
@@ -203,6 +216,9 @@
 				<pathelement location="${scala-compiler}" />
 				<pathelement location="${scala-library}" />
 				<pathelement location="${scala-reflect}" />
+				<pathelement location="${scala-ant}" />
+				<!-- <pathelement location="${jna}" /> -->
+				<!-- <pathelement location="${jline}" /> -->
 			</classpath>
 		</taskdef>
 		<scalac destdir="${antBuild}" srcdir="${ElectricScalaLoc}" deprecation="on" addparams="-feature">
@@ -223,6 +239,8 @@
 				<pathelement location="${slf4j-jdk}" />
 				<pathelement location="${beanshell}" />
 				<pathelement location="${jython}" />
+				<pathelement location="${abcl}" />
+				<pathelement location="${abcl-contrib}" />
 				<pathelement location="${AppleJava}" />
 				<pathelement location="${junit}" />
 				<pathelement location="${j3dcore}" />
@@ -236,7 +254,7 @@
 		</copy>
 	</target>
 
-	<target name="copyPublicJARs" description="Copy Jar files for logging and Scala">
+	<target name="copyPublicJARs" depends="initialize" description="Copy Jar files for logging and Scala">
 		<unjar src="${slf4j-api}" dest="${antBuild}">
 			<patternset> <include name="org/"/> </patternset>
 		</unjar>
@@ -246,28 +264,59 @@
 		<unjar src="${scala-library}" dest="${antBuild}">
 			<patternset> <include name="scala/"/> </patternset>
 		</unjar>
+		<unjar src="${junit}" dest="${antBuild}">
+			<patternset> <include name="org/"/> </patternset>
+		</unjar>
+		<unjar src="${jmf}" dest="${antBuild}">
+			<patternset>
+			  <include name="com/"/>
+			  <include name="javax/"/>
+			</patternset>
+		</unjar>
+		<unjar src="${j3dcore}" dest="${antBuild}">
+			<patternset> <include name="javax/"/> </patternset>
+		</unjar>
+		<unjar src="${j3dutils}" dest="${antBuild}">
+			<patternset> <include name="javax/"/> </patternset>
+		</unjar>
+		<unjar src="${vecmath}" dest="${antBuild}">
+			<patternset> <include name="javax/"/> </patternset>
+		</unjar>
 		<copy todir="${antBuild}/META-INF">
 			<fileset dir="${ElectricScalaLoc}/META-INF" />
 		</copy>
 	</target>
 
-	<target name="copyPrivateJARs" description="Copy Jar files for Apple stubs and Bean Shell">
+	<target name="copyPrivateJARs" depends="initialize" description="Copy Jar files for Apple stubs and Bean Shell">
+	</target>
+
+	<target name="copyAppleJAR" depends="initialize" description="Copy Jar files for Apple stubs and Bean Shell">
 		<unjar dest="${antBuild}" src="${AppleJava}">
 			<patternset> <include name="com/"/> </patternset>
 		</unjar>
+	</target>
+
+	<target name="copyBshJAR" depends="initialize" description="Copy Jar files for Bean Shell">
 		<unjar dest="${antBuild}" src="${beanshell}">
 			<patternset> <include name="bsh/"/> </patternset>
 		</unjar>
 	</target>
 
-	<target name="copyJythonJAR" description="Copy Jar file for Jythyon">
+	<target name="copyJythonJAR" depends="initialize" description="Copy Jar file for Jythyon">
 		<unjar dest="${antBuild}" src="${jython}" />
+	</target>
+
+	<target name="copyABCLJAR" depends="initialize" description="Copy Jar file for ABCL">
+		<unjar dest="${antBuild}" src="${abcl}" />
+		<unjar dest="${antBuild}" src="${abcl-contrib}" />
 	</target>
 
 	<target name="incrementalJARs" unless="buildDirExists" description="Add JAR files only if incremental build is 'new'">
 		<antcall target="copyPublicJARs" />
-		<antcall target="copyPrivateJARs" />
+		<antcall target="copyAppleJAR" />
+		<antcall target="copyBshJAR" />
 		<antcall target="copyJythonJAR" />
+		<antcall target="copyABCLJAR" />
 	</target>
 
 	<target name="copyGNUParts" description="Copy GNU license files">
@@ -293,60 +342,83 @@
 		</jar>
 	</target>
 
-	<target name="createBuildDirectory" description="Create temporary build directory">
-		<delete dir="${antBuild}" />
+	<target name="createBuildDirectory" unless="buildDirExists" description="Create temporary build directory">
 		<mkdir dir="${antBuild}"/>
+		<antcall target="copyPublicJARs" />
+		<antcall target="copyGNUParts" />
+		<antcall target="copyAppleJAR" />
+		<antcall target="copyBshJAR" />
+		<antcall target="copyJythonJAR" />
+		<antcall target="copyABCLJAR" />
 	</target>
 	
 	<target name="deleteBuildDirectory" description="Delete temporary build directory">
 		<delete dir="${antBuild}" />
 	</target>
 
-	<target name="mac-app" depends="jarForGNUSource" description="Build Macintosh Application">
-		<!--java jar="electric.jar" fork="true" outputproperty="version">
-			<arg value="-v" />
-			<jvmarg value="-Xmx1000m" />
-		</java-->
-		<property name="releasedir" value="Release${version}" />
-		<property name="appdir" value="${releasedir}/Electric.app" />
-		<mkdir dir="${releasedir}" />
-		<mkdir dir="${appdir}" />
-		<mkdir dir="${appdir}/Contents" />
-		<mkdir dir="${appdir}/Contents/MacOS" />
-		<mkdir dir="${appdir}/Contents/Resources" />
-		<mkdir dir="${appdir}/Contents/Resources/Java" />
-		<copy file="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub" todir="${appdir}/Contents/MacOS" />
-		<chmod file="${appdir}/Contents/MacOS/JavaApplicationStub" perm="755" />
-		<copy file="${packaging}/Info.plist" todir="${appdir}/Contents" />
-		<replace file="${appdir}/Contents/Info.plist" token="@VERSION" value="${version}" />
-		<copy file="${packaging}/PkgInfo" todir="${appdir}/Contents" />
-		<copy file="${packaging}/electric.icns" todir="${appdir}/Contents/Resources" />
-		<copy file="${packaging}/electric-${version}.jar" todir="${appdir}/Contents/Resources/Java" />
-		<!--exec executable="/Developer/Tools/SetFile">
-			<arg value="-a" />
-			<arg value="B" />
-			<arg value="${appdir}" />
-		</exec-->
-		<exec executable="/usr/bin/SetFile">
-			<arg value="-a" />
-			<arg value="B" />
-			<arg value="${appdir}" />
-		</exec>
-		<exec executable="${packaging}/mkdmg.sh">
-			<arg value="Electric${version}" />
-			<arg value="${releasedir}" />
-		</exec>
+	<taskdef name="bundleapp" 
+		 classname="com.oracle.appbundler.AppBundlerTask"
+		 classpath="packaging/appbundler-1.0ea.jar">
+	</taskdef>
+	<target name="mac-app" depends="initialize" description="Build Macintosh Application">
+	  <antcall target="jarForPublicIncremental" />
+	  <exec executable="/usr/libexec/java_home" 
+		outputproperty="jre">
+	    <arg value="-v15"/>
+	  </exec>
+	  <property name="electric" value="${packaging}/electricPublic-${version}.jar" />
+	  <property name="bundledir" value="${packaging}/Release${version}" />
+	  <mkdir dir="${bundledir}" />
+	  <bundleapp outputdirectory="${bundledir}"
+		     name="Electric"
+		     displayname="Electric VLSI"
+		     identifier="com.sun.Electric"
+		     shortversion="${version}"
+		     icon="${packaging}/electric.icns"
+		     applicationCategory="public.cae.electronics"
+		     mainclassname="com.sun.electric.Launcher">
+            <runtime dir="${jre}"/>
+	    <classpath dir=".">
+	      <include name="${electric}" />
+	      <include name="${AppleJava}" />
+	      <include name="${abcl-contrib}" />
+	      <include name="${abcl}" />
+	      <include name="${beanshell}" />
+	      <include name="${jmf}" />
+	      <include name="${junit}" />
+	      <include name="${jython}" />
+	      <include name="${scala-compiler}" />
+	      <include name="${scala-library}" />
+	      <include name="${slf4j-api}" />
+	      <include name="${slf4j-jdk}" />
+	      <include name="${j3dcore}" />
+	      <include name="${j3dutils}" />
+	      <include name="${vecmath}" />
+	      <include name="${jogl-all}" />
+	      <include name="${gluegen-rt}" />
+	      <include name="${jogl-all-natives}" />
+	      <include name="${gluegen-rt-natives}" />
+	    </classpath>
+	    <librarypath dir=".">
+	      <include name="${jogl-all}" />
+	      <include name="${gluegen-rt}" />
+	      <include name="${jogl-all-natives}" />
+	      <include name="${gluegen-rt-natives}" />
+	    </librarypath>
+	    <option value="-Xdebug"/>
+	    <option value="-Xverify:none"/>
+	    <option value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"/>
+	    <option value="-Xms64m"/>
+	    <option value="-Xmx2048m"/>
+	    <option value="-Xss64m"/>
+	    <option value="-Dcom.apple.mrj.application.apple.menu.about.name=Electric"/>
+	  </bundleapp>
 	</target>
-
+	
 	<target name="clean" depends="initialize" description="Clean all build products">
 		<delete dir="${antBuild}" />
-		<delete quiet="false">
-			<fileset dir=".">
-				<include name="electric*.jar" />
-				<include name="Electric*.img" />
-			</fileset>
-		</delete>
-		<delete dir="Release${version}" />
+		<delete dir="${packaging}/Release${version}" />
+		<delete file="${packaging}/electricPublic-${version}.jar" />
 	</target>
 
 </project>
