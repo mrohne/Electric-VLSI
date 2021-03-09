@@ -188,9 +188,6 @@ public class ToolMenu {
 			EvalJython.hasJython() ? new EMenuItem("Run _Jython Script...") {
 				public void run() { jythonScriptCommand(); }
 			} : null,
-			EvalABCL.hasABCL() ? new EMenuItem("Run _ABCL Script...") {
-			public void run() {abclScriptCommand();	}
-			} : null, 		 
 			new EMenuItem("Manage _Scripts...") {
 				public void run() { new LanguageScripts(); }
 			},
