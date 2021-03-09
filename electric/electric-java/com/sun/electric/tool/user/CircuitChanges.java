@@ -57,6 +57,7 @@ import com.sun.electric.tool.Job;
 import com.sun.electric.tool.JobException;
 import com.sun.electric.tool.io.input.LibraryFiles;
 import com.sun.electric.tool.project.Project;
+import com.sun.electric.tool.user.Highlight;
 import com.sun.electric.tool.user.dialogs.EDialog;
 import com.sun.electric.tool.user.menus.MenuCommands;
 import com.sun.electric.tool.user.ui.EditWindow;
@@ -547,7 +548,7 @@ public class CircuitChanges
         if (highlights.size() == 1)
         {
         	Highlight high = highlights.get(0);
-        	if (high instanceof HighlightArea) highlightedArea = true;
+        	if (high.isHighlightArea()) highlightedArea = true;
         }
 
         if (highlightedArea)

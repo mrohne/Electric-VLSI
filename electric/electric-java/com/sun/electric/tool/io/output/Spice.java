@@ -432,6 +432,9 @@ public class Spice extends Topology
                 break;
         }
 
+		System.out.println("Netlist target:     "+preferedEngineTemplateKey);
+		System.out.println("Layout Technology:  "+layoutTechnology);
+
 		// start writing the spice deck
 		if (useCDL)
 		{
@@ -2517,7 +2520,7 @@ public class Spice extends Topology
                     Cell verilogCell = cell.otherView(View.VERILOG);
                     if (verilogCell == null)
                     {
-                    	System.out.println("Verilog cell for " + cell.describe(false) + " requested but it does not exist");
+                    	reportWarning("Verilog cell for " + cell.describe(false) + " requested but it does not exist", cell);
                     	return false;
                     }
                     File spiceFile = new File(filePath);
@@ -2532,7 +2535,7 @@ public class Spice extends Topology
                 		printWriter.close();
                 	} catch (IOException e)
                 	{
-                		System.out.println("Error writing Verilog file");
+						reportWarning("Error writing Verilog file", cell);
                 	}
                     isVerilog = true;
                 } else
@@ -2556,9 +2559,9 @@ public class Spice extends Topology
                 }
                 modelOverrides.put(cell, absFileName);
             }
+			reportWarning("Skipping cell " + cell.describe(false), cell);
             return true;
         }
-
         return false;
     }
 
@@ -2649,7 +2652,14 @@ public class Spice extends Topology
 	protected int maxNameLength() { if (useCDL) return CDLMAXLENSUBCKTNAME; return SPICEMAXLENSUBCKTNAME; }
 
     protected boolean enumerateLayoutView(Cell cell) {
-        return CellModelPrefs.isUseLayoutView(localPrefs.modelFiles.get(cell));
+		if (CellModelPrefs.isUseLayoutView(localPrefs.modelFiles.get(cell))) {
+			System.out.println("Using layout " + cell.describe(false));
+			return true;
+		}
+		else {
+			System.out.println("Using schematic " + cell.describe(false));
+			return false;
+		}
     }
 
     private Netlist.ShortResistors getShortResistorsFlat() {

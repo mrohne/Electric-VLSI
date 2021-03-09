@@ -308,6 +308,8 @@ public class AutoStitch
 		if (showProgress) Job.getUserInterface().setProgressNote("Initializing routing");
 		ArcProto preferredArc = prefs.preferredArc;
 
+		// if (stayInside == null && forced == true) stayInside = mergeGeometry(cell, cell.getBounds());
+		
 		// gather objects to stitch
 		List<NodeInst> nodesToStitch = getNodesToStitch(cell, origNodesToStitch);
 		List<ArcInst> arcsToStitch = getArcsToStitch(cell, origArcsToStitch);
@@ -2180,7 +2182,7 @@ name=null;
 			// get routable geometry
 			PolyMerge stayInside = mergeGeometry(cell, rect);
 			// check layer bounds
-			if (!stayInside.contains(layer, topLoc)) {
+			if (stayInside != null && !stayInside.contains(layer, topLoc)) {
 				if (DEBUGEXPORTS) System.out.println("**** EXCEEDING "+layer+" AT "+topLoc);
 				return null;
 			}
@@ -2210,7 +2212,7 @@ name=null;
 			// find suitable bend
 			Point2D bend1 = new Point2D.Double(pinLoc.getX(), topLoc.getY());
 			Point2D bend2 = new Point2D.Double(topLoc.getX(), pinLoc.getY());
-			if (!stayInside.contains(layer, bend1)) bend1 = bend2;
+			if (stayInside != null && !stayInside.contains(layer, bend1)) bend1 = bend2;
 			// route to port
 			Map<ArcProto, Integer> arcMap = new HashMap<ArcProto,Integer>();
 			Map<NodeProto, Integer> nodeMap = new HashMap<NodeProto,Integer>();

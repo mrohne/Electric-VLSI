@@ -1027,7 +1027,7 @@ public class GDS extends Geometry
 			String msg = "Warning: GDS-II Polygons may not have more than 200 points (this has " + points.length + ")";
 			reportWarning(msg, poly, cell);
 		}
-		if (points.length == 2) outputPath(poly, layerNumber, layerType); else
+		if (points.length == 2) outputPath(cell, poly, layerNumber, layerType); else
 		outputBoundary(cell, poly, layerNumber, layerType);
 	}
 
@@ -1464,10 +1464,14 @@ public class GDS extends Geometry
 		outputDouble(scale);
 	}
 
-	private List<Point> reducePolygon(PolyBase poly)
+	private List<Point> reducePolygon(Cell cell, PolyBase poly)
 	{
 		List<Point> pts = new ArrayList<Point>();
 		Point2D [] points = poly.getPoints();
+		if (points.length == 0) {
+			reportWarning("Zero length polygon", poly, cell);
+			return pts;
+		}
 		int lastX = scaleDBUnit(points[0].getX());
 		int lastY = scaleDBUnit(points[0].getY());
 		int firstX = lastX;
@@ -1497,7 +1501,7 @@ public class GDS extends Geometry
 	private void outputBoundary(Cell cell, PolyBase poly, int layerNumber, int layerType)
 	{
 		// remove redundant points
-		List<Point> reducedPoints = reducePolygon(poly);
+		List<Point> reducedPoints = reducePolygon(cell, poly);
 		int count = reducedPoints.size();
 		if (count <= 2) return;
 		int start = 0;
@@ -1582,10 +1586,10 @@ public class GDS extends Geometry
 		return false;
 	}
 
-	private void outputPath(PolyBase poly, int layerNumber, int layerType)
+	private void outputPath(Cell cell, PolyBase poly, int layerNumber, int layerType)
 	{
 		// remove redundant points
-		List<Point> reducedPoints = reducePolygon(poly);
+		List<Point> reducedPoints = reducePolygon(cell, poly);
 		int numPoints = reducedPoints.size();
 		if (numPoints <= 2) return;
 
