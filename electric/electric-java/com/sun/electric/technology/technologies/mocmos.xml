@@ -1702,7 +1702,7 @@
                 <lambdaBox klx="-2.0" khx="2.0" kly="-2.0" khy="2.0"/>
             </box>
         </nodeLayer>
-        <nodeLayer layer="Polysilicon-1" style="FILLED">
+        <nodeLayer layer="Polysilicon-1" style="FILLED" portNum="0">
             <box>
                 <lambdaBox klx="-10.0" khx="10.0" kly="-10.0" khy="10.0"/>
             </box>
@@ -1712,7 +1712,7 @@
                 <lambdaBox klx="0.0" khx="0.0" kly="0.0" khy="0.0"/>
             </multicutbox>
         </nodeLayer>
-        <nodeLayer layer="Polysilicon-2" style="FILLED">
+        <nodeLayer layer="Polysilicon-2" style="FILLED" portNum="1">
             <box>
                 <lambdaBox klx="-5.0" khx="5.0" kly="-5.0" khy="5.0"/>
             </box>
