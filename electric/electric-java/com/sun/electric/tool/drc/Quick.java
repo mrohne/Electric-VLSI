@@ -327,7 +327,7 @@ public class Quick
 
 		// now search for DRC exclusion areas
         reportInfo.exclusionMap.clear();
-		accumulateExclusion(cell);
+		getAllExclusionBounds(cell);
 
 		// now do the DRC
         int logsFound = 0;
@@ -1954,6 +1954,20 @@ public class Quick
 				msg = tinyNodeInst + " is too small for the " + tinyGeometric;
 			}
 		}
+
+        if (coverByExclusion(origPoly1, cell)) return false;
+        if (coverByExclusion(origPoly2, cell)) return false;
+//System.out.println("ERROR IN CELL "+cell.describe(false));		// TODO: debug
+//Rectangle2D r1 = origPoly1.getBounds2D();
+//Rectangle2D r2 = origPoly2.getBounds2D();
+//System.out.println("  POLY1: "+r1.getMinX()+"<=X<="+r1.getMaxX()+" AND "+r1.getMinY()+"<=Y<="+r1.getMaxY());
+//System.out.println("  POLY2: "+r2.getMinX()+"<=X<="+r2.getMaxX()+" AND "+r2.getMinY()+"<=Y<="+r2.getMaxY());
+//Area area = reportInfo.exclusionMap.get(cell);
+//if (area != null)
+//{
+//	Rectangle2D e = area.getBounds2D();
+//	System.out.println("  HAS EXCLUSION: "+e.getMinX()+"<=X<="+e.getMaxX()+" AND "+e.getMinY()+"<=Y<="+e.getMaxY());
+//}
 
 		DRC.createDRCErrorLogger(reportInfo, errorType, msg, cell, theRule.getValue(0), pd, theRule.ruleName,
             origPoly1, geom1, layer1, origPoly2, geom2, layer2);
@@ -4507,38 +4521,59 @@ public class Quick
 	 */
     private NodeProto drcNodeProto = Generic.tech().drcNode;
 
-    private void accumulateExclusion(Cell cell)
-	{
-        Area area = null;
+    private void getAllExclusionBounds(Cell cell)
+    {
+    	// compute total bounds in this cell's coordinate system
+		Area area = accumulateExclusion(cell, DBMath.MATID, null);
+		if (area != null)
+			reportInfo.exclusionMap.put(cell, area);
 
+		// spread to all subcells
+		for(Iterator<NodeInst> it = cell.getNodes(); it.hasNext(); )
+		{
+			NodeInst ni = it.next();
+			if (!ni.isCellInstance()) continue;
+
+			// examine contents
+			Cell subCell = (Cell)ni.getProto();
+			getAllExclusionBounds(subCell);
+		}
+    }
+	
+    private Area accumulateExclusion(Cell cell, FixpTransform trans, Area area)
+	{
+        // first gather all DRC exclusion inside this cell
 		for(Iterator<NodeInst> it = cell.getNodes(); it.hasNext(); )
 		{
 			NodeInst ni = it.next();
 			NodeProto np = ni.getProto();
-			
-			if (np == drcNodeProto) //Generic.tech().drcNode)
+			if (np == drcNodeProto)
 			{
-                // Must get polygon from getNodeShape otherwise it will miss
-                // rings
-                FixpTransform trans = ni.rotateOut();
-                Poly [] list = cell.getTechnology().getShapeOfNode(ni, true, true, null);
-                assert(list.length == 1);
-                list[0].transform(trans);
-                Area thisArea = new Area(list[0]);
-                if (area == null)
-                    area = thisArea;
-                else
-                    area.add(thisArea);
-				continue;
+	            // must get polygon from getNodeShape otherwise it will miss rings
+	            Poly [] list = cell.getTechnology().getShapeOfNode(ni, true, true, null);
+	            assert(list.length == 1);
+	            FixpTransform subRot = ni.rotateOut();
+
+	            // gather exclusion for the upper-level cell
+	            subRot.preConcatenate(trans);
+				list[0].transform(subRot);
+	            Area thisArea = new Area(list[0]);
+	            if (area == null) area = thisArea; else
+	            	area.add(thisArea);
 			}
 
 			if (ni.isCellInstance())
 			{
 				// examine contents
-				accumulateExclusion((Cell)np);
+				Cell subCell = (Cell)ni.getProto();
+	            FixpTransform subRot = ni.rotateOut();
+	            subRot.preConcatenate(trans);
+				FixpTransform subTrans = ni.translateOut();
+				subTrans.preConcatenate(subRot);
+				area = accumulateExclusion(subCell, subTrans, area);
 			}
-		};
-        reportInfo.exclusionMap.put(cell, area);
+		}
+        return area;
 	}
 
     /**************************************************************************************************************
