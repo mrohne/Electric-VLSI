@@ -1247,10 +1247,11 @@ public class Panel extends JPanel
 				double value = ss.getLowValue();
 				if (localGraphics != null) localGraphics.setFont(waveWindow.getFont());
 				int lastY = -1;
-				int ySeparation = convertYDataToScreen(value/analogScaleValue) - convertYDataToScreen(value/analogScaleValue+ss.getSeparation());
-				double textSkip = 100;
-				if (ySeparation > 0) textSkip = 20 / ySeparation;
-				double textSkipPos = 0;
+				int lastGoodY = -1;
+//				int ySeparation = convertYDataToScreen(value/analogScaleValue) - convertYDataToScreen(value/analogScaleValue+ss.getSeparation());
+//				double textSkip = 100;
+//				if (ySeparation > 0) textSkip = 20 / ySeparation;
+//				double textSkipPos = 0;
 				for(;;)
 				{
 					if (value > displayedHigh) break;
@@ -1283,10 +1284,11 @@ public class Panel extends JPanel
 						}
 
 						// skip text if spaced too closely
-						textSkipPos -= analogScaleValue;
-						if (textSkipPos <= 0)
+//						textSkipPos -= analogScaleValue;
+//						if (textSkipPos <= 0)
+						if (lastGoodY < 0 || lastGoodY - y > 15)
 						{
-							textSkipPos = textSkip;
+//							textSkipPos = textSkip;
 							String yValue = TextUtils.convertToEngineeringNotation(value, null, ss.getStepScale()+3);
 							if (polys != null)
 							{
@@ -1307,6 +1309,7 @@ public class Panel extends JPanel
 								if (xPos < 0) xPos = 0;
 								localGraphics.drawString(yValue, xPos, yPos);
 							}
+							lastGoodY = y;
 						}
 						lastY = y;
 					}
