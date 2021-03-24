@@ -141,6 +141,7 @@ import com.sun.electric.tool.user.dialogs.CellBrowser;
 import com.sun.electric.tool.user.dialogs.FillGenDialog;
 import com.sun.electric.tool.user.dialogs.LanguageScripts;
 import com.sun.electric.tool.user.dialogs.MultiFingerTransistor;
+import com.sun.electric.tool.user.dialogs.NCCAnnotations;
 import com.sun.electric.tool.user.dialogs.OpenFile;
 import com.sun.electric.tool.user.dialogs.SeaOfGatesCell;
 import com.sun.electric.tool.user.ncc.HighlightEquivalent;
@@ -509,7 +510,7 @@ public class ToolMenu {
 				}),
 
 			// ------------------- NCC
-			// mnemonic keys available: B D FGHIJKLM O QRS VWXYZ
+			// mnemonic keys available: B D FGHIJKLM O QR  VWXYZ
 			new EMenu("_NCC",
 				new EMenuItem("Schematic and Layout Views of Cell in _Current Window") {
 					public void run() { new NccJob(1); }
@@ -572,11 +573,15 @@ public class ToolMenu {
 						public void run() { NccCellAnnotations.makeNCCAnnotationMenuCommand("blackBox <comment explaining why>"); }
 					}),
 
-					SEPARATOR,
+				new EMenuItem("_Show NCC Annotations...") {
+					public void run() { showNCCAnnotations(); }
+				},
 
-					new EMenuItem("Import Calibre LVS Errors for Current Cell...") {
-						public void run() { importCalibreLVSErrors(); }
-					}),
+				SEPARATOR,
+
+				new EMenuItem("Import Calibre LVS Errors for Current Cell...") {
+					public void run() { importCalibreLVSErrors(); }
+				}),
 
 			// ------------------- Network
 			// mnemonic keys available: D F IJK M O S U W YZ
@@ -2903,6 +2908,15 @@ public class ToolMenu {
 		com.sun.electric.tool.io.output.GDS.buildUniqueNames(cell, mangledNames,
 				IOTool.getGDSCellNameLenMax(), IOTool.isGDSOutUpperCase());
 		CalibreDrcErrors.importErrors(fileName, mangledNames, "DRC", false);
+	}
+
+	/**
+	 * Method to show the NCC annotations in the library cells.
+	 */
+	public static void showNCCAnnotations()
+	{
+		NCCAnnotations dialog = new NCCAnnotations(TopLevel.getCurrentJFrame());
+		dialog.setVisible(true);
 	}
 
 	/**

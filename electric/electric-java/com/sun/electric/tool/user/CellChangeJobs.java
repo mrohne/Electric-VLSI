@@ -1248,7 +1248,6 @@ public class CellChangeJobs
 				// need to determine if arc goes along horizontal or vertical direction
 				if ((orient.isYMirrored() || orient.isXMirrored()) && a.isHeadExtended() != a.isTailExtended())
 				{
-//					newAi.setHeadExtended(a.isTailExtended()); newAi.setTailExtended(a.isHeadExtended());
 					newAi.setHeadExtended(false); newAi.setTailExtended(false);
 				}
 			}
@@ -1516,8 +1515,8 @@ public class CellChangeJobs
 	 * instead of creating a cross-library reference.  False to copy everything needed.
 	 * @param existing a map that disambiguates cell names when they clash in different original libraries.
 	 * The main key is an old cell name, and the value for that key is a map of library names to new cell names.
-	 * So, for example, if libraries "A" and "B" both have a cell called "X", then existing.get("X").get("A") is "X" but
-	 * existing.get(X").get("B") is "X_1" which disambiguates the cell names in the destination library.
+	 * So, for example, if libraries "A" and "B" both have a cell called "X{lay}", then existing.get("X{lay}").get("A") is "X{lay}" but
+	 * existing.get("X{lay}").get("B") is "X_1{lay}" which disambiguates the cell names in the destination library.
      * @param idMapper mapper which handles renamed cells
      * @param newCells mapper which handles both copied and renamed cells
 	 * @param deleteThese a list of Cells to delete when all is done (if moving instead of copying)
@@ -1696,11 +1695,12 @@ public class CellChangeJobs
 		if (copiedCell != null) return copiedCell;
 
 		// get the proper cell name to use in the destination library
-		Map<String,String> libToNameMap = existing.get(fromCell.getName());
+        String cName = fromCell.getName() + ";" + fromCell.getVersion() + fromCell.getView().getAbbreviationExtension();
+		Map<String,String> libToNameMap = existing.get(cName);
 		if (libToNameMap == null)
 		{
 			libToNameMap = new HashMap<String,String>();
-			existing.put(fromCell.getName(), libToNameMap);
+			existing.put(cName, libToNameMap);
 		}
 		String newName = libToNameMap.get(fromCell.getLibrary().getName());
 		if (newName == null)
@@ -1709,13 +1709,11 @@ public class CellChangeJobs
 			{
 				newName = toName;
 				if (i > 0) newName += "_" + i;
+				newName += ";" + fromCell.getVersion() + toView.getAbbreviationExtension();
 				if (!libToNameMap.values().contains(newName)) break;
 			}
 			libToNameMap.put(fromCell.getLibrary().getName(), newName);
 		}
-		newName += ";" + fromCell.getVersion();
-		if (toView.getAbbreviation().length() > 0)
-			newName += toView.getAbbreviationExtension();
 		Cell newFromCell = Cell.copyNodeProto(fromCell, toLib, newName, useExisting, existing);
 		if (newFromCell == null)
 		{
@@ -1787,18 +1785,19 @@ public class CellChangeJobs
 	 * @param cell the Cell in question.
 	 * @param existing a map that disambiguates cell names when they clash in different original libraries.
 	 * The main key is an old cell name, and the value for that key is a map of library names to new cell names.
-	 * So, for example, if libraries "A" and "B" both have a cell called "X", then existing.get("X").get("A") is "X" but
-	 * existing.get(X").get("B") is "X_1" which disambiguates the cell names in the destination library.
+	 * So, for example, if libraries "A" and "B" both have a cell called "X", then existing.get("X{lay}").get("A") is "X{lay}" but
+	 * existing.get("X{lay}").get("B") is "X_1{lay}" which disambiguates the cell names in the destination library.
 	 * @param destLib the destination library being searched.
 	 * @return a Cell from the destination library that matches the Cell being searched (null if none).
 	 */
 	private static Cell inDestLib(Cell cell, Map<String,Map<String,String>> existing, Library destLib)
 	{
-		Map<String,String> libToNameMap = existing.get(cell.getName());
+        String cName = cell.getName() + ";" + cell.getVersion() + cell.getView().getAbbreviationExtension();
+		Map<String,String> libToNameMap = existing.get(cName);
 		if (libToNameMap == null) return null;
 		String newCellName = libToNameMap.get(cell.getLibrary().getName());
 		if (newCellName == null) return null;
-		Cell copiedCell = destLib.findNodeProto(newCellName + ";" + cell.getVersion() + cell.getView().getAbbreviationExtension());
+		Cell copiedCell = destLib.findNodeProto(newCellName);
 		return copiedCell;
 	}
 

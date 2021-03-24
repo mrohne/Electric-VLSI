@@ -110,8 +110,7 @@ public class NccJob extends Job {
 			return null;
 		} 
 		if (cellCtxts.size()>2) {
-			prln("More than two Cells are open in windows. Could you please");
-			prln("close windows until only two Cells are open. (Sorry JonL.)");
+			prln("More than two Cells are open in windows. Please close windows until only two Cells are open");
 			return null;
 		}
 		CellContext[] cellContexts = new CellContext[2];

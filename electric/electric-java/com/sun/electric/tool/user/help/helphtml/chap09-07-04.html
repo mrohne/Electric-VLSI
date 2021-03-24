@@ -12,21 +12,27 @@
 <!-- COMMAND Tools/NCC/Add NCC Annotation to Cell/Force Part Match -->
 <!-- COMMAND Tools/NCC/Add NCC Annotation to Cell/Force Wire Match -->
 <!-- COMMAND Tools/NCC/Add NCC Annotation to Cell/Black Box -->
+<!-- COMMAND Tools/NCC/Show NCC Annotations... -->
+
 
 <P>
-For certain situations, NCC cannot figure out that two cells are
-equivalent unless the designer supplies extra information. The
+Annotations are how special instructions are given to the Network Consistency Checker. The
 designer supplies this information by adding NCC annotations to
 layout and/or schematic cells.
-This is done with the subcommands of the <B>Tools / NCC / Add NCC Annotations to Cell</B> menu.
-</p>
-<p>
-NCC annotations are represented by
-attributes placed on cells.
+Thise annotations can be inserted in a circuit with the various commands under
+the <B>Tools / NCC / Add NCC Annotations to Cell</B> menu.
+
 The attribute's name is <i>NCC</i> and it contains one or more lines of text, each with a separate NCC annotation.
 Thus, although a cell can have at most one attribute named <i>NCC</i>,
 that attribute can contain any number of NCC annotations.
-</p>
+<P>
+To see all NCC annotations in a library, use the  the <B>Tools / NCC / Show NCC Annotations...</B> command.
+The "edit" button (with a pencil icon) changes an annotation,
+and the "delete" button (with an "X" icon) deletes an annotation.
+</P>
+<P>
+<CENTER><IMG SRC="fig09-72.png" ALT="Figure9.72"></CENTER>
+<P>
 
 <H4>exportsConnectedByParent <i>&lt;string or regular expression&gt;</i></H4>
 <P>

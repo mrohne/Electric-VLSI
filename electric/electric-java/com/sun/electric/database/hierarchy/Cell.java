@@ -914,8 +914,8 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
      * @param useExisting true to use existing subcell instances if they exist in the destination Library.
      * @param cellNamesToUse a map that disambiguates cell names when they clash in different original libraries.
      * The main key is an old cell name, and the value for that key is a map of library names to new cell names.
-     * So, for example, if libraries "A" and "B" both have a cell called "X", then existing.get("X").get("A") is "X" but
-     * existing.get(X").get("B") is "X_1" which disambiguates the cell names in the destination library. The map may be null.
+     * So, for example, if libraries "A" and "B" both have a cell called "X{lay}", then existing.get("X{lay}").get("A") is "X{lay}" but
+     * existing.get("X{lay}").get("B") is "X_1{lay}" which disambiguates the cell names in the destination library. The map may be null.
      * @return the new Cell in the destination Library.
      */
     public static Cell copyNodeProto(Cell fromCell, Library toLib, String toName, boolean useExisting,
@@ -983,7 +983,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
                 }
 
                 // switch cell names if disambiguating
-                String oldCellName = niProto.getName();
+                String oldCellName = niProto.getName() + ";" + niProto.getVersion() + niProto.getView().getAbbreviationExtension();
                 if (cellNamesToUse != null)
                 {
                     Map<String, String> libToNameMap = cellNamesToUse.get(oldCellName);
@@ -1002,12 +1002,8 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
                 for (Iterator<Cell> cIt = toLib.getCells(); cIt.hasNext();)
                 {
                     lnt = cIt.next();
-                    if (lnt.getName().equals(oldCellName)
-                        && //					if (lnt.getName().equalsIgnoreCase(oldCellName) &&
-                        lnt.getView() == niProto.getView())
-                    {
-                        break;
-                    }
+                    String cName = lnt.getName() + ";" + lnt.getVersion() + lnt.getView().getAbbreviationExtension();
+                    if (cName.equals(oldCellName)) break;
                     lnt = null;
                 }
                 if (lnt == null)
@@ -1022,11 +1018,6 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
                     PortInst pi = pIt.next();
                     PortProto pp = pi.getPortProto();
                     PortProto ppt = lnt.findPortProto(pp.getName());
-//					if (ppt != null)
-//					{
-//						// the connections must match, too
-//						if (pp->connects != ppt->connects) ppt = null;
-//					}
                     if (ppt == null)
                     {
                         System.out.println("Cannot use subcell " + lnt.noLibDescribe() + " in " + destLib

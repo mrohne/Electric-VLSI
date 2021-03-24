@@ -2,6 +2,10 @@
 
 NOTE: Please place changes under the version that will be released next.
 
+************************* Version 9.08-e: ******************************
+
+IMP (3/23/2021) Added "Tools/NCC/Show NCC Annotations..." to see all annotations at once.
+
 ************************* Version 9.08-d: ******************************
 
 IMP: (12/21/2020, GA) Added code to handle newer LTSpice raw output.
