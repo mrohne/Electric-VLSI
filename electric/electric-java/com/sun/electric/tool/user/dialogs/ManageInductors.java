@@ -467,9 +467,8 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		}
 		NodeInst ni = curInductanceData.cell.findNode(inductorName);
 		if (ni == null) return;
-
-		double wid = ni.getXSize(), hei = ni.getYSize();
-		double inductorSize = Math.min(wid, hei);
+//		double inductorSize = Math.min(ni.getXSize(), ni.getYSize());
+		double inductorSize = ni.getYSize();
 
 		// determine arc type that matters
 		ArcProto ap = ni.getProto().getPort(0).getBasePort().getConnection();
