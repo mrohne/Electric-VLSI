@@ -24,6 +24,7 @@ package com.sun.electric.tool.ncc.netlist;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.technology.PrimitiveNode.Function;
 import com.sun.electric.tool.ncc.NccOptions;
 import com.sun.electric.tool.ncc.basic.NccUtils;
@@ -79,8 +80,8 @@ public class Bipolar extends Part {
 								{Primes.get(1), Primes.get(2), Primes.get(3)}; 
     
     // ---------- private methods ----------
-	private Bipolar(Function np, PartNameProxy name, double area, Wire[] pins) {
-		super(name, np, pins);
+	private Bipolar(Function np, PartNameProxy name, VarContext cont, double area, Wire[] pins) {
+		super(name, cont, np, pins);
 		Job.error(np==null, "null type?");
 		this.area = area;
 	}
@@ -95,9 +96,9 @@ public class Bipolar extends Part {
 
     // ---------- public methods ----------
 
-	public Bipolar(Function np, PartNameProxy name, double area,
+	public Bipolar(Function np, PartNameProxy name, VarContext cont, double area,
 				   Wire emit, Wire base, Wire coll) {
-		this(np, name, area, new Wire[] {emit, base, coll});
+		this(np, name, cont, area, new Wire[] {emit, base, coll});
 	}
     public double getArea() {return area;}
     @Override

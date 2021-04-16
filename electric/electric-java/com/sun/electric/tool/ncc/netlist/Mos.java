@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.technology.PrimitiveNode.Function;
 import com.sun.electric.tool.ncc.NccOptions;
 import com.sun.electric.tool.ncc.basic.NccUtils;
@@ -204,9 +205,9 @@ public class Mos extends Part {
     // ---------- private methods ----------
 	/** Stack of series transistors. If Mos has body connection then 
 	 * body is last entry of pins */
-	private Mos(Function np, PartNameProxy name, double width, double length,
+	private Mos(Function np, PartNameProxy name, VarContext cont, double width, double length,
 				boolean hasBody, Wire[] pins) {
-		super(name, np, pins);
+		super(name, cont, np, pins);
 		this.width = width;
 		this.length = length;
 		this.hasBody = hasBody;
@@ -265,14 +266,14 @@ public class Mos extends Part {
     // ---------- public methods ----------
 
 	/** Transistor without body port. */
-	public Mos(Function np, PartNameProxy name, double width, double length,
+	public Mos(Function np, PartNameProxy name, VarContext cont, double width, double length,
 			   Wire src, Wire gate, Wire drn) {
-		this(np, name, width, length, false, new Wire[] {src, gate, drn});
+		this(np, name, cont, width, length, false, new Wire[] {src, gate, drn});
 	}
 	/** Transistor with body port. */
-	public Mos(Function np, PartNameProxy name, double width, double length,
+	public Mos(Function np, PartNameProxy name, VarContext cont, double width, double length,
 			   Wire src, Wire gate, Wire drn, Wire body) {
-		this(np, name, width, length, true, new Wire[] {src, gate, drn, body});
+		this(np, name, cont, width, length, true, new Wire[] {src, gate, drn, body});
 	}
     @Override
     public double getLength() {return length;}
@@ -459,7 +460,7 @@ public class Mos extends Part {
 			mergedPins[aNdx++] = tb.pins[bNdx];
 		}
 		if (hasBody) mergedPins[mergedPins.length-1] = ta.pins[ta.bodyNdx()];
-		Mos stack = new Mos(ta.type(), ta.getNameProxy(),  
+		Mos stack = new Mos(ta.type(), ta.getNameProxy(), ta.getContext(),
 							ta.getWidth(), ta.getLength(), 
 							hasBody, mergedPins);
 

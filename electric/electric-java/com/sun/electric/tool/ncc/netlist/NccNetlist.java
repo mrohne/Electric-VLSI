@@ -529,9 +529,9 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		if (type==null) return;
 		
 		Part t = w!=null ? (
-			new Mos(type, name, width, length, s, g, d, w)
+			new Mos(type, name, info.getContext(), width, length, s, g, d, w)
 		) : (
-			new Mos(type, name, width, length, s, g, d)
+			new Mos(type, name, info.getContext(), width, length, s, g, d)
 		);
 		parts.add(t);
 	}
@@ -548,13 +548,13 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		Wire b = getWireForPortInst(ni.getTransistorBasePort(), info);
 		Wire c = getWireForPortInst(ni.getTransistorCollectorPort(), info);
 		Function f = ni.getFunction();
-		Part t = new Bipolar(f, name, area, e, b, c);
+		Part t = new Bipolar(f, name, info.getContext(), area, e, b, c);
 		parts.add(t);								 
 	}
 
 	private void buildResistor(NodeInst ni, NccCellInfo info) {
 		NodableNameProxy np = info.getUniqueNodableNameProxy(ni, "/");
-		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
+		PartNameProxy name = new PartNameProxy(np, pathPrefix);
 		double width=0, length=0;
 		if (globals.getOptions().checkSizes) {
 			Variable var = ni.getParameterOrVariable("SCHEM_resistance");
@@ -577,7 +577,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		Function type = getResistorType(ni, info);
 		// if unrecognized resistor type then ignore 
 		if (type!=null) {
-			Part t = new Resistor(type, name, width, length, wires[0], wires[1]);
+			Part t = new Resistor(type, name, info.getContext(), width, length, wires[0], wires[1]);
 			parts.add(t);
 		}
 	}
@@ -602,7 +602,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		Function type = ni.getFunction();
 		// if unrecognized type then ignore 
 		if (type!=null) {
-			Part t = new Inductor(type, name, length, wires[0], wires[1]);
+			Part t = new Inductor(type, name, info.getContext(), length, wires[0], wires[1]);
 			parts.add(t);
 		}
 	}
@@ -628,7 +628,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		Function type = ni.getFunction();
 		// if unrecognized type then ignore 
 		if (type!=null) {
-			Part t = new Josephson(type, name, area, wires[0], wires[1]);
+			Part t = new Josephson(type, name, info.getContext(), area, wires[0], wires[1]);
 			parts.add(t);
 		}
 	}
@@ -770,7 +770,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		NodableNameProxy np = parentInfo.getUniqueNodableNameProxy(parentInst, "/");
 		PartNameProxy name = new PartNameProxy(np, pathPrefix); 
 
-		parts.add(new Subcircuit(name, subcktInfo, pins));
+		parts.add(new Subcircuit(name, info.getContext(), subcktInfo, pins));
 	}
 	/** Check to see if the parent of the current Cell instance says to
 	 * flatten the current Cell instance */

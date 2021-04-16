@@ -23,6 +23,7 @@ package com.sun.electric.tool.ncc.netlist;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.technology.PrimitiveNode.Function;
 import com.sun.electric.tool.ncc.NccOptions;
 import com.sun.electric.tool.ncc.basic.Primes;
@@ -54,8 +55,8 @@ public class Josephson extends Part {
     private final double area;
 
     // ---------- public methods ----------
-	public Josephson(Function type, PartNameProxy name, double area, Wire w1, Wire w2) {
-		super(name, type, new Wire[]{w1, w2});
+	public Josephson(Function type, PartNameProxy name, VarContext cont, double area, Wire w1, Wire w2) {
+		super(name, cont, type, new Wire[]{w1, w2});
 		this.area = area;
 	}
 

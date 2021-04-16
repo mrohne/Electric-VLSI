@@ -23,6 +23,7 @@ package com.sun.electric.tool.ncc.netlist;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.technology.PrimitiveNode.Function;
 import com.sun.electric.tool.ncc.NccOptions;
 import com.sun.electric.tool.ncc.netlist.NccNameProxy.PartNameProxy;
@@ -142,9 +143,9 @@ public class Subcircuit extends Part {
 		return coeffSum*getCode();
     }
 	
-	public Subcircuit(PartNameProxy instName, SubcircuitInfo subcircuitInfo,
+	public Subcircuit(PartNameProxy instName, VarContext cont, SubcircuitInfo subcircuitInfo,
 	                  Wire[] pins) {
-		super(instName, Function.UNKNOWN, pins);
+		super(instName, cont, Function.UNKNOWN, pins);
 		this.subcircuitInfo = subcircuitInfo;
 		pinCoeffs = subcircuitInfo.getPortCoeffs();
 		

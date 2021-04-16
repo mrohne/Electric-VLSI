@@ -23,6 +23,7 @@ package com.sun.electric.tool.ncc.netlist;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.technology.PrimitiveNode.Function;
 import com.sun.electric.tool.ncc.NccOptions;
 import com.sun.electric.tool.ncc.basic.Primes;
@@ -56,9 +57,9 @@ public class Resistor extends Part {
     private final double width, length;
 
     // ---------- public methods ----------
-	public Resistor(Function type, PartNameProxy name, 
+	public Resistor(Function type, PartNameProxy name, VarContext info,
 			        double width, double length, Wire w1, Wire w2) {
-		super(name, type, new Wire[]{w1, w2});
+		super(name, info, type, new Wire[]{w1, w2});
 		this.width = width;
 		this.length = length;
 	}

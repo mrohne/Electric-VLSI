@@ -25,6 +25,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.sun.electric.database.hierarchy.Cell;
+import com.sun.electric.database.hierarchy.Nodable;
+import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.technology.PrimitiveNode.Function;
 import com.sun.electric.tool.ncc.NccOptions;
 import com.sun.electric.tool.ncc.netlist.NccNameProxy.PartNameProxy;
@@ -44,15 +47,18 @@ public abstract class Part extends NetObject implements PartReportable {
 
     // ---------- private data -------------
 	private PartNameProxy nameProxy;
+	private VarContext context;
 	private final Function type;
     protected Wire[] pins;
     
     // ---------- private methods ----------
 	/** @param name the name of Part
+	 * @param cont the VarContext of Part
 	 * @param type the type of Parts
 	 * @param pins Wires attached to pins of Part */
-    protected Part(PartNameProxy name, Function type, Wire[] pins){
+    protected Part(PartNameProxy name, VarContext cont, Function type, Wire[] pins){
     	nameProxy = name;
+    	context = cont;
     	this.type = type;
 		this.pins = pins;
 		for (int i=0; i<pins.length; i++)  pins[i].add(this);
@@ -87,6 +93,7 @@ public abstract class Part extends NetObject implements PartReportable {
 	@Override public String getName() {return nameProxy.getName();}
 	@Override public Iterator getConnected() {return Arrays.asList(pins).iterator();}
 	public PartNameProxy getNameProxy() {return nameProxy;}
+	public VarContext getContext() {return context;}
     @Override public Type getNetObjType() {return Type.PART;}
 
 	/** Here is the accessor for the number of terminals on this Part
@@ -184,11 +191,22 @@ public abstract class Part extends NetObject implements PartReportable {
     /** @return a String containing the part type, the Cell containing the part, 
      * and the instance name */
     @Override public String instanceDescription() {
-    	// Don't print "Cell instance:" in root Cell where there is no path.
-    	String inst = nameProxy.cellInstPath();
-    	String instMsg = inst.equals("") ? "" : (" Cell instance: "+inst); 
-    	return typeString()+" "+nameProxy.leafName()+" in Cell: "+
-		       nameProxy.leafCell().libDescribe()+instMsg;
+    	// Don't print "Cell instance:" in root Cell where there is no path (THIS IS THE ORIGINAL CODE)
+//    	String inst = nameProxy.cellInstPath();
+//    	String instMsg = inst.equals("") ? "" : (" Cell instance: "+inst);
+//    	return typeString() + " " + nameProxy.leafName() + " in Cell: " + nameProxy.leafCell().libDescribe() + instMsg;
+
+    	String cellPath = nameProxy.leafCell().libDescribe();
+    	VarContext cont = getContext();
+		Iterator<Nodable> it = cont.getPathIterator();
+		if (it.hasNext())
+		{
+			Nodable no = it.next();
+			cellPath = no.getParent().libDescribe();
+		}
+    	String inst2 = cont.getInstPath(" / ");
+    	if (inst2.length() > 0) cellPath += " / " + inst2;
+    	return typeString() + " " + nameProxy.leafName() + " in Cell: " + cellPath;
     }
     
 	/** Report the numeric values of this Part,
