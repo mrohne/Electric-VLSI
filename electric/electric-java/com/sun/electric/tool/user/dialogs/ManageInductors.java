@@ -79,7 +79,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 {
 	private static double lastSquareFactor = 1;
 	private static double lastLengthFactor = 1;
-	private static double lastCornerFactor = 1;
+	private static double lastSquaresPerCorner = 0.5587;
 	private static Map<Cell,CellInductance> allInductanceData = new HashMap<Cell,CellInductance>();
 	private CellInductance curInductanceData;
 	private NodeInst inductorNode;
@@ -109,7 +109,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 
 		perSquareFactor.setText(lastSquareFactor+"");
 		perLengthFactor.setText(lastLengthFactor+"");
-		perCornerFactor.setText(lastCornerFactor+"");
+		perCornerFactor.setText(lastSquaresPerCorner+"");
 
 		fasthenryDefWidthSubdivs.setText("default=" + TextUtils.formatDistance(SimulationTool.getFastHenryWidthSubdivisions()));
 		fasthenryDefHeightSubdivs.setText("default=" + TextUtils.formatDistance(SimulationTool.getFastHenryHeightSubdivisions()));
@@ -646,7 +646,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		Technology tech = Technology.getCurrent();
 		lastSquareFactor = TextUtils.atofDistance(perSquareFactor.getText(), tech);
 		lastLengthFactor = TextUtils.atofDistance(perLengthFactor.getText(), tech);
-		lastCornerFactor = TextUtils.atofDistance(perCornerFactor.getText(), tech);
+		lastSquaresPerCorner = TextUtils.atofDistance(perCornerFactor.getText(), tech);
 
 		// find inductor to change
 		Cell cell = WindowFrame.needCurCell();
@@ -731,29 +731,27 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 
 		// compute the number of squares
 		double squareCount = edgeLength / inductorSize;
-		double squareComponent = squareCount * lastSquareFactor;
 		inductorInfo.append("    Square-count = Edge-length (" + TextUtils.formatDouble(edgeLength, PRECISION) + ") / " +
 			"Arc width (" + TextUtils.formatDouble(inductorSize, PRECISION) + ") = " + 
 			TextUtils.formatDouble(squareCount, PRECISION) + "\n");
 
-		// compute the square component
-		inductorInfo.append("    Final Square-component = Square-count (" + squareCount + ") x " +
-			"Square-factor (" + TextUtils.formatDouble(lastSquareFactor, PRECISION) + ") = " +
-			TextUtils.formatDouble(squareComponent, PRECISION) + "\n");
-
 		// compute the corner component
-		inductorInfo.append("Corner-component:\n");
-		double cornerComponent = cornerCount * lastCornerFactor;
-		inductorInfo.append("  Corner-count (" + cornerCount + ") x " +
-			"Corner-factor (" + TextUtils.formatDouble(lastCornerFactor, PRECISION) + ") = " +
+		double cornerComponent = cornerCount * lastSquaresPerCorner;
+		inductorInfo.append("    Corner-squares = Corner-count (" + cornerCount + ") x " +
+			"Squares-per-Corner (" + TextUtils.formatDouble(lastSquaresPerCorner, PRECISION*2) + ") = " +
 			TextUtils.formatDouble(cornerComponent, PRECISION) + "\n");
 
-		// combine square and corner information
-		inductorInfo.append("Square-and-corner component:\n");
-		double squareAndCornerComponent = squareComponent + cornerComponent;
-		inductorInfo.append("  Square-component (" + TextUtils.formatDouble(squareComponent, PRECISION) + ") + " +
-			"Corner-component (" + TextUtils.formatDouble(cornerComponent, PRECISION) + ") = " +
-			TextUtils.formatDouble(squareAndCornerComponent, PRECISION) + "\n");
+		// compute the total number of squares
+		double totalSquareComponent = squareCount + cornerComponent;
+		inductorInfo.append("    Total-squares = Square-count (" + squareCount + ") x " +
+			"Corner-squares (" + TextUtils.formatDouble(cornerComponent, PRECISION) + ") = " +
+			TextUtils.formatDouble(totalSquareComponent, PRECISION) + "\n");
+
+		// compute the square component
+		double squareComponent = totalSquareComponent * lastSquareFactor;
+		inductorInfo.append("    Final Square-component = Total-squares (" + totalSquareComponent + ") * " +
+			"Square-factor (" + TextUtils.formatDouble(lastSquareFactor, PRECISION) + ") = " +
+			TextUtils.formatDouble(squareComponent, PRECISION) + "\n");
 
 		// compute the length information
 		inductorInfo.append("Length component:\n");
@@ -763,10 +761,10 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 			TextUtils.formatDouble(lengthComponent, PRECISION) + " (in Electric units)\n");
 
 		inductorInfo.append("Computed inductance:\n");
-		double denom = lengthComponent + squareAndCornerComponent;
+		double denom = lengthComponent + squareComponent;
 		if (denom == 0) computedInductance = 0; else
-			computedInductance = (lengthComponent * squareAndCornerComponent) / denom;
-		inductorInfo.append("  (square-and-corner x length) / (square-and-corner + length) = " +
+			computedInductance = (lengthComponent * squareComponent) / denom;
+		inductorInfo.append("  (Square-component x length) / (Square-component + length) = " +
 			TextUtils.formatDouble(computedInductance, PRECISION) + "\n");
 	}
 
@@ -1131,7 +1129,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel1.add(perLengthFactor, gridBagConstraints);
 
-        jLabel2.setText("Per-Corner factor:");
+        jLabel2.setText("Squares per Corner:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
