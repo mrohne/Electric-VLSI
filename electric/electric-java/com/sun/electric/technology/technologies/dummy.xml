@@ -67,7 +67,7 @@
         <display3D thick="2.65" height="16.5" mode="NONE" factor="0.2"/>
         <cifLayer cif="CMF"/>
         <skillLayer skill="metal1"/>
-        <parasitics resistance="0.078" capacitance="0.1209" edgeCapacitance="0.1104"/>
+        <parasitics resistance="0.078" capacitance="0.1209" edgeCapacitance="0.1104" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-1-Node" port="metal-1">
             <lambda>3.0</lambda>
             <portArc>Metal-1</portArc>

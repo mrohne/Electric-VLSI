@@ -51,6 +51,7 @@ import com.sun.electric.database.variable.Variable;
 import com.sun.electric.technology.GDSLayers.GDSLayerType;
 import com.sun.electric.technology.Layer.Function;
 import com.sun.electric.technology.Layer.LayerSortingType;
+import com.sun.electric.technology.XMLRules.XMLRule;
 import com.sun.electric.technology.technologies.Artwork;
 import com.sun.electric.technology.technologies.GEM;
 import com.sun.electric.technology.technologies.Generic;
@@ -1150,7 +1151,7 @@ public class Technology implements Comparable<Technology>, Serializable {
             Layer layer = Layer.newInstance(this, l.name, l.desc);
             layers.put(l.name, layer);
             layer.setFunction(l.function, l.extraFunction);
-            layer.setFactoryParasitics(l.resistance, l.capacitance, l.edgeCapacitance);
+            layer.setFactoryParasitics(l.resistance, l.capacitance, l.edgeCapacitance, l.inductanceAreaFactor, l.inductanceLengthFactor);
             layer.setFactoryCIFLayer(l.cif != null ? l.cif : "");
             layer.setFactoryDXFLayer("");
             layer.setFactorySkillLayer(l.skill != null ? l.skill : "");
@@ -3937,6 +3938,128 @@ public class Technology implements Comparable<Technology>, Serializable {
     public static StringBuffer getRuleDifferences(XMLRules origRules, XMLRules newRules) {
         return (new StringBuffer(""));
     }
+
+  /**
+	 * Method to compare a Rules set with the "factory" set and construct an override string.
+	 * @param origDRCRules
+	 * @param newDRCRules
+	 * @return a StringBuffer that describes any overrides.  Returns "" if there are none.
+	 */
+	public static StringBuffer getRuleDifferences_8_05(XMLRules origDRCRules, XMLRules newDRCRules)
+	{
+		StringBuffer changes = new StringBuffer();
+		Technology tech = origDRCRules.getTechnology();
+		XMLRules origRules = origDRCRules;
+		XMLRules newRules = newDRCRules;
+
+		// include differences in the wide-rule limit
+//		if (!newRules.wideLimit.equals(origRules.wideLimit))
+//		{
+//			changes.append("w:"+newRules.wideLimit+";");
+//		}
+
+		// include differences in layer spacings
+		for(int l1=0; l1<tech.getNumLayers(); l1++)
+			for(int l2=0; l2<=l1; l2++)
+		{
+			int i = newRules.getRuleIndex(l2, l1);
+            XMLRule rule1 = origRules.getRule(i,  DRCTemplate.DRCRuleType.CONSPA);
+            XMLRule rule2 = newRules.getRule(i,  DRCTemplate.DRCRuleType.CONSPA);
+			if (!rule1.equals(rule2))
+			{
+				changes.append("c:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+rule2.values[0]+";");
+			}
+			if (!rule1.ruleName.equals(rule2.ruleName))
+			{
+				changes.append("cr:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+rule2.ruleName+";");
+			}
+            rule1 = origRules.getRule(i,  DRCTemplate.DRCRuleType.UCONSPA);
+            rule2 = newRules.getRule(i,  DRCTemplate.DRCRuleType.UCONSPA);
+			if (!rule1.equals(rule2))
+			{
+				changes.append("u:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+rule2.values[0]+";");
+//				changes.append("cr:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+rule2+";");
+			}
+			if (!rule1.ruleName.equals(rule2.ruleName))
+			{
+				changes.append("ur:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+rule2.ruleName+";");
+			}
+
+//			if (!newRules.conListWide[i].equals(origRules.conListWide[i]))
+//			{
+//				changes.append("cw:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.conListWide[i]+";");
+//			}
+//			if (!newRules.conListWideRules[i].equals(origRules.conListWideRules[i]))
+//			{
+//				changes.append("cwr:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.conListWideRules[i]+";");
+//			}
+//			if (!newRules.unConListWide[i].equals(origRules.unConListWide[i]))
+//			{
+//				changes.append("uw:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.unConListWide[i]+";");
+//			}
+//			if (!newRules.unConListWideRules[i].equals(origRules.unConListWideRules[i]))
+//			{
+//				changes.append("uwr:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.unConListWideRules[i]+";");
+//			}
+//
+//			if (!newRules.conListMulti[i].equals(origRules.conListMulti[i]))
+//			{
+//				changes.append("cm:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.conListMulti[i]+";");
+//			}
+//			if (!newRules.conListMultiRules[i].equals(origRules.conListMultiRules[i]))
+//			{
+//				changes.append("cmr:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.conListMultiRules[i]+";");
+//			}
+//			if (!newRules.unConListMulti[i].equals(origRules.unConListMulti[i]))
+//			{
+//				changes.append("um:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.unConListMulti[i]+";");
+//			}
+//			if (!newRules.unConListMultiRules[i].equals(origRules.unConListMultiRules[i]))
+//			{
+//				changes.append("umr:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.unConListMultiRules[i]+";");
+//			}
+//
+//			if (!newRules.edgeList[i].equals(origRules.edgeList[i]))
+//			{
+//				changes.append("e:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.edgeList[i]+";");
+//			}
+//			if (!newRules.edgeListRules[i].equals(origRules.edgeListRules[i]))
+//			{
+//				changes.append("er:"+tech.getLayer(l1).getName()+"/"+tech.getLayer(l2).getName()+"="+newRules.edgeListRules[i]+";");
+//			}
+		}
+
+		// include differences in minimum layer widths
+//		for(int i=0; i<newRules.numLayers; i++)
+//		{
+//			if (!newRules.minWidth[i].equals(origRules.minWidth[i]))
+//			{
+//				changes.append("m:"+tech.getLayer(i).getName()+"="+newRules.minWidth[i]+";");
+//			}
+//			if (!newRules.minWidthRules[i].equals(origRules.minWidthRules[i]))
+//			{
+//				changes.append("mr:"+tech.getLayer(i).getName()+"="+newRules.minWidthRules[i]+";");
+//			}
+//		}
+
+		// include differences in minimum node sizes
+//		int j = 0;
+//		for(Iterator<PrimitiveNode> it = tech.getNodes(); it.hasNext(); )
+//		{
+//			PrimitiveNode np = it.next();
+//			if (!newRules.minNodeSize[j*2].equals(origRules.minNodeSize[j*2]) ||
+//				!newRules.minNodeSize[j*2+1].equals(origRules.minNodeSize[j*2+1]))
+//			{
+//				changes.append("n:"+np.getName()+"="+newRules.minNodeSize[j*2]+"/"+newRules.minNodeSize[j*2+1]+";");
+//			}
+//			if (!newRules.minNodeSizeRules[j].equals(origRules.minNodeSizeRules[j]))
+//			{
+//				changes.append("nr:"+np.getName()+"="+newRules.minNodeSizeRules[j]+";");
+//			}
+//			j++;
+//		}
+		return changes;
+	}
 
     /**
      * Method to be called from DRC:setRules

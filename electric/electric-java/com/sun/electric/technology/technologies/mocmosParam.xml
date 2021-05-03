@@ -42,7 +42,7 @@
     <layer name="Metal-1" fun="METAL1">
         <cifLayer cif="CMF"/>
         <skillLayer skill="metal1"/>
-        <parasitics resistance="0.078" capacitance="0.1209" edgeCapacitance="0.1104"/>
+        <parasitics resistance="0.078" capacitance="0.1209" edgeCapacitance="0.1104" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-1-Node" port="metal-1">
             <portArc>Metal-1</portArc>
         </pureLayerNode>
@@ -51,7 +51,7 @@
     <layer name="Metal-2" fun="METAL2">
         <cifLayer cif="CMS"/>
         <skillLayer skill="metal2"/>
-        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974"/>
+        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-2-Node" port="metal-2">
             <portArc>Metal-2</portArc>
         </pureLayerNode>
@@ -60,7 +60,7 @@
     <layer name="Metal-3" fun="METAL3">
         <cifLayer cif="CMT"/>
         <skillLayer skill="metal3"/>
-        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974"/>
+        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-3-Node" port="metal-3">
             <portArc>Metal-3</portArc>
         </pureLayerNode>
@@ -69,7 +69,7 @@
     <layer name="Metal-4" fun="METAL4">
         <cifLayer cif="CMQ"/>
         <skillLayer skill="metal4"/>
-        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974"/>
+        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-4-Node" port="metal-4">
             <portArc>Metal-4</portArc>
         </pureLayerNode>
@@ -78,7 +78,7 @@
     <layer name="Metal-5" fun="METAL5">
         <cifLayer cif="CMP"/>
         <skillLayer skill="metal5"/>
-        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974"/>
+        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-5-Node" port="metal-5">
             <portArc>Metal-5</portArc>
         </pureLayerNode>
@@ -87,7 +87,7 @@
     <layer name="Metal-6" fun="METAL6">
         <cifLayer cif="CM6"/>
         <skillLayer skill="metal6"/>
-        <parasitics resistance="0.036" capacitance="0.0423" edgeCapacitance="0.1273"/>
+        <parasitics resistance="0.036" capacitance="0.0423" edgeCapacitance="0.1273" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-6-Node" port="metal-6">
             <portArc>Metal-6</portArc>
         </pureLayerNode>
@@ -96,7 +96,7 @@
     <layer name="Polysilicon-1" fun="POLY1">
         <cifLayer cif="CPG"/>
         <skillLayer skill="poly"/>
-        <parasitics resistance="6.2" capacitance="0.1467" edgeCapacitance="0.0608"/>
+        <parasitics resistance="6.2" capacitance="0.1467" edgeCapacitance="0.0608" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Polysilicon-1-Node" port="polysilicon-1">
             <portArc>Polysilicon-1</portArc>
         </pureLayerNode>
@@ -104,7 +104,7 @@
 
     <layer name="Polysilicon-2" fun="POLY2">
         <cifLayer cif="CEL"/>
-        <parasitics resistance="50.0" capacitance="1.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="50.0" capacitance="1.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Polysilicon-2-Node" port="polysilicon-2">
             <portArc>Polysilicon-2</portArc>
         </pureLayerNode>
@@ -113,7 +113,7 @@
     <layer name="P-Active" fun="DIFFP">
         <cifLayer cif="CAA"/>
         <skillLayer skill="aa"/>
-        <parasitics resistance="2.5" capacitance="0.9" edgeCapacitance="0.0"/>
+        <parasitics resistance="2.5" capacitance="0.9" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="P-Active-Node" port="active">
             <portArc>Active</portArc>
             <portArc>P-Active</portArc>
@@ -124,7 +124,7 @@
     <layer name="N-Active" fun="DIFFN">
         <cifLayer cif="CAA"/>
         <skillLayer skill="aa"/>
-        <parasitics resistance="3.0" capacitance="0.9" edgeCapacitance="0.0"/>
+        <parasitics resistance="3.0" capacitance="0.9" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="N-Active-Node" port="active">
             <portArc>Active</portArc>
             <portArc>P-Active</portArc>
@@ -163,49 +163,49 @@
     <layer name="Poly-Cut" fun="CONTACT1" extraFun="connects-poly">
         <cifLayer cif="CCC"/>
         <skillLayer skill="pcont"/>
-        <parasitics resistance="2.2" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="2.2" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Poly-Cut-Node" port="polycut"/>
     </layer>
 
     <layer name="Active-Cut" fun="CONTACT1" extraFun="connects-diff">
         <cifLayer cif="CCC"/>
         <skillLayer skill="acont"/>
-        <parasitics resistance="2.5" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="2.5" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Active-Cut-Node" port="activecut"/>
     </layer>
 
     <layer name="Via1" fun="CONTACT2" extraFun="connects-metal">
         <cifLayer cif="CVA"/>
         <skillLayer skill="via"/>
-        <parasitics resistance="1.0" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="1.0" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Via-1-Node" port="via-1"/>
     </layer>
 
     <layer name="Via2" fun="CONTACT3" extraFun="connects-metal">
         <cifLayer cif="CVS"/>
         <skillLayer skill="via2"/>
-        <parasitics resistance="0.9" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="0.9" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Via-2-Node" port="via-2"/>
     </layer>
 
     <layer name="Via3" fun="CONTACT4" extraFun="connects-metal">
         <cifLayer cif="CVT"/>
         <skillLayer skill="via3"/>
-        <parasitics resistance="0.8" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="0.8" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Via-3-Node" port="via-3"/>
     </layer>
 
     <layer name="Via4" fun="CONTACT5" extraFun="connects-metal">
         <cifLayer cif="CVQ"/>
         <skillLayer skill="via4"/>
-        <parasitics resistance="0.8" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="0.8" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Via-4-Node" port="via-4"/>
     </layer>
 
     <layer name="Via5" fun="CONTACT6" extraFun="connects-metal">
         <cifLayer cif="CV5"/>
         <skillLayer skill="via5"/>
-        <parasitics resistance="0.8" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="0.8" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Via-5-Node" port="via-5"/>
     </layer>
 
@@ -218,7 +218,7 @@
     <layer name="Transistor-Poly" fun="GATE">
         <cifLayer cif="CPG"/>
         <skillLayer skill="poly"/>
-        <parasitics resistance="2.5" capacitance="0.09" edgeCapacitance="0.0"/>
+        <parasitics resistance="2.5" capacitance="0.09" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Transistor-Poly-Node" port="trans-poly-1">
             <portArc>Polysilicon-1</portArc>
         </pureLayerNode>

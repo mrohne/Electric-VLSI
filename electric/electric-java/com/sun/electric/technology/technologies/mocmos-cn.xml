@@ -87,7 +87,7 @@
         <foreground>true</foreground>
         <display3D thick="2.65" height="16.5" mode="NONE" factor="0.0"/>
         <cifLayer cif="CMF"/>
-        <parasitics resistance="0.078" capacitance="0.1209" edgeCapacitance="0.1104"/>
+        <parasitics resistance="0.078" capacitance="0.1209" edgeCapacitance="0.1104" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-1-Node" port="metal-1">
             <lambda>3.0</lambda>
             <portArc>Metal-1</portArc>
@@ -119,7 +119,7 @@
         <foreground>true</foreground>
         <display3D thick="2.65" height="22.15" mode="NONE" factor="0.0"/>
         <cifLayer cif="CMS"/>
-        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974"/>
+        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-2-Node" port="metal-2">
             <lambda>3.0</lambda>
             <portArc>Metal-2</portArc>
@@ -151,7 +151,7 @@
         <foreground>true</foreground>
         <display3D thick="2.65" height="27.8" mode="NONE" factor="0.0"/>
         <cifLayer cif="CMT"/>
-        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974"/>
+        <parasitics resistance="0.078" capacitance="0.0843" edgeCapacitance="0.0974" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-3-Node" port="metal-3">
             <lambda>3.0</lambda>
             <portArc>Metal-3</portArc>
@@ -183,7 +183,7 @@
         <foreground>true</foreground>
         <display3D thick="1.0" height="13.0" mode="NONE" factor="0.0"/>
         <cifLayer cif="CPG"/>
-        <parasitics resistance="6.2" capacitance="0.1467" edgeCapacitance="0.0608"/>
+        <parasitics resistance="6.2" capacitance="0.1467" edgeCapacitance="0.0608" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Polysilicon-1-Node" port="polysilicon-1">
             <lambda>2.0</lambda>
             <portArc>Polysilicon-1</portArc>
@@ -215,7 +215,7 @@
         <foreground>true</foreground>
         <display3D thick="4.0" height="9.0" mode="NONE" factor="0.0"/>
         <cifLayer cif="CAA"/>
-        <parasitics resistance="2.5" capacitance="0.9" edgeCapacitance="0.0"/>
+        <parasitics resistance="2.5" capacitance="0.9" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="P-Active-Node" port="active">
             <lambda>3.0</lambda>
             <portArc>P-Active</portArc>
@@ -248,7 +248,7 @@
         <foreground>true</foreground>
         <display3D thick="4.0" height="9.0" mode="NONE" factor="0.0"/>
         <cifLayer cif="CAA"/>
-        <parasitics resistance="3.0" capacitance="0.9" edgeCapacitance="0.0"/>
+        <parasitics resistance="3.0" capacitance="0.9" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="N-Active-Node" port="active">
             <lambda>3.0</lambda>
             <portArc>P-Active</portArc>
@@ -397,7 +397,7 @@
         <foreground>true</foreground>
         <display3D thick="2.5" height="14.0" mode="NONE" factor="0.0"/>
         <cifLayer cif="CCC"/>
-        <parasitics resistance="2.2" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="2.2" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Poly-Cut-Node" port="polycut">
             <lambda>2.0</lambda>
         </pureLayerNode>
@@ -428,7 +428,7 @@
         <foreground>true</foreground>
         <display3D thick="3.5" height="13.0" mode="NONE" factor="0.0"/>
         <cifLayer cif="CCC"/>
-        <parasitics resistance="2.5" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="2.5" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Active-Cut-Node" port="activecut">
             <lambda>2.0</lambda>
         </pureLayerNode>
@@ -459,7 +459,7 @@
         <foreground>true</foreground>
         <display3D thick="3.0" height="19.15" mode="NONE" factor="0.0"/>
         <cifLayer cif="CVA"/>
-        <parasitics resistance="1.0" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="1.0" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Via-1-Node" port="via-1">
             <lambda>2.0</lambda>
         </pureLayerNode>
@@ -490,7 +490,7 @@
         <foreground>true</foreground>
         <display3D thick="3.0" height="24.8" mode="NONE" factor="0.0"/>
         <cifLayer cif="CVS"/>
-        <parasitics resistance="0.9" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="0.9" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Via-2-Node" port="via-2">
             <lambda>2.0</lambda>
         </pureLayerNode>
@@ -521,7 +521,7 @@
         <foreground>true</foreground>
         <display3D thick="3.0" height="30.45" mode="NONE" factor="0.0"/>
         <cifLayer cif="CVT"/>
-        <parasitics resistance="0.8" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="0.8" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Via-3-Node" port="via-3">
             <lambda>2.0</lambda>
         </pureLayerNode>
@@ -552,7 +552,7 @@
         <foreground>true</foreground>
         <display3D thick="1.0" height="13.0" mode="NONE" factor="0.0"/>
         <cifLayer cif="CPG"/>
-        <parasitics resistance="2.5" capacitance="0.09" edgeCapacitance="0.0"/>
+        <parasitics resistance="2.5" capacitance="0.09" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Transistor-Poly-Node" port="trans-poly-1">
             <lambda>2.0</lambda>
             <portArc>Polysilicon-1</portArc>
@@ -704,7 +704,7 @@
         <foreground>true</foreground>
         <display3D thick="4.0" height="9.0" mode="NONE" factor="0.0"/>
         <cifLayer cif="CAA"/>
-        <parasitics resistance="3.0" capacitance="0.9" edgeCapacitance="0.0"/>
+        <parasitics resistance="3.0" capacitance="0.9" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
     </layer>
 
     <layer name="P-Active-CN" fun="DIFFP" extraFun="carb-nano">
@@ -732,7 +732,7 @@
         <foreground>true</foreground>
         <display3D thick="4.0" height="9.0" mode="NONE" factor="0.0"/>
         <cifLayer cif="CAA"/>
-        <parasitics resistance="3.0" capacitance="0.9" edgeCapacitance="0.0"/>
+        <parasitics resistance="3.0" capacitance="0.9" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
     </layer>
 
     <!-- ******************** ARCS ******************** -->

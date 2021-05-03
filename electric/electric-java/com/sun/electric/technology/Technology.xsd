@@ -896,6 +896,8 @@
                                     <xsd:attribute name="resistance" type="xsd:double" use="required"/>
                                     <xsd:attribute name="capacitance" type="xsd:double" use="required"/>
                                     <xsd:attribute name="edgeCapacitance" type="xsd:double" use="required"/>
+                                    <xsd:attribute name="inductanceAreaFactor" type="xsd:double" use="required"/>
+                                    <xsd:attribute name="inductanceLengthFactor" type="xsd:double" use="required"/>
                                 </xsd:complexType>
                             </xsd:element>
                             <xsd:element name="pureLayerNode" minOccurs="0">

@@ -116,7 +116,9 @@ public class Info
     /** 3D transparency factor (layer cell) */                  static final int LAYER3DFACTOR     = 60;
     /** Spice template (node cell) */                           static final int NODESPICETEMPLATE = 61;
 	/** Elib width offset (arc cell) */                         static final int ARCWIDTHOFFSET    = 62;
-	/** Factory min resolution (info tech) */                   static final int TECHRESOLUTION = 63;
+	/** Factory min resolution (info tech) */                   static final int TECHRESOLUTION    = 63;
+	/** SPICE edge capacitance (layer cell) */					static final int LAYERINDAREAFAC   = 64;
+	/** SPICE edge capacitance (layer cell) */					static final int LAYERINDLENFAC    = 65;
 
 
     /** key of Variable holding layer information. */	public static final Variable.Key LAYER_KEY = Variable.newKey("EDTEC_layer");

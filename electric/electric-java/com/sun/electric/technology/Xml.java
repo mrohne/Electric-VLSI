@@ -244,6 +244,8 @@ public class Xml {
         public double resistance;
         public double capacitance;
         public double edgeCapacitance;
+        public double inductanceAreaFactor;
+        public double inductanceLengthFactor;
         public PureLayerNode pureLayerNode;
     }
 
@@ -1045,6 +1047,8 @@ public class Xml {
                     curLayer.resistance = Double.parseDouble(a("resistance"));
                     curLayer.capacitance = Double.parseDouble(a("capacitance"));
                     curLayer.edgeCapacitance = Double.parseDouble(a("edgeCapacitance"));
+                    curLayer.inductanceAreaFactor = Double.parseDouble(a("inductanceAreaFactor"));
+                    curLayer.inductanceLengthFactor = Double.parseDouble(a("inductanceLengthFactor"));
                     break;
                 case pureLayerNode:
                     curLayer.pureLayerNode = new PureLayerNode();
@@ -2172,11 +2176,13 @@ public class Xml {
             }
 
             // write the SPICE information
-            if (li.resistance != 0 || li.capacitance != 0 || li.edgeCapacitance != 0) {
+            if (li.resistance != 0 || li.capacitance != 0 || li.edgeCapacitance != 0 || li.inductanceAreaFactor != 0 || li.inductanceLengthFactor != 0) {
                 b(XmlKeyword.parasitics);
                 a("resistance", li.resistance);
                 a("capacitance", li.capacitance);
                 a("edgeCapacitance", li.edgeCapacitance);
+                a("inductanceAreaFactor", li.inductanceAreaFactor);
+                a("inductanceLengthFactor", li.inductanceLengthFactor);
                 el();
             }
             if (li.pureLayerNode != null) {

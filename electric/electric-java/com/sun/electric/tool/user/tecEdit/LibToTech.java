@@ -2553,6 +2553,8 @@ public class LibToTech
 			layer.resistance = li.spiRes;
 			layer.capacitance = li.spiCap;
 			layer.edgeCapacitance = li.spiECap;
+			layer.inductanceAreaFactor = li.inductanceAreaFactor;
+			layer.inductanceLengthFactor = li.inductanceLengthFactor;
 			if (li.pureLayerNode != null) {
 				layer.pureLayerNode = new Xml.PureLayerNode();
 				layer.pureLayerNode.name = li.pureLayerNode.name;

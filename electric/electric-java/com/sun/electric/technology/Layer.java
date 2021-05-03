@@ -1217,6 +1217,8 @@ public class Layer implements Serializable, Comparable {
     private Setting resistanceSetting;
     private Setting capacitanceSetting;
     private Setting edgeCapacitanceSetting;
+    private Setting inductanceAreaFactorSetting;
+    private Setting inductanceLengthFactorSetting;
     private Setting layer3DThicknessSetting;
     private Setting layer3DDistanceSetting;
     /** the pure-layer node that contains just this layer */
@@ -1678,11 +1680,16 @@ public class Layer implements Serializable, Comparable {
      * @param resistance the resistance of this Layer.
      * @param capacitance the capacitance of this Layer.
      * @param edgeCapacitance the edge capacitance of this Layer.
+     * @param inductanceAreaFactor the area factor for inductance on this Layer.
+     * @param inductanceLengthFactor the length factor for inductance on this Layer.
      */
-    public void setFactoryParasitics(double resistance, double capacitance, double edgeCapacitance) {
+    public void setFactoryParasitics(double resistance, double capacitance, double edgeCapacitance,
+    	double inductanceAreaFactor, double inductanceLengthFactor) {
         resistanceSetting = makeParasiticSetting("Resistance", resistance);
         capacitanceSetting = makeParasiticSetting("Capacitance", capacitance);
         edgeCapacitanceSetting = makeParasiticSetting("EdgeCapacitance", edgeCapacitance);
+        inductanceAreaFactorSetting = makeParasiticSetting("InductanceAreaFactor", inductanceAreaFactor);
+        inductanceLengthFactorSetting = makeParasiticSetting("InductanceLengthFactor", inductanceLengthFactor);
     }
 
 //    /**
@@ -1692,10 +1699,14 @@ public class Layer implements Serializable, Comparable {
 //    {
 //        double res = resistanceSetting.getDoubleFactoryValue();
 //        double cap = capacitanceSetting.getDoubleFactoryValue();
-//        double edgecap = edgeCapacitanceSetting.getDoubleFactoryValue();
+//        double edgeCap = edgeCapacitanceSetting.getDoubleFactoryValue();
+//        double inductanceAreaFactor = inductanceAreaFactorSetting.getDoubleFactoryValue();
+//        double inductanceLengthFactor = inductanceLengthFactorSetting.getDoubleFactoryValue();
 //        setResistance(res);
 //        setCapacitance(cap);
-//        setEdgeCapacitance(edgecap);
+//        setEdgeCapacitance(edgeCap);
+//        setInductanceAreaFactor(inductanceAreaFactor);
+//        setInductanceLengthFactor(inductanceLengthFactor);
 //    }
     /**
      * Method to return the resistance for this layer.
@@ -1746,11 +1757,44 @@ public class Layer implements Serializable, Comparable {
     }
 
     /**
+     * Method to return the inductance area factor for this layer.
+     * @return the inductance area factor for this layer.
+     */
+    public double getInductanceAreaFactor() {
+        return inductanceAreaFactorSetting.getDouble();
+    }
+
+    /**
+     * Returns project preferences to tell the inductance area factor for this Layer.
+     * Returns project preferences to tell the inductance area factor for this Layer.
+     */
+    public Setting getInductanceAreaFactorSetting() {
+        return inductanceAreaFactorSetting;
+    }
+
+    /**
+     * Method to return the inductance length factor for this layer.
+     * @return the inductance length factor for this layer.
+     */
+    public double getInductanceLengthFactor() {
+        return inductanceLengthFactorSetting.getDouble();
+    }
+
+    /**
+     * Returns project preferences to tell the inductance length factor for this Layer.
+     * Returns project preferences to tell the inductance length factor for this Layer.
+     */
+    public Setting getInductanceLengthFactorSetting() {
+        return inductanceLengthFactorSetting;
+    }
+
+    /**
      * Method to finish initialization of this Layer.
      */
     void finish() {
-        if (resistanceSetting == null || capacitanceSetting == null || edgeCapacitanceSetting == null) {
-            setFactoryParasitics(0, 0, 0);
+        if (resistanceSetting == null || capacitanceSetting == null || edgeCapacitanceSetting == null ||
+        	inductanceAreaFactorSetting == null || inductanceLengthFactorSetting == null) {
+            setFactoryParasitics(0, 0, 0, 0, 0);
         }
         if (cifLayerSetting == null) {
             setFactoryCIFLayer("");
@@ -1848,6 +1892,8 @@ public class Layer implements Serializable, Comparable {
         l.resistance = getResistanceSetting().getDoubleFactoryValue();
         l.capacitance = getCapacitanceSetting().getDoubleFactoryValue();
         l.edgeCapacitance = getEdgeCapacitanceSetting().getDoubleFactoryValue();
+        l.inductanceAreaFactor = getInductanceAreaFactorSetting().getDoubleFactoryValue();
+        l.inductanceLengthFactor = getInductanceLengthFactorSetting().getDoubleFactoryValue();
         if (pureLayerNode != null) {
             l.pureLayerNode = new Xml.PureLayerNode();
             l.pureLayerNode.name = pureLayerNode.getName();

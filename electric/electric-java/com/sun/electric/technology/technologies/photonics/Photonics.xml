@@ -503,7 +503,7 @@
         <opacity>0.5</opacity>
         <foreground>true</foreground>
         <display3D thick="1.0" height="6" mode="NONE" factor="0.2"/>
-        <parasitics resistance="8.5" capacitance="0.097" edgeCapacitance="0.073"/>
+        <parasitics resistance="8.5" capacitance="0.097" edgeCapacitance="0.073" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="photonics-waveguide-Node" port="photonics-waveguide">
             <lambda>7.2</lambda>
         </pureLayerNode>
@@ -566,7 +566,7 @@
         <display3D thick="5.0" height="7.0" mode="SCREEN_DOOR" factor="0.2"/>
         <cifLayer cif="Not set"/>
         <skillLayer skill="photonics-top"/>
-        <parasitics resistance="1.0" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="1.0" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="photonics-top-Node" port="Port_photonics_top">
             <lambda>10.0</lambda>
         </pureLayerNode>
@@ -598,7 +598,7 @@
         <display3D thick="6.0" height="0.0" mode="NONE" factor="1.0"/>
         <cifLayer cif="Not set"/>
         <skillLayer skill="photonics-bottom"/>
-        <parasitics resistance="1.0" capacitance="0.0" edgeCapacitance="0.0"/>
+        <parasitics resistance="1.0" capacitance="0.0" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="photonics-bottom-Node" port="Port_photonics_bottom">
             <lambda>10.0</lambda>
         </pureLayerNode>

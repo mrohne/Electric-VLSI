@@ -93,7 +93,7 @@
         <foreground>true</foreground>
         <display3D thick="0.5" height="11.0" mode="NONE" factor="0.2"/>
         <cifLayer cif="CMF"/>
-        <parasitics resistance="0.03" capacitance="0.03" edgeCapacitance="0.0"/>
+        <parasitics resistance="0.03" capacitance="0.03" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-1-Node" port="metal-1">
             <lambda>4.0</lambda>
             <portArc>Metal-1</portArc>
@@ -125,7 +125,7 @@
         <foreground>true</foreground>
         <display3D thick="0.5" height="12.0" mode="NONE" factor="0.2"/>
         <cifLayer cif="CMS"/>
-        <parasitics resistance="0.03" capacitance="0.03" edgeCapacitance="0.0"/>
+        <parasitics resistance="0.03" capacitance="0.03" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Metal-2-Node" port="metal-2">
             <lambda>4.0</lambda>
             <portArc>Metal-2</portArc>
@@ -157,7 +157,7 @@
         <foreground>true</foreground>
         <display3D thick="0.5" height="9.0" mode="NONE" factor="0.2"/>
         <cifLayer cif="CPG"/>
-        <parasitics resistance="50.0" capacitance="0.04" edgeCapacitance="0.0"/>
+        <parasitics resistance="50.0" capacitance="0.04" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Polysilicon-Node" port="polysilicon">
             <lambda>4.0</lambda>
             <portArc>Polysilicon</portArc>
@@ -189,7 +189,7 @@
         <foreground>true</foreground>
         <display3D thick="2.0" height="7.0" mode="NONE" factor="0.2"/>
         <cifLayer cif="CAA"/>
-        <parasitics resistance="10.0" capacitance="0.1" edgeCapacitance="0.0"/>
+        <parasitics resistance="10.0" capacitance="0.1" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="Active-Node" port="active">
             <lambda>4.0</lambda>
             <portArc>Active</portArc>
@@ -223,7 +223,7 @@
         <foreground>true</foreground>
         <display3D thick="2.0" height="7.0" mode="NONE" factor="0.2"/>
         <cifLayer cif="CAA"/>
-        <parasitics resistance="10.0" capacitance="0.1" edgeCapacitance="0.0"/>
+        <parasitics resistance="10.0" capacitance="0.1" edgeCapacitance="0.0" inductanceAreaFactor="0" inductanceLengthFactor="0"/>
         <pureLayerNode name="D-Active-Node" port="active">
             <lambda>4.0</lambda>
             <portArc>Active</portArc>

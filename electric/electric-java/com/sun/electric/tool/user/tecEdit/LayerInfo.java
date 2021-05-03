@@ -38,6 +38,7 @@ import com.sun.electric.util.TextUtils;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -60,6 +61,8 @@ public class LayerInfo extends Info
 	double         spiRes;
 	double         spiCap;
 	double         spiECap;
+	double         inductanceAreaFactor;
+	double         inductanceLengthFactor;
 	double         height3d;
 	double         thick3d;
 	double         coverage;
@@ -204,6 +207,8 @@ public class LayerInfo extends Info
 		loadTableEntry(layerTextTable, LAYERSPIRES, new Double(spiRes));
 		loadTableEntry(layerTextTable, LAYERSPICAP, new Double(spiCap));
 		loadTableEntry(layerTextTable, LAYERSPIECAP, new Double(spiECap));
+		loadTableEntry(layerTextTable, LAYERINDAREAFAC, new Double(inductanceAreaFactor));
+		loadTableEntry(layerTextTable, LAYERINDLENFAC, new Double(inductanceLengthFactor));
 		loadTableEntry(layerTextTable, LAYER3DHEIGHT, new Double(height3d));
 		loadTableEntry(layerTextTable, LAYER3DTHICK, new Double(thick3d));
 		loadTableEntry(layerTextTable, LAYER3DMODE, desc);

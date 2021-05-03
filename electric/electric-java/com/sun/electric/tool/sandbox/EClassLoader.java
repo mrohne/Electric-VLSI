@@ -211,6 +211,8 @@ class EClassLoader extends URLClassLoader {
     protected final Method Layer_getGDSLayer = getMethod(classLayer, "getGDSLayer");
     protected final Method Layer_getGraphics = getMethod(classLayer, "getGraphics");
     protected final Method Layer_getHeight = getMethod(classLayer, "getHeight");
+    protected final Method Layer_getInductanceAreaFactor = getMethod(classLayer, "InductanceAreaFactor");
+    protected final Method Layer_getInductanceLengthFactor = getMethod(classLayer, "InductanceLengthFactor");
     protected final Method Layer_getName = getMethod(classLayer, "getName");
     protected final Method Layer_getNonPseudoLayer = getMethod(classLayer, "getNonPseudoLayer");
     protected final Method Layer_getPseudoLayer = getMethod(classLayer, "getPseudoLayer");

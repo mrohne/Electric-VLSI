@@ -1960,6 +1960,8 @@ public class TechEditWizardData
         l.resistance = 1;
         l.capacitance = 0;
         l.edgeCapacitance = 0;
+        l.inductanceAreaFactor = 0;
+        l.inductanceLengthFactor = 0;
 //            if (layer.getPseudoLayer() != null)
 //                l.pseudoLayer = layer.getPseudoLayer().getName();
 

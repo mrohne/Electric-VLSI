@@ -347,6 +347,8 @@ public class TechExplorer extends ESandBox {
             l.resistance = (Double)Layer_getResistance.invoke(layer);
             l.capacitance = (Double)Layer_getCapacitance.invoke(layer);
             l.edgeCapacitance = (Double)Layer_getEdgeCapacitance.invoke(layer);
+            l.inductanceAreaFactor = (Double)Layer_getInductanceAreaFactor.invoke(layer);
+            l.inductanceLengthFactor = (Double)Layer_getInductanceLengthFactor.invoke(layer);
             t.layers.add(l);
         }
         if (Technology_getNumMetals != null)
@@ -927,6 +929,8 @@ public class TechExplorer extends ESandBox {
 //            l.resistance = (Double)Layer_getResistance.invoke(layer);
 //            l.capacitance = (Double)Layer_getCapacitance.invoke(layer);
 //            l.edgeCapacitance = (Double)Layer_getEdgeCapacitance.invoke(layer);
+//            l.inductanceAreaFactor = (Double)Layer_getInductanceAreaFactor.invoke(layer);
+//            l.inductanceLengthFactor = (Double)Layer_getInductanceLengthFactor.invoke(layer);
 //            t.layers.add(l);
 //        }
 //        if (Technology_getNumMetals != null)
