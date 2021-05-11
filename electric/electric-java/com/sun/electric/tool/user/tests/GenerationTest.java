@@ -534,7 +534,7 @@ public class GenerationTest extends AbstractTest
 			removeLines(destLib, trimmedLib, " *"); // remove license
 
 			// see if the library is as expected
-			String expectedLib = trueRootPath + "data/expected/TechEditWizardMoCmos.xml";
+			String expectedLib = trueRootPath + "data/expected/TechEditWizardMoCmosPartial.xml";
 			if (!compareResults(trimmedLib, expectedLib)) good = false;
 		} catch (Exception e)
 		{

@@ -1858,6 +1858,10 @@ public class ClickZoomWireListener
             	String name = ap.getName();
             	int dashPos = name.lastIndexOf('-');
             	if (dashPos < 0) dashPos = name.lastIndexOf('_');
+            	if (dashPos < 0)
+            	{
+            		for(int i=0; i<name.length(); i++) if (Character.isDigit(name.charAt(i))) { dashPos = i-1;   break; }
+            	}
             	int nameLevel = -1;
             	if (dashPos >= 0) nameLevel = TextUtils.atoi(name.substring(dashPos+1));
             	if (nameLevel+1 == level) shiftCount++; else
@@ -1934,7 +1938,8 @@ public class ClickZoomWireListener
      * Wire up or down a layer
      * @param down true to wire down a layer, otherwise wire up a layer
      */
-    public void wireDownUp(boolean down) {
+    public void wireDownUp(boolean down)
+    {
         EditWindow wnd = EditWindow.getCurrent();
         if (wnd == null) return;
         Highlighter highlighter = wnd.getHighlighter();
@@ -1943,38 +1948,47 @@ public class ClickZoomWireListener
 
         // find current arcs that can connect to portinst
         Technology tech = cell.getTechnology();
-        if (highlighter.getNumHighlights() == 1 && cell != null) {
+        if (highlighter.getNumHighlights() == 1 && cell != null)
+        {
             ElectricObject obj = highlighter.getOneHighlight().getElectricObject();
-            if (obj instanceof PortInst) {
+            if (obj instanceof PortInst)
+            {
                 PortInst pi = (PortInst)obj;
                 ArcProto [] connArcs = pi.getPortProto().getBasePort().getConnections();
                 if (connArcs == null || connArcs.length == 0) return;
                 ArcProto sourceAp = null;
-                for (ArcProto ap : connArcs) {
+                for (ArcProto ap : connArcs)
+                {
                     if (ap.getTechnology() != tech) continue;
                     if (ap.isNotUsed()) continue;               // ignore arcs that aren't used
 //                  if (!ap.getFunction().isPoly() && !ap.getFunction().isMetal()) continue;
                     if (!ap.getFunction().isDiffusion() && !ap.getFunction().isPoly() && !ap.getFunction().isMetal()) continue;
-                    if (sourceAp == null) {
+                    if (sourceAp == null)
+                    {
                         sourceAp = ap; continue;
                     }
                     // can't compare poly versus metal using getLevel()
-                    if (down && ap.getFunction().isPoly() && sourceAp.getFunction().isMetal()) {
+                    if (down && ap.getFunction().isPoly() && sourceAp.getFunction().isMetal())
+                    {
                         sourceAp = ap; continue; // poly is lower than metal
                     }
-                    if (!down && ap.getFunction().isMetal() && sourceAp.getFunction().isPoly()) {
+                    if (!down && ap.getFunction().isMetal() && sourceAp.getFunction().isPoly())
+                    {
                         sourceAp = ap; continue;
                     }
-                    if (!down && ap.getFunction().isMetal() && sourceAp.getFunction().isDiffusion()) {
+                    if (!down && ap.getFunction().isMetal() && sourceAp.getFunction().isDiffusion())
+                    {
                         sourceAp = ap; continue;
                     }
                     if (sourceAp.getFunction().isDiffusion() || ap.getFunction().isDiffusion()) continue;
 
                     // can compare by getLevel() since both of type poly or both of type metal
-                    if (down && ap.getFunction().getLevel() < sourceAp.getFunction().getLevel()) {
+                    if (down && ap.getFunction().getLevel() < sourceAp.getFunction().getLevel())
+                    {
                         sourceAp = ap; continue;
                     }
-                    if (!down && ap.getFunction().getLevel() > sourceAp.getFunction().getLevel()) {
+                    if (!down && ap.getFunction().getLevel() > sourceAp.getFunction().getLevel())
+                    {
                         sourceAp = ap;
                     }
                 }
@@ -1985,23 +1999,29 @@ public class ClickZoomWireListener
                 int level = sourceAp.getFunction().getLevel();
 
                 // now go down one or up one
-                if (down && level == 1 && !metal) {
+                if (down && level == 1 && !metal)
+                {
                     // lower boundary condition - can't go lower
                     return;
-                } else if (!down && diff) {
+                } else if (!down && diff)
+                {
                     // wiring up from diffusion
                     metal = true;
                     diff = true;
                     level = 1;
-                } else if (!down && level == 1 && !metal) {
+                } else if (!down && level == 1 && !metal)
+                {
                     // wiring up from poly
                     metal = true;
-                } else if (down && level == 1 && metal) {
+                } else if (down && level == 1 && metal)
+                {
                     // lower boundary condition - switch to metal
                     metal = false; // level is 1
-                } else if (down) {
+                } else if (down)
+                {
                     level--;
-                } else if (!down) { // up
+                } else if (!down)
+                { // up
                     level++;
                 }
 
@@ -2012,7 +2032,8 @@ public class ClickZoomWireListener
                 // get new arc
                 ArcProto destAp = null;
                 boolean found = false;
-                for (Iterator<ArcProto> it = tech.getArcs(); it.hasNext(); ) {
+                for (Iterator<ArcProto> it = tech.getArcs(); it.hasNext(); )
+                {
                     destAp = it.next();
                     if (destAp.isNotUsed()) continue;               // ignore arcs that aren't used
 //                  if (destAp.getFunction() == newFunc) {

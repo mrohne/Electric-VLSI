@@ -2,7 +2,7 @@
  *
  * Electric(tm) VLSI Design System
  *
- * File: CalculateInductances.java
+ * File: ManageInductors.java
  *
  * Copyright (c) 2021, Static Free Software. All rights reserved.
  *
@@ -26,7 +26,6 @@ import com.sun.electric.database.change.DatabaseChangeEvent;
 import com.sun.electric.database.change.DatabaseChangeListener;
 import com.sun.electric.database.geometry.Poly;
 import com.sun.electric.database.hierarchy.Cell;
-import com.sun.electric.database.hierarchy.Export;
 import com.sun.electric.database.prototype.NodeProto;
 import com.sun.electric.database.text.TextUtils;
 import com.sun.electric.database.topology.ArcInst;
@@ -34,8 +33,6 @@ import com.sun.electric.database.topology.Connection;
 import com.sun.electric.database.topology.Geometric;
 import com.sun.electric.database.topology.NodeInst;
 import com.sun.electric.database.topology.PortInst;
-import com.sun.electric.database.variable.DisplayedText;
-import com.sun.electric.database.variable.ElectricObject;
 import com.sun.electric.database.variable.TextDescriptor;
 import com.sun.electric.database.variable.Variable;
 import com.sun.electric.technology.ArcProto;
@@ -46,7 +43,6 @@ import com.sun.electric.technology.technologies.Schematics;
 import com.sun.electric.tool.Job;
 import com.sun.electric.tool.JobException;
 import com.sun.electric.tool.simulation.SimulationTool;
-import com.sun.electric.tool.user.Highlight;
 import com.sun.electric.tool.user.HighlightListener;
 import com.sun.electric.tool.user.Highlighter;
 import com.sun.electric.tool.user.User;
@@ -54,13 +50,9 @@ import com.sun.electric.tool.user.UserInterfaceMain;
 import com.sun.electric.tool.user.ui.EditWindow;
 import com.sun.electric.tool.user.ui.TopLevel;
 import com.sun.electric.tool.user.ui.WindowFrame;
-import com.sun.electric.tool.user.waveform.WaveformWindow;
 
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -68,8 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JList;
-import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -77,7 +67,7 @@ import javax.swing.event.ListSelectionListener;
 /**
  * Class to handle the "Manage Inductors" dialog.
  */
-public class ManageInductors extends EModelessDialog implements HighlightListener //, DatabaseChangeListener
+public class ManageInductors extends EModelessDialog implements HighlightListener, DatabaseChangeListener
 {
 	private static double lastAreaFactor = 1;
 	private static double lastLengthFactor = 1;
@@ -86,7 +76,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	private CellInductance curInductanceData;
 	private NodeInst inductorNode;
 	private double computedInductance;
-	private boolean noHighlightUpdate = false, noInductListUpdate = false;
+	private boolean noHighlightUpdate = false, noInductListUpdate = false, noInductArcsUpdate = false;;
 	private static final int PRECISION = 3;
 
 	/**
@@ -113,12 +103,12 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		lengthFactor.setText(lastLengthFactor+"");
 		perCornerFactor.setText(lastSquaresPerCorner+"");
 
-		fasthenryDefWidthSubdivs.setText("default=" + TextUtils.formatDistance(SimulationTool.getFastHenryWidthSubdivisions()));
-		fasthenryDefHeightSubdivs.setText("default=" + TextUtils.formatDistance(SimulationTool.getFastHenryHeightSubdivisions()));
+		fasthenryDefWidthSubdivs.setText("default=" + SimulationTool.getFastHenryWidthSubdivisions());
+		fasthenryDefHeightSubdivs.setText("default=" + SimulationTool.getFastHenryHeightSubdivisions());
 		fasthenryDefThickness.setText("default=" + TextUtils.formatDistance(SimulationTool.getFastHenryDefThickness()));
 		fasthenryDefZHeight.setText("");
 
-//		UserInterfaceMain.addDatabaseChangeListener(this);
+		UserInterfaceMain.addDatabaseChangeListener(this);
 		Highlighter.addHighlightListener(this);
 		listOfInductors.addListSelectionListener(new ListSelectionListener()
 		{
@@ -128,15 +118,6 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		{
 			public void valueChanged(ListSelectionEvent e) { inductorArcSelected(); }
 		});
-
-		useAreaFactor.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent evt) { useSuggestedAreaFactor(); }
-        });
-		useLengthFactor.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent evt) { useSuggestedLengthFactor(); }
-        });
 		
 		finishInitialization();
 		showSelected();
@@ -145,15 +126,131 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 
 	protected void escapePressed() { closeDialog(null); }
 
-//	/**
-//	 * Respond to database changes and updates the dialog.
-//	 * @param e database change event.
-//	 */
-//	public void databaseChanged(DatabaseChangeEvent e)
-//	{
-//		if (!isVisible()) return;
-//		showSelected();			// causes layout changes to update selection
-//	}
+	/**
+	 * Respond to database changes and updates the dialog.
+	 * @param e database change event.
+	 */
+	public void databaseChanged(DatabaseChangeEvent e)
+	{
+		if (!isVisible()) return;
+		if (!stayCurrent.isSelected()) return;
+		
+		// update all inductors in the cell
+		EditWindow curWnd = EditWindow.getCurrent();
+		if (curWnd == null) return;
+		Cell cell = curWnd.getCell();
+		if (cell == null) return;
+		if (curInductanceData == null) allInductanceData.put(cell, curInductanceData = new CellInductance(cell));
+		if (curInductanceData.cell != cell) return;
+		curInductanceData.recalculate();
+
+		// update list of inductors
+		noInductArcsUpdate = true;
+		String[] inductorArray = new String[curInductanceData.inductorNames.size()];
+		int j = 0;
+		for(String str : curInductanceData.inductorNames) inductorArray[j++] = str;
+		String formerSelection = listOfInductors.getSelectedValue();
+		listOfInductors.setListData(inductorArray);
+		if (formerSelection != null && curInductanceData.inductorNames.contains(formerSelection))
+		{
+			listOfInductors.setSelectedValue(formerSelection, true);
+		} else
+		{
+			if (listOfInductors.getComponentCount() > 0)
+				listOfInductors.setSelectedIndex(0);
+		}
+		noInductArcsUpdate = false;
+
+		// get default area and length factors
+		double defaultAreaFactor = TextUtils.atof(areaFactor.getText());
+		double defaultLengthFactor = TextUtils.atof(lengthFactor.getText());
+
+		Map<NodeInst,Double> newValues = new HashMap<NodeInst,Double>();
+		NodeInst sellectedInductor = null;
+		List<ArcInst> selectedArcs = null;
+		List<ArcInst> deletedArcs = null;
+		double selectedAreaFactor = 0, selectedLengthFactor = 0;
+		StringBuffer changedExplanation = new StringBuffer();
+		for(Iterator<NodeInst> it = cell.getNodes(); it.hasNext(); )
+		{
+			NodeInst ni = it.next();
+			NodeProto np = ni.getProto();
+			if (np.getFunction() == PrimitiveNode.Function.INDUCT)
+			{
+				List<ArcInst> arcsOnInductor = new ArrayList<ArcInst>();
+				List<ArcInst> arcsToDelete = new ArrayList<ArcInst>();
+				getArcsOnInductor(ni, ni.getName(), arcsOnInductor, arcsToDelete);
+				StringBuffer sb = new StringBuffer();
+				double areaFactor = defaultAreaFactor;
+				double lengthFactor = defaultLengthFactor;
+				Layer lay = getLayerWithFactors(ni);
+				if (lay != null)
+				{
+					double area = lay.getInductanceAreaFactor();
+					double length = lay.getInductanceLengthFactor();
+					if (area != 0) areaFactor = area;
+					if (length != 0) lengthFactor = length;
+				}
+				double inductance = analyzeInductor(sb, ni, arcsOnInductor, areaFactor, lengthFactor);
+
+				Variable exists = ni.getVar(Schematics.SCHEM_INDUCTANCE);
+				if (exists != null)
+				{
+					Object obj = exists.getObject();
+					double val = 0;
+					if (obj instanceof Double) val = ((Double)obj).doubleValue();
+					if (obj instanceof String) val = Double.parseDouble((String)obj);
+					if (val != inductance)
+					{
+						sellectedInductor = ni;
+						newValues.put(ni, inductance);
+						selectedArcs = arcsOnInductor;
+						deletedArcs = arcsToDelete;
+						selectedAreaFactor = areaFactor;
+						selectedLengthFactor = lengthFactor;
+						changedExplanation.append(sb.toString());
+					}
+				}
+			}
+		}
+		if (newValues.size() > 0)
+		{
+			if (newValues.size() == 1)
+			{
+				// highlight the inductor and update the arcs on it
+				noInductArcsUpdate = noHighlightUpdate = true;
+				String inductorName = sellectedInductor.getName();
+				listOfInductors.setSelectedValue(inductorName, true);
+				String[] arcNames = new String[selectedArcs.size()];
+				for(int i=0; i<selectedArcs.size(); i++) arcNames[i] = selectedArcs.get(i).getName();
+				listOfArcsOnInductor.clearSelection();
+				listOfArcsOnInductor.setListData(arcNames);
+				(new UpdateInductanceNames(selectedArcs, deletedArcs, inductorName, null)).startJob();
+				noInductArcsUpdate = noHighlightUpdate = false;
+				if (selectedAreaFactor == 0)
+				{
+					areaFactorSuggestion.setText("No suggestion");
+					useAreaFactor.setEnabled(false);
+				} else
+				{
+					areaFactorSuggestion.setText("Suggest: " + selectedAreaFactor);
+					useAreaFactor.setEnabled(true);
+				}
+				if (selectedLengthFactor == 0)
+				{
+					lengthFactorSuggestion.setText("No suggestion");
+					useLengthFactor.setEnabled(false);
+				} else
+				{
+					lengthFactorSuggestion.setText("Suggest: " + selectedLengthFactor);
+					useLengthFactor.setEnabled(true);
+				}
+			}
+			inductorInfo.setText(changedExplanation.toString());
+			(new AnnotateCellInductance(newValues)).startJob();
+			System.out.println("Inductance management: Updating " + newValues.size() + " inductor values");
+		}
+	}
 
 	/**
 	 * Recache the current Cell data when Highlights change.
@@ -161,6 +258,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	public void highlightChanged(Highlighter which)
 	{
 		if (!isVisible()) return;
+		if (stayCurrent.isSelected()) return;
 		makeInductanceDataCurrent();
 	}
 
@@ -173,15 +271,8 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 
 	/********************************** MANAGE LIST OF INDUCTORS **********************************/
 
-	/**
-	 * Method called when a name is selected from the list of inductors.
-	 */
-	private void inductorSelected()
+	private List<ArcInst> getArcNamesOnInductor(String inductorName)
 	{
-		if (curInductanceData == null) return;
-		int index = listOfInductors.getSelectedIndex();
-		if (index < 0) return;
-		String inductorName = listOfInductors.getSelectedValue();
 		List<ArcInst> selectedArcs = new ArrayList<ArcInst>();
 		for(Iterator<ArcInst> it = curInductanceData.cell.getArcs(); it.hasNext(); )
 		{
@@ -191,6 +282,19 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 			if (inductorName.equals(var.getPureValue(-1)))
 				selectedArcs.add(ai);
 		}
+		return selectedArcs;
+	}
+	/**
+	 * Method called when a name is selected from the list of inductors.
+	 */
+	private void inductorSelected()
+	{
+		if (curInductanceData == null) return;
+		if (noInductArcsUpdate) return;
+		int index = listOfInductors.getSelectedIndex();
+		if (index < 0) return;
+		String inductorName = listOfInductors.getSelectedValue();
+		List<ArcInst> selectedArcs = getArcNamesOnInductor(inductorName);
 		String[] arcNames = new String[selectedArcs.size()];
 		for(int i=0; i<selectedArcs.size(); i++) arcNames[i] = selectedArcs.get(i).getName();
 		listOfArcsOnInductor.clearSelection();
@@ -209,10 +313,9 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		curInductanceData.suggestedAreaFactor = curInductanceData.suggestedLengthFactor = 0;
 		if (inductorNode != null)
 		{
-			PrimitiveNode np = (PrimitiveNode)inductorNode.getProto();
-			for(Iterator<Layer> it = np.getLayerIterator(); it.hasNext(); )
+			Layer lay = getLayerWithFactors(inductorNode);
+			if (lay != null)
 			{
-				Layer lay = it.next();
 				double area = lay.getInductanceAreaFactor();
 				double length = lay.getInductanceLengthFactor();
 				if (area != 0) curInductanceData.suggestedAreaFactor = area;
@@ -308,6 +411,19 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 				break;
 			}
 		}
+	}
+
+	private Layer getLayerWithFactors(NodeInst ni)
+	{
+		PrimitiveNode np = (PrimitiveNode)ni.getProto();
+		for(Iterator<Layer> it = np.getLayerIterator(); it.hasNext(); )
+		{
+			Layer lay = it.next();
+			double area = lay.getInductanceAreaFactor();
+			double length = lay.getInductanceLengthFactor();
+			if (area != 0 || length != 0) return lay;
+		}
+		return null;
 	}
 
 	private void useSuggestedAreaFactor()
@@ -512,34 +628,25 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	}
 
 	/**
-	 * Method when the "Compute" button is clicked. Figures out which arcs connect to this inductor.
+	 * Method to compute the arcs connected to an inductor node.
+	 * @param ni the inductor node.
+	 * @param inductorName the name of the inductor node.
+	 * @param arcsToAdd a List that gets filled with ArcInst objects on the inductor.
+	 * @param arcsToDelete a List that gets filled with ArcInst objects no longer on the inductor.
 	 */
-	private void computeArcsOnInductor()
+	private void getArcsOnInductor(NodeInst ni, String inductorName, List<ArcInst> arcsToAdd, List<ArcInst> arcsToDelete)
 	{
-		String inductorName = needSelectedInductor();
-		if (inductorName == null) return;
-		if (!curInductanceData.inductorNamesonNodes.contains(inductorName))
-		{
-			Job.getUserInterface().showErrorMessage("There is no inductor node named " + inductorName +
-				" so the arcs on it cannot be computed.", "Cannot Compute Inductor");
-			return;
-		}
-		NodeInst ni = curInductanceData.cell.findNode(inductorName);
-		if (ni == null) return;
-		double inductorSize = ni.getYSize();
-
 		// determine arc type that matters
+		double inductorSize = ni.getYSize();
 		ArcProto ap = ni.getProto().getPort(0).getBasePort().getConnection();
 		PrimitiveNode pnp = ap.findPinProto();
 
-		// follow connected arcs
-		Set<ArcInst> connectedArcs = new HashSet<ArcInst>();
 		for(Iterator<Connection> cIt = ni.getConnections(); cIt.hasNext(); )
 		{
 			Connection con = cIt.next();
 			ArcInst followArc = con.getArc();
 			if (followArc.getLambdaBaseWidth() != inductorSize) continue;
-			connectedArcs.add(followArc);
+			arcsToAdd.add(followArc);
 			NodeInst followNode = ni;
 			for(;;)
 			{
@@ -559,21 +666,41 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 					otherArc = ai2;
 				}
 				if (otherArc == null) break;
-				connectedArcs.add(otherArc);
+				arcsToAdd.add(otherArc);
 				followArc = otherArc;
 				followNode = nextNode;
 			}
 		}
-		
 		// figure out which arcs should no longer be connected
-		List<ArcInst> disconnectedArcs = new ArrayList<ArcInst>();
+		Set<ArcInst> connectedArcSet = new HashSet<ArcInst>();
+		for(ArcInst ai : arcsToAdd) connectedArcSet.add(ai);
 		for(Iterator<ArcInst> aIt = curInductanceData.cell.getArcs(); aIt.hasNext(); )
 		{
 			ArcInst ai = aIt.next();
-			if (connectedArcs.contains(ai)) continue;
+			if (connectedArcSet.contains(ai)) continue;
 			Variable var = ai.getVar(Schematics.INDUCTOR_NAME);
-			if (var != null && var.getPureValue(-1).equals(inductorName)) disconnectedArcs.add(ai);
+			if (var != null && var.getPureValue(-1).equals(inductorName)) arcsToDelete.add(ai);
 		}
+	}
+
+	/**
+	 * Method when the "Compute" button is clicked. Figures out which arcs connect to this inductor.
+	 */
+	private void computeArcsOnInductor()
+	{
+		String inductorName = needSelectedInductor();
+		if (inductorName == null) return;
+		if (!curInductanceData.inductorNamesonNodes.contains(inductorName))
+		{
+			Job.getUserInterface().showErrorMessage("There is no inductor node named " + inductorName +
+				" so the arcs on it cannot be computed.", "Cannot Compute Inductor");
+			return;
+		}
+		NodeInst ni = curInductanceData.cell.findNode(inductorName);
+		if (ni == null) return;
+		List<ArcInst> connectedArcs = new ArrayList<ArcInst>();
+		List<ArcInst> disconnectedArcs = new ArrayList<ArcInst>();
+		getArcsOnInductor(ni, inductorName, connectedArcs, disconnectedArcs);
 
 		// assign the inductor name on these arcs
 		(new UpdateInductanceNames(connectedArcs, disconnectedArcs, inductorName, this)).startJob();
@@ -597,7 +724,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 			Job.getUserInterface().showErrorMessage("Must select arcs first to add them to the inductor", "No Arcs Selected");
 			return;
 		}
-		Set<ArcInst> arcSet = new HashSet<ArcInst>();
+		List<ArcInst> arcSet = new ArrayList<ArcInst>();
 		for(Geometric geom : arcs) arcSet.add((ArcInst)geom);
 
 		// assign the inductor name on these arcs
@@ -701,10 +828,8 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	 */
 	private void analyzeInductors()
 	{
-		Technology tech = Technology.getCurrent();
-		lastAreaFactor = TextUtils.atofDistance(areaFactor.getText(), tech);
-		lastLengthFactor = TextUtils.atofDistance(lengthFactor.getText(), tech);
-		lastSquaresPerCorner = TextUtils.atofDistance(perCornerFactor.getText(), tech);
+		lastAreaFactor = TextUtils.atof(areaFactor.getText());
+		lastLengthFactor = TextUtils.atof(lengthFactor.getText());
 
 		// find inductor to change
 		Cell cell = WindowFrame.needCurCell();
@@ -723,6 +848,16 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		{
 			inductorNode = curInductanceData.cell.findNode(inductorName);
 		}
+
+		StringBuffer sb = new StringBuffer();
+		computedInductance = analyzeInductor(sb, inductorNode, inductorArcs, lastAreaFactor, lastLengthFactor);
+		inductorInfo.setText(sb.toString());
+	}
+
+	double analyzeInductor(StringBuffer explanation, NodeInst inductorNode, List<ArcInst> inductorArcs,
+		double areaFactor, double lengthFactor)
+	{
+		lastSquaresPerCorner = TextUtils.atof(perCornerFactor.getText());
 
 		// determine size
 		double inductorSize = 0;
@@ -769,12 +904,13 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		}
 
 		// compute area component of the inductor
-		inductorInfo.setText("Area component:\n");
+		explanation.append("======= COMPUTATION OF INDUCTOR: " + inductorNode.describe(false) + " =======\n");
+		explanation.append("Area component:\n");
 		double edgeLength = 0;
 		if (inductorNode != null)
 		{
 			edgeLength = Math.max(inductorNode.getXSize(), inductorNode.getYSize());
-			inductorInfo.append("  Node " + inductorNode.describe(false) +" edge-length=" + TextUtils.formatDouble(edgeLength, PRECISION) + "\n");
+			explanation.append("  Node " + inductorNode.describe(false) +" edge-length=" + TextUtils.formatDouble(edgeLength, PRECISION) + "\n");
 		}
 		if (inductorArcs != null)
 		{
@@ -782,48 +918,49 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 			{
 				double arcEdge = ai.getHeadLocation().distance(ai.getTailLocation());
 				edgeLength += arcEdge;
-				inductorInfo.append("  Arc " + ai.describe(false) + " edge-length=" + TextUtils.formatDouble(arcEdge, PRECISION) + "\n");
+				explanation.append("  Arc " + ai.describe(false) + " edge-length=" + TextUtils.formatDouble(arcEdge, PRECISION) + "\n");
 			}
 		}
-		inductorInfo.append("    Total Edge-length = " + TextUtils.formatDouble(edgeLength, PRECISION) + "\n");
+		explanation.append("    Total Edge-length = " + TextUtils.formatDouble(edgeLength, PRECISION) + "\n");
 
 		// compute the number of squares
 		double squareCount = edgeLength / inductorSize;
-		inductorInfo.append("    Square-count = Edge-length (" + TextUtils.formatDouble(edgeLength, PRECISION) + ") / " +
+		explanation.append("    Square-count = Edge-length (" + TextUtils.formatDouble(edgeLength, PRECISION) + ") / " +
 			"Arc width (" + TextUtils.formatDouble(inductorSize, PRECISION) + ") = " + 
 			TextUtils.formatDouble(squareCount, PRECISION) + "\n");
 
 		// compute the corner component
 		double cornerComponent = cornerCount * lastSquaresPerCorner;
-		inductorInfo.append("    Corner-squares = Corner-count (" + cornerCount + ") x " +
+		explanation.append("    Corner-squares = Corner-count (" + cornerCount + ") x " +
 			"Squares-per-Corner (" + TextUtils.formatDouble(lastSquaresPerCorner, PRECISION*2) + ") = " +
 			TextUtils.formatDouble(cornerComponent, PRECISION) + "\n");
 
 		// compute the total number of squares
 		double totalSquareComponent = squareCount + cornerComponent;
-		inductorInfo.append("    Total-squares = Square-count (" + squareCount + ") + " +
+		explanation.append("    Total-squares = Square-count (" + squareCount + ") + " +
 			"Corner-squares (" + TextUtils.formatDouble(cornerComponent, PRECISION) + ") = " +
 			TextUtils.formatDouble(totalSquareComponent, PRECISION) + "\n");
 
 		// compute the area component
-		double areaComponent = totalSquareComponent * lastAreaFactor;
-		inductorInfo.append("    Final Area-component = Total-squares (" + totalSquareComponent + ") * " +
-			"Area-factor (" + TextUtils.formatDouble(lastAreaFactor, PRECISION) + ") = " +
+		double areaComponent = totalSquareComponent * areaFactor;
+		explanation.append("    Final Area-component = Total-squares (" + TextUtils.formatDouble(totalSquareComponent, PRECISION) + ") * " +
+			"Area-factor (" + TextUtils.formatDouble(areaFactor, PRECISION) + ") = " +
 			TextUtils.formatDouble(areaComponent, PRECISION) + "\n");
 
 		// compute the length information
-		inductorInfo.append("Length component:\n");
-		double lengthComponent = edgeLength * lastLengthFactor;
-		inductorInfo.append("  Edge-length (" + TextUtils.formatDouble(edgeLength, PRECISION) + ") x " +
-			"Length-factor (" + TextUtils.formatDouble(lastLengthFactor, PRECISION) + ") = " +
+		explanation.append("Length component:\n");
+		double lengthComponent = edgeLength * lengthFactor;
+		explanation.append("  Edge-length (" + TextUtils.formatDouble(edgeLength, PRECISION) + ") x " +
+			"Length-factor (" + TextUtils.formatDouble(lengthFactor, PRECISION) + ") = " +
 			TextUtils.formatDouble(lengthComponent, PRECISION) + " (in Electric units)\n");
 
-		inductorInfo.append("Computed inductance:\n");
+		explanation.append("Computed inductance:\n");
 		double denom = lengthComponent + areaComponent;
-		if (denom == 0) computedInductance = 0; else
-			computedInductance = (lengthComponent * areaComponent) / denom;
-		inductorInfo.append("  (Area-component x length) / (Area-component + length) = " +
-			TextUtils.formatDouble(computedInductance, PRECISION) + "\n");
+		double inductance = 0;
+		if (denom != 0) inductance = (lengthComponent * areaComponent) / denom;
+		explanation.append("  (Area-component x length) / (Area-component + length) = " +
+			TextUtils.formatDouble(inductance, PRECISION) + "\n");
+		return inductance;
 	}
 
 	/**
@@ -831,7 +968,9 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	 */
 	private void assignValue()
 	{
-		(new AnnotateCellInductance(inductorNode, computedInductance)).startJob();
+		Map<NodeInst,Double> newValues = new HashMap<NodeInst,Double>();
+		newValues.put(inductorNode, computedInductance);
+		(new AnnotateCellInductance(newValues)).startJob();
 	}
 
 	/**
@@ -839,24 +978,25 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	 */
 	public static class AnnotateCellInductance extends Job
 	{
-		private NodeInst inductorNode;
-		private double computedInductance;
+		private Map<NodeInst,Double> newValues;
 
-		public AnnotateCellInductance(NodeInst node, double value)
+		public AnnotateCellInductance(Map<NodeInst,Double> nv)
 		{
 			super("Analyze Cell Inductors", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
-			inductorNode = node;
-			computedInductance = value;
+			newValues = nv;
 		}
 
 		@Override
 		public boolean doIt() throws JobException
 		{
-			Double ind = new Double(computedInductance);
-			Variable exists = inductorNode.getVar(Schematics.SCHEM_INDUCTANCE);
-			if (exists != null)
-				inductorNode.newVar(Schematics.SCHEM_INDUCTANCE, ind, exists.getTextDescriptor()); else
-					inductorNode.newDisplayVar(Schematics.SCHEM_INDUCTANCE, ind, getEditingPreferences());
+			for(NodeInst ni : newValues.keySet())
+			{
+				Double ind = newValues.get(ni);
+				Variable exists = ni.getVar(Schematics.SCHEM_INDUCTANCE);
+				if (exists != null)
+					ni.newVar(Schematics.SCHEM_INDUCTANCE, ind, exists.getTextDescriptor()); else
+						ni.newDisplayVar(Schematics.SCHEM_INDUCTANCE, ind, getEditingPreferences());
+			}
 			return true;
 		}
 	}
@@ -985,12 +1125,12 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	 */
 	public static class UpdateInductanceNames extends Job
 	{
-		private Set<ArcInst> connectedArcs;
+		private List<ArcInst> connectedArcs;
 		private List<ArcInst> disconnectedArcs;
 		private String nodeName;
 		private transient ManageInductors dialog;
 
-		public UpdateInductanceNames(Set<ArcInst> arcsPlus, List<ArcInst> arcsMinus, String name, ManageInductors mi)
+		public UpdateInductanceNames(List<ArcInst> arcsPlus, List<ArcInst> arcsMinus, String name, ManageInductors mi)
 		{
 			super("Update Inductor Names", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
 			connectedArcs = arcsPlus;
@@ -1019,7 +1159,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 
 		public void terminateOK()
 		{
-			dialog.inductorSelected();
+			if (dialog != null) dialog.inductorSelected();
 		}
 	}
 
@@ -1077,13 +1217,16 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         useAreaFactor = new javax.swing.JButton();
         lengthFactorSuggestion = new javax.swing.JLabel();
         useLengthFactor = new javax.swing.JButton();
+        clearComputationArea = new javax.swing.JButton();
         inductorListPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         listOfInductors = new javax.swing.JList<>();
         addInductor = new javax.swing.JButton();
         deleteInductor = new javax.swing.JButton();
         renameInductor = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
         recacheCell = new javax.swing.JButton();
+        stayCurrent = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         listOfArcsOnInductor = new javax.swing.JList<>();
@@ -1117,7 +1260,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         });
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Inductance Computation"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Inductance Computation", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         analyzeInductor.setText("Analyze");
@@ -1131,7 +1274,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.weighty = 0.5;
+        gridBagConstraints.weighty = 0.3;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel1.add(analyzeInductor, gridBagConstraints);
         analyzeInductor.getAccessibleContext().setAccessibleDescription("");
@@ -1147,7 +1290,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.weighty = 0.5;
+        gridBagConstraints.weighty = 0.3;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel1.add(annotateInductor, gridBagConstraints);
 
@@ -1159,7 +1302,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 6;
-        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.gridheight = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -1228,6 +1371,13 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         jPanel1.add(areaFactorSuggestion, gridBagConstraints);
 
         useAreaFactor.setText("Use");
+        useAreaFactor.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                useAreaFactorActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -1243,12 +1393,34 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         jPanel1.add(lengthFactorSuggestion, gridBagConstraints);
 
         useLengthFactor.setText("Use");
+        useLengthFactor.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                useLengthFactorActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel1.add(useLengthFactor, gridBagConstraints);
+
+        clearComputationArea.setText("Clear");
+        clearComputationArea.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                clearComputationAreaActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel1.add(clearComputationArea, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1260,7 +1432,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         getContentPane().add(jPanel1, gridBagConstraints);
 
-        inductorListPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Inductors in Cell"));
+        inductorListPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Inductors in Cell", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         inductorListPanel.setLayout(new java.awt.GridBagLayout());
 
         listOfInductors.setModel(new javax.swing.AbstractListModel<String>()
@@ -1325,6 +1497,8 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         inductorListPanel.add(renameInductor, gridBagConstraints);
 
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
         recacheCell.setText("Recache Current Cell");
         recacheCell.addActionListener(new java.awt.event.ActionListener()
         {
@@ -1336,9 +1510,23 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 10);
+        jPanel4.add(recacheCell, gridBagConstraints);
+
+        stayCurrent.setText("Update All Inductors in Cell");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 10, 4, 4);
+        jPanel4.add(stayCurrent, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
-        inductorListPanel.add(recacheCell, gridBagConstraints);
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        inductorListPanel.add(jPanel4, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1349,7 +1537,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         getContentPane().add(inductorListPanel, gridBagConstraints);
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Arcs in Selected Inductor"));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Arcs in Selected Inductor", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         listOfArcsOnInductor.setModel(new javax.swing.AbstractListModel<String>()
@@ -1424,7 +1612,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         getContentPane().add(jPanel3, gridBagConstraints);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("FastHenry Factors"));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "FastHenry Factors", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         jLabel3.setText("Thickness:");
@@ -1609,12 +1797,28 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		showSelected();
     }//GEN-LAST:event_recacheCellActionPerformed
 
+    private void useAreaFactorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useAreaFactorActionPerformed
+		useSuggestedAreaFactor();
+    }//GEN-LAST:event_useAreaFactorActionPerformed
+
+    private void useLengthFactorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_useLengthFactorActionPerformed
+    {//GEN-HEADEREND:event_useLengthFactorActionPerformed
+		useSuggestedLengthFactor();
+    }//GEN-LAST:event_useLengthFactorActionPerformed
+
+    private void clearComputationAreaActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_clearComputationAreaActionPerformed
+    {//GEN-HEADEREND:event_clearComputationAreaActionPerformed
+		inductorInfo.setText("");
+    }//GEN-LAST:event_clearComputationAreaActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addArcToInductor;
     private javax.swing.JButton addInductor;
     private javax.swing.JButton analyzeInductor;
     private javax.swing.JButton annotateInductor;
+    private javax.swing.JTextField areaFactor;
     private javax.swing.JLabel areaFactorSuggestion;
+    private javax.swing.JButton clearComputationArea;
     private javax.swing.JButton computeArcsOnInductor;
     private javax.swing.JButton deleteInductor;
     private javax.swing.JLabel fasthenryDefHeightSubdivs;
@@ -1638,18 +1842,19 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTextField lengthFactor;
     private javax.swing.JLabel lengthFactorSuggestion;
     private javax.swing.JList<String> listOfArcsOnInductor;
     private javax.swing.JList<String> listOfInductors;
     private javax.swing.JTextField perCornerFactor;
-    private javax.swing.JTextField lengthFactor;
-    private javax.swing.JTextField areaFactor;
     private javax.swing.JButton recacheCell;
     private javax.swing.JButton removeArcFromInductor;
     private javax.swing.JButton renameInductor;
+    private javax.swing.JCheckBox stayCurrent;
     private javax.swing.JButton updateFasthenryData;
     private javax.swing.JButton useAreaFactor;
     private javax.swing.JButton useLengthFactor;

@@ -12,32 +12,42 @@ All of this is managed with the <b>Manage Inductors...</b> command
 Once inductors have been established, you can also write a deck for further analysis by FastHenry.
 <p>
 <TABLE><TR><TD>
-Inductor management lets you create inductor names in the current cell
-(with the "New..." button). When the cell changes, click "Recache Current Cell" to
-see the current cell's inductance information. You can also rename an inductor and can delete it.
+This dialog lets you manage inductors in the current cell.
+If you edit a different cell, click "Recache Current Cell" to see the current cell's inductance information.
+<br><br>
+The top part of the dialog, with the list of inductors in the cell, allows you to
+create new inductor (with the "New..." button). 
+You can also rename an inductor and delete it.
 Note that if an inductor is listed because there is an inductor node with that name,
 you cannot delete the inductor in this dialog and must instead delete the inductor node.
 <br><br>
-Once inductors have been established, you can assign arcs to them.
-The "Compute" button tries to figure out which arcs are connected
+The next part of the dialog lists arcs on the selected inductor.
+You can click the "Compute" button to figure out which arcs are connected
 by following the inductor node through the circuit.
 If there is no inductor node present, this button does nothing.
-You can assign arcs manually by selecting them in the circuit and clicking the "Add" button.
-You can remove arcs from an inductor by selecting them in this dialog and clicking the "Remove" button.
+You can also assign arcs manually by selecting them in the circuit and clicking the "Add" button.
+You can remove manually-added arcs from an inductor by selecting them in this dialog and clicking the "Remove" button.
 Note that this dialog cross-probes correctly between the list of arcs and the arcs in the circuit:
 clicking on either shows the other.
 <br><br>
-The middle section of the dialog lets you assign analysis factors for FastHenry.
+The next section of the dialog lets you assign analysis factors for FastHenry.
 FastHenry is an inductance analysis tool (see the papers of <A HREF="http://rleweb.mit.edu/rlestaff/p-whit.htm">Jacob White</A>).
 You can set the thickness and Z height of this inductor,
 and you can set the number of subdivisions of the width and height.
 Note that default value are shown that will be used if no value is given in this dialog.
 <br><br>
 The bottom part of the dialog is able to do simple inductance computation.
-It uses a formula that depends on the number of "squares" in the inductor
-as well as a length and corner-turning factor.
-Click the "Analyze" button to show the computation of the current inductance value.
+It uses a formula that depends on the area and length of the inductor
+as well as a corner-turning factor.
+Click the "Analyze" button to show the computation of the current inductance value (and click "Clear" to remove that text).
 Click the "Annotate" button to assign the computed inductance to the inductor node (if there is one).
+<br><br>
+The area and length factors may have suggested values, depending on the layer of the inductor.
+Click the "Use" buttons to apply these values.
+<br><br>
+You can also click "Update All Inductors in Cell" (at the top of the dialog) to request that the dialog watch all edits
+made to the cell and update all inductance values, doing a "Compute" of the arcs, a "Use" for the area and length factors,
+an "Analyze" of the inductance, and an "Annotate" to update the inductor value.
 </TD><TD><CENTER><IMG SRC="fig09-06.png" ALT="Figure 9.6"></CENTER></TD></TR></TABLE>
 <P>
 After all of the inductors have been identified, you can generate a FastHenry deck with the
