@@ -67,7 +67,7 @@ import javax.swing.event.ListSelectionListener;
 /**
  * Class to handle the "Manage Inductors" dialog.
  */
-public class ManageInductors extends EModelessDialog implements HighlightListener, DatabaseChangeListener
+public class ManageInductors extends EModelessDialog implements /*HighlightListener,*/ DatabaseChangeListener
 {
 	private static double lastAreaFactor = 1;
 	private static double lastLengthFactor = 1;
@@ -76,7 +76,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	private CellInductance curInductanceData;
 	private NodeInst inductorNode;
 	private double computedInductance;
-	private boolean noHighlightUpdate = false, noInductListUpdate = false, noInductArcsUpdate = false;;
+	private boolean noHighlightUpdate = false, noInductListUpdate = false, noInductArcsUpdate = false;
 	private static final int PRECISION = 3;
 
 	/**
@@ -109,7 +109,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		fasthenryDefZHeight.setText("");
 
 		UserInterfaceMain.addDatabaseChangeListener(this);
-		Highlighter.addHighlightListener(this);
+//		Highlighter.addHighlightListener(this);
 		listOfInductors.addListSelectionListener(new ListSelectionListener()
 		{
 			public void valueChanged(ListSelectionEvent e) { inductorSelected(); }
@@ -118,7 +118,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		{
 			public void valueChanged(ListSelectionEvent e) { inductorArcSelected(); }
 		});
-		
+
 		finishInitialization();
 		showSelected();
 		pack();
@@ -134,7 +134,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	{
 		if (!isVisible()) return;
 		if (!stayCurrent.isSelected()) return;
-		
+
 		// update all inductors in the cell
 		EditWindow curWnd = EditWindow.getCurrent();
 		if (curWnd == null) return;
@@ -252,15 +252,15 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		}
 	}
 
-	/**
-	 * Recache the current Cell data when Highlights change.
-	 */
-	public void highlightChanged(Highlighter which)
-	{
-		if (!isVisible()) return;
-		if (stayCurrent.isSelected()) return;
-		makeInductanceDataCurrent();
-	}
+//	/**
+//	 * Recache the current Cell data when Highlights change.
+//	 */
+//	public void highlightChanged(Highlighter which)
+//	{
+//		if (!isVisible()) return;
+//		if (stayCurrent.isSelected()) return;
+//		makeInductanceDataCurrent();
+//	}
 
 	/**
 	 * Called when by a Highlighter when it loses focus. The argument
@@ -304,6 +304,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		for(Iterator<NodeInst> it = curInductanceData.cell.getNodes(); it.hasNext(); )
 		{
 			NodeInst ni = it.next();
+			if (ni.isCellInstance()) continue;
 			if (ni.getName().equals(inductorName))
 			{
 				inductorNode = ni;
@@ -527,7 +528,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 			dialog.listOfInductors.setSelectedValue(newName, true);
 			dialog.curInductanceData.inductorNames.remove(oldName);
 			dialog.curInductanceData.inductorNames.add(newName);
-			dialog.showSelected(); 
+			dialog.showSelected();
 		}
 	}
 
@@ -581,7 +582,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		if (curInductanceData.cell == null)
 		{
 			border.setTitle("NO CURRENT CELL");
-			listOfInductors.setListData(new String[0]);	
+			listOfInductors.setListData(new String[0]);
 		} else
 		{
 			border.setTitle("Inductors in Cell " + curInductanceData.cell.describe(false));
@@ -684,16 +685,16 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	}
 
 	/**
-	 * Method when the "Compute" button is clicked. Figures out which arcs connect to this inductor.
+	 * Method when the "Detect" button is clicked. Figures out which arcs connect to this inductor.
 	 */
-	private void computeArcsOnInductor()
+	private void detectArcsOnInductor()
 	{
 		String inductorName = needSelectedInductor();
 		if (inductorName == null) return;
 		if (!curInductanceData.inductorNamesonNodes.contains(inductorName))
 		{
 			Job.getUserInterface().showErrorMessage("There is no inductor node named " + inductorName +
-				" so the arcs on it cannot be computed.", "Cannot Compute Inductor");
+				" so the arcs on it cannot be detected.", "Cannot Detect Inductor");
 			return;
 		}
 		NodeInst ni = curInductanceData.cell.findNode(inductorName);
@@ -764,7 +765,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		List<ArcInst> inductorArcs = getArcsOnInductor();
 		if (inductorArcs.size() == 0)
 		{
-			Job.getUserInterface().showErrorMessage("Must first assign arcs to the inductor with either 'Compute' or 'Add'",
+			Job.getUserInterface().showErrorMessage("Must first assign arcs to the inductor with either 'Detect' or 'Add'",
 				"No Arcs on Selected Inductor");
 			return;
 		}
@@ -926,7 +927,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		// compute the number of squares
 		double squareCount = edgeLength / inductorSize;
 		explanation.append("    Square-count = Edge-length (" + TextUtils.formatDouble(edgeLength, PRECISION) + ") / " +
-			"Arc width (" + TextUtils.formatDouble(inductorSize, PRECISION) + ") = " + 
+			"Arc width (" + TextUtils.formatDouble(inductorSize, PRECISION) + ") = " +
 			TextUtils.formatDouble(squareCount, PRECISION) + "\n");
 
 		// compute the corner component
@@ -1075,7 +1076,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 			inductorNamesDefined = new HashSet<String>();
 			inductorNames = new HashSet<String>();
 		}
-		
+
 		public void recalculate()
 		{
 			// gather all inductor names in the cell
@@ -1121,7 +1122,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 	/********************************** UTILITIES **********************************/
 
 	/**
-	 * This class finishes the "Compute" function by filling in names on arcs.
+	 * This class finishes the "Detect" function by filling in names on arcs.
 	 */
 	public static class UpdateInductanceNames extends Job
 	{
@@ -1232,7 +1233,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         listOfArcsOnInductor = new javax.swing.JList<>();
         addArcToInductor = new javax.swing.JButton();
         removeArcFromInductor = new javax.swing.JButton();
-        computeArcsOnInductor = new javax.swing.JButton();
+        detectArcsOnInductor = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -1588,12 +1589,12 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel3.add(removeArcFromInductor, gridBagConstraints);
 
-        computeArcsOnInductor.setText("Compute");
-        computeArcsOnInductor.addActionListener(new java.awt.event.ActionListener()
+        detectArcsOnInductor.setText("Detect");
+        detectArcsOnInductor.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                computeArcsOnInductorActionPerformed(evt);
+                detectArcsOnInductorActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1601,7 +1602,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
         gridBagConstraints.gridy = 0;
         gridBagConstraints.weighty = 0.3;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-        jPanel3.add(computeArcsOnInductor, gridBagConstraints);
+        jPanel3.add(detectArcsOnInductor, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1777,10 +1778,10 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
 		removeArcFromInductor();
     }//GEN-LAST:event_removeArcFromInductorActionPerformed
 
-    private void computeArcsOnInductorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_computeArcsOnInductorActionPerformed
-    {//GEN-HEADEREND:event_computeArcsOnInductorActionPerformed
-		computeArcsOnInductor();
-    }//GEN-LAST:event_computeArcsOnInductorActionPerformed
+    private void detectArcsOnInductorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_detectArcsOnInductorActionPerformed
+    {//GEN-HEADEREND:event_detectArcsOnInductorActionPerformed
+		detectArcsOnInductor();
+    }//GEN-LAST:event_detectArcsOnInductorActionPerformed
 
     private void updateFasthenryDataActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_updateFasthenryDataActionPerformed
     {//GEN-HEADEREND:event_updateFasthenryDataActionPerformed
@@ -1819,7 +1820,7 @@ public class ManageInductors extends EModelessDialog implements HighlightListene
     private javax.swing.JTextField areaFactor;
     private javax.swing.JLabel areaFactorSuggestion;
     private javax.swing.JButton clearComputationArea;
-    private javax.swing.JButton computeArcsOnInductor;
+    private javax.swing.JButton detectArcsOnInductor;
     private javax.swing.JButton deleteInductor;
     private javax.swing.JLabel fasthenryDefHeightSubdivs;
     private javax.swing.JLabel fasthenryDefThickness;

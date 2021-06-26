@@ -22,6 +22,8 @@
 package com.sun.electric.tool.ncc.result;
 
 import com.sun.electric.tool.ncc.netlist.NccNameProxy.PartNameProxy;
+import com.sun.electric.tool.ncc.netlist.Part;
+import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.tool.Job;
 
 /** Save Part information needed by the NCC GUI when reporting
@@ -42,6 +44,7 @@ public class PartReport extends NetObjReport {
 	
 	private final PartNameProxy nameProxy;
 	private final String typeString;
+	public VarContext pContext;
 	private boolean isMos, isResistor, isInductor, isJosephson;
 	private double width, length;
 	private void checkLenWidValid() {
@@ -50,6 +53,7 @@ public class PartReport extends NetObjReport {
 	}
 	public PartReport(PartReportable p) {
 		super(p);
+		if (p instanceof Part) pContext = ((Part)p).getContext();
 		nameProxy = p.getNameProxy();
 		typeString = p.typeString();
 		isMos = p.isMos();

@@ -22,7 +22,6 @@
 package com.sun.electric.tool.user;
 
 import com.sun.electric.database.EditingPreferences;
-import com.sun.electric.database.geometry.EPoint;
 import com.sun.electric.database.geometry.ERectangle;
 import com.sun.electric.database.geometry.Poly;
 import com.sun.electric.database.geometry.ScreenPoint;
@@ -239,17 +238,18 @@ public final class ExportChanges
 						Export opp = exports.get(k).pp;
 						infstr += "'" + opp.getName() + "'";
 						Poly poly = opp.getPoly();
-						double x = poly.getCenterX();
-						double y = poly.getCenterY();
+						Rectangle2D bnd = poly.getBounds2D();
+						double lowX = bnd.getMinX(), highX = bnd.getMaxX();
+						double lowY = bnd.getMinY(), highY = bnd.getMaxY();
 						if (j == k)
 						{
-							lx = hx = x;   ly = hy = y;
+							lx = lowX;   hx = highX;   ly = lowY;   hy = highY;
 						} else
 						{
-							if (x < lx) lx = x;
-							if (x > hx) hx = x;
-							if (y < ly) ly = y;
-							if (y > hy) hy = y;
+							if (lowX < lx) lx = lowX;
+							if (highX > hx) hx = highX;
+							if (lowY < ly) ly = lowY;
+							if (highY > hy) hy = highY;
 						}
 						ArcProto [] arcList = opp.getBasePort().getConnections();
 						for(int a=0; a<arcList.length; a++)
@@ -272,17 +272,18 @@ public final class ExportChanges
 							if (j != k && exports.get(k).busList != j) continue;
 							Export opp = exports.get(k).pp;
 							Poly poly = opp.getPoly();
-							double x = poly.getCenterX();
-							double y = poly.getCenterY();
+							Rectangle2D bnd = poly.getBounds2D();
+							double lowX = bnd.getMinX(), highX = bnd.getMaxX();
+							double lowY = bnd.getMinY(), highY = bnd.getMaxY();
 							if (j == k)
 							{
-								lx = hx = x;   ly = hy = y;
+								lx = lowX;   hx = highX;   ly = lowY;   hy = highY;
 							} else
 							{
-								if (x < lx) lx = x;
-								if (x > hx) hx = x;
-								if (y < ly) ly = y;
-								if (y > hy) hy = y;
+								if (lowX < lx) lx = lowX;
+								if (highX > hx) hx = highX;
+								if (lowY < ly) ly = lowY;
+								if (highY > hy) hy = highY;
 							}
 							ArcProto [] arcList = opp.getBasePort().getConnections();
 							for(int a=0; a<arcList.length; a++)
@@ -321,13 +322,17 @@ public final class ExportChanges
 					} else
 					{
 						// isolated export
+						infstr += activity + " export '" + pp.getName() + "' at ";
 						Poly poly = pp.getPoly();
-						double x = poly.getCenterX();
-						double y = poly.getCenterY();
-						infstr += activity + " export '" + pp.getName() + "' at (" + x + ", " + y + ") connects to";
+						Rectangle2D bnd = poly.getBounds2D();
+						double lowX = bnd.getMinX(), highX = bnd.getMaxX();
+						double lowY = bnd.getMinY(), highY = bnd.getMaxY();
+						if (lowX == highX && lowY == highY) infstr += "(" + lowX + ", " + lowY + ")"; else
+							infstr += "(" + lowX + "<=" + highX + ", " + lowY + "<=" + highY + ")";
 						ArcProto [] arcList = pp.getBasePort().getConnections();
 						for(int a=0; a<arcList.length; a++)
 							arcsSeen.add(arcList[a]);
+						infstr += " connects to";
 						infstr = addPossibleArcConnections(infstr, arcsSeen);
 
 						// check for the export in the associated cell

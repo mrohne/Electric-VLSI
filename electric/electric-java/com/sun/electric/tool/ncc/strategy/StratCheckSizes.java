@@ -83,7 +83,14 @@ public class StratCheckSizes extends Strategy {
     }
     private void summary() {
     	if (mismatches.size()==0) return; // no news is good news
-    	Collections.sort(mismatches, new MismatchComparator());
+    	try
+    	{
+    		Collections.sort(mismatches, new MismatchComparator());
+    	} catch (IllegalArgumentException e)
+    	{
+    		System.out.println("NCC Error sorting " + mismatches.size() + " mismatches:");
+    		for(Mismatch mm : mismatches) System.out.println("    " + mm);
+    	}
     	System.out.println("  There are "+mismatches.size()+" size mismatches.");
     	for (Mismatch m : mismatches)
     		System.out.print(m.toString());

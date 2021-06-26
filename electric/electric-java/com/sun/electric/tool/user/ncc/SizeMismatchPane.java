@@ -47,8 +47,10 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import com.sun.electric.database.hierarchy.Cell;
+import com.sun.electric.database.hierarchy.Nodable;
 import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.tool.ncc.basic.NccUtils;
+import com.sun.electric.tool.ncc.netlist.Part;
 import com.sun.electric.tool.ncc.result.PartReport;
 import com.sun.electric.tool.ncc.result.SizeMismatch.LengthMismatch;
 import com.sun.electric.tool.ncc.result.SizeMismatch.Mismatch;
@@ -210,6 +212,13 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
                 params[0] = NccUtils.round(parts[rowNdx][line].getWidth(),2) + ""; 
                 params[1] = NccUtils.round(parts[rowNdx][line].getLength(),2) + "";
                 name = parts[rowNdx][line].instanceDescription();
+				if (parts[rowNdx][line] instanceof PartReport)		// improvements by SMR 6/2021
+				{
+					PartReport pr = (PartReport)parts[rowNdx][line];
+					Nodable no = pr.pContext.getNodable();
+					if (no != null)
+						name += " (in subcell " + no.getNodeInst().getProto().describe(false) + ")";
+				}
             }
             JPanel subRow = createSubRow(params, paramDims, name, rowNdx, line);
             subRow.setBackground(bkgndColor);
