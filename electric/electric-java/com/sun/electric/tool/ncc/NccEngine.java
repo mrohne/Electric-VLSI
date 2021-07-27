@@ -30,7 +30,7 @@ package com.sun.electric.tool.ncc;
 import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.variable.VarContext;
 import com.sun.electric.tool.ncc.basic.NccUtils;
-import com.sun.electric.tool.ncc.netlist.NccNetlist;
+	import com.sun.electric.tool.ncc.netlist.NccNetlist;
 import com.sun.electric.tool.ncc.netlist.Part;
 import com.sun.electric.tool.ncc.netlist.Wire;
 import com.sun.electric.tool.ncc.processing.ExportChecker;
@@ -44,6 +44,8 @@ import com.sun.electric.tool.ncc.processing.SerialParallelMerge;
 import com.sun.electric.tool.ncc.result.NccResult;
 import com.sun.electric.tool.ncc.result.BenchmarkResults.BenchIdx;
 import com.sun.electric.tool.ncc.strategy.StratCheckSizes;
+import com.sun.electric.tool.ncc.strategy.StratHashParts;
+import com.sun.electric.tool.ncc.strategy.StratPrint;
 import com.sun.electric.tool.ncc.trees.Circuit;
 import com.sun.electric.tool.ncc.trees.EquivRecord;
 
@@ -234,6 +236,28 @@ public class NccEngine {
 			boolean sizesOK = StratCheckSizes.doYourJob(globals);
 
 			start = NccUtils.registerTiming("  Size checking took ",start,BenchIdx.SIZE_CHECKING_TIME,globals);
+
+			// with super-high reporting requests, run the Print strategy
+			if (globals.getOptions().howMuchStatus >= 3)
+			{
+				boolean first = true;
+				for (Iterator<EquivRecord> eIt=globals.getPartLeafEquivRecs().getNotMatched(); eIt.hasNext();) {
+					EquivRecord er = eIt.next();
+					if (!er.isLeaf()) continue;
+					if (er.isMismatched()) continue;
+					if (first) { System.out.println("=========== Printing Unmatched Parts:");  first = false; }
+					StratPrint.doYourJob(er, globals);
+				}
+				first = true;
+				for (Iterator<EquivRecord> eIt=globals.getPartLeafEquivRecs().getMatched(); eIt.hasNext();) {
+					EquivRecord er = eIt.next();
+					if (!er.isLeaf()) continue;
+					if (er.isMismatched()) continue;
+					if (first) { System.out.println("=========== Printing Matched Parts:");  first = false; }
+					StratPrint.doYourJob(er, globals);
+				}
+				System.out.println("=========== Done Printing");
+			}
 
 //			Date d6 = new Date();
 //			globals.status1("  Size checking took "+NccUtils.hourMinSec(d5, d6));

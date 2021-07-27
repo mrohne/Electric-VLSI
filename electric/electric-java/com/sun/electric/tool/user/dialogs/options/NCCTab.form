@@ -272,7 +272,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="jLabel4">
               <Properties>
-                <Property name="text" type="java.lang.String" value="How many status messages to print (0-&gt;few, 2-&gt;many):"/>
+                <Property name="text" type="java.lang.String" value="How many status messages to print (0-&gt;few, 3-&gt;many):"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">

@@ -64,10 +64,14 @@ public class StratPrint extends Strategy {
 
     // ---------- the tree walking code ---------
     private void preamble(EquivRecord j) {
-    	startTime("StratPrint", j.nameString());
+    	globals.status2("----- Starting Print Strategy");
+//    	startTime("StratPrint", j.nameString());
     }
 
-	private void summary(){elapsedTime();}
+	private void summary() {
+    	globals.status2("----- Ending Print Strategy");
+//		elapsedTime();
+	}
 
 	public LeafList doFor(EquivRecord j){
 		globals.status2("**  Depth= " + getDepth() + " "+j.nameString());

@@ -44,6 +44,7 @@ public class SizeMismatch {
 			this.maxPart = new PartReport(maxPart);
 		}
 		public double relErr() {return (max-min)/min;}
+		public double ratioErr() {return max/min;}
 		public double absErr() {return max-min;}
 		public abstract String widLen();
 		public abstract String wl();

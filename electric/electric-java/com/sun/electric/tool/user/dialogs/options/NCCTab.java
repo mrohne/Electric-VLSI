@@ -374,7 +374,7 @@ public class NCCTab extends PreferencePanel
         progressReport.setBorder(javax.swing.BorderFactory.createTitledBorder("Reporting Progress"));
         progressReport.setLayout(new java.awt.GridBagLayout());
 
-        jLabel4.setText("How many status messages to print (0->few, 2->many):");
+        jLabel4.setText("How many status messages to print (0->few, 3->many):");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

@@ -21,6 +21,16 @@
 */
 package com.sun.electric.tool.user.ncc;
 
+import com.sun.electric.database.hierarchy.Cell;
+import com.sun.electric.database.hierarchy.Nodable;
+import com.sun.electric.database.variable.VarContext;
+import com.sun.electric.tool.ncc.basic.NccUtils;
+import com.sun.electric.tool.ncc.result.PartReport;
+import com.sun.electric.tool.ncc.result.SizeMismatch.LengthMismatch;
+import com.sun.electric.tool.ncc.result.SizeMismatch.Mismatch;
+import com.sun.electric.tool.ncc.result.SizeMismatch.WidthMismatch;
+import com.sun.electric.tool.user.Highlighter;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,17 +55,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-
-import com.sun.electric.database.hierarchy.Cell;
-import com.sun.electric.database.hierarchy.Nodable;
-import com.sun.electric.database.variable.VarContext;
-import com.sun.electric.tool.ncc.basic.NccUtils;
-import com.sun.electric.tool.ncc.netlist.Part;
-import com.sun.electric.tool.ncc.result.PartReport;
-import com.sun.electric.tool.ncc.result.SizeMismatch.LengthMismatch;
-import com.sun.electric.tool.ncc.result.SizeMismatch.Mismatch;
-import com.sun.electric.tool.ncc.result.SizeMismatch.WidthMismatch;
-import com.sun.electric.tool.user.Highlighter;
 
 class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentListener {
     // constants
@@ -87,8 +86,10 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
         // compute max numbers to estimate column width
         int errColWidth = 7, widColWidth = 3, lenColWidth = 3;
         for (int i=0; i<size; i++) {
-            String err = NccUtils.round(mismatches[i].relErr()*100,1) + "";
+            String err = NccUtils.round(mismatches[i].relErr()*100,1) + "%";
             errColWidth = Math.max(errColWidth, err.length());
+            String rErr = NccUtils.round(mismatches[i].ratioErr(), 1) + "";
+            errColWidth = Math.max(errColWidth, rErr.length());
             
             String w1 = NccUtils.round(mismatches[i].minPart.getWidth(),2) + "";
             String w2 = NccUtils.round(mismatches[i].maxPart.getWidth(),2) + "";
@@ -100,7 +101,7 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
             int len = Math.max(l1.length(), l2.length());
             lenColWidth = Math.max(lenColWidth, len+1);
         }
-        dimErrCol = new Dimension(errColWidth*7, 20);        
+        dimErrCol = new Dimension(errColWidth*7, 40);        
         dimWidCol = new Dimension(widColWidth*7, 16);
         dimLenCol = new Dimension(lenColWidth*7, 16);
         
@@ -156,10 +157,11 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
     private JPanel createRow(int rowNdx) {
         // create the main container of this row
         JPanel row = new JPanel(new BorderLayout());
-        String relErr;        
+        String relErr, ratioErr = null;        
         if (rowNdx < 0) {
             bkgndColor = row.getBackground();
-            relErr = "Error,%";
+            relErr = "Error percent";
+            ratioErr = "Error ratio";
         } else {
             bkgndColor = Color.WHITE;
             row.setBackground(bkgndColor);
@@ -173,31 +175,46 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
                 parts[rowNdx][0] = mismatches[rowNdx].maxPart;
             }
             if (mismatches[rowNdx].relErr()*100<.1)
-                relErr = "< 0.01";
+                relErr = "< 0.01%";
             else
-                relErr = NccUtils.round(mismatches[rowNdx].relErr()*100, 1) + "";            
+                relErr = NccUtils.round(mismatches[rowNdx].relErr()*100, 1) + "%";
+            ratioErr = NccUtils.round(mismatches[rowNdx].ratioErr(), 1) + "";
         }
         
-        // create panel with relative error value
-        JLabel errLabel = new JLabel(relErr);
-        errLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        errLabel.setMinimumSize(dimErrCol);
-        errLabel.setMaximumSize(dimErrCol);
-        errLabel.setPreferredSize(dimErrCol);
-        errLabel.setFont(font);
-        errLabel.setBorder(border);
+//        // create panel with relative error value
+//        JLabel errLabel = new JLabel(relErr);
+//        errLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+//        errLabel.setMinimumSize(dimErrCol);
+//        errLabel.setMaximumSize(dimErrCol);
+//        errLabel.setPreferredSize(dimErrCol);
+//        errLabel.setFont(font);
+//        errLabel.setBorder(border);
 
-        // set up the panel with error label and curcuit-specific data
+        Box errSubPanel = new Box(BoxLayout.Y_AXIS);
+        errSubPanel.setMinimumSize(dimErrCol);
+        errSubPanel.setMaximumSize(dimErrCol);
+        errSubPanel.setPreferredSize(dimErrCol);
+        String edge[] = new String[2];
+        edge[0] = relErr;
+        edge[1] = ratioErr;
+        for (int line=0; line<2; line++) {
+            JPanel subRow = createDoubleRow(edge[line], line);
+            subRow.setBackground(bkgndColor);
+            errSubPanel.add(subRow);
+        }
+
+        // set up the panel with error label and circuit-specific data
         JPanel errPanel = new JPanel();
         errPanel.setLayout(new BoxLayout(errPanel, BoxLayout.X_AXIS));
         errPanel.add(Box.createHorizontalStrut(4));
-        errPanel.add(errLabel);
+//        errPanel.add(errLabel);
+        errPanel.add(errSubPanel);
         errPanel.add(Box.createHorizontalStrut(4));
         errPanel.add(new JSeparator(SwingConstants.VERTICAL));
         errPanel.add(Box.createHorizontalStrut(2));
         errPanel.setBackground(bkgndColor);
         
-        // set up the panel with two rows: one per curcuit
+        // set up the panel with two rows: one per circuit
         Box subRowsPanel = new Box(BoxLayout.Y_AXIS);
         Dimension paramDims[] = {dimWidCol, dimLenCol};
         String params[] = new String[2];
@@ -237,10 +254,18 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
         row.setAlignmentY(TOP_ALIGNMENT);
         return row;
     }
-       
+    
+	 private JPanel createDoubleRow(String name, int lineNdx) {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        panel.setBorder(border);
+        panel.setBackground(bkgndColor);
+        panel.add(Box.createHorizontalStrut(10));
+        panel.add(createNamePane(name, -1, lineNdx));
+        return panel;
+	 }
+
     private JPanel createSubRow(String params[], Dimension paramDims[],
                                 String name, int rowNdx, int lineNdx) {
-        //StringBuffer text = new StringBuffer(64);
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         panel.setBorder(border);
         panel.setBackground(bkgndColor);
@@ -281,7 +306,7 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
             label.setBorder(border);
             return label;
         } 
-        // drop "Part:" or "Wire:" prefices
+        // drop "Part:" or "Wire:" prefixes
         if (name.startsWith("Wire: ") || name.startsWith("Part: "))
             name = name.substring(6);
         // drop "Cell instance:" info
