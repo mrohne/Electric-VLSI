@@ -289,7 +289,7 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
         TRANS4("4-port-transistor", "trans-4", true, false),
         /** Describes a Josephson Junction transistor. */
         JOSEPHSON("josephson-junction-transistor", "josephson", false, false),
-        /** Describes a resistor. */
+        /** Describes a normal (damper) resistor. */
         RESIST("resistor", "res", false, false),
         /** Describes a poly resistor. */
         //@Deprecated
@@ -319,6 +319,8 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
         RESNACTIVE("n-type-active-resistor", "resnactive", false, false),
         /** Describes a p-active resistor */
         RESPACTIVE("p-type-active-resistor", "respactive", false, false),
+        /** Describes a bias resistor. */
+        RESISTBIAS("resistor-bias", "res-b", false, false),
         /** Describes an ESD device */
         ESDDEVICE("esd-device", "esdd", false, false),
         /** Describes a capacitor. */
@@ -527,7 +529,7 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
          * @return true if this function describes a non simple resistor.
          */
         public boolean isComplexResistor() {
-            return this == PRESIST || this == WRESIST || this == RESHIRESPOLY2
+            return this == RESISTBIAS || this == PRESIST || this == WRESIST || this == RESHIRESPOLY2
                     || this == RESNPOLY || this == RESPPOLY
             		|| this == RESNPOLYM || this == RESPPOLYM
                     || this == RESNNSPOLY || this == RESPNSPOLY

@@ -105,6 +105,9 @@
             <menuNodeInst protoName="Resistor" function="RESHIRESPOLY2" techBits="9">
                 <menuNodeText text="Hi-Res-Poly2" size="0"/>
             </menuNodeInst>
+            <menuNodeInst protoName="Resistor" function="RESISTBIAS" techBits="10">
+                <menuNodeText text="Bias" size="0"/>
+            </menuNodeInst>
         </menuBox>
         <menuBox>
             <menuNodeInst protoName="Inductor" function="INDUCT">

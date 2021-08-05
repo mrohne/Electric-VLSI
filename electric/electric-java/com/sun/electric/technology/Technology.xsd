@@ -615,6 +615,7 @@
             <xsd:enumeration value="TRANS4"/>
             <xsd:enumeration value="JOSEPHSON"/>
             <xsd:enumeration value="RESIST"/>
+            <xsd:enumeration value="RESISTBIAS"/>
             <!-- @Deprecated xsd:enumeration value="PRESIST"/-->
             <xsd:enumeration value="RESNPOLY"/>
             <xsd:enumeration value="RESPPOLY"/>

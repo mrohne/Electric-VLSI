@@ -2806,6 +2806,7 @@
         <primitiveNode name="Resistor-n-type-no-silicide-poly-resistor" fun="RESNNSPOLY"/>
         <primitiveNode name="Resistor-p-type-no-silicide-poly-resistor" fun="RESPNSPOLY"/>
         <primitiveNode name="Resistor-hi-res-poly2-resistor" fun="RESHIRESPOLY2"/>
+        <primitiveNode name="Resistor-bias" fun="RESISTBIAS"/>
         <diskOffset untilVersion="1" x="3.0" y="0.5"/>
         <diskOffset untilVersion="2" x="2.0" y="0.5"/>
         <nodeBase>
@@ -2825,6 +2826,7 @@
                 <primitiveNode name="Resistor-p-type-active-resistor"/>
                 <primitiveNode name="Resistor-n-type-no-silicide-poly-resistor"/>
                 <primitiveNode name="Resistor-p-type-no-silicide-poly-resistor"/>
+                <primitiveNode name="Resistor-bias"/>
             </inNodes>
             <points/>
             <techPoint xm="-0.3333333333" xa="-2.0" ym="0.0" ya="0.0"/>
@@ -2837,6 +2839,14 @@
             <techPoint xm="0.25" xa="1.5" ym="-0.5" ya="-0.5"/>
             <techPoint xm="0.3" xa="1.8" ym="0.0" ya="0.0"/>
             <techPoint xm="0.3333333333" xa="2.0" ym="0.0" ya="0.0"/>
+        </nodeLayer>
+        <nodeLayer layer="Node" style="DISC">
+            <inNodes>
+                <primitiveNode name="Resistor-bias"/>
+            </inNodes>
+            <points/>
+            <techPoint xm="3" xa="-1.85" ym="0.0" ya="0.25"/>
+            <techPoint xm="3" xa="-1.975" ym="0.0" ya="0.25"/>
         </nodeLayer>
         <nodeLayer layer="Node" style="TEXTBOX" message="N" relSize="2.0">
             <inNodes>

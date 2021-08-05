@@ -4,6 +4,8 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+IMP: (8/5/2021) Added "Bias Resistor" primitive Node and schematic symbol with dot.
+
 IMP: (7/27/2021) NCC reporting has new level 3 which runs a print strategy.
 
 IMP: (7/27/2021) NCC size errors are now shown as both percentage and ratio.

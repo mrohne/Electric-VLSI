@@ -1460,6 +1460,10 @@ public class Schematics extends Technology {
                     new Technology.TechPoint(RIGHT6BYP5, EdgeV.b(-0.5)),
                     new Technology.TechPoint(RIGHT6BYP6, EdgeV.c(0)),
                     new Technology.TechPoint(RIGHT6BYP66, EdgeV.c(0))});
+        /* Dot for bias resistors */
+        Technology.NodeLayer resistorLayerDot = new Technology.NodeLayer(node_lay, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, new Technology.TechPoint[]{
+            new Technology.TechPoint(new EdgeH(3, -1.85), new EdgeV(0.0, 0.25)),
+            new Technology.TechPoint(new EdgeH(3, -1.975), new EdgeV(0.0, 0.25))});
         /* bold resistor */
         Technology.NodeLayer resistorLayerBold = new Technology.NodeLayer(node_lay, 0, Poly.Type.OPENEDT3, Technology.NodeLayer.POINTS, new Technology.TechPoint[]{
                     new Technology.TechPoint(LEFT6BYP66, EdgeV.c(0)),
@@ -1517,6 +1521,7 @@ public class Schematics extends Technology {
         resistorUSN.setMessage("US-N");
         resistorUSN.setDescriptor(tdBig);
         Technology.NodeLayer[] resistorLayersNorm = new Technology.NodeLayer[]{resistorLayer};
+        Technology.NodeLayer[] resistorLayersBias = new Technology.NodeLayer[]{resistorLayer, resistorLayerDot};
         Technology.NodeLayer[] resistorLayersHiResPoly2 = new Technology.NodeLayer[]{resistorLayerBold}; // bold icon
         Technology.NodeLayer[] resistorLayersNPoly = new Technology.NodeLayer[]{resistorLayer, resistorLayerN};
         Technology.NodeLayer[] resistorLayersPPoly = new Technology.NodeLayer[]{resistorLayer, resistorLayerP};
@@ -1536,7 +1541,8 @@ public class Schematics extends Technology {
             resistorLayersPActive,
             resistorLayersNNSPoly,
             resistorLayersPNSPoly,
-            resistorLayersHiResPoly2
+            resistorLayersHiResPoly2,
+            resistorLayersBias
         };
         PrimitiveNode.Function[] resistorFunctions = {
             PrimitiveNode.Function.RESIST,
@@ -1548,7 +1554,8 @@ public class Schematics extends Technology {
             PrimitiveNode.Function.RESPACTIVE,
             PrimitiveNode.Function.RESNNSPOLY,
             PrimitiveNode.Function.RESPNSPOLY,
-            PrimitiveNode.Function.RESHIRESPOLY2
+            PrimitiveNode.Function.RESHIRESPOLY2,
+            PrimitiveNode.Function.RESISTBIAS
         };
         resistorNode = new MultiFunctionNode("Resistor", 6.0, 1.0, ERectangle.fromLambda(-2, -0.5, 4, 1),
                 resistorLayersNorm, resistorLayers, PrimitiveNode.Function.RESIST, resistorFunctions);

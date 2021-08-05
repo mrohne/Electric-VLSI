@@ -157,6 +157,7 @@ public class Change extends EModelessDialog implements HighlightListener
 
     	Map<Function,String> specialResistor = new HashMap<Function,String>();
     	specialResistor.put(Function.RESIST, "normal");
+    	specialResistor.put(Function.RESISTBIAS, "bias");
     	specialResistor.put(Function.RESNPOLY, "n-poly");
     	specialResistor.put(Function.RESPPOLY, "p-poly");
     	specialResistor.put(Function.RESNNSPOLY, "n-poly-no-silicide");
