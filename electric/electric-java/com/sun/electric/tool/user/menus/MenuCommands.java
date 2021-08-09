@@ -100,7 +100,11 @@ public final class MenuCommands {
 
 	private static List<EMenuItem> makeTestMenus() {
 		List<EMenuItem> list = new ArrayList<EMenuItem>(5);
-		if (Job.getDebug()) list.add(TestMenu.makeMenu());
+		if (Job.getDebug())
+		{
+			list.add(TestMenu.makeMenu());
+			list.add(DeveloperMenu.makeMenu());
+		}
 		list.add(PublicDebugMenu.makeMenu());
 
 		// Adding developers menus. They are accessed by DevelopersMenus
