@@ -114,7 +114,7 @@ public class NccEngine {
 		int numCells = globals.getNumNetlistsBeingCompared();
 		int[] partCounts = getNetObjCounts(globals.getParts(), numCells);
 		int[] wireCounts = getNetObjCounts(globals.getWires(), numCells);
-		int[] portCounts = getNetObjCounts(globals.getWires(), numCells);
+		int[] portCounts = getNetObjCounts(globals.getPorts(), numCells);
 		String[] cellNames = globals.getRootCellNames();
 		VarContext[] contexts = globals.getRootContexts();
 		for (int i=0; i<cellNames.length; i++) {
