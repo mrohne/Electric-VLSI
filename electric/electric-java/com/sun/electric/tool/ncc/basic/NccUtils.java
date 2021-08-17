@@ -23,6 +23,7 @@
 package com.sun.electric.tool.ncc.basic;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -194,6 +195,15 @@ public class NccUtils {
             System.out.println("Huh? I woke up.");
         }
     }
+
+	private static DecimalFormat round2DF = new DecimalFormat("#.##");
+	private static DecimalFormat round2DFExp = new DecimalFormat("#.##E00");
+
+	public static String roundedString(double x) {
+		if (x == 0) return "0";
+		if (x < 0.1) return round2DFExp.format(x);
+		return round2DF.format(x);
+	}
 	public static double round(double x, int places) {
 		long m = pow(10, places);
 		return Math.rint(x*m)/m;

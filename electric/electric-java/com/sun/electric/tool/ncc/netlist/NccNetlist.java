@@ -68,7 +68,6 @@ import com.sun.electric.tool.Job;
  */
 public class NccNetlist {
     public final static Netlist.ShortResistors SHORT_RESISTORS = Netlist.ShortResistors.PARASITIC;
-	private final NccGlobals globals;
 	private final Cell rootCell;
 	private final VarContext rootContext;
 	private ArrayList<Wire> wires;
@@ -94,7 +93,6 @@ public class NccNetlist {
 	public NccNetlist(Cell root, VarContext context, 
 					  HierarchyInfo hierInfo, boolean blackBox, 
 					  NccGlobals globals) {
-		this.globals = globals;
 		rootCell = root; 
 		rootContext = context;
 
@@ -104,6 +102,13 @@ public class NccNetlist {
 			wires = v.getWireList();
 			parts = v.getPartList();
 			ports = v.getPortList();
+			if (v.isDebug())
+			{
+				globals.prln("Netlist for cell: "+root.describe(false));
+				for(Wire w : wires) globals.prln("  Wire: "+w.fullDescription());
+				for(Part p : parts) globals.prln("  Part: "+p.fullDescription());
+				for(Port p : ports) globals.prln("  Port: "+p.fullDescription());
+			}
 			exportAssertionFailures = v.exportAssertionFailures();
 			badTransistorType = v.badTransistorType();
 		} catch (RuntimeException e) {
@@ -358,6 +363,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 	private final boolean blackBox;
 	
 	// --------------------------- private methods ----------------------------
+	public boolean isDebug() { return debug; }
 	private void error(boolean pred, String msg) {globals.error(pred, msg);}
 	private String spaces() {
 		StringBuffer sp = new StringBuffer();
@@ -592,6 +598,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 			{
 				Object obj = info.getContext()==null ? var.getObject() : info.getContext().evalVar(var, ni);
 				length = VarContext.objectToDouble(obj, 0);
+System.out.println("INDUCTOR "+ni.describe(false)+" VALUE="+obj+" WHICH BECOMES "+length);
 			} else
 			{
 				if (!isSchematicPrimitive(ni))
@@ -650,16 +657,26 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		Function f = ni.getFunction();
 		if (f.isTransistor()) {
 			buildTransistor(ni, info);
+			if (debug)
+				globals.prln(spaces()+"Adding Transistor: " + ni.describe(false));
 		} else if (f.isResistor()) {
 			// We use normal resistors to model parasitic wire resistance.
 			// NCC normally considers them to be "short circuits" and discards them.
 			// But in special cases, when the user wants them checked, they are
 			if (globals.getOptions().checkResistors)
+			{
 				buildResistor(ni, info);
+				if (debug)
+					globals.prln(spaces()+"Adding Resistor: " + ni.describe(false));
+			}
 		} else if (f == Function.INDUCT) {
 			buildInductor(ni, info);
+			if (debug)
+				globals.prln(spaces()+"Adding Inductor: " + ni.describe(false));
 		} else if (f == Function.JOSEPHSON) {
 			buildJosephson(ni, info);
+			if (debug)
+				globals.prln(spaces()+"Adding Josephson: " + ni.describe(false));
 		}
 	}
 	
@@ -797,7 +814,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 		
 		NccCellInfo info = (NccCellInfo) ci;
 		if (debug) {
-			globals.status2(spaces()+"Enter cell: " + info.getCell().getName());
+			globals.prln(spaces()+"Enter cell: " + info.getCell().getName());
 			depth++;
 		}
 		if (info.isRootCell()) {
@@ -834,7 +851,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 	public void exitCell(CellInfo info) {
 		if (debug) {
 			depth--;
-			globals.status2(spaces()+"Exit cell: " + info.getCell().getName());
+			globals.prln(spaces()+"Exit cell: " + info.getCell().getName());
 		}
 	}
 	@Override

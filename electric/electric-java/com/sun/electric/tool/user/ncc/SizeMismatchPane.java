@@ -86,18 +86,18 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
         // compute max numbers to estimate column width
         int errColWidth = 7, widColWidth = 3, lenColWidth = 3;
         for (int i=0; i<size; i++) {
-            String err = NccUtils.round(mismatches[i].relErr()*100,1) + "%";
+            String err = NccUtils.round(mismatches[i].relErr()*100,1) + " %";
             errColWidth = Math.max(errColWidth, err.length());
             String rErr = NccUtils.round(mismatches[i].ratioErr(), 1) + "";
             errColWidth = Math.max(errColWidth, rErr.length());
             
-            String w1 = NccUtils.round(mismatches[i].minPart.getWidth(),2) + "";
-            String w2 = NccUtils.round(mismatches[i].maxPart.getWidth(),2) + "";
+            String w1 = NccUtils.roundedString(mismatches[i].minPart.getWidth());
+            String w2 = NccUtils.roundedString(mismatches[i].maxPart.getWidth());
             int wid = Math.max(w1.length(), w2.length());
             widColWidth = Math.max(widColWidth, wid+1);
             
-            String l1 = NccUtils.round(mismatches[i].minPart.getLength(),2) + "";
-            String l2 = NccUtils.round(mismatches[i].maxPart.getLength(),2) + "";
+            String l1 = NccUtils.roundedString(mismatches[i].minPart.getLength());
+            String l2 = NccUtils.roundedString(mismatches[i].maxPart.getLength());
             int len = Math.max(l1.length(), l2.length());
             lenColWidth = Math.max(lenColWidth, len+1);
         }
@@ -175,9 +175,9 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
                 parts[rowNdx][0] = mismatches[rowNdx].maxPart;
             }
             if (mismatches[rowNdx].relErr()*100<.1)
-                relErr = "< 0.01%";
+                relErr = "< 0.01 %";
             else
-                relErr = NccUtils.round(mismatches[rowNdx].relErr()*100, 1) + "%";
+                relErr = NccUtils.round(mismatches[rowNdx].relErr()*100, 1) + " %";
             ratioErr = NccUtils.round(mismatches[rowNdx].ratioErr(), 1) + "";
         }
         
@@ -226,8 +226,8 @@ class SizeMismatchPane extends JPanel implements HyperlinkListener, AdjustmentLi
                 String titles[] = result.getNames();
                 name = "Name in " + titles[line];
             } else {
-                params[0] = NccUtils.round(parts[rowNdx][line].getWidth(),2) + ""; 
-                params[1] = NccUtils.round(parts[rowNdx][line].getLength(),2) + "";
+                params[0] = NccUtils.roundedString(parts[rowNdx][line].getWidth());		// improvements by SMR 6/2021
+                params[1] = NccUtils.roundedString(parts[rowNdx][line].getLength());
                 name = parts[rowNdx][line].instanceDescription();
 				if (parts[rowNdx][line] instanceof PartReport)		// improvements by SMR 6/2021
 				{
