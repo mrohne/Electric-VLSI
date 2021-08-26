@@ -1281,7 +1281,9 @@ public class Layer implements Serializable, Comparable {
         if (transparent != 0) {
             Color colorFromMap = tech.getFactoryTransparentLayerColors()[transparent - 1];
             if ((colorFromMap.getRGB() & 0xFFFFFF) != graphics.getRGB()) {
-                throw new IllegalArgumentException();
+				System.out.print("****Layer "+name+": Wrong transparent color "+Integer.toHexString(graphics.getRGB()));
+				graphics = graphics.withColor(colorFromMap);
+				System.out.println("->"+Integer.toHexString(graphics.getRGB()));
             }
         }
         Layer layer = new Layer(name, tech, graphics);
