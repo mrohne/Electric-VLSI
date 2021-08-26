@@ -98,6 +98,9 @@ public class DesignRulesTab extends PreferencePanel
 
         // Resolution
 		drResolutionValue.setText(TextUtils.formatDistance(dp.getResolution(curTech).getLambda()));
+
+        // AngleStep
+		drAngleStepValue.setText(TextUtils.formatDistance(dp.getAngleStep(curTech)));
 	}
 
 	/**
@@ -110,6 +113,8 @@ public class DesignRulesTab extends PreferencePanel
         DRC.DRCPreferences dp = new DRC.DRCPreferences(false);
 		double currentResolution = TextUtils.atofDistance(drResolutionValue.getText());
 		dp.setResolution(curTech, ECoord.fromLambdaRoundSizeGrid(currentResolution));
+		double currentAngleStep = TextUtils.atofDistance(drAngleStepValue.getText());
+		dp.setAngleStep(curTech, currentAngleStep);
 
         // Getting last changes
 		if (designRulesFactoryReset)
@@ -136,6 +141,7 @@ public class DesignRulesTab extends PreferencePanel
 		{
 			Technology tech = it.next();
             dp.setResolution(tech, tech.getFactoryResolution());
+            dp.setAngleStep(tech, tech.getFactoryAngleStep());
 	        XMLRules rules = tech.getFactoryDesignRules();
 			DRC.setRules(dp, tech, rules);
 			tech.setCachedRules(rules);
@@ -155,7 +161,8 @@ public class DesignRulesTab extends PreferencePanel
         designRules = new javax.swing.JPanel();
         drResolutionLabel = new javax.swing.JLabel();
         drResolutionValue = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
+        drAngleStepLabel = new javax.swing.JLabel();
+        drAngleStepValue = new javax.swing.JTextField();
         drTechName = new javax.swing.JLabel();
 
         setTitle("Tool Options");
@@ -186,13 +193,21 @@ public class DesignRulesTab extends PreferencePanel
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         designRules.add(drResolutionValue, gridBagConstraints);
 
-        jLabel6.setText("(use 0 to ignore resolution check)");
+        drAngleStepLabel.setText("Min. angle step in degrees:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-        designRules.add(jLabel6, gridBagConstraints);
+        designRules.add(drAngleStepLabel, gridBagConstraints);
+
+        drAngleStepValue.setColumns(6);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        designRules.add(drAngleStepValue, gridBagConstraints);
 
         drTechName.setText("jLabel1");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -217,8 +232,9 @@ public class DesignRulesTab extends PreferencePanel
     private javax.swing.JPanel designRules;
     private javax.swing.JLabel drResolutionLabel;
     private javax.swing.JTextField drResolutionValue;
+    private javax.swing.JLabel drAngleStepLabel;
+    private javax.swing.JTextField drAngleStepValue;
     private javax.swing.JLabel drTechName;
-    private javax.swing.JLabel jLabel6;
     // End of variables declaration//GEN-END:variables
 
     /****************************** Reset default arc widths ******************************/
