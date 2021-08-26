@@ -31,6 +31,7 @@ import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.PathIterator;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -217,6 +218,31 @@ public class PolyMerge extends GeometryHandler implements Serializable
 	}
 
 	/**
+	 * Method to add two layers in this merge and produce a third.
+	 * @param sourceA the first Layer to intersect.
+	 * @param sourceB the second Layer to intersect.
+	 * @param dest the destination layer to place the union of the first two.
+	 * If there is no intersection, all geometry on this layer is cleared.
+	 */
+	public void unionLayers(Layer sourceA, Layer sourceB, Layer dest)
+	{
+		Area destArea = null;
+		Area sourceAreaA = (Area)layers.get(sourceA);
+		if (sourceAreaA != null)
+		{
+			Area sourceAreaB = (Area)layers.get(sourceB);
+			if (sourceAreaB != null)
+			{
+				destArea = new Area(sourceAreaA);
+				destArea.add(sourceAreaB);
+				if (destArea.isEmpty()) destArea = null;
+			}
+		}
+		if (destArea == null) layers.remove(dest); else
+			layers.put(dest, destArea);
+	}
+
+	/**
 	 * Method to intersect two layers in this merge and produce a third.
 	 * @param sourceA the first Layer to intersect.
 	 * @param sourceB the second Layer to intersect.
@@ -290,12 +316,12 @@ public class PolyMerge extends GeometryHandler implements Serializable
 	 */
 	public void insetLayer(Layer source, Layer dest, double amount)
 	{
-		Area sourceArea = (Area)layers.get(source);
-		if (sourceArea == null) layers.remove(dest); else
+		Area area = (Area)layers.get(source);
+		if (area == null) layers.remove(dest); else
 		{
-			layers.put(dest, sourceArea.clone());
+			layers.put(dest, area.clone());
 			if (amount == 0) return;
-			List<PolyBase> orig = getAreaPoints(sourceArea, source, true);
+			List<PolyBase> orig = PolyBase.getPointsInArea(area, source, true, true);
 			for(PolyBase poly : orig)
 			{
 				PolyBase.Point [] points = poly.getPoints();
@@ -375,6 +401,9 @@ public class PolyMerge extends GeometryHandler implements Serializable
 		Area area = (Area)layers.get(layer);
 		if (area == null) return false;
 
+		// first check with poly.getBounds2D
+		if (area.contains(poly.getBounds2D())) return true;
+
 		// create an area that is the new polygon minus the original area
 		Area polyArea = new Area(poly);
 		polyArea.subtract(area);
@@ -388,15 +417,38 @@ public class PolyMerge extends GeometryHandler implements Serializable
 
     public Area exclusive(Layer layer, PolyBase poly)
     {
+        // create an area that is the new polygon minus the original area
+		return exclusive(layer, new Area(poly));
+    }
+
+    public Area exclusive(Layer layer, Area poly)
+    {
         // find the area for the given layer
 		Area area = (Area)layers.get(layer);
 		if (area == null) return null;
 
         // create an area that is the new polygon minus the original area
-		Area polyArea = new Area(poly);
-		polyArea.subtract(area);
+		poly.subtract(area);
 
-        return polyArea;
+        return poly;
+    }
+
+    public Area inclusive(Layer layer, PolyBase poly)
+    {
+        // create an area that is the new polygon intersecting the original area
+		return inclusive(layer, new Area(poly));
+    }
+
+    public Area inclusive(Layer layer, Area poly)
+    {
+        // find the area for the given layer
+		Area area = (Area)layers.get(layer);
+		if (area == null) return null;
+
+        // create an area that is the new polygon intersecting the original area
+		poly.intersect(area);
+
+        return poly;
     }
 
     /**
@@ -464,7 +516,7 @@ public class PolyMerge extends GeometryHandler implements Serializable
 
 	private double getAreaOfArea(Area area)
 	{
-		List<PolyBase> pointList = getAreaPoints(area, null, true);
+		List<PolyBase> pointList = PolyBase.getPointsInArea(area, null, true, true);
 		double totalArea = 0;
 		for(PolyBase p : pointList)
 		{
@@ -483,14 +535,40 @@ public class PolyMerge extends GeometryHandler implements Serializable
 	{
 		Area area = (Area)layers.get(layer);
 		if (area == null) return false;
-		return area.contains(pt);
+		// pt is in the interior of area?
+		if (area.contains(pt)) return true;
+		// pt is on the boundary of area?
+		PathIterator pIt = area.getPathIterator(null);
+		if (PolyBase.isPointOnPath(pIt, pt)) return true;
+		return false;
 	}
 
-	public Collection<PolyBase> getObjects(Object layer, boolean modified, boolean simple)
+	public Collection<PolyBase> getObjects(Object key, boolean modified, boolean simple)
 	{
 		// Since simple is used, correct detection of loops must be guaranteed
 		// outside.
-		return getMergedPoints((Layer)layer, simple);
+		Layer layer = (Layer) key;
+		return getMergedPoints(layer, simple);
+	}
+
+    /**
+	 * Method to return the basic Area on a given Layer in this Merge.
+	 * @param layer the layer in question.
+	 * @return the list of Polys that describes this Merge.
+	 */
+    public Area getMergedArea(Layer layer)
+	{
+		return (Area)layers.get(layer);
+	}
+
+    /**
+	 * Method to return set basic Area on a given Layer in this Merge.
+	 * @param layer the layer in question.
+	 * @return the list of Polys that describes this Merge.
+	 */
+    public void setMergedArea(Layer layer, Area area)
+	{
+		layers.put(layer, area);
 	}
 
     /**
@@ -503,18 +581,15 @@ public class PolyMerge extends GeometryHandler implements Serializable
 	{
 		Area area = (Area)layers.get(layer);
 		if (area == null) return null;
-		return getAreaPoints(area, layer, simple);
-	}
-
-	/**
-	 * Method to return a list of polygons in this merge for a given layer.
-	 * @param area the Area object that describes the merge.
-	 * @param layer the desired Layer.
-	 * @param simple true for simple polygons, false to allow complex ones.
-	 * @return a List of PolyBase objects that describes the layer in the merge.
-	 */
-    public static List<PolyBase> getAreaPoints(Area area, Layer layer, boolean simple)
-    {
         return PolyBase.getPointsInArea(area, layer, simple, true);
 	}
+
+    public Collection<PolyBase.PolyBaseTree> getTreeObjects(Object key)
+    {
+		Layer layer = (Layer) key;
+		Area area = (Area)layers.get(layer);
+		if (area == null) return null;
+        return PolyBase.getPolyTrees(area, layer);
+	}
+
 }
