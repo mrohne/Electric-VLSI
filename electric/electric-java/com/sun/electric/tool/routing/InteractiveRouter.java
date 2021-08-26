@@ -470,7 +470,8 @@ public abstract class InteractiveRouter extends Router {
             SizeOffset so = pn.getProtoSizeOffset();
             endRE = RouteElementPort.newNode(cell, pn, pn.getPort(0), endPoint,
                     pn.getDefWidth(ep)-so.getHighXOffset()-so.getLowXOffset(),
-                    pn.getDefHeight(ep)-so.getHighYOffset()-so.getLowYOffset(), Orientation.IDENT, ep);
+					pn.getDefHeight(ep)-so.getHighYOffset()-so.getLowYOffset(), Orientation.IDENT, 
+					stayInside, ep);
         }
 
         // favor contact on bisected arc
@@ -533,7 +534,7 @@ public abstract class InteractiveRouter extends Router {
 						EPoint portLoc2 = dNi.findPortInstFromProto(primPort2).getCenter();
 
 						// make the curved primitive
-						RouteElementPort newPinRE1 = RouteElementPort.newNode(cell, pn, primPort1, curveCenter, pn.getDefWidth(ep), pn.getDefHeight(ep), orient, ep);
+						RouteElementPort newPinRE1 = RouteElementPort.newNode(cell, pn, primPort1, curveCenter, pn.getDefWidth(ep), pn.getDefHeight(ep), orient, stayInside, ep);
 						newPinRE1.setConnectingSite(new Poly(Poly.from(portLoc1)));
 						route.add(newPinRE1);
 						RouteElementPort newPinRE2 = RouteElementPort.newNodeOtherPort(cell, newPinRE1, primPort2, ep);
@@ -623,7 +624,7 @@ public abstract class InteractiveRouter extends Router {
 						EPoint portLoc2 = dNi.findPortInstFromProto(primPort2).getCenter();
 
 						// create the curve primitive
-						RouteElementPort newPinRE1 = RouteElementPort.newNode(cell, pn, primPort1, curveCenter, pn.getDefWidth(ep), pn.getDefHeight(ep), orient, ep);
+						RouteElementPort newPinRE1 = RouteElementPort.newNode(cell, pn, primPort1, curveCenter, pn.getDefWidth(ep), pn.getDefHeight(ep), orient, stayInside, ep);
 						newPinRE1.setConnectingSite(new Poly(Poly.from(portLoc1)));
 						route.add(newPinRE1);
 						RouteElementPort newPinRE2 = RouteElementPort.newNodeOtherPort(cell, newPinRE1, primPort2, ep);
@@ -645,7 +646,7 @@ public abstract class InteractiveRouter extends Router {
                 double defwidth = pn.getDefWidth(ep)-so.getHighXOffset()-so.getLowXOffset();
                 double defheight = pn.getDefHeight(ep)-so.getHighYOffset()-so.getLowYOffset();
                 RouteElementPort pinRE = RouteElementPort.newNode(cell, pn, pn.getPort(0), cornerLoc,
-                        defwidth, defheight, Orientation.IDENT, ep);
+																  defwidth, defheight, Orientation.IDENT, stayInside, ep);
                 route.add(pinRE);
                 addConnectingArc(route, cell, startRE, pinRE, startPoint, cornerLoc, startArc,
                         startArcWidth, startAngle, extendArcHead, extendArcTail, stayInside, alignment);
@@ -1408,7 +1409,7 @@ public abstract class InteractiveRouter extends Router {
 
         // make new pin
         RouteElementPort newPinRE = RouteElementPort.newNode(cell, pn, pn.getPort(0),
-                bisectPoint, width, height, Orientation.IDENT, ep);
+															 bisectPoint, width, height, Orientation.IDENT, stayInside, ep);
         newPinRE.setBisectArcPin(true);
 
         // make dummy end pins
