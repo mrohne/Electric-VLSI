@@ -75,6 +75,7 @@ public class ArcInfo extends Info
 		new SpecialTextDescr(0,  9, ARCINC),
 		new SpecialTextDescr(0,  6, ARCANTENNARATIO),
         new SpecialTextDescr(0,  3, ARCWIDTHOFFSET),
+        new SpecialTextDescr(0,  0, ARCCURVABLE),
 	};
 
 	ArcInfo()
@@ -111,6 +112,7 @@ public class ArcInfo extends Info
 		loadTableEntry(arcTextTable, ARCINC, new Integer(angInc));
 		loadTableEntry(arcTextTable, ARCANTENNARATIO, new Double(antennaRatio));
 		loadTableEntry(arcTextTable, ARCWIDTHOFFSET, new Double(widthOffset));
+		loadTableEntry(arcTextTable, ARCCURVABLE, Boolean.valueOf(curvable));
 
 		// now create those text objects
 		createSpecialText(np, arcTextTable, ep);
@@ -164,6 +166,9 @@ public class ArcInfo extends Info
 					break;
 				case ARCWIDTHOFFSET:
 					aIn.widthOffset = TextUtils.atof(str);
+					break;
+				case ARCCURVABLE:
+					aIn.curvable = str.equalsIgnoreCase("yes");
 					break;
 			}
 		}
