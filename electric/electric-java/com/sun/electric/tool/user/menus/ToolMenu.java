@@ -2347,8 +2347,10 @@ public class ToolMenu {
     		return;
     	}
         String fileName = OpenFile.chooseInputFile(FileType.ABCL, null, null);
-		System.out.println("Executing commands in ABCL Script: " + fileName);
-		EvalABCL.runScriptNoJob("(LOAD #p\""+fileName+"\")");
+		if (fileName != null) {
+			System.out.println("Executing commands in ABCL Script: " + fileName);
+			EvalABCL.runScriptNoJob("(LOAD #p\""+fileName+"\")");
+		}
     }
 
 	/**
