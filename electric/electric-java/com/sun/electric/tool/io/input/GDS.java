@@ -160,7 +160,6 @@ public class GDS extends Input<Object>
     private CellArrayBuilder  cellArrayBuilder;
     private Map<Library,Cell> currentCells;
 	private CellBuilder      theCell;
-	private NodeProto        theNodeProto;
 	private PrimitiveNode    layerNodeProto;
 	private UnknownLayerMessage currentUnknownLayerMessage;
     private PrimitiveNode    pinNodeProto;
@@ -2088,7 +2087,7 @@ public class GDS extends Input<Object>
 
 		theCell.makeInstanceArray(np, nCols, nRows, Orientation.fromJava(angle, mX, mY), scale,
 			theVertices[0], rowInterval, colInterval);
-		if (localPrefs.dumpReadable) printWriter.println("-- Array Reference: " + nCols + "x" + nRows + " of " + theNodeProto.describe(false));
+		if (localPrefs.dumpReadable) printWriter.println("-- Array Reference: " + nCols + "x" + nRows + " of " + np.describe(false));
 	}
 
 	private class ReadOrientation
@@ -2165,7 +2164,7 @@ public class GDS extends Input<Object>
 		if (trans) angle = 3600 - angle;
 
 		theCell.makeInstance(np, loc, Orientation.fromJava(angle, false, mY), scale, 0, 0, null, null);
-		if (localPrefs.dumpReadable) printWriter.println("-- Instance of " + theNodeProto.noLibDescribe() +
+		if (localPrefs.dumpReadable) printWriter.println("-- Instance of " + np.noLibDescribe() +
         	" at (" + TextUtils.formatDistance(loc.getX()) + "," + TextUtils.formatDistance(loc.getY()) + ")");
 	}
 
@@ -2200,7 +2199,7 @@ public class GDS extends Input<Object>
 			}
 			double cX = (lx + hx) / 2, cY = (ly + hy) / 2;
 			printWriter.print("-- Shape on " + (layerIsPin ? "pin " : "") + "layer " + curLayerNum + "/" + curLayerType +
-        		" (" + layerNodeProto.describe(false) + ") at (" + TextUtils.formatDistance(cX) + "," + TextUtils.formatDistance(cY) +
+        		" (" + layerNodeProto + ") at (" + TextUtils.formatDistance(cX) + "," + TextUtils.formatDistance(cY) +
         		") has " + numVertices + " points:");
 	        for(int i=0; i<numVertices; i++) printWriter.print(" (" + TextUtils.formatDistance(theVertices[i].getX()) + "," +
 	        	TextUtils.formatDistance(theVertices[i].getX()) + ")");
@@ -2786,7 +2785,7 @@ public class GDS extends Input<Object>
 		curLayerType = layerType;
 		layerIsPin = false;
 		currentUnknownLayerMessage = null;
-		Integer layerInt = new Integer(layerNum + (layerType<<16));
+		Integer layerInt = Integer.valueOf(layerNum + (layerType<<16));
 		List<Layer> list = layerNames.get(layerInt);
 		Layer layer = null;
 		
@@ -2988,9 +2987,6 @@ public class GDS extends Input<Object>
 	{
 		// scan for this prototype
 		name = scaleName(name, 1.0);
-		if (localPrefs.skeletonize) name += "{lay.sk}"; else
-			name += "{lay}";
-		name = scaleName(name, 1.0);
 		Cell np = findCell(name);
 		if (np == null)
 		{
@@ -3010,6 +3006,9 @@ public class GDS extends Input<Object>
 	private DecimalFormat scaleFormat = new DecimalFormat("#.###");
 	private String scaleName(String name, double scale)
 	{
+        // CellName n = CellName.parseName(name);
+		// System.out.println("scaleName("+name+","+scale+")"+" -> "+n);
+		
 		// name for scaled cell
 		if (name.contains("@")) {
 			System.out.print("PATCH: name " + name);
