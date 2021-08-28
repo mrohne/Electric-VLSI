@@ -1821,25 +1821,47 @@ public class PolyBase implements Shape, PolyNodeMerge {
         if (det != 0) {
             return null;
         }
-        double minX1 = Math.min(line1.getX1(), line1.getX2());
-        double minX2 = Math.min(line2.getX1(), line2.getX2());
+		double X11 = line1.getX1();
+		double X12 = line1.getX2();
+		double X21 = line2.getX1();
+		double X22 = line2.getX2();
+		double Y11 = line1.getY1();
+		double Y12 = line1.getY2();
+		double Y21 = line2.getY1();
+		double Y22 = line2.getY2();
+
+        double minX1 = Math.min(X11, X12);
+        double minX2 = Math.min(X21, X22);
         double minX = Math.max(minX1, minX2);
 
-        double minY1 = Math.min(line1.getY1(), line1.getY2());
-        double minY2 = Math.min(line2.getY1(), line2.getY2());
+        double minY1 = Math.min(Y11, Y12);
+        double minY2 = Math.min(Y21, Y22);
         double minY = Math.max(minY1, minY2);
 
-        double maxX1 = Math.max(line1.getX1(), line1.getX2());
-        double maxX2 = Math.max(line2.getX1(), line2.getX2());
+        double maxX1 = Math.max(X11, X12);
+        double maxX2 = Math.max(X21, X22);
         double maxX = Math.min(maxX1, maxX2);
 
-        double maxY1 = Math.max(line1.getY1(), line1.getY2());
-        double maxY2 = Math.max(line2.getY1(), line2.getY2());
+        double maxY1 = Math.max(Y11, Y12);
+        double maxY2 = Math.max(Y21, Y22);
         double maxY = Math.min(maxY1, maxY2);
 
-        Point2D p1 = new Point2D.Double(minX, minY);
-        Point2D p2 = new Point2D.Double(maxX, maxY);
-        return new Line2D.Double(p1, p2);
+		/**
+		 * The above (original) code works independently on the two axes, essentially:
+		 * 1. convert the lines to rectangles
+		 * 2. clip them to each other
+		 * 3. return (arbitrarily) the I-quadrant diagonal
+		 * This is clearly not the intention, this diagonal might not even be parallel to the lines
+		 * Below we select the diagonal that is in the same quadrant as line1
+		 */
+		double begX = (X11 < X12) ? minX : maxX;
+		double begY = (Y11 < Y12) ? minY : maxY;
+		double endX = (X11 < X12) ? maxX : minX;
+		double endY = (Y11 < Y12) ? maxY : minY;
+
+		Point2D p1 = new Point2D.Double(begX, begY);
+		Point2D p2 = new Point2D.Double(endX, endY);
+		return new Line2D.Double(p1, p2);
     }
 
     /**
