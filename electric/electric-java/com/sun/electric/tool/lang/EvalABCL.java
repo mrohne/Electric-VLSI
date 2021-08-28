@@ -106,7 +106,6 @@ public class EvalABCL {
 		Runnable thunk = new Runnable() {
 				public void run() {
 					try {
-						System.out.println("runScriptNoJob("+string+")");
 						abclFactory.getScriptEngine().eval(string);
 					} catch (Throwable e) {
 						System.out.println("runScriptNoJob: " + e);
@@ -162,7 +161,6 @@ public class EvalABCL {
 			super("ABCL script", User.getUserTool(), jobType, null, null, jobPriority);
 			this.string = string;
             this.cell = null;
-			System.out.println("EvalABCL.ScriptJob(\""+string+"\", "+jobType+", "+jobPriority+")");
         }
 
         public boolean doIt() {
