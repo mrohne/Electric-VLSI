@@ -97,7 +97,7 @@ public class GDS extends Geometry
 	/** old key of Variable with GDS text text. */		public static final Variable.Key OLD_GDS_TEXT_KEY = Variable.newKey("GDS_text");
 
 	private static final int GDSVERSION        =      3;
-	private static final int ROUNDSEGMENTS     =    100;
+	private static final int ROUNDSEGMENTS     =     96;
 	private static final int BYTEMASK          =   0xFF;
 	private static final int DSIZE             =    512;		/* data block */
 	private static final int EXPORTPRESENTATION=      0;		/* centered (was 8 for bottom-left) */
@@ -1468,6 +1468,7 @@ public class GDS extends Geometry
 	{
 		List<Point> pts = new ArrayList<Point>();
 		Point2D [] points = poly.getPoints();
+		if (points == null || points.length == 0) return pts;
 		int lastX = scaleDBUnit(points[0].getX());
 		int lastY = scaleDBUnit(points[0].getY());
 		int firstX = lastX;
