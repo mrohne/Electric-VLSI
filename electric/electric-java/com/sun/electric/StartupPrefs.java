@@ -57,6 +57,7 @@ public class StartupPrefs {
 	 */
 	public static int getDisplayStyle() { return getUserInt(DisplayStyleKey, DisplayStyleDef); }
 
+
 	/** Preferences key to tell the maximum number of undos retained in memory. */
     public static final String MaxUndoHistoryKey = "MaxUndoHistory";
 	/** Default aximum number of undos retained in memory. */
@@ -65,6 +66,7 @@ public class StartupPrefs {
 	 * Method to get the maximum number of undos retained in memory
 	 */
 	public static int getMaxUndoHistory() { return getUserInt(MaxUndoHistoryKey, MaxUndoHistoryDef); }
+
 
 	/** Preferences key to tell the maximum memory to use for Electric, in megatybes. */
     public static final String MemorySizeKey = "MemorySize";
@@ -77,7 +79,8 @@ public class StartupPrefs {
 	 */
     public static int getMemorySize() { return getUserInt(MemorySizeKey, MemorySizeDef); }
 
-	/** Preferences key to tell the maximum permanent space of 2dn GC to use for Electric, in megatybes. */
+
+    /** Preferences key to tell the maximum permanent space of 2dn GC to use for Electric, in megatybes. */
     public static final String PermSizeKey = "PermSize";
 	/** Default maximum permanent space of 2dn GC to use for Electric, in megatybes. */
     public static final int PermSizeDef = 0;
@@ -88,7 +91,8 @@ public class StartupPrefs {
 	 */
     public static int getPermSpace() { return getUserInt(PermSizeKey, PermSizeDef); }
 
-	/** Preferences key to tell whether to use a separate client and server for Electric. */
+
+    /** Preferences key to tell whether to use a separate client and server for Electric. */
     public static final String UseClientServerKey = "UseClientServer";
 	/** Default whether to use a separate client and server for Electric */
     public static final boolean UseClientServerDef = false;
@@ -98,6 +102,7 @@ public class StartupPrefs {
 	 * @return true to use a separate client and server for Electric
 	 */
 	public static boolean isUseClientServer() { return getUserBoolean(UseClientServerKey, UseClientServerDef); }
+
 
 	/** Preferences key to tell whether to perform snapshot logging in a temporary file. */
     public static final String SnapshotLoggingKey = "SnapshotLogging";
@@ -110,7 +115,20 @@ public class StartupPrefs {
 	 */
 	public static boolean isSnapshotLogging() { return getUserBoolean(SnapshotLoggingKey, SnapshotLoggingDef); }
 
-    public static boolean getUserBoolean(String key, boolean def) {
+
+	/** Preferences key to tell whether to scale the screen. */
+    public static final String ScreenScalingKey = "ScreenScaling";
+	/** Default whether to scale the screen. */
+    public static final double ScreenScalingDef = 0;
+	/**
+	 * Method to tell whether to scale the screen.
+	 * The default is 0 (no scaling).
+	 * @return the amount to scale the screen.
+	 */
+	public static double getScreenScaling() { return getUserDouble(ScreenScalingKey, ScreenScalingDef); }
+
+
+	public static boolean getUserBoolean(String key, boolean def) {
         return userNode.getBoolean(key, def);
     }
 

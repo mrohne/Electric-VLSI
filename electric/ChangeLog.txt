@@ -4,18 +4,20 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
-IMP: (8/5/2021) Added "Bias Resistor" primitive Node and schematic symbol with dot.
+IMP: (12/7/2021, SMR): Added Display preference to scale the entire Electric screen.
+ 
+IMP: (8/5/2021, SMR) Added "Bias Resistor" primitive Node and schematic symbol with dot.
 
-IMP: (7/27/2021) NCC reporting has new level 3 which runs a print strategy.
+IMP: (7/27/2021, SMR) NCC reporting has new level 3 which runs a print strategy.
 
-IMP: (7/27/2021) NCC size errors are now shown as both percentage and ratio.
+IMP: (7/27/2021, SMR) NCC size errors are now shown as both percentage and ratio.
 
-BUG: (6/23/2021) "List Exports" doesn't show the bounds of a non-point export.
+BUG: (6/23/2021, SMR) "List Exports" doesn't show the bounds of a non-point export.
 FIX: In ExportChanges.DescribeExports.doIt() now make better report.
 
-IMP: (5/11/2021) Added "Manage Inductances" to unify inductor tags and FastHenry actions.
+IMP: (5/11/2021, SMR) Added "Manage Inductances" to unify inductor tags and FastHenry actions.
 
-IMP: (3/23/2021) Added "Tools/NCC/Show NCC Annotations..." to see all annotations at once.
+IMP: (3/23/2021, SMR) Added "Tools/NCC/Show NCC Annotations..." to see all annotations at once.
 
 ************************* Version 9.08-d: ******************************
 

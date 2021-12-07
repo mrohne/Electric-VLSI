@@ -2597,6 +2597,26 @@ public class User extends Listener
 	 */
 	public static int getFactoryPermSpace() { return cachePermSize.getIntFactoryValue(); }
 
+	private static Pref cacheScreenScaling = Pref.makeDoublePref(StartupPrefs.ScreenScalingKey, tool.prefs, StartupPrefs.ScreenScalingDef);
+	/**
+	 * Method to tell the amount to scale the entire screen.
+	 * The default is 0. If zero, no scaling is done.
+	 * @return the amount to scale the entire screen.
+	 */
+	public static double getScreenScaling() { return cacheScreenScaling.getDouble(); }
+	/**
+	 * Method to set the amount to scale the entire screen.
+	 * If zero, no scaling is done.
+	 * @param sca amount to scale the entire screen.
+	 */
+	public static void setScreenScaling(double sca) { cacheScreenScaling.setDouble(sca); }
+	/**
+	 * Method to tell the amount to scale the entire screen, by default.
+	 * If zero, no scaling is done.
+	 * @return the amount to scale the entire screen, by default.
+	 */
+	public static double getFactoryScreenScaling() { return cacheScreenScaling.getDoubleFactoryValue(); }
+
 	private static Pref cacheUseTwoJVMs = Pref.makeBooleanPref("UseTwoJVMs", tool.prefs, false);
 	/**
 	 * Method to tell whether to use two JVMs when running Electric.

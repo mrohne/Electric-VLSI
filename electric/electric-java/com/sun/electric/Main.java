@@ -21,20 +21,6 @@
  */
 package com.sun.electric;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.prefs.Preferences;
-
-import javax.swing.JFrame;
-
 import com.sun.electric.database.EditingPreferences;
 import com.sun.electric.database.Environment;
 import com.sun.electric.database.Snapshot;
@@ -63,11 +49,37 @@ import com.sun.electric.tool.user.ErrorLogger;
 import com.sun.electric.tool.user.MessagesStream;
 import com.sun.electric.tool.user.User;
 import com.sun.electric.tool.user.UserInterfaceMain;
+import com.sun.electric.tool.user.dialogs.PreferencesFrame;
 import com.sun.electric.tool.user.menus.FileMenu;
+import com.sun.electric.tool.user.menus.HelpMenu;
+import com.sun.electric.tool.user.menus.MenuCommands;
 import com.sun.electric.tool.util.concurrent.runtime.taskParallel.SimpleWorker;
 import com.sun.electric.tool.util.concurrent.runtime.taskParallel.ThreadPool;
+import com.sun.electric.util.ClientOS;
 import com.sun.electric.util.TextUtils;
 import com.sun.electric.util.UsageFormatter;
+
+import java.awt.Desktop;
+//import java.awt.desktop.AboutEvent;
+//import java.awt.desktop.AboutHandler;
+//import java.awt.desktop.PreferencesEvent;
+//import java.awt.desktop.PreferencesHandler;
+//import java.awt.desktop.QuitEvent;
+//import java.awt.desktop.QuitHandler;
+//import java.awt.desktop.QuitResponse;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.prefs.Preferences;
+
+import javax.swing.JFrame;
 
 /**
  * This class initializes Electric and starts the system. How to run Electric:
@@ -129,7 +141,28 @@ public final class Main
         List<String> argsList = new ArrayList<String>();
         for (int i=0; i<args.length; i++) argsList.add(args[i]);
 
-		// -v (short version)
+//        if (ClientOS.os == ClientOS.OS.MACINTOSH)		// TODO: debug Macintosh
+//        {
+//			System.setProperty("apple.laf.useScreenMenuBar", "true");
+//			System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+//			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Electric");
+//			Desktop desktop = Desktop.getDesktop();
+//			desktop.setAboutHandler(new AboutHandler()
+//			{
+//				public void handleAbout(AboutEvent e) { HelpMenu.aboutCommand(); }
+//			});
+//			desktop.setPreferencesHandler(new PreferencesHandler()
+//			{
+//				public void handlePreferences(PreferencesEvent e) { PreferencesFrame.preferencesCommand(); }
+//			});
+//			desktop.setQuitHandler(new QuitHandler()
+//			{
+//				public void handleQuitRequestWith(QuitEvent e, QuitResponse r) { FileMenu.quitCommand(); }
+//			});
+//			desktop.setDefaultMenuBar(MenuCommands.menuBar().genInstance());
+//        }
+
+        // -v (short version)
 		if (hasCommandLineOption(argsList, "-v"))
 		{
 			System.out.println(Version.getVersion());
@@ -257,7 +290,12 @@ public final class Main
             pipedebug = true;
         }
 
-        UserInterfaceMain.Mode mode = null;
+        // set overall scaling if requested		// TODO: finish
+        double screenScaling = StartupPrefs.getScreenScaling();
+        if (screenScaling > 0)
+        	System.setProperty("sun.java2d.uiScale", screenScaling + "");
+
+		UserInterfaceMain.Mode mode = null;
         if (hasCommandLineOption(argsList, "-mdi")) mode = UserInterfaceMain.Mode.MDI;
         if (hasCommandLineOption(argsList, "-sdi")) mode = UserInterfaceMain.Mode.SDI;
 
