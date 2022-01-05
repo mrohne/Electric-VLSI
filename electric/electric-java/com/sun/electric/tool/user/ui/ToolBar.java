@@ -721,6 +721,7 @@ public class ToolBar extends JToolBar
 	static final Cursor measureCursor = readCursor("CursorMeasure.gif", 0, 12);
 	static final Cursor routingCursor = readCursor("CursorRouting.gif", 0, 0);
 	static final Cursor hardSelectCursor = readCursor("CursorHardSelect.gif", 5, 1);
+	static final Cursor areaSelectCursor = readCursor("CursorAreaSelect.gif", 0, 0);
 
 	public static Cursor readCursor(String cursorName, int hotX, int hotY)
 	{
@@ -786,7 +787,8 @@ public class ToolBar extends JToolBar
 				checkLeavingOutlineMode();
 				WindowFrame.setListener(ClickZoomWireListener.theOne);
 				if (isSelectSpecial()) TopLevel.setCurrentCursor(hardSelectCursor); else
-					TopLevel.setCurrentCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					if (ToolBar.getSelectMode() == ToolBar.SelectMode.AREA) TopLevel.setCurrentCursor(areaSelectCursor); else
+						TopLevel.setCurrentCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				curMode = CursorMode.CLICKZOOMWIRE;
 				lastListener = null;
 				break;
@@ -1061,7 +1063,7 @@ public class ToolBar extends JToolBar
 		}
 
 		@Override public boolean isSelected() { return getSelectMode() == sm; }
-		@Override public void run() { setSelectMode(sm); }
+		@Override public void run() { setSelectMode(sm);   changeCursorMode(CursorMode.CLICKZOOMWIRE); }
 	}
 
 	// --------------------------- SelectSpecial staff ---------------------------------------------------------

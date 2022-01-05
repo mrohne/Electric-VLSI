@@ -4,6 +4,7 @@
 <!-- COMMAND Edit/Cleanup Cell/Cleanup Pins -->
 <!-- COMMAND Edit/Cleanup Cell/Cleanup Pins Everywhere -->
 <!-- COMMAND Edit/Arc/Insert Jog In Arc -->
+<!-- COMMAND Edit/Arc/Insert Inductor In Arc -->
 <!-- COMMAND Edit/Arc/Connect Arcs that Cross Named Network... -->
 
 The default width is set by the Arcs Preferences (in menu <B>File / Preferences...</B>, "General" section, "Arcs" tab).
@@ -28,6 +29,12 @@ and the third arc is perpendicular to them, connecting the ends at the cursor lo
 <P>
 Once the jog is inserted, either half of the arc may be moved without affecting the other half,
 and the perpendicular arc will keep the circuit connected.
+<P>
+Another unusual command is <B>Insert Inductor In Arc</B> (in menu <B>Edit / Arc</B>).
+This command lets you interactively select a position in the select arc,
+then it creates an inductor node there.
+Note that this command will fail for most layout technologies because they do not have inductor nodes,
+but specialized technologies that do have inductor nodes will find this command useful.
 <P>
 Beginning users often leave many extra pins in their circuits.
 With the <B>Cleanup Pins</B> command (in menu <B>Edit / Cleanup Cell</B>),

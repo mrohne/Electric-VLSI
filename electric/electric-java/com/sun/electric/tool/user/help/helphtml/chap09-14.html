@@ -50,6 +50,12 @@ made to the cell and update all inductance values, doing a "Compute" of the arcs
 an "Analyze" of the inductance, and an "Annotate" to update the inductor value.
 </TD><TD><CENTER><IMG SRC="fig09-06.png" ALT="Figure 9.6"></CENTER></TD></TR></TABLE>
 <P>
+At the very bottom are controls for experimenting with different inductor widths.
+By default, the width is derived from the size of the inductor nodes and the connected arcs,
+but you can override this value by setting it in the "Inductor width" field then clicking the
+"Analyze with new Width" button. If you like this new width, you can then change the size of the
+inductor node and connected arcs by clicking the "Apply new Width" button.
+<P>
 After all of the inductors have been identified, you can generate a FastHenry deck with the
 <B>Write FastHenry Deck...</B> command (in menu <B>Tools / Inductors</B>).
 Before doing that, however, you can set other options for FastHenry deck generation.

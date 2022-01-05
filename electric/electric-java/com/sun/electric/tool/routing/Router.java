@@ -94,15 +94,15 @@ public abstract class Router {
      * @param arcsCreatedMap a map of arcs to integers which is updated to indicate the number of each arc type created.
      * @param nodesCreatedMap a map of nodes to integers which is updated to indicate the number of each node type created.
      * @param ep EditingPreferences with default sizes
-     * @return true on error.
+     * @return a List of ArcInst objects created (null on error).
      */
-    public static boolean createRouteNoJob(Route route, Cell cell, Map<ArcProto,Integer> arcsCreatedMap,
+    public static List<ArcInst> createRouteNoJob(Route route, Cell cell, Map<ArcProto,Integer> arcsCreatedMap,
     	Map<NodeProto,Integer> nodesCreatedMap, EditingPreferences ep)
     {
         EDatabase.serverDatabase().checkChanging();
 
         // check if we can edit this cell
-        if (CircuitChangeJobs.cantEdit(cell, null, true, false, true) != 0) return true;
+        if (CircuitChangeJobs.cantEdit(cell, null, true, false, true) != 0) return null;
 
         // pass 1: build all newNodes
         for (RouteElement e : route)
@@ -120,12 +120,14 @@ public abstract class Router {
         }
 
         // pass 2: do all other actions (deletes, newArcs)
+        List<ArcInst> newArcs = new ArrayList<ArcInst>();
         for (RouteElement e : route)
         {
         	if (e.getAction() == RouteElement.RouteElementAction.newNode) continue;
             ElectricObject result = e.doAction(ep);
+            if (result instanceof ArcInst) newArcs.add((ArcInst)result);
             if (e.getAction() == RouteElement.RouteElementAction.newArc) {
-            	if (result == null) return true;
+            	if (result == null) return null;
                 RouteElementArc rea = (RouteElementArc)e;
                 Integer i = arcsCreatedMap.get(rea.getArcProto());
                 if (i == null) i = new Integer(0);
@@ -165,7 +167,7 @@ public abstract class Router {
 	            }
         	}
         }
-        return false;
+        return newArcs;
     }
 
 	public static void reportRoutingResults(String prefix, Map<ArcProto,Integer> arcsCreatedMap, Map<NodeProto,Integer> nodesCreatedMap, boolean beep)

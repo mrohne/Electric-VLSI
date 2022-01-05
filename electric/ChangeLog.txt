@@ -4,6 +4,12 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+IMP: (1/4/2022, SMR): Area select now shows a unique cursor to indicate the mode.
+
+IMP: (1/4/2022, SMR): Auto-stitch now leaves newly created arcs highlighted.
+
+IMP: (1/4/2022, SMR): New command to insert an inductor in an arc.
+
 IMP: (12/7/2021, SMR): Added Display preference to scale the entire Electric screen.
  
 IMP: (8/5/2021, SMR) Added "Bias Resistor" primitive Node and schematic symbol with dot.

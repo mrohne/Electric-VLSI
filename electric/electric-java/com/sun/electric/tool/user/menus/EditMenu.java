@@ -34,6 +34,7 @@ import com.sun.electric.database.hierarchy.Library;
 import com.sun.electric.database.network.Network;
 import com.sun.electric.database.prototype.NodeProto;
 import com.sun.electric.database.prototype.PortCharacteristic;
+import com.sun.electric.database.prototype.PortProto;
 import com.sun.electric.database.topology.ArcInst;
 import com.sun.electric.database.topology.Geometric;
 import com.sun.electric.database.topology.NodeInst;
@@ -100,6 +101,7 @@ import com.sun.electric.tool.user.ui.TopLevel;
 import com.sun.electric.tool.user.ui.WindowFrame;
 import com.sun.electric.tool.user.waveform.WaveformWindow;
 import com.sun.electric.util.math.DBMath;
+import com.sun.electric.util.math.Orientation;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -282,7 +284,7 @@ public class EditMenu {
 				new EMenuItem("_Edit Bus Parameters...") { public void run() {
 					BusParameters.showBusParametersDialog(); }}),
 
-		// mnemonic keys available:     E G I  L   PQ S  VWXYZ
+		// mnemonic keys available:     E G    L   PQ S  VWXYZ
 			new EMenu("Ar_c",
 				new EMenuItem("_Rigid") { public void run() {
 					CircuitChanges.arcRigidCommand(); }},
@@ -304,6 +306,8 @@ public class EditMenu {
 				SEPARATOR,
 				new EMenuItem("Insert _Jog In Arc") { public void run() {
 					insertJogInArcCommand(); }},
+				new EMenuItem("Insert _Inductor In Arc") { public void run() {
+					insertInductorInArcCommand(); }},
 				new EMenuItem("Rip _Bus") { public void run() {
 					CircuitChanges.ripBus(); }},
 				new EMenuItem("Connect Arcs that Cross Named Networ_k...") { public void run() {
@@ -1712,6 +1716,203 @@ public class EditMenu {
                 // highlight one of the jog nodes
                 highlighter.clear();
                 highlighter.addElectricObject(jogPoint.getOnlyPortInst(), jogPoint.getParent());
+                highlighter.finished();
+            }
+        }
+    }
+
+    /**
+     * This method implements the command to insert an inductor in an arc
+     */
+    public static void insertInductorInArcCommand()
+    {
+        EditWindow wnd = EditWindow.needCurrent();
+        if (wnd == null) return;
+        ArcInst ai = (ArcInst)wnd.getHighlighter().getOneElectricObject(ArcInst.class);
+        if (ai == null) return;
+
+        // make sure there are inductor arcs available
+        Technology tech = ai.getProto().getTechnology();
+        PrimitiveNode inductorNode = null;
+        for(Iterator<PrimitiveNode> it = tech.getNodes(); it.hasNext(); )
+        {
+        	PrimitiveNode pnp = it.next();
+        	if (pnp.getFunction() != PrimitiveNode.Function.INDUCT) continue;
+        	for(Iterator<PortProto> pIt = pnp.getPorts(); pIt.hasNext(); )
+        	{
+        		PortProto pp = pIt.next();
+        		if (pp.connectsTo(ai.getProto())) { inductorNode = pnp;   break; }
+        	}
+        	if (inductorNode != null) break;
+        }
+        if (inductorNode == null)
+        {
+        	System.out.println("ERROR: There is no inductor node that can connect to " + ai.getProto().describe() + " arcs");
+        	return;
+        }
+
+        System.out.println("Select the position in the arc to place the inductor");
+        WindowFrame.ElectricEventListener currentListener = WindowFrame.getListener();
+        WindowFrame.setListener(new InsertInductorInArcListener(wnd, ai, inductorNode, currentListener));
+    }
+
+    /**
+     * Class to handle the interactive selection of an inductor's location in an arc.
+     */
+    private static class InsertInductorInArcListener implements WindowFrame.ElectricEventListener
+    {
+        private EditWindow wnd;
+        private ArcInst ai;
+        private PrimitiveNode pnp;
+        private WindowFrame.ElectricEventListener currentListener;
+
+        /**
+         * Create a new insert-jog-point listener
+         * @param wnd Controlling window
+         * @param ai the arc that is having an inductor inserted.
+         * @param currentListener listener to restore when done
+         */
+        public InsertInductorInArcListener(EditWindow wnd, ArcInst ai, PrimitiveNode pnp, WindowFrame.ElectricEventListener currentListener)
+        {
+            this.wnd = wnd;
+            this.ai = ai;
+            this.pnp = pnp;
+            this.currentListener = currentListener;
+        }
+
+        public void mousePressed(MouseEvent evt) {}
+        public void mouseClicked(MouseEvent evt) {}
+        public void mouseEntered(MouseEvent evt) {}
+        public void mouseExited(MouseEvent evt) {}
+
+        public void mouseDragged(MouseEvent evt)
+        {
+            mouseMoved(evt);
+        }
+
+        public void mouseReleased(MouseEvent evt)
+        {
+            Point2D insert2D = getInsertPoint(evt);
+            EPoint insert = EPoint.fromLambda(insert2D.getX(), insert2D.getY());
+            new InsertInductorPoint(ai, insert, pnp, wnd.getHighlighter());
+            WindowFrame.setListener(currentListener);
+        }
+
+        public void mouseMoved(MouseEvent evt)
+        {
+            Point2D insert = getInsertPoint(evt);
+            double x = insert.getX();
+            double y = insert.getY();
+
+            double width = ai.getLambdaBaseWidth() / 2;
+            Highlighter highlighter = wnd.getHighlighter();
+            highlighter.clear();
+            highlighter.addLine(new Point2D.Double(x-width, y-width), new Point2D.Double(x+width, y+width), ai.getParent());
+            highlighter.addLine(new Point2D.Double(x+width, y-width), new Point2D.Double(x-width, y+width), ai.getParent());
+            highlighter.finished();
+            wnd.repaint();
+        }
+
+        private Point2D getInsertPoint(MouseEvent evt)
+        {
+            Point2D mouseDB = wnd.screenToDatabase(evt.getX(), evt.getY());
+            EditWindow.gridAlign(mouseDB);
+            Point2D insert = DBMath.closestPointToSegment(ai.getHeadLocation(), ai.getTailLocation(), mouseDB);
+            return insert;
+        }
+
+        public void mouseWheelMoved(MouseWheelEvent e) {}
+
+        public void keyPressed(KeyEvent e) {}
+
+        public void keyReleased(KeyEvent e) {}
+
+        public void keyTyped(KeyEvent e) {}
+
+        public void databaseChanged(DatabaseChangeEvent e) {}
+
+        private static class InsertInductorPoint extends Job
+        {
+            private ArcInst ai;
+            private PrimitiveNode pnp;
+            private EPoint insert;
+            private transient Highlighter highlighter;
+            private NodeInst insertedInductor;
+
+            protected InsertInductorPoint(ArcInst ai, EPoint insert, PrimitiveNode pnp, Highlighter highlighter)
+            {
+                super("Insert Jog in Arc", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
+                this.ai = ai;
+                this.pnp = pnp;
+                this.insert = insert;
+                this.highlighter = highlighter;
+                startJob();
+            }
+
+            @Override
+            public boolean doIt() throws JobException
+            {
+                EditingPreferences ep = getEditingPreferences();
+                if (CircuitChangeJobs.cantEdit(ai.getParent(), null, true, false, true) != 0) return false;
+
+                // create the inductor
+                Orientation orient = Orientation.fromJava(ai.getAngle(), false, false);
+                NodeInst ni = NodeInst.makeInstance(pnp, ep, insert, pnp.getDefWidth(ep), pnp.getDefHeight(ep), ai.getParent(), orient, null);
+                if (ni == null)
+                {
+                    System.out.println("Cannot create inductor " + pnp.describe(true));
+                    return false;
+                }
+
+                // now save the old arc information
+                PortInst headPort = ai.getHeadPortInst();
+                PortInst tailPort = ai.getTailPortInst();
+                Point2D headPt = ai.getHeadLocation();
+                Point2D tailPt = ai.getTailLocation();
+                double width = ai.getLambdaBaseWidth();
+                String arcName = ai.getName();
+
+                // get location of connection to the inductor
+                PortInst pi1 = ni.getPortInst(0);
+                PortInst pi2 = ni.getPortInst(1);
+                Point2D p1Loc = pi1.getPoly().getCenter();
+                Point2D p2Loc = pi2.getPoly().getCenter();
+                if (headPt.distance(p1Loc) > headPt.distance(p2Loc))
+                {
+                	PortInst swapPI = pi1;   pi1 = pi2;   pi2 = swapPI;
+                	Point2D swapPT = p1Loc;  p1Loc = p2Loc;   p2Loc = swapPT;
+                }
+
+                // create the new arcs and delete the old one
+                ArcProto ap = ai.getProto();
+                ArcInst newAi1 = ArcInst.makeInstanceBase(ap, ep, width, headPort, pi1,      headPt, p1Loc, null);
+                ArcInst newAi3 = ArcInst.makeInstanceBase(ap, ep, width, pi2,      tailPort, p2Loc, tailPt, null);
+                ai.kill();
+                if (arcName != null)
+                {
+                    if (headPt.distance(insert) > tailPt.distance(insert))
+                    {
+                        newAi1.setName(arcName, ep);
+                        newAi1.copyTextDescriptorFrom(ai, ArcInst.ARC_NAME);
+                    } else
+                    {
+                        newAi3.setName(arcName, ep);
+                        newAi3.copyTextDescriptorFrom(ai, ArcInst.ARC_NAME);
+                    }
+                }
+
+                // remember the node to be highlighted
+                insertedInductor = ni;
+                fieldVariableChanged("insertedInductor");
+                return true;
+            }
+
+            @Override
+            public void terminateOK()
+            {
+                // highlight the inductor node
+                highlighter.clear();
+                highlighter.addElectricObject(insertedInductor.getPortInst(0), insertedInductor.getParent());
                 highlighter.finished();
             }
         }

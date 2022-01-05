@@ -50,6 +50,7 @@ import com.sun.electric.tool.user.UserInterfaceMain;
 import com.sun.electric.tool.user.ui.EditWindow;
 import com.sun.electric.tool.user.ui.TopLevel;
 import com.sun.electric.tool.user.ui.WindowFrame;
+import com.sun.electric.util.math.Orientation;
 
 import java.awt.Frame;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -191,7 +193,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 					if (area != 0) areaFactor = area;
 					if (length != 0) lengthFactor = length;
 				}
-				double inductance = analyzeInductor(sb, ni, arcsOnInductor, areaFactor, lengthFactor);
+				double inductance = analyzeInductor(sb, ni, arcsOnInductor, areaFactor, lengthFactor, calculateInductorWidth(arcsOnInductor));
 
 				Variable exists = ni.getVar(Schematics.SCHEM_INDUCTANCE);
 				if (exists != null)
@@ -825,9 +827,59 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 	/********************************** INDUCTANCE COMPUTATION **********************************/
 
 	/**
+	 * Method to apply the override inductor width to all arcs and the inductor node
+	 */
+	private void applyInductorWidth()
+    {
+		// make a list of arcs on the inductor
+		List<ArcInst> inductorArcs = getArcsOnInductor();
+
+		// get the new inductor width
+		double inductorWidth = TextUtils.atof(widthValue.getText());
+
+		// make the change
+		(new ApplyInductorWidth(inductorNode, inductorArcs, inductorWidth)).startJob();
+	}
+
+	/**
+	 * This class finishes the job of changing the inductor width by manipulating the database.
+	 */
+	public static class ApplyInductorWidth extends Job
+	{
+		private NodeInst inductorNode;
+		private List<ArcInst> inductorArcs;
+		private double newWidth;
+
+		public ApplyInductorWidth(NodeInst in, List<ArcInst> ia, double nw)
+		{
+			super("Change Inductor Width", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
+			inductorNode = in;
+			inductorArcs = ia;
+			newWidth = nw;
+		}
+
+		@Override
+		public boolean doIt() throws JobException
+		{
+			if (inductorNode != null)
+			{
+				// change Y size to the value
+				double ySize = inductorNode.getYSize();
+				inductorNode.modifyInstance(0, 0, 0, newWidth - ySize, Orientation.IDENT);
+			}
+			for(ArcInst ai : inductorArcs)
+			{
+				// change width to the value
+				ai.setLambdaBaseWidth(newWidth);
+			}
+			return true;
+		}
+	}
+
+	/**
 	 * Method called when the "Analyze" button is clicked.
 	 */
-	private void analyzeInductors()
+	private void analyzeInductors(boolean useOverride)
 	{
 		lastAreaFactor = TextUtils.atof(areaFactor.getText());
 		lastLengthFactor = TextUtils.atof(lengthFactor.getText());
@@ -850,35 +902,44 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 			inductorNode = curInductanceData.cell.findNode(inductorName);
 		}
 
+		double inductorWidth;
+		if (useOverride) inductorWidth = TextUtils.atof(widthValue.getText()); else
+			inductorWidth = calculateInductorWidth(inductorArcs);
+
 		StringBuffer sb = new StringBuffer();
-		computedInductance = analyzeInductor(sb, inductorNode, inductorArcs, lastAreaFactor, lastLengthFactor);
+		computedInductance = analyzeInductor(sb, inductorNode, inductorArcs, lastAreaFactor, lastLengthFactor, inductorWidth);
 		inductorInfo.setText(sb.toString());
 	}
 
-	double analyzeInductor(StringBuffer explanation, NodeInst inductorNode, List<ArcInst> inductorArcs,
-		double areaFactor, double lengthFactor)
+	double calculateInductorWidth(List<ArcInst> inductorArcs)
 	{
-		lastSquaresPerCorner = TextUtils.atof(perCornerFactor.getText());
-
-		// determine size
-		double inductorSize = 0;
+		// determine inductor width
+		double inductorWidth = 0;
 		if (inductorNode != null)
 		{
 			double wid = inductorNode.getXSize(), hei = inductorNode.getYSize();
-			inductorSize = Math.min(wid, hei);
+			inductorWidth = Math.min(wid, hei);
 		} else
 		{
 			if (inductorArcs != null && inductorArcs.size() > 0)
 			{
-				inductorSize = Double.MAX_VALUE;
+				inductorWidth = Double.MAX_VALUE;
 				for(ArcInst ai : inductorArcs)
 				{
 					double wid = ai.getLambdaBaseWidth();
-					if (wid < inductorSize) inductorSize = wid;
+					if (wid < inductorWidth) inductorWidth = wid;
 				}
 			}
 		}
-		if (inductorSize == 0) inductorSize = 1;
+		if (inductorWidth == 0) inductorWidth = 1;
+		widthValue.setText(TextUtils.formatDouble(inductorWidth));
+		return inductorWidth;
+	}
+
+	double analyzeInductor(StringBuffer explanation, NodeInst inductorNode, List<ArcInst> inductorArcs,
+		double areaFactor, double lengthFactor, double inductorWidth)
+	{
+		lastSquaresPerCorner = TextUtils.atof(perCornerFactor.getText());
 
 		// count the number of corners
 		int cornerCount = 0;
@@ -905,7 +966,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 		}
 
 		// compute area component of the inductor
-		explanation.append("======= COMPUTATION OF INDUCTOR: " + inductorNode.describe(false) + " =======\n");
+		explanation.append("======= COMPUTATION OF INDUCTOR" + (inductorNode != null ? ": " + inductorNode.describe(false) : "") + " =======\n");
 		explanation.append("Area component:\n");
 		double edgeLength = 0;
 		if (inductorNode != null)
@@ -925,9 +986,9 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 		explanation.append("    Total Edge-length = " + TextUtils.formatDouble(edgeLength, PRECISION) + "\n");
 
 		// compute the number of squares
-		double squareCount = edgeLength / inductorSize;
+		double squareCount = edgeLength / inductorWidth;
 		explanation.append("    Square-count = Edge-length (" + TextUtils.formatDouble(edgeLength, PRECISION) + ") / " +
-			"Arc width (" + TextUtils.formatDouble(inductorSize, PRECISION) + ") = " +
+			"Inductor width (" + TextUtils.formatDouble(inductorWidth, PRECISION) + ") = " +
 			TextUtils.formatDouble(squareCount, PRECISION) + "\n");
 
 		// compute the corner component
@@ -1074,7 +1135,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 			inductorNamesonNodes = new HashSet<String>();
 			inductorNamesonArcs = new HashSet<String>();
 			inductorNamesDefined = new HashSet<String>();
-			inductorNames = new HashSet<String>();
+			inductorNames = new TreeSet<String>();
 		}
 
 		public void recalculate()
@@ -1219,6 +1280,10 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         lengthFactorSuggestion = new javax.swing.JLabel();
         useLengthFactor = new javax.swing.JButton();
         clearComputationArea = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        analyzeInductorNewWidth = new javax.swing.JButton();
+        widthValue = new javax.swing.JTextField();
+        applyNewWidth = new javax.swing.JButton();
         inductorListPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         listOfInductors = new javax.swing.JList<>();
@@ -1422,6 +1487,49 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         gridBagConstraints.weighty = 0.3;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel1.add(clearComputationArea, gridBagConstraints);
+
+        jLabel8.setText("Inductor width:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        jPanel1.add(jLabel8, gridBagConstraints);
+
+        analyzeInductorNewWidth.setText("Analyze with new Width");
+        analyzeInductorNewWidth.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                analyzeInductorNewWidthActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 2;
+        jPanel1.add(analyzeInductorNewWidth, gridBagConstraints);
+
+        widthValue.setColumns(5);
+        widthValue.setToolTipText("");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel1.add(widthValue, gridBagConstraints);
+
+        applyNewWidth.setText("Apply new Width");
+        applyNewWidth.setToolTipText("");
+        applyNewWidth.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                applyNewWidthActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 2;
+        jPanel1.add(applyNewWidth, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1750,7 +1858,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 
     private void analyzeInductorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_analyzeInductorActionPerformed
     {//GEN-HEADEREND:event_analyzeInductorActionPerformed
-		analyzeInductors();
+		analyzeInductors(false);
     }//GEN-LAST:event_analyzeInductorActionPerformed
 
     private void annotateInductorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_annotateInductorActionPerformed
@@ -1812,16 +1920,28 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 		inductorInfo.setText("");
     }//GEN-LAST:event_clearComputationAreaActionPerformed
 
+    private void analyzeInductorNewWidthActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_analyzeInductorNewWidthActionPerformed
+    {//GEN-HEADEREND:event_analyzeInductorNewWidthActionPerformed
+		analyzeInductors(true);
+    }//GEN-LAST:event_analyzeInductorNewWidthActionPerformed
+
+    private void applyNewWidthActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_applyNewWidthActionPerformed
+    {//GEN-HEADEREND:event_applyNewWidthActionPerformed
+        applyInductorWidth();
+    }//GEN-LAST:event_applyNewWidthActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addArcToInductor;
     private javax.swing.JButton addInductor;
     private javax.swing.JButton analyzeInductor;
+    private javax.swing.JButton analyzeInductorNewWidth;
     private javax.swing.JButton annotateInductor;
+    private javax.swing.JButton applyNewWidth;
     private javax.swing.JTextField areaFactor;
     private javax.swing.JLabel areaFactorSuggestion;
     private javax.swing.JButton clearComputationArea;
-    private javax.swing.JButton detectArcsOnInductor;
     private javax.swing.JButton deleteInductor;
+    private javax.swing.JButton detectArcsOnInductor;
     private javax.swing.JLabel fasthenryDefHeightSubdivs;
     private javax.swing.JLabel fasthenryDefThickness;
     private javax.swing.JLabel fasthenryDefWidthSubdivs;
@@ -1840,6 +1960,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -1859,5 +1980,6 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
     private javax.swing.JButton updateFasthenryData;
     private javax.swing.JButton useAreaFactor;
     private javax.swing.JButton useLengthFactor;
+    private javax.swing.JTextField widthValue;
     // End of variables declaration//GEN-END:variables
 }

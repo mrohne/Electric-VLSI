@@ -60,7 +60,9 @@ import com.sun.electric.technology.technologies.Schematics;
 import com.sun.electric.tool.Job;
 import com.sun.electric.tool.JobException;
 import com.sun.electric.tool.user.CircuitChangeJobs;
+import com.sun.electric.tool.user.Highlighter;
 import com.sun.electric.tool.user.User;
+import com.sun.electric.tool.user.ui.EditWindow;
 import com.sun.electric.util.TextUtils;
 import com.sun.electric.util.math.DBMath;
 import com.sun.electric.util.math.ECoord;
@@ -177,6 +179,7 @@ public class AutoStitch
 		private boolean forced;
 		private AutoOptions prefs;
 		private EDimension alignment;
+		private List<ArcInst> newArcs;
 
 		private AutoStitchJob(Cell cell, List<NodeInst> nodesToStitch, List<ArcInst> arcsToStitch,
 			double lX, double hX, double lY, double hY, boolean forced)
@@ -204,9 +207,22 @@ public class AutoStitch
 			if (lX != hX && lY != hY)
 				limitBound = new Rectangle2D.Double(lX, lY, hX-lX, hY-lY);
             EditingPreferences ep = getEditingPreferences();
-			runAutoStitch(cell, nodesToStitch, arcsToStitch, this, null, limitBound, forced, false, ep, prefs, false, alignment);
+            newArcs = runAutoStitch(cell, nodesToStitch, arcsToStitch, this, null, limitBound, forced, false, ep, prefs, false, alignment);
+            fieldVariableChanged("newArcs");
 			return true;
 		}
+
+        @Override
+        public void terminateOK()
+        {
+            // highlight the new arcs
+            EditWindow wnd = EditWindow.needCurrent();
+            Highlighter highlighter = wnd.getHighlighter();
+            highlighter.clear();
+        	for(ArcInst ai : newArcs)
+        		highlighter.addElectricObject(ai, ai.getParent());
+            highlighter.finished();
+        }
 	}
 
 	/**
@@ -223,8 +239,9 @@ public class AutoStitch
 	 * @param prefs routing preferences.
 	 * @param showProgress true to show progress.
 	 * @param alignment grid alignment for edges of arcs (null if none).
+	 * @return a List of ArcInst objects that were created.
 	 */
-	public static void runAutoStitch(Cell cell, List<NodeInst> nodesToStitch, List<ArcInst> arcsToStitch, Job job,
+	public static List<ArcInst> runAutoStitch(Cell cell, List<NodeInst> nodesToStitch, List<ArcInst> arcsToStitch, Job job,
 		PolyMerge stayInside, Rectangle2D limitBound, boolean forced, boolean includePureLayerNodes,
 		EditingPreferences ep, AutoOptions prefs, boolean showProgress, EDimension alignment)
 	{
@@ -232,13 +249,13 @@ public class AutoStitch
 		if (cell.isAllLocked())
 		{
 			System.out.println("WARNING: Cell " + cell.describe(false) + " is locked: no changes can be made");
-			return;
+			return null;
 		}
 
 		AutoStitch as = new AutoStitch(ep);
 		as.alignment = alignment;
 		as.includePureLayerNodes = includePureLayerNodes;
-		as.runNow(cell, nodesToStitch, arcsToStitch, job, stayInside, limitBound, forced, prefs, showProgress);
+		return as.runNow(cell, nodesToStitch, arcsToStitch, job, stayInside, limitBound, forced, prefs, showProgress);
 	}
 
 	private AutoStitch(EditingPreferences ep)
@@ -301,8 +318,9 @@ public class AutoStitch
 	 * @param forced true if the stitching was explicitly requested (and so results should be printed).
 	 * @param prefs routing preferences.
 	 * @param showProgress true to show progress.
+	 * @return a List of ArcInst objects that were created.
 	 */
-	private void runNow(Cell cell, List<NodeInst> origNodesToStitch, List<ArcInst> origArcsToStitch, Job job,
+	private List<ArcInst> runNow(Cell cell, List<NodeInst> origNodesToStitch, List<ArcInst> origArcsToStitch, Job job,
 		PolyMerge stayInside, Rectangle2D limitBound, boolean forced, AutoOptions prefs, boolean showProgress)
 	{
 		if (showProgress) Job.getUserInterface().setProgressNote("Initializing routing");
@@ -326,7 +344,7 @@ public class AutoStitch
 		totalToStitch += arcsToStitch.size();
 		int soFar = 0;
 
-		if (job != null && job.checkAbort()) return;
+		if (job != null && job.checkAbort()) return null;
 
 		// if creating exports, make first pass in which exports must be created
 		if (prefs.createExports)
@@ -343,7 +361,7 @@ public class AutoStitch
 				soFar++;
 				if (showProgress && (soFar%100) == 0)
 				{
-					if (job != null && job.checkAbort()) return;
+					if (job != null && job.checkAbort()) return null;
 					Job.getUserInterface().setProgressValue(soFar * 100 / totalToStitch);
 				}
 				checkExportCreationStitching(ni, overlapMap, gatherNetworks);
@@ -355,7 +373,7 @@ public class AutoStitch
 				soFar++;
 				if (showProgress && (soFar%100) == 0)
 				{
-					if (job != null && job.checkAbort()) return;
+					if (job != null && job.checkAbort()) return null;
 					Job.getUserInterface().setProgressValue(soFar * 100 / totalToStitch);
 				}
 
@@ -431,7 +449,7 @@ public class AutoStitch
 			soFar++;
 			if (showProgress && (soFar%100) == 0)
 			{
-				if (job != null && job.checkAbort()) return;
+				if (job != null && job.checkAbort()) return null;
 				Job.getUserInterface().setProgressValue(soFar * 100 / totalToStitch);
 			}
 			checkDaisyChain(ai, nodePortBounds, stayInside, top);
@@ -443,11 +461,9 @@ public class AutoStitch
 			System.out.println("Auto-routing detected " + allRoutes.size() + " daisy-chained arcs");
 			for(Route route : allRoutes)
 			{
-				boolean failure = Router.createRouteNoJob(route, cell, arcsCreatedMap, nodesCreatedMap, ep);
-				if (failure)
-				{
+				List<ArcInst> newArcs = Router.createRouteNoJob(route, cell, arcsCreatedMap, nodesCreatedMap, ep);
+				if (newArcs == null)
 					System.out.println("AUTO STITCHER FAILED TO MAKE DAISY-CHAIN ARC");
-				}
 			}
 
 			// reset for the rest of the analysis
@@ -465,7 +481,7 @@ public class AutoStitch
 			soFar++;
 			if (showProgress && (soFar%100) == 0)
 			{
-				if (job != null && job.checkAbort()) return;
+				if (job != null && job.checkAbort()) return null;
 				Job.getUserInterface().setProgressValue(soFar * 100 / totalToStitch);
 			}
 			checkStitching(ni, nodePortBounds, arcLayers, stayInside, top, limitBound, preferredArc);
@@ -477,7 +493,7 @@ public class AutoStitch
 			soFar++;
 			if (showProgress && (soFar%100) == 0)
 			{
-				if (job != null && job.checkAbort()) return;
+				if (job != null && job.checkAbort()) return null;
 				Job.getUserInterface().setProgressValue(soFar * 100 / totalToStitch);
 			}
 
@@ -489,7 +505,7 @@ public class AutoStitch
 		}
 
 		// create the routes
-		makeConnections(showProgress, arcsCreatedMap, nodesCreatedMap, stayInside);
+		List<ArcInst> newArcs = makeConnections(showProgress, arcsCreatedMap, nodesCreatedMap, stayInside);
 
 		// report results
         boolean beep = User.isPlayClickSoundsWhenCreatingArcs();
@@ -498,7 +514,7 @@ public class AutoStitch
 		// check for any inline pins due to created wires
 		if (showProgress)
 		{
-			if (job != null && job.checkAbort()) return;
+			if (job != null && job.checkAbort()) return null;
 			Job.getUserInterface().setProgressValue(0);
 			Job.getUserInterface().setProgressNote("Cleaning up pins...");
 		}
@@ -525,6 +541,7 @@ public class AutoStitch
 			{
 			}
 		}
+		return newArcs;
 	}
 
 	private double getPortSize(PortInst pi)
@@ -560,7 +577,7 @@ public class AutoStitch
 		return widestArc;
 	}
 
-	private void makeConnections(boolean showProgress, Map<ArcProto,Integer> arcsCreatedMap,
+	private List<ArcInst> makeConnections(boolean showProgress, Map<ArcProto,Integer> arcsCreatedMap,
 		Map<NodeProto,Integer> nodesCreatedMap, PolyMerge stayInside)
 	{
 		// create the routes
@@ -572,6 +589,7 @@ public class AutoStitch
 			Job.getUserInterface().setProgressNote("Creating " + totalToStitch + " wires...");
 		}
 		Collections.sort(allRoutes, new CompRoutes());
+		List<ArcInst> newArcs = new ArrayList<ArcInst>();
 		for (Route route : allRoutes)
 		{
 			soFar++;
@@ -616,8 +634,10 @@ public class AutoStitch
 //		            }
 //		        }
 //			}
-			Router.createRouteNoJob(route, c, arcsCreatedMap, nodesCreatedMap, ep);
+			List<ArcInst> newArcsThisRoute = Router.createRouteNoJob(route, c, arcsCreatedMap, nodesCreatedMap, ep);
+			for(ArcInst ai: newArcsThisRoute) newArcs.add(ai);
 		}
+		return newArcs;
 	}
 
 	/****************************************** ARCS THAT DAISY-CHAIN ******************************************/
@@ -2262,7 +2282,7 @@ name=null;
                                 PrimitiveNode pin = ap.findPinProto();
                                 NodeInst pinNi = NodeInst.newInstance(pin, ep, center, pin.getDefWidth(ep), pin.getDefHeight(ep), cell);
                                 Route route = router.planRoute(cell, pinNi.getOnlyPortInst(), pi, center, null, ep, false, false, null, null);
-                                if (!Router.createRouteNoJob(route, cell, new HashMap<ArcProto,Integer>(), new HashMap<NodeProto,Integer>(), ep)) {
+                                if (Router.createRouteNoJob(route, cell, new HashMap<ArcProto,Integer>(), new HashMap<NodeProto,Integer>(), ep) != null) {
                                     pi = pinNi.getOnlyPortInst();
                                 } else {
                                     if (pinNi != null) pinNi.kill(); // delete if route failed
