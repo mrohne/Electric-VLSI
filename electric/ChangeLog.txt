@@ -4,6 +4,10 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+IMP: (1/22/2022, SMR): Inductance Management now has options to recache everything and rename all inductors.
+
+IMP: (1/22/2022, SMR): New command Export/Export Connection Information to show arcs on exports.
+
 IMP: (1/4/2022, SMR): Area select now shows a unique cursor to indicate the mode.
 
 IMP: (1/4/2022, SMR): Auto-stitch now leaves newly created arcs highlighted.

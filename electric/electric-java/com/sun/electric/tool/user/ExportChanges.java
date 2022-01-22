@@ -36,6 +36,8 @@ import com.sun.electric.database.network.NetworkTool;
 import com.sun.electric.database.prototype.PortCharacteristic;
 import com.sun.electric.database.prototype.PortProto;
 import com.sun.electric.database.text.Name;
+import com.sun.electric.database.topology.ArcInst;
+import com.sun.electric.database.topology.Connection;
 import com.sun.electric.database.topology.Geometric;
 import com.sun.electric.database.topology.NodeInst;
 import com.sun.electric.database.topology.PortInst;
@@ -1153,6 +1155,56 @@ public final class ExportChanges
 			return;
 		}
 		deleteExports(cell, exportsToDelete);
+	}
+
+	/**
+	 * Method to explain which arcs will get deleted if the export is removed.
+	 */
+	public static void exportConnectionList()
+	{
+		// make sure there is a current cell
+		Cell cell = WindowFrame.needCurCell();
+		if (cell == null) return;
+
+		List<Export> exportsToExamine = getSelectedExports();
+		if (exportsToExamine.size() == 0)
+		{
+			System.out.println("There are no selected exports to examine");
+			return;
+		}
+		for(Export e : exportsToExamine)
+		{
+			Set<ArcInst> arcsOnExport = new HashSet<ArcInst>();
+			climbUpHierarchy(cell, e, arcsOnExport);
+			if (arcsOnExport.size() == 0)
+			{
+				System.out.println("Export " + e.getName() + " has no arcs on it anywhere up the hierarchy");
+			} else
+			{
+				System.out.println("Export " + e.getName() + " has these arcs on it:");
+				for(ArcInst ai : arcsOnExport)
+					System.out.println("  Arc " + ai.describe(false) + " in cell " + ai.getParent().describe(false));
+			}
+		}
+	}
+
+	private static void climbUpHierarchy(Cell cell, Export e, Set<ArcInst> arcsOnExport)
+	{
+		for(Iterator<NodeInst> it = cell.getInstancesOf(); it.hasNext(); )
+		{
+			NodeInst ni = it.next();
+			PortInst pi = ni.findPortInstFromProto(e);
+			for(Iterator<Connection> cIt = pi.getConnections(); cIt.hasNext(); )
+			{
+				Connection con = cIt.next();
+				arcsOnExport.add(con.getArc());
+			}
+			for(Iterator<Export> eIt = pi.getExports(); eIt.hasNext(); )
+			{
+				Export furtherUp = eIt.next();
+				climbUpHierarchy(ni.getParent(), furtherUp, arcsOnExport);
+			}
+		}
 	}
 
 	/**

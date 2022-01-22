@@ -37,7 +37,7 @@ public class ExportMenu {
 	static EMenu makeMenu() {
 		/****************************** THE EXPORT MENU ******************************/
 
-		// mnemonic keys available: AB    G IJK     Q         
+		// mnemonic keys available: AB    G  JK     Q         
 		return new EMenu("E_xport",
 
 			new EMenuItem("_Create Export...", 'E') { public void run() {
@@ -97,6 +97,8 @@ public class ExportMenu {
 
 			SEPARATOR,
 
+			new EMenuItem("Export Connection _Information") { public void run() {
+				ExportChanges.exportConnectionList(); }},
 			new EMenuItem("Summari_ze Exports") { public void run() {
 				ExportChanges.describeExports(true); }},
 			new EMenuItem("Lis_t Exports") { public void run() {

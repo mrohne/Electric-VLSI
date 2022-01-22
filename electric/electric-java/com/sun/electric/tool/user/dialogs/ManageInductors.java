@@ -136,14 +136,18 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 	{
 		if (!isVisible()) return;
 		if (!stayCurrent.isSelected()) return;
+		updateCurrentCell(false);
+	}
 
+	private String updateCurrentCell(boolean brief)
+	{
 		// update all inductors in the cell
 		EditWindow curWnd = EditWindow.getCurrent();
-		if (curWnd == null) return;
+		if (curWnd == null) return null;
 		Cell cell = curWnd.getCell();
-		if (cell == null) return;
+		if (cell == null) return null;
 		if (curInductanceData == null) allInductanceData.put(cell, curInductanceData = new CellInductance(cell));
-		if (curInductanceData.cell != cell) return;
+		if (curInductanceData.cell != cell) return null;
 		curInductanceData.recalculate();
 
 		// update list of inductors
@@ -210,7 +214,9 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 						deletedArcs = arcsToDelete;
 						selectedAreaFactor = areaFactor;
 						selectedLengthFactor = lengthFactor;
-						changedExplanation.append(sb.toString());
+						if (brief) changedExplanation.append("Updated " + ni.getName() + " inductance from " +
+							TextUtils.formatDouble(val, PRECISION) + " to " + TextUtils.formatDouble(inductance, PRECISION) + "\n"); else
+								changedExplanation.append(sb.toString());
 					}
 				}
 			}
@@ -248,10 +254,19 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 					useLengthFactor.setEnabled(true);
 				}
 			}
-			inductorInfo.setText(changedExplanation.toString());
+			if (!brief)
+			{
+				inductorInfo.setText(changedExplanation.toString());
+				System.out.println("Inductance management: Updating " + newValues.size() + " inductor values");
+			}
 			(new AnnotateCellInductance(newValues)).startJob();
-			System.out.println("Inductance management: Updating " + newValues.size() + " inductor values");
 		}
+		if (brief)
+		{
+			if (changedExplanation.length() == 0) return "Nothing changed in cell " + cell.describe(false);
+			return "Changes in cell " + cell.describe(false) + ":\n" + changedExplanation.toString();
+		}
+		return null;
 	}
 
 //	/**
@@ -286,6 +301,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 		}
 		return selectedArcs;
 	}
+
 	/**
 	 * Method called when a name is selected from the list of inductors.
 	 */
@@ -482,7 +498,46 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 			Job.getUserInterface().showErrorMessage("There is already an inductor called " + newName, "Duplicate Inductor Name");
 			return;
 		}
-		(new RenameInductor(curInductanceData.cell, inductorName, newName, this)).startJob();
+		String[] inductorNames = {inductorName};
+		String[] newNames = {newName};
+		(new RenameInductor(curInductanceData.cell, inductorNames, newNames, this)).startJob();
+	}
+
+	/**
+	 * Method called when the user clicks "Rename All..." to rename all inductors.
+	 */
+	private void renameAllInductors()
+	{
+		String namePattern = Job.getUserInterface().askForInput("New name for inductors (use '*' where numbers will go):", "Rename Inductors", "");
+		if (namePattern == null) return;
+		namePattern = namePattern.trim();
+		if (namePattern.length() == 0) return;
+		int starPos = namePattern.indexOf("*");
+		if (starPos < 0)
+		{
+			Job.getUserInterface().showErrorMessage("Inductor name pattern must have a '*' where the numbers will go", "Bad Pattern Name");
+			return;
+		}
+		String left = namePattern.substring(0, starPos);
+		String right = namePattern.substring(starPos+1);
+
+		// rename all the inductors
+		int numInds = listOfInductors.getModel().getSize();
+		List<String> oldNameList = new ArrayList<String>();
+		List<String> newNameList = new ArrayList<String>();
+		for(int i = 0; i < numInds; i++)
+		{
+			String oldName = listOfInductors.getModel().getElementAt(i);
+			String newName = left + (i+1) + right;
+			if (oldName.equals(newName)) continue;
+			oldNameList.add(oldName);
+			newNameList.add(newName);
+		}
+		String[] oldNames = new String[oldNameList.size()];
+		for(int i=0; i<oldNameList.size(); i++) oldNames[i] = oldNameList.get(i);
+		String[] newNames = new String[newNameList.size()];
+		for(int i=0; i<newNameList.size(); i++) newNames[i] = newNameList.get(i);
+		(new RenameInductor(curInductanceData.cell, oldNames, newNames, this)).startJob();
 	}
 
 	/**
@@ -490,36 +545,39 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 	 */
 	public static class RenameInductor extends Job
 	{
-		private String oldName, newName;
+		private String[] oldNames, newNames;
 		private Cell cell;
 		private transient ManageInductors dialog;
 
-		public RenameInductor(Cell c, String oName, String nName, ManageInductors mi)
+		public RenameInductor(Cell c, String[] oNames, String[] nNames, ManageInductors mi)
 		{
 			super("Rename Inductor", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
 			cell = c;
-			oldName = oName;
-			newName = nName;
+			oldNames = oNames;
+			newNames = nNames;
 			dialog = mi;
 		}
 
 		@Override
 		public boolean doIt() throws JobException
 		{
-			for(Iterator<NodeInst> nIt = cell.getNodes(); nIt.hasNext(); )
+			for(int i=0; i<oldNames.length; i++)
 			{
-				NodeInst ni = nIt.next();
-				if (ni.getName().equals(oldName)) ni.setName(newName);
-			}
-			for(Iterator<ArcInst> aIt = cell.getArcs(); aIt.hasNext(); )
-			{
-				ArcInst ai = aIt.next();
-				Variable var = ai.getVar(Schematics.INDUCTOR_NAME);
-				if (var != null)
+				for(Iterator<NodeInst> nIt = cell.getNodes(); nIt.hasNext(); )
 				{
-					String iName = var.getPureValue(-1);
-					if (iName.equals(oldName))
-						ai.newVar(Schematics.INDUCTOR_NAME, newName, var.getTextDescriptor());
+					NodeInst ni = nIt.next();
+					if (ni.getName().equals(oldNames[i])) ni.setName(newNames[i]);
+				}
+				for(Iterator<ArcInst> aIt = cell.getArcs(); aIt.hasNext(); )
+				{
+					ArcInst ai = aIt.next();
+					Variable var = ai.getVar(Schematics.INDUCTOR_NAME);
+					if (var != null)
+					{
+						String iName = var.getPureValue(-1);
+						if (iName.equals(oldNames[i]))
+							ai.newVar(Schematics.INDUCTOR_NAME, newNames[i], var.getTextDescriptor());
+					}
 				}
 			}
 			return true;
@@ -527,9 +585,12 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 
 		public void terminateOK()
 		{
-			dialog.listOfInductors.setSelectedValue(newName, true);
-			dialog.curInductanceData.inductorNames.remove(oldName);
-			dialog.curInductanceData.inductorNames.add(newName);
+			for(int i=0; i<oldNames.length; i++)
+			{
+				dialog.listOfInductors.setSelectedValue(newNames[i], true);
+				dialog.curInductanceData.inductorNames.remove(oldNames[i]);
+				dialog.curInductanceData.inductorNames.add(newNames[i]);
+			}
 			dialog.showSelected();
 		}
 	}
@@ -936,6 +997,16 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 		return inductorWidth;
 	}
 
+	/**
+	 * Method called when the "Analyze And Annotate All" button is clicked.
+	 */
+	private void analyzeAndAnnotateAllInductors()
+	{
+		String news = updateCurrentCell(true);
+		if (news == null) return;
+		inductorInfo.setText(news);
+	}
+
 	double analyzeInductor(StringBuffer explanation, NodeInst inductorNode, List<ArcInst> inductorArcs,
 		double areaFactor, double lengthFactor, double inductorWidth)
 	{
@@ -1293,6 +1364,8 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         jPanel4 = new javax.swing.JPanel();
         recacheCell = new javax.swing.JButton();
         stayCurrent = new javax.swing.JCheckBox();
+        analyzeAndAnnotateAll = new javax.swing.JButton();
+        renameAllInductors = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         listOfArcsOnInductor = new javax.swing.JList<>();
@@ -1555,7 +1628,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridheight = 3;
+        gridBagConstraints.gridheight = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.6;
         gridBagConstraints.weighty = 1.0;
@@ -1629,6 +1702,18 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         gridBagConstraints.insets = new java.awt.Insets(4, 10, 4, 4);
         jPanel4.add(stayCurrent, gridBagConstraints);
 
+        analyzeAndAnnotateAll.setText("Analyze & Annotate All");
+        analyzeAndAnnotateAll.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                analyzeAndAnnotateAllActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(4, 10, 4, 4);
+        jPanel4.add(analyzeAndAnnotateAll, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -1636,6 +1721,20 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         inductorListPanel.add(jPanel4, gridBagConstraints);
+
+        renameAllInductors.setText("Rename All...");
+        renameAllInductors.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                renameAllInductorsActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        inductorListPanel.add(renameAllInductors, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -1930,9 +2029,19 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         applyInductorWidth();
     }//GEN-LAST:event_applyNewWidthActionPerformed
 
+    private void analyzeAndAnnotateAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeAndAnnotateAllActionPerformed
+    	analyzeAndAnnotateAllInductors();
+    }//GEN-LAST:event_analyzeAndAnnotateAllActionPerformed
+
+    private void renameAllInductorsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_renameAllInductorsActionPerformed
+    {//GEN-HEADEREND:event_renameAllInductorsActionPerformed
+    	renameAllInductors();
+    }//GEN-LAST:event_renameAllInductorsActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addArcToInductor;
     private javax.swing.JButton addInductor;
+    private javax.swing.JButton analyzeAndAnnotateAll;
     private javax.swing.JButton analyzeInductor;
     private javax.swing.JButton analyzeInductorNewWidth;
     private javax.swing.JButton annotateInductor;
@@ -1975,6 +2084,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
     private javax.swing.JTextField perCornerFactor;
     private javax.swing.JButton recacheCell;
     private javax.swing.JButton removeArcFromInductor;
+    private javax.swing.JButton renameAllInductors;
     private javax.swing.JButton renameInductor;
     private javax.swing.JCheckBox stayCurrent;
     private javax.swing.JButton updateFasthenryData;

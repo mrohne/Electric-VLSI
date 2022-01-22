@@ -11,14 +11,15 @@ All of this is managed with the <b>Manage Inductors...</b> command
 (in menu <b>Tools / Inductors</b>).
 Once inductors have been established, you can also write a deck for further analysis by FastHenry.
 <p>
-<TABLE><TR><TD>
 This dialog lets you manage inductors in the current cell.
 If you edit a different cell, click "Recache Current Cell" to see the current cell's inductance information.
-<br><br>
+<p>
+<TABLE><TR><TD>
 The top part of the dialog, with the list of inductors in the cell, allows you to
 create new inductor (with the "New..." button). 
-You can also rename an inductor and delete it.
-Note that if an inductor is listed because there is an inductor node with that name,
+You can rename a single inductor or all of them (the "Rename All..." option prompts for a string with an "*"
+in it and renames every inductor with that pattern, substituting increasing numbers where the "*" is).
+You can also delete inductors, but note that if an inductor is listed because there is an inductor node with that name,
 you cannot delete the inductor in this dialog and must instead delete the inductor node.
 <br><br>
 The next part of the dialog lists arcs on the selected inductor.
@@ -46,8 +47,9 @@ The area and length factors may have suggested values, depending on the layer of
 Click the "Use" buttons to apply these values.
 <br><br>
 You can also click "Update All Inductors in Cell" (at the top of the dialog) to request that the dialog watch all edits
-made to the cell and update all inductance values, doing a "Compute" of the arcs, a "Use" for the area and length factors,
+made to the cell and update all inductance values, doing a "Detect" of the arcs,
 an "Analyze" of the inductance, and an "Annotate" to update the inductor value.
+This operation can also be invoked directly on every inductor in the cell with the "Analyze & Annotate All" button.
 </TD><TD><CENTER><IMG SRC="fig09-06.png" ALT="Figure 9.6"></CENTER></TD></TR></TABLE>
 <P>
 At the very bottom are controls for experimenting with different inductor widths.
