@@ -197,7 +197,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 					if (area != 0) areaFactor = area;
 					if (length != 0) lengthFactor = length;
 				}
-				double inductance = analyzeInductor(sb, ni, arcsOnInductor, areaFactor, lengthFactor, calculateInductorWidth(arcsOnInductor));
+				double inductance = analyzeInductor(sb, ni, arcsOnInductor, areaFactor, lengthFactor, calculateInductorWidth(ni, arcsOnInductor));
 
 				Variable exists = ni.getVar(Schematics.SCHEM_INDUCTANCE);
 				if (exists != null)
@@ -218,6 +218,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 							TextUtils.formatDouble(val, PRECISION) + " to " + TextUtils.formatDouble(inductance, PRECISION) + "\n"); else
 								changedExplanation.append(sb.toString());
 					}
+//if (brief) changedExplanation.append("\n" + sb.toString());
 				}
 			}
 		}
@@ -965,20 +966,20 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 
 		double inductorWidth;
 		if (useOverride) inductorWidth = TextUtils.atof(widthValue.getText()); else
-			inductorWidth = calculateInductorWidth(inductorArcs);
+			inductorWidth = calculateInductorWidth(inductorNode, inductorArcs);
 
 		StringBuffer sb = new StringBuffer();
 		computedInductance = analyzeInductor(sb, inductorNode, inductorArcs, lastAreaFactor, lastLengthFactor, inductorWidth);
 		inductorInfo.setText(sb.toString());
 	}
 
-	double calculateInductorWidth(List<ArcInst> inductorArcs)
+	double calculateInductorWidth(NodeInst iNode, List<ArcInst> inductorArcs)
 	{
 		// determine inductor width
 		double inductorWidth = 0;
-		if (inductorNode != null)
+		if (iNode != null)
 		{
-			double wid = inductorNode.getXSize(), hei = inductorNode.getYSize();
+			double wid = iNode.getXSize(), hei = iNode.getYSize();
 			inductorWidth = Math.min(wid, hei);
 		} else
 		{
