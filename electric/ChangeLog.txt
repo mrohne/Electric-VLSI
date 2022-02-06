@@ -4,6 +4,9 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+BUG: (2/6/2022, SMR): Re-export deep doesn't get area right in subcells.
+FIX: In tool.user.ExportChanges.reExportInBounds(), use transformIn() instead of translateIn(rotateIn())
+
 IMP: (1/22/2022, SMR): Inductance Management now has options to recache everything and rename all inductors.
 
 IMP: (1/22/2022, SMR): New command Export/Export Connection Information to show arcs on exports.

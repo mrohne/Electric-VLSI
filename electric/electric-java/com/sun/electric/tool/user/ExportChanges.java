@@ -925,7 +925,8 @@ public final class ExportChanges
 			// if doing a deep reexport, recurse into the cell
 			if (deep)
 			{
-				FixpTransform goIn = ni.translateIn(ni.rotateIn());
+//				FixpTransform goIn = ni.translateIn(ni.rotateIn());
+				FixpTransform goIn = ni.transformIn();
 				Rectangle2D boundsInside = new Rectangle2D.Double(bounds.getMinX(), bounds.getMinY(),
 					bounds.getWidth(), bounds.getHeight());
 				DBMath.transformRect(boundsInside, goIn);
@@ -1078,6 +1079,9 @@ public final class ExportChanges
 			Export newPp = Export.newInstance(cell, pi, protoNameString, ep, pc);
 			if (newPp != null)
 			{
+				System.out.println("Exported port " + protoNameString + " from port " + pi.getPortProto().getName() + " of node " +
+					pi.getNodeInst().describe(false) + " in cell " + cell.describe(false));
+
 				// copy text descriptor, var, and characteristic
 				if (pi.getPortProto() instanceof Export)
 				{
