@@ -177,6 +177,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 		List<ArcInst> deletedArcs = null;
 		double selectedAreaFactor = 0, selectedLengthFactor = 0;
 		StringBuffer changedExplanation = new StringBuffer();
+		List<String> unshortenedInductors = new ArrayList<String>();
 		for(Iterator<NodeInst> it = cell.getNodes(); it.hasNext(); )
 		{
 			NodeInst ni = it.next();
@@ -185,7 +186,8 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 			{
 				List<ArcInst> arcsOnInductor = new ArrayList<ArcInst>();
 				List<ArcInst> arcsToDelete = new ArrayList<ArcInst>();
-				getArcsOnInductor(ni, ni.getName(), arcsOnInductor, arcsToDelete);
+				if (getArcsOnInductor(ni, ni.getName(), arcsOnInductor, arcsToDelete))
+					unshortenedInductors.add(ni.getName());					
 				StringBuffer sb = new StringBuffer();
 				double areaFactor = defaultAreaFactor;
 				double lengthFactor = defaultLengthFactor;
@@ -264,8 +266,15 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 		}
 		if (brief)
 		{
-			if (changedExplanation.length() == 0) return "Nothing changed in cell " + cell.describe(false);
-			return "Changes in cell " + cell.describe(false) + ":\n" + changedExplanation.toString();
+			String warning = "";
+			if (unshortenedInductors.size() > 0)
+			{
+				warning = "Inductors with unshortened arcs:";
+				for(String indName : unshortenedInductors) warning += " " + indName;
+				warning += "\n";
+			}
+			if (changedExplanation.length() == 0) return warning + "Nothing changed in cell " + cell.describe(false);
+			return warning + "Changes in cell " + cell.describe(false) + ":\n" + changedExplanation.toString();
 		}
 		return null;
 	}
@@ -634,6 +643,25 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 		}
 	}
 
+	/**
+	 * Method called when the "Shorten" button is clicked.
+	 * It shortens all arcs on the selected inductor.
+	 */
+	private void shortenCurrentInductor()
+	{
+		String inductorName = needSelectedInductor();
+		if (inductorName == null) return;
+
+		NodeInst ni = curInductanceData.cell.findNode(inductorName);
+		if (ni == null) return;
+		List<ArcInst> connectedArcs = new ArrayList<ArcInst>();
+		List<ArcInst> disconnectedArcs = new ArrayList<ArcInst>();
+		getArcsOnInductor(ni, inductorName, connectedArcs, disconnectedArcs);
+
+		// shorten all arcs on the inductor
+		(new ShortenArcs(connectedArcs)).startJob();
+	}
+
 	private void showSelected()
 	{
 		makeInductanceDataCurrent();
@@ -698,8 +726,9 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 	 * @param inductorName the name of the inductor node.
 	 * @param arcsToAdd a List that gets filled with ArcInst objects on the inductor.
 	 * @param arcsToDelete a List that gets filled with ArcInst objects no longer on the inductor.
+	 * @return true if the inductor has un-shortened arcs.
 	 */
-	private void getArcsOnInductor(NodeInst ni, String inductorName, List<ArcInst> arcsToAdd, List<ArcInst> arcsToDelete)
+	private boolean getArcsOnInductor(NodeInst ni, String inductorName, List<ArcInst> arcsToAdd, List<ArcInst> arcsToDelete)
 	{
 		// determine arc type that matters
 		double inductorSize = ni.getYSize();
@@ -739,13 +768,19 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 		// figure out which arcs should no longer be connected
 		Set<ArcInst> connectedArcSet = new HashSet<ArcInst>();
 		for(ArcInst ai : arcsToAdd) connectedArcSet.add(ai);
+		boolean unshortened = false;
 		for(Iterator<ArcInst> aIt = curInductanceData.cell.getArcs(); aIt.hasNext(); )
 		{
 			ArcInst ai = aIt.next();
-			if (connectedArcSet.contains(ai)) continue;
+			if (connectedArcSet.contains(ai))
+			{
+				if (ai.isHeadExtended() || ai.isTailExtended()) unshortened = true;
+				continue;
+			}
 			Variable var = ai.getVar(Schematics.INDUCTOR_NAME);
 			if (var != null && var.getPureValue(-1).equals(inductorName)) arcsToDelete.add(ai);
 		}
+		return unshortened;
 	}
 
 	/**
@@ -1298,6 +1333,31 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
 	}
 
 	/**
+	 * This class finishes the "Shorten" function by shortening arcs on an inductor.
+	 */
+	public static class ShortenArcs extends Job
+	{
+		private List<ArcInst> connectedArcs;
+
+		public ShortenArcs(List<ArcInst> arcs)
+		{
+			super("Shorten Arcs", User.getUserTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
+			connectedArcs = arcs;
+		}
+
+		@Override
+		public boolean doIt() throws JobException
+		{
+			for(ArcInst ai : connectedArcs)
+			{
+				ai.setHeadExtended(false);
+				ai.setTailExtended(false);
+			}
+			return true;
+		}
+	}
+
+	/**
 	 * Method to get the name of the selected inductor in the top list.
 	 * Displays an error message if there is none.
 	 * @return the current inductor name (null if none selected).
@@ -1373,6 +1433,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         addArcToInductor = new javax.swing.JButton();
         removeArcFromInductor = new javax.swing.JButton();
         detectArcsOnInductor = new javax.swing.JButton();
+        shortenArcs = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -1400,7 +1461,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         });
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Inductance Computation", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Inductance Computation"));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         analyzeInductor.setText("Analyze");
@@ -1615,7 +1676,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         getContentPane().add(jPanel1, gridBagConstraints);
 
-        inductorListPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Inductors in Cell", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        inductorListPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Inductors in Cell"));
         inductorListPanel.setLayout(new java.awt.GridBagLayout());
 
         listOfInductors.setModel(new javax.swing.AbstractListModel<String>()
@@ -1746,7 +1807,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         getContentPane().add(inductorListPanel, gridBagConstraints);
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Arcs in Selected Inductor", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Arcs in Selected Inductor"));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         listOfArcsOnInductor.setModel(new javax.swing.AbstractListModel<String>()
@@ -1760,7 +1821,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 3;
+        gridBagConstraints.gridheight = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.6;
         gridBagConstraints.weighty = 1.0;
@@ -1812,6 +1873,20 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         jPanel3.add(detectArcsOnInductor, gridBagConstraints);
 
+        shortenArcs.setText("Shorten");
+        shortenArcs.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                shortenArcsActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
+        jPanel3.add(shortenArcs, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -1821,7 +1896,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         getContentPane().add(jPanel3, gridBagConstraints);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "FastHenry Factors", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("FastHenry Factors"));
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
         jLabel3.setText("Thickness:");
@@ -2039,6 +2114,11 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
     	renameAllInductors();
     }//GEN-LAST:event_renameAllInductorsActionPerformed
 
+    private void shortenArcsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_shortenArcsActionPerformed
+    {//GEN-HEADEREND:event_shortenArcsActionPerformed
+        shortenCurrentInductor();
+    }//GEN-LAST:event_shortenArcsActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addArcToInductor;
     private javax.swing.JButton addInductor;
@@ -2087,6 +2167,7 @@ public class ManageInductors extends EModelessDialog implements /*HighlightListe
     private javax.swing.JButton removeArcFromInductor;
     private javax.swing.JButton renameAllInductors;
     private javax.swing.JButton renameInductor;
+    private javax.swing.JButton shortenArcs;
     private javax.swing.JCheckBox stayCurrent;
     private javax.swing.JButton updateFasthenryData;
     private javax.swing.JButton useAreaFactor;

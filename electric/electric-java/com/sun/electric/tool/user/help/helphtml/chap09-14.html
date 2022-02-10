@@ -14,14 +14,14 @@ Once inductors have been established, you can also write a deck for further anal
 This dialog lets you manage inductors in the current cell.
 If you edit a different cell, click "Recache Current Cell" to see the current cell's inductance information.
 <p>
-<TABLE><TR><TD>
 The top part of the dialog, with the list of inductors in the cell, allows you to
 create new inductor (with the "New..." button). 
 You can rename a single inductor or all of them (the "Rename All..." option prompts for a string with an "*"
 in it and renames every inductor with that pattern, substituting increasing numbers where the "*" is).
 You can also delete inductors, but note that if an inductor is listed because there is an inductor node with that name,
 you cannot delete the inductor in this dialog and must instead delete the inductor node.
-<br><br>
+<p>
+<TABLE><TR><TD>
 The next part of the dialog lists arcs on the selected inductor.
 You can click the "Detect" button to figure out which arcs are connected
 by following the inductor node through the circuit.
@@ -30,6 +30,8 @@ You can also assign arcs manually by selecting them in the circuit and clicking 
 You can remove manually-added arcs from an inductor by selecting them in this dialog and clicking the "Remove" button.
 Note that this dialog cross-probes correctly between the list of arcs and the arcs in the circuit:
 clicking on either shows the other.
+Finally, you can request that all arcs on the inductor be "shortened" (have their end extension removed)
+by clicking the "Shorten" button.
 <br><br>
 The next section of the dialog lets you assign analysis factors for FastHenry.
 FastHenry is an inductance analysis tool (see the papers of <A HREF="http://rleweb.mit.edu/rlestaff/p-whit.htm">Jacob White</A>).
@@ -42,15 +44,14 @@ It uses a formula that depends on the area and length of the inductor
 as well as a corner-turning factor.
 Click the "Analyze" button to show the computation of the current inductance value (and click "Clear" to remove that text).
 Click the "Annotate" button to assign the computed inductance to the inductor node (if there is one).
-<br><br>
+</TD><TD><CENTER><IMG SRC="fig09-06.png" ALT="Figure 9.6"></CENTER></TD></TR></TABLE><br><br>
 The area and length factors may have suggested values, depending on the layer of the inductor.
 Click the "Use" buttons to apply these values.
-<br><br>
+<P>
 You can also click "Update All Inductors in Cell" (at the top of the dialog) to request that the dialog watch all edits
 made to the cell and update all inductance values, doing a "Detect" of the arcs,
 an "Analyze" of the inductance, and an "Annotate" to update the inductor value.
 This operation can also be invoked directly on every inductor in the cell with the "Analyze & Annotate All" button.
-</TD><TD><CENTER><IMG SRC="fig09-06.png" ALT="Figure 9.6"></CENTER></TD></TR></TABLE>
 <P>
 At the very bottom are controls for experimenting with different inductor widths.
 By default, the width is derived from the size of the inductor nodes and the connected arcs,

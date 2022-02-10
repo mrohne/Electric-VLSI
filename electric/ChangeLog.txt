@@ -4,6 +4,8 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+IMP: (2/10/2022, SMR) Added "Shorten" button to Inductance Management dialog.
+
 BUG: (2/6/2022, SMR): Re-export deep doesn't get area right in subcells.
 FIX: In tool.user.ExportChanges.reExportInBounds(), use transformIn() instead of translateIn(rotateIn())
 
