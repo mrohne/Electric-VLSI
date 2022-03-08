@@ -1,40 +1,40 @@
-<!-- HEADER 6-3: Preferences -->
+<!-- HEADER 6-3: Preferences and Settings -->
 
 <!-- COMMAND File/Preferences... -->
 <!-- COMMAND File/Export/User Preferences... -->
-<!-- COMMAND File/Export/Project Preferences... -->
+<!-- COMMAND File/Export/Project Settings... -->
 <!-- COMMAND File/Import/User Preferences... -->
-<!-- COMMAND File/Import/Project Preferences... -->
+<!-- COMMAND File/Import/Project Settings... -->
 
 <TABLE><TR><TD WIDTH="30%"><CENTER><IMG SRC="fig06-07.png" ALT="Figure 6.7"></CENTER></TD><TD WIDTH="70%">
-All preferences in Electric are controlled with the <B>Preferences...</B> command (in menu <B>File</B>).
-You can also get Preferences with this icon on the tool bar.
+All options in Electric are controlled with the <B>Preferences...</B> command (in menu <B>File</B>).
+You can also get the dialog with this icon on the tool bar.
 </TD></TR></TABLE>
 <P>
-This dialog has a central panel with a tree-structured list of all of the preferences,
-and two panels on the left and right for setting the <I>Project</I> and <I>User</I> aspects of the preferences.
-If a particular preference has no User or Project part, that panel does not appear.
-The differences between User and Project preferences is:
+The dialog has a central panel with a tree-structured list of all of the options,
+and two panels on the left and right for controlling the <I>Project Settings</I> and
+<I>User Preferences</I> aspects of the preferences.
+If a particular option has no User or Project part, that panel does not appear.
+The differences between User Preferences and Project Settings is:
 <UL>
 <LI><B>User Preferences</B> (on the right) affect the user's interaction with the system.
 Examples are printer control, display colors, and keyboard bindings.
 Each user may have different preferences, and it does not impact the design being done.</LI>
-<LI><B>Project Preferences</B> (on the left) affect the actual circuitry being edited
+<LI><B>Project Settings</B> (on the left) affect the actual circuitry being edited
 (and so should be the same for every user who is editing that circuitry).
 Examples are GDS layer mappings and technology scaling.</LI>
 </UL>
 <P>
 <CENTER><IMG SRC="fig07-26.png" ALT="Figure 7.26"></CENTER>
 <P>
-The Preferences dialog is modeless, meaning that it can remain on the screen while other work is done.
-For this reason, the dialog has an "Apply" button so that changes can be made without dismissing
-the dialog.
-The Preferences dialog also has "Export" and "Import" buttons for saving Preferences to an XML file
+This dialog is modeless, meaning that it can remain on the screen while other work is done.
+For this reason, the dialog has an "Apply" button so that changes can be made without dismissing it.
+The dialog also has "Export" and "Import" buttons for saving Preferences and Settings to an XML file
 (this function is also available from the <B>File / Import</B> and <B>File / Export</B> menus).
 Use the "Help" button to see the page in the user's manual that explains the current panel.
-Finally, the Preferences dialog has a "Reset" button for resetting the current User Preferences panel to its
+Finally, the dialog has a "Reset" button for resetting the current User Preferences panel to its
 factory-default state, and a "Reset All" button for resetting all User Preferences to their factory-default state.
-Note that Project Preferences are not affected by the reset buttons.
+Note that Project Settings are not affected by the reset buttons.
 <P>
 <H4>Where Preferences Are Stored</H4>
 <P>
@@ -53,26 +53,25 @@ In your home directory, under Library/Preferences.  Look at: ~/Library/Preferenc
 </UL>
 You can delete the appropriate data to reset Electric to its "factory" state.
 <P>
-To save your preferences to disk, for saving and transporting to other systems,
+To save your User Preferences to disk, for saving and transporting to other systems,
 use the "Export" button in the Preferences dialog,
-or use the <B>Preferences...</B> commands (in menu <B>File / Export</B>).
+or use the <B>User Preferences...</B> commands (in menu <B>File / Export</B>).
 This will write an XML file with preference information which
 can be read back into Electric with the
-"Import" button, or the <B>Preferences...</B> commands (in menu <B>File / Import</B>).
+"Import" button, or the <B>User Preferences...</B> commands (in menu <B>File / Import</B>).
 <P>
-Project Preferences are also saved with your circuitry so that the values will be correct when
+Project Settings are also saved with your circuitry so that the values will be correct when
 the circuits are read back in.
-<P>
-By default, project preferences are saved in each library that is written to disk.
+By default, Project Settings are saved in each library that is written to disk.
 However, for multiple-library projects, this can be troublesome if some libraries have
-different preferences than others.
+different settings than others.
 The solution is to create a file, in the same directory as the libraries, called "projsettings.xml".
-If this file exists, then preferences are taken from it (and ignored in the libraries).
-To write this file, use the <B>Project Preferences...</B> command (in menu <B>File / Export</B>).
-To override current settings and explicitly read a project preferences file, use the
-<B>Project Preferences...</B> command (in menu <B>File / Import</B>).
+If this file exists, then settings are taken from it (and ignored in the libraries).
+To write this file, use the <B>Project Settings...</B> command (in menu <B>File / Export</B>).
+To override current settings and explicitly read a project settings file, use the
+<B>Project Settings...</B> command (in menu <B>File / Import</B>).
 <P>
-When Electric finds Project Preferences that are inconsistent with the current values, this dialog appears.
+When Electric finds Project Settings that are inconsistent with the current values, this dialog appears.
 You must choose whether you want to use the new setting values or the current setting.
 This can be done on an individual basis, or for all settings that conflict.
 <P>

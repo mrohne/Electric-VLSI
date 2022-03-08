@@ -191,7 +191,7 @@ public class FileMenu {
                     TextWindow.readTextCell(); }},
                 new EMenuItem("User _Preferences...") { public void run() {
                     importPrefsCommand(); }},
-                new EMenuItem("Pro_ject Preferences...") { public void run() {
+                new EMenuItem("Pro_ject Settings...") { public void run() {
                     ProjSettings.importSettings(); }},
                 new EMenuItem("XML Error Logger...") { public void run() {
                     ErrorLoggerTree.importLogger(); }}
@@ -268,7 +268,7 @@ public class FileMenu {
                     saveOldJelib(); }},
                 new EMenuItem("_User Preferences...") { public void run() {
                     exportPrefsCommand(); }},
-                new EMenuItem("Pro_ject Preferences...") { public void run() {
+                new EMenuItem("Pro_ject Settings...") { public void run() {
                     ProjSettings.exportSettings(); }}
             ),
 
