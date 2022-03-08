@@ -1317,43 +1317,56 @@ public class Export extends ElectricObject implements PortProto, Comparable<Expo
     }
 
     /**
-     * helper method to ensure that all arcs connected to Export "pp" at
+     * helper method to ensure that all arcs connected to this Export at
      * instances of its Cell (or any of its export sites)
      * can connect to Export newPP.
      * @return true if the connection cannot be made.
      */
-    public boolean doesntConnect(PrimitivePort newPP) {
+    public boolean doesntConnect(PrimitivePort newPP)
+    {
+    	Connection con = doesntConnectCon(newPP);
+    	if (con == null) return false;
+    	ArcInst ai = con.getArc();
+        System.out.println("Arc " + ai.describe(false) + " in cell " + ai.getParent().describe(false) + " cannot connect to port " + getName());
+        return true;
+    }
+
+    /**
+     * helper method to ensure that all arcs connected to this Export at
+     * instances of its Cell (or any of its export sites)
+     * can connect to Export newPP.
+     * @return Connection with a problem (null if okay).
+     */
+    public Connection doesntConnectCon(PrimitivePort newPP)
+    {
         // check every instance of this node
-        for (Iterator<NodeInst> it = parent.getInstancesOf(); it.hasNext();) {
+        for (Iterator<NodeInst> it = parent.getInstancesOf(); it.hasNext();)
+        {
             NodeInst ni = it.next();
 
             // make sure all arcs on this port can connect
             PortInst pi = ni.findPortInstFromProto(this);
-            for (Iterator<Connection> cIt = pi.getConnections(); cIt.hasNext();) {
+            for (Iterator<Connection> cIt = pi.getConnections(); cIt.hasNext();)
+            {
                 Connection con = cIt.next();
-//			for(Iterator cIt = ni.getConnections(); cIt.hasNext(); )
-//			{
-//				Connection con = (Connection)cIt.next();
-//				if (con.getPortInst().getPortProto() != this) continue;
-                if (!newPP.connectsTo(con.getArc().getProto())) {
-                    System.out.println(con.getArc() + " in " + ni.getParent()
-                            + " cannot connect to port " + getName());
-                    return true;
+                if (!newPP.connectsTo(con.getArc().getProto()))
+                {
+                    System.out.println(con.getArc() + " in " + ni.getParent() +
+                        " cannot connect to port " + getName());
+                    return con;
                 }
             }
 
             // make sure all further exports are still valid
-            for (Iterator<Export> eIt = ni.getExports(); eIt.hasNext();) {
+            for (Iterator<Export> eIt = ni.getExports(); eIt.hasNext();)
+            {
                 Export oPP = eIt.next();
-                if (oPP.getOriginalPort().getPortProto() != this) {
-                    continue;
-                }
-                if (oPP.doesntConnect(newPP)) {
-                    return true;
-                }
+                if (oPP.getOriginalPort().getPortProto() != this) continue;
+                Connection subCon = oPP.doesntConnectCon(newPP);
+                if (subCon != null) return subCon;
             }
         }
-        return false;
+        return null;
     }
 
     /****************************** SUPPORT ******************************/

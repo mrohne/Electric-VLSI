@@ -4,6 +4,10 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+IMP: (3/8/2022, SMR) Change command highlights arcs that are troublesome.
+
+IMP: (3/8/2022, SMR) Cleaned up distinction between Preferences and Settings.
+
 IMP: (2/10/2022, SMR) Added "Shorten" button to Inductance Management dialog.
 
 BUG: (2/6/2022, SMR): Re-export deep doesn't get area right in subcells.

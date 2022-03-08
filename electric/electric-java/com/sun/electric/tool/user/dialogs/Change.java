@@ -36,6 +36,7 @@ import com.sun.electric.database.topology.Connection;
 import com.sun.electric.database.topology.Geometric;
 import com.sun.electric.database.topology.NodeInst;
 import com.sun.electric.database.topology.PortInst;
+import com.sun.electric.database.topology.NodeInst.ChangeError;
 import com.sun.electric.technology.ArcProto;
 import com.sun.electric.technology.PrimitiveNode;
 import com.sun.electric.technology.PrimitiveNode.Function;
@@ -997,6 +998,7 @@ public class Change extends EModelessDialog implements HighlightListener
 
 	private void doTheChange(EditingPreferences ep)
 	{
+		if (geomsToChange.size() == 0) return;
 		NodeProto np = null;
 		ArcProto ap = null;
 		Function func = null;
@@ -1040,6 +1042,7 @@ public class Change extends EModelessDialog implements HighlightListener
 		private boolean changeInCell, changeInLibrary, changeEverywhere, changeConnected;
 		private Function func;
 		private List<Geometric> highlightThese;
+        private List<ChangeError> replacementErrors;
 		private List<NodeInst> nodesToExpand = new ArrayList<NodeInst>();
         private Map<NodeInst, BatchChanges.NodeReplacement> replacements = new LinkedHashMap<NodeInst, BatchChanges.NodeReplacement>();
 
@@ -1064,6 +1067,8 @@ public class Change extends EModelessDialog implements HighlightListener
 			this.changeInLibrary = changeInLibrary;
 			this.changeEverywhere = changeEverywhere;
 			this.changeConnected = changeConnected;
+			this.highlightThese = new ArrayList<Geometric>();
+			this.replacementErrors = new ArrayList<ChangeError>();
             if (scheduleNodes(ep))
                 startJob();
 		}
@@ -1141,7 +1146,8 @@ public class Change extends EModelessDialog implements HighlightListener
                             }
                             if (found) break;
                         }
-                        if (found) {
+                        if (found)
+                        {
                             schedule(lNi);
                         }
                     }
@@ -1158,15 +1164,17 @@ public class Change extends EModelessDialog implements HighlightListener
             return true;
         }
 
-        private void scheduleInCell(Cell cell, NodeProto oldNType) {
+        private void scheduleInCell(Cell cell, NodeProto oldNType)
+        {
             // replace throughout this cell if requested
-            for (Iterator<NodeInst> nIt = cell.getNodes(); nIt.hasNext();) {
+            for (Iterator<NodeInst> nIt = cell.getNodes(); nIt.hasNext();)
+            {
                 NodeInst lNi = nIt.next();
-                if (lNi.getProto() != oldNType) {
-                    continue;
-                }
+                if (lNi.getProto() != oldNType) continue;
+
                 // do not replace the example icon
-                if (lNi.isIconOfParent()) {
+                if (lNi.isIconOfParent())
+                {
                     System.out.println("Example icon in " + cell + " not replaced");
                     continue;
                 }
@@ -1181,19 +1189,25 @@ public class Change extends EModelessDialog implements HighlightListener
             }
             PrimitiveNode.Function fun = func != null ? func : PrimitiveNode.Function.UNKNOWN;
             BatchChanges.NodeReplacement nr = new BatchChanges.NodeReplacement(lNi, np, fun, null);
-            if (lNi.checkReplacement(nr, ep, ignorePortNames, allowMissingPorts)) {
-                replacements.put(lNi, nr);
-            } else {
-        		System.out.println(np + " does not fit in the place of " + lNi.getProto());
+            lNi.checkReplacementErrors(nr, ep, ignorePortNames, allowMissingPorts, replacementErrors);
+            if (replacementErrors.size() == 0) replacements.put(lNi, nr); else
+            {
+        		System.out.println("Node " + np.describe(false) + " does not fit in the place of node " + lNi.getProto().describe(false));
+            	for(ChangeError ce : replacementErrors)
+            	{
+            		ce.printError();
+            		ArcInst ai = ce.getConAI();
+            		if (ai != null) highlightThese.add(ai);
+            	}
             }
         }
 
         @Override
 		public boolean doIt() throws JobException
 		{
+            if (replacementErrors.size() > 0) return true;
             EDatabase database = getDatabase();
             EditingPreferences ep = getEditingPreferences();
-			highlightThese = new ArrayList<Geometric>();
 			fieldVariableChanged("highlightThese");
 			MutableInteger nodeFailures = new MutableInteger(0);
 
@@ -1224,9 +1238,9 @@ public class Change extends EModelessDialog implements HighlightListener
                     System.out.println(oldNType + " replaced with " + replacedWithNode);
                     continue;
 				}
-                // get arc to be replaced
-                ArcInst ai = (ArcInst)geomToChange;
 
+				// get arc to be replaced
+                ArcInst ai = (ArcInst)geomToChange;
                 if (ap == null)
                 {
                     System.out.println("Arc " + ai.getName() + " skipped");
@@ -1391,7 +1405,8 @@ public class Change extends EModelessDialog implements HighlightListener
                         " arcs connected to this replaced with " + ap);
                 } else System.out.println(oldAType + " replaced with " +ap);
 			}
-            for (Map.Entry<NodeProto,MutableInteger> e: totalByNodeProto.entrySet()) {
+            for (Map.Entry<NodeProto,MutableInteger> e: totalByNodeProto.entrySet()) 
+            {
                 NodeProto oldNType = e.getKey();
                 String msg = null;
         		if (changeEverywhere)
@@ -1426,10 +1441,9 @@ public class Change extends EModelessDialog implements HighlightListener
 			if (wnd != null)
 			{
 				Highlighter highlighter = wnd.getHighlighter();
+				highlighter.clear();
 				for(Geometric geom : highlightThese)
-				{
 					highlighter.addElectricObject(geom, geom.getParent());
-				}
                 highlighter.finished();
             }
 			if (nodesToExpand.size() > 0)

@@ -828,382 +828,452 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
     }
 
     /**
-     * Method to replace this NodeInst with one of another type.
-     * All arcs and exports on this NodeInst are moved to the new one.
-     * @param np the new type to put in place of this NodeInst.
-     * @param ep EditingPreferences with default sizes and text descriptors.
-     * @param ignorePortNames true to not use port names when determining association between old and new prototype.
-     * @param allowMissingPorts true to allow replacement to have missing ports and, therefore, delete the arcs that used to be there.
-     * @param preserveParameters true to keep parameters on the old node and put them on the new one.
-     * @return the new NodeInst that replaces this one.
-     * Returns null if there is an error doing the replacement.
-     */
-    public NodeInst replace(NodeProto np, EditingPreferences ep, boolean ignorePortNames, boolean allowMissingPorts, boolean preserveParameters) {
-        BatchChanges.NodeReplacement replacement = new BatchChanges.NodeReplacement(this, np, PrimitiveNode.Function.UNKNOWN, null);
-        if (checkReplacement(replacement, ep, ignorePortNames, allowMissingPorts)) {
-            return doReplace(replacement, ep, allowMissingPorts, preserveParameters);
-        } else {
-            return null;
-        }
-    }
+	 * Class to define errors in a "change" operation that swaps one component for another.
+	 */
+	public static class ChangeError implements Serializable
+	{
+		public static final int CE_RECURSIVE = 1;			// no parameters
+		public static final int CE_MISSINGPORT = 2;			// ai, pi
+		public static final int CE_UNCONNECTABLEPORT = 3;	// ai, pi, pp
+		public static final int CE_MISSINGEXPORT = 4;		// pp
+		public static final int CE_MISSINGHIER = 5;			// ai, pp
 
-    /**
-     * Method to construct an object that represents a task to replace this NodeInst with one of another type.
-     * All arcs and exports on this NodeInst will be moved to the new one.
-     * @param replacement replacement task
-     * @param ep EditingPreferences with default sizes and text descriptors.
-     * @param ignorePortNames true to not use port names when determining association between old and new prototype.
-     * @param allowMissingPorts true to allow replacement to have missing ports and, therefore, delete the arcs that used to be there.
-     * @return true if replacement is possible.
-     * Returns true if replacement is possible.
-     */
-    public boolean checkReplacement(BatchChanges.NodeReplacement replacement, EditingPreferences ep,
-            boolean ignorePortNames, boolean allowMissingPorts) {
-        EDatabase database = getDatabase();
-        NodeProto np = replacement.newProtoId.inDatabase(database);
-        // check for recursion
-        if (np instanceof Cell) {
-            if (Cell.isInstantiationRecursive((Cell) np, topology.cell)) {
-                System.out.println("Cannot replace because it would be recursive");
-                return false;
-            }
-        }
+		private int errorType;
+		private ArcInst conAI;
+		private PortInst conPI;
+		private PortProto ppBad;
 
-        // see if nodeinst is mirrored
-        NodeInst newNi = makeDummyInstance(np, replacement.newImmutableInst(getDatabase().backup(), ep));
-        assert newNi != null;
+		public ChangeError(int et, ArcInst ai, PortInst pi, PortProto pp)
+		{
+			errorType = et;
+			conAI = ai;
+			conPI = pi;
+			ppBad = pp;
+		}
 
-        // associate the ports between these nodes
-        PortAssociation[] oldAssoc = portAssociate(this, newNi, ignorePortNames);
-        assert oldAssoc.length == getNumPortInsts();
-        for (int portIndex = 0; portIndex < oldAssoc.length; portIndex++) {
-            assert oldAssoc[portIndex].portInst == getPortInst(portIndex);
-        }
+		public ArcInst getConAI() { return conAI; }
 
-        // see if the old arcs can connect to ports
-//        double arcDx = 0, arcDy = 0;
-//        int arcCount = 0;
-        String portMismatchError = null;
-        List<String> arcMismatchErrors = null;
-        for (Iterator<Connection> it = getConnections(); it.hasNext();) {
-            Connection con = it.next();
+		public void printError()
+		{
+			switch (errorType)
+			{
+				case CE_RECURSIVE:
+					System.out.println("Cannot replace because it would be recursive");
+					break;
+				case CE_MISSINGPORT:
+					System.out.println("Arc " + conAI.describe(false) + " on old port " + conPI.getPortProto().getName() + " cannot find new port");
+					break;
+				case CE_UNCONNECTABLEPORT:
+					System.out.println("Arc " + conAI.describe(false) + " on old port " + conPI.getPortProto().getName() +
+						" cannot connect to new port " + ppBad.getName());
+					break;
+				case CE_MISSINGEXPORT:
+					System.out.println("No port on new node can replace old node export: " + ppBad.getName());
+					break;
+				case CE_MISSINGHIER:
+					System.out.println("Arc " + conAI.describe(false) + " in higher-level cell " + conAI.getParent().describe(false) +
+						" cannot connect to port " + ppBad.getName());
+					break;
+			}
+		}
+	}
 
-            // make sure there is an association for this port
-            int index = 0;
-            for (; index < oldAssoc.length; index++) {
-                if (oldAssoc[index].portInst == con.getPortInst()) {
-                    break;
-                }
-            }
-            if (index >= oldAssoc.length || oldAssoc[index].assn == null) {
-                if (allowMissingPorts) {
-                    continue;
-                }
-                if (portMismatchError != null) {
-                    portMismatchError += ",";
-                } else {
-                    portMismatchError = "No port on new node has same name and location as old node port(s):";
-                }
-                portMismatchError += " " + con.getPortInst().getPortProto().getName();
-                continue;
-            }
+	/**
+	 * Method to replace this NodeInst with one of another type.
+	 * All arcs and exports on this NodeInst are moved to the new one.
+	 * @param np the new type to put in place of this NodeInst.
+	 * @param ep EditingPreferences with default sizes and text descriptors.
+	 * @param ignorePortNames true to not use port names when determining association between old and new prototype.
+	 * @param allowMissingPorts true to allow replacement to have missing ports and, therefore, delete the arcs that used to be there.
+	 * @param preserveParameters true to keep parameters on the old node and put them on the new one.
+	 * @return the new NodeInst that replaces this one.
+	 * Returns null if there is an error doing the replacement.
+	 */
+	public NodeInst replace(NodeProto np, EditingPreferences ep, boolean ignorePortNames, boolean allowMissingPorts, boolean preserveParameters)
+	{
+		BatchChanges.NodeReplacement replacement = new BatchChanges.NodeReplacement(this, np, PrimitiveNode.Function.UNKNOWN, null);
+		if (checkReplacement(replacement, ep, ignorePortNames, allowMissingPorts))
+			return doReplace(replacement, ep, allowMissingPorts, preserveParameters);
+		return null;
+	}
 
-            // make sure the arc can connect to this type of port
-            PortInst opi = oldAssoc[index].assn;
-            ArcInst ai = con.getArc();
-            if (!opi.getPortProto().connectsTo(ai.getProto())) {
-                if (allowMissingPorts) {
-                    continue;
-                }
-                if (arcMismatchErrors == null) {
-                    arcMismatchErrors = new ArrayList<String>();
-                }
-                arcMismatchErrors.add(ai + " on old port " + con.getPortInst().getPortProto().getName()
-                        + " cannot connect to new port " + opi.getPortProto().getName());
-                continue;
-            }
+	/**
+	 * Method to construct an object that represents a task to replace this NodeInst with one of another type.
+	 * All arcs and exports on this NodeInst will be moved to the new one.
+	 * @param replacement replacement task
+	 * @param ep EditingPreferences with default sizes and text descriptors.
+	 * @param ignorePortNames true to not use port names when determining association between old and new prototype.
+	 * @param allowMissingPorts true to allow replacement to have missing ports and, therefore, delete the arcs that used to be there.
+	 * @return true if replacement is possible.
+	 */
+	public boolean checkReplacement(BatchChanges.NodeReplacement replacement, EditingPreferences ep,
+		boolean ignorePortNames, boolean allowMissingPorts)
+	{
+		List<ChangeError> replacementErrors = new ArrayList<ChangeError>();
+		checkReplacementErrors(replacement, ep, ignorePortNames, allowMissingPorts, replacementErrors);
+		if (replacementErrors.size() == 0) return true;
+		for(ChangeError ce : replacementErrors) ce.printError();
+		return false;
+	}
 
-            // see if the arc fits in the new port
-//            Poly poly = opi.getPoly();
-//            if (!poly.isInside(con.getLocation())) {
-//                // arc doesn't fit: accumulate error distance
-//                double xp = poly.getCenterX();
-//                double yp = poly.getCenterY();
-//                arcDx += xp - con.getLocation().getX();
-//                arcDy += yp - con.getLocation().getY();
-//            }
-//            arcCount++;
-        }
-        if (portMismatchError != null || arcMismatchErrors != null) {
-            if (portMismatchError != null) {
-                System.out.println(portMismatchError);
-            }
-            if (arcMismatchErrors != null) {
-                for (String err : arcMismatchErrors) {
-                    System.out.println(err);
-                }
-            }
-            return false;
-        }
+	/**
+	 * Method to replace this NodeInst with one of another type and explain errors instead of printing them.
+	 * All arcs and exports on this NodeInst are moved to the new one.
+	 * @param np the new type to put in place of this NodeInst.
+	 * @param ep EditingPreferences with default sizes and text descriptors.
+	 * @param ignorePortNames true to not use port names when determining association between old and new prototype.
+	 * @param allowMissingPorts true to allow replacement to have missing ports and, therefore, delete the arcs that used to be there.
+	 * @param preserveParameters true to keep parameters on the old node and put them on the new one.
+	 * @param problems a List of errors found.
+	 * @return the new NodeInst that replaces this one.
+	 * Returns null if there is an error doing the replacement.
+	 */
+	public NodeInst replaceFullExplain(NodeProto np, EditingPreferences ep, boolean ignorePortNames, boolean allowMissingPorts,
+		boolean preserveParameters, List<ChangeError> problems)
+	{
+		BatchChanges.NodeReplacement replacement = new BatchChanges.NodeReplacement(this, np, PrimitiveNode.Function.UNKNOWN, null);
+		checkReplacementErrors(replacement, ep, ignorePortNames, allowMissingPorts, problems);
+		if (problems.size() == 0)
+			return doReplace(replacement, ep, allowMissingPorts, preserveParameters);
+		return null;
+	}
 
-        // see if the old exports have the same connections
-        List<String> exportErrors = null;
-        for (Iterator<Export> it = getExports(); it.hasNext();) {
-            Export pp = it.next();
+	public void checkReplacementErrors(BatchChanges.NodeReplacement replacement, EditingPreferences ep,
+		boolean ignorePortNames, boolean allowMissingPorts, List<ChangeError> replacementErrors)
+	{
+		EDatabase database = getDatabase();
+		NodeProto np = replacement.newProtoId.inDatabase(database);
 
-            // make sure there is an association for this port
-            int index = 0;
-            for (; index < oldAssoc.length; index++) {
-                if (oldAssoc[index].portInst == pp.getOriginalPort()) {
-                    break;
-                }
-            }
-            if (index >= oldAssoc.length || oldAssoc[index].assn == null) {
-                if (exportErrors == null) {
-                    exportErrors = new ArrayList<String>();
-                }
-                exportErrors.add("No port on new node has same name and location as old node port: "
-                        + pp.getOriginalPort().getPortProto().getName());
-                continue;
-            }
-            PortInst opi = oldAssoc[index].assn;
+		// check for recursion
+		if (np instanceof Cell)
+		{
+			if (Cell.isInstantiationRecursive((Cell) np, topology.cell))
+			{
+				replacementErrors.add(new ChangeError(ChangeError.CE_RECURSIVE, null, null, null));
+				return;
+			}
+		}
 
-            // ensure that all arcs connected at exports still connect
-            if (pp.doesntConnect(opi.getPortProto().getBasePort())) {
-                return false;
-            }
-        }
-        if (exportErrors != null) {
-            for (String msg : exportErrors) {
-                System.out.println(msg);
-            }
-            return false;
-        }
-        for (int portIndex = 0; portIndex < oldAssoc.length; portIndex++) {
-            replacement.setAssoc(oldAssoc[portIndex].portInst, oldAssoc[portIndex].assn);
-        }
-        return true;
-    }
+		// see if nodeinst is mirrored
+		NodeInst newNi = makeDummyInstance(np, replacement.newImmutableInst(getDatabase().backup(), ep));
+		assert newNi != null;
 
-    /**
-     * Method to really replace this NodeInst with one of another type.
-     * The new NodeInst will have the same nodeId as this NodeIsnt.
-     * All arcs and exports on this NodeInst will be moved to the new one.
-     * @param replacement the Replacement task.
-     * @param ep EditingPreferences with default sizes and text descriptors.
-     * @param allowMissingPorts true to allow replacement to have missing ports and, therefore, delete the arcs that used to be there.
-     * @param preserveParameters true to keep parameters on the old node and put them on the new one.
-     * @return the new NodeInst that replaces this one.
-     * @throws IllegalArgument if replacement is impossible
-     */
-    public NodeInst doReplace(BatchChanges.NodeReplacement replacement, EditingPreferences ep, boolean allowMissingPorts, boolean preserveParameters) {
-        EDatabase database = topology.cell.getDatabase();
-        assert replacement.getOldNi(database) == this;
-        ImmutableNodeInst newD = replacement.newImmutableInst(database.backup(), ep);
+		// associate the ports between these nodes
+		PortAssociation[] oldAssoc = portAssociate(this, newNi, ignorePortNames);
+		assert oldAssoc.length == getNumPortInsts();
+		for (int portIndex = 0; portIndex < oldAssoc.length; portIndex++)
+		{
+			assert oldAssoc[portIndex].portInst == getPortInst(portIndex);
+		}
 
-        // Save arcs and exports connected to old node
-        Set<ArcInst> arcList = new HashSet<ArcInst>();
-        for (Iterator<Connection> it = getConnections(); it.hasNext();) {
-            arcList.add(it.next().getArc());
-        }
-        Map<Export, PortInst> exportList = new HashMap<Export, PortInst>();
-        for (Iterator<Export> it = getExports(); it.hasNext();) {
-            Export e = it.next();
-            exportList.put(e, e.getOriginalPort());
-        }
-        for (Export e : exportList.keySet()) {
-            NodeInst dummyNi = NodeInst.newInstance(Generic.tech().universalPinNode, ep, EPoint.ORIGIN, 0, 0, topology.cell);
-            boolean ok = e.move(dummyNi.getOnlyPortInst());
-            assert (!ok);
-        }
-        assert !hasExports();
-//        List<Variable> parList = new ArrayList<Variable>();
-//        if (preserveParameters)
-//        {
-//        	for(Iterator<Variable> it = getParameters(); it.hasNext(); ) parList.add(it.next());
-//        }
-        kill();
+		// see if the old arcs can connect to ports
+//		double arcDx = 0, arcDy = 0;
+//		int arcCount = 0;
+		for (Iterator<Connection> it = getConnections(); it.hasNext();)
+		{
+			Connection con = it.next();
 
-        NodeInst newNi = topology.cell.addNode(newD);
-        assert newNi.d == newD && newNi.protoType.getId() == replacement.newProtoId && !newNi.validVisBounds;
+			// make sure there is an association for this port
+			int index = 0;
+			for (; index < oldAssoc.length; index++)
+			{
+				if (oldAssoc[index].portInst == con.getPortInst()) break;
+			}
+			if (index >= oldAssoc.length || oldAssoc[index].assn == null)
+			{
+				if (allowMissingPorts) continue;
+				replacementErrors.add(new ChangeError(ChangeError.CE_MISSINGPORT, con.getArc(), con.getPortInst(), null));
+				continue;
+			}
 
-//        // replace parameters
-//    	for(Variable var : parList)
-//    	{
-//    		Variable newVar = newNi.getParameter(var.getKey());
-//    		if (newVar != null)
-//    			newNi.delParameter(var.getKey());
-//    		newNi.addParameter(var);
-//    	}
+			// make sure the arc can connect to this type of port
+			PortInst opi = oldAssoc[index].assn;
+			ArcInst ai = con.getArc();
+			if (!opi.getPortProto().connectsTo(ai.getProto()))
+			{
+				if (allowMissingPorts) continue;
+				replacementErrors.add(new ChangeError(ChangeError.CE_UNCONNECTABLEPORT, con.getArc(), con.getPortInst(), opi.getPortProto()));
+				continue;
+			}
 
-        // now replace all of the arcs
-        for (ArcInst ai : arcList) {
-            PortInst[] newPortInst = new PortInst[2];
-            EPoint[] newPoint = new EPoint[2];
-            int otherEnd = 0;
-            for (int e = 0; e < 2; e++) {
-                PortInst pi = ai.getPortInst(e);
-                if (pi.getNodeInst() != this) {
-                    // end of arc connected elsewhere: keep the information
-                    newPortInst[e] = pi;
-                    newPoint[e] = ai.getLocation(e);
-                    otherEnd = e;
-                } else {
-                    // end of arc connected to replaced node: translate to new node
-                    PortProtoId newPortId = replacement.assoc[pi.getPortIndex()];
-                    PortProto newPort = newPortId != null ? newPortId.inDatabase(database) : null;
-                    if (newPort == null) {
-                        assert allowMissingPorts;
-                        continue;
-                    }
+			// see if the arc fits in the new port
+//			Poly poly = opi.getPoly();
+//			if (!poly.isInside(con.getLocation())) {
+//				// arc doesn't fit: accumulate error distance
+//				double xp = poly.getCenterX();
+//				double yp = poly.getCenterY();
+//				arcDx += xp - con.getLocation().getX();
+//				arcDy += yp - con.getLocation().getY();
+//			}
+//			arcCount++;
+		}
+		if (replacementErrors.size() > 0) return;
 
-                    // make sure the arc can connect to this type of port
-                    PortInst opi = newNi.findPortInstFromProto(newPort);
-                    assert opi != null;
-                    newPortInst[e] = opi;
-                    Poly poly = opi.getPoly();
-                    EPoint newLoc = ai.getLocation(e);
-                    newPoint[e] = poly.isInside(newLoc) ? newLoc : EPoint.fromLambda(poly.getCenterX(), poly.getCenterY());
-                }
-            }
-            if (newPortInst[ArcInst.TAILEND] == null || newPortInst[ArcInst.HEADEND] == null) {
-                continue;
-            }
+		// see if the old exports have the same connections
+		for (Iterator<Export> it = getExports(); it.hasNext();)
+		{
+			Export pp = it.next();
 
-            // see if a bend must be made in the wire
-            boolean zigzag = false;
-            if (ai.isFixedAngle()) {
-                if (newPoint[0].getX() != newPoint[1].getX() || newPoint[0].getY() != newPoint[1].getY()) {
-                    int ii = DBMath.figureAngle(newPoint[0], newPoint[1]);
-                    int ang = ai.getDefinedAngle();
-                    if ((ii % 1800) != (ang % 1800)) {
-                        zigzag = true;
-                    }
-                }
-            }
+			// make sure there is an association for this port
+			int index = 0;
+			for (; index < oldAssoc.length; index++)
+			{
+				if (oldAssoc[index].portInst == pp.getOriginalPort()) break;
+			}
+			if (index >= oldAssoc.length || oldAssoc[index].assn == null)
+			{
+				replacementErrors.add(new ChangeError(ChangeError.CE_MISSINGEXPORT, null, null, pp));
+				continue;
+			}
+			PortInst opi = oldAssoc[index].assn;
 
-            // see if a bend can be a straight by some simple manipulations
-            if (zigzag && !ai.isRigid() && (ai.getDefinedAngle() % 900) == 0) {
-                // find the node at the other end
-                NodeInst adjustThisNode = ai.getPortInst(otherEnd).getNodeInst();
-                if (!adjustThisNode.hasExports()) {
-                    // other end not exported, see if all arcs can be adjusted
-                    boolean adjustable = true;
-                    for (Iterator<Connection> oIt = adjustThisNode.getConnections(); oIt.hasNext();) {
-                        Connection otherCon = oIt.next();
-                        ArcInst otherArc = otherCon.getArc();
-                        if (otherArc == ai) {
-                            continue;
-                        }
-                        if (otherArc.isRigid()) {
-                            adjustable = false;
-                            break;
-                        }
-                        if (otherArc.getDefinedAngle() % 900 != 0) {
-                            adjustable = false;
-                            break;
-                        }
-                        if (((ai.getDefinedAngle() / 900) & 1) == ((otherArc.getDefinedAngle() / 900) & 1)) {
-                            adjustable = false;
-                            break;
-                        }
-                    }
-                    if (adjustable) {
-                        double dX = 0, dY = 0;
-                        if ((ai.getDefinedAngle() % 1800) == 0) {
-                            // horizontal arc: move the other node vertically
-                            dY = newPoint[1 - otherEnd].getY() - newPoint[otherEnd].getY();
-                            newPoint[otherEnd] = EPoint.fromLambda(newPoint[otherEnd].getX(), newPoint[1 - otherEnd].getY());
-                        } else {
-                            // vertical arc: move the other node horizontally
-                            dX = newPoint[1 - otherEnd].getX() - newPoint[otherEnd].getX();
-                            newPoint[otherEnd] = EPoint.fromLambda(newPoint[1 - otherEnd].getX(), newPoint[otherEnd].getY());
-                        }
+			// ensure that all arcs connected at exports still connect
+			Connection conErr = pp.doesntConnectCon(opi.getPortProto().getBasePort());
+			if (conErr != null)
+				replacementErrors.add(new ChangeError(ChangeError.CE_MISSINGHIER, conErr.getArc(), null, opi.getPortProto() /*.getBasePort()*/ ));
+		}
+		if (replacementErrors.size() == 0)
+		{
+			for (int portIndex = 0; portIndex < oldAssoc.length; portIndex++)
+			{
+				replacement.setAssoc(oldAssoc[portIndex].portInst, oldAssoc[portIndex].assn);
+			}
+		}
+	}
 
-                        // special case where the old arc must be deleted first so that the other node can move
-                        adjustThisNode.move(dX, dY);
-                        ArcInst newAi = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), newPortInst[ArcInst.HEADEND], newPortInst[ArcInst.TAILEND],
-                                newPoint[ArcInst.HEADEND], newPoint[ArcInst.TAILEND], ai.getName(), ArcInst.DEFAULTANGLE);
-                        if (newAi == null) {
-                            throw new IllegalArgumentException();
-                        }
-                        newAi.copyPropertiesFrom(ai);
-                        continue;
-                    }
-                }
-            }
+	/**
+	 * Method to really replace this NodeInst with one of another type.
+	 * The new NodeInst will have the same nodeId as this NodeIsnt.
+	 * All arcs and exports on this NodeInst will be moved to the new one.
+	 * @param replacement the Replacement task.
+	 * @param ep EditingPreferences with default sizes and text descriptors.
+	 * @param allowMissingPorts true to allow replacement to have missing ports and, therefore, delete the arcs that used to be there.
+	 * @param preserveParameters true to keep parameters on the old node and put them on the new one.
+	 * @return the new NodeInst that replaces this one.
+	 * @throws IllegalArgument if replacement is impossible
+	 */
+	public NodeInst doReplace(BatchChanges.NodeReplacement replacement, EditingPreferences ep, boolean allowMissingPorts, boolean preserveParameters)
+	{
+		EDatabase database = topology.cell.getDatabase();
+		assert replacement.getOldNi(database) == this;
+		ImmutableNodeInst newD = replacement.newImmutableInst(database.backup(), ep);
 
-            ArcInst newAi;
-            if (zigzag) {
-                // make that two wires
-                double cX = newPoint[0].getX();
-                double cY = newPoint[1].getY();
-                NodeProto pinNp = ai.getProto().findOverridablePinProto(ep);
-                double psx = pinNp.getDefWidth(ep);
-                double psy = pinNp.getDefHeight(ep);
-                NodeInst pinNi = NodeInst.newInstance(pinNp, ep, new Point2D.Double(cX, cY), psx, psy, topology.cell);
-                PortInst pinPi = pinNi.getOnlyPortInst();
-                newAi = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), newPortInst[ArcInst.HEADEND], pinPi, newPoint[ArcInst.HEADEND],
-                        new Point2D.Double(cX, cY), null, ArcInst.DEFAULTANGLE);
-                if (newAi == null) {
-                    throw new IllegalArgumentException();
-                }
-                newAi.copyPropertiesFrom(ai);
+		// Save arcs and exports connected to old node
+		Set<ArcInst> arcList = new HashSet<ArcInst>();
+		for (Iterator<Connection> it = getConnections(); it.hasNext();)
+		{
+			arcList.add(it.next().getArc());
+		}
+		Map<Export, PortInst> exportList = new HashMap<Export, PortInst>();
+		for (Iterator<Export> it = getExports(); it.hasNext();)
+		{
+			Export e = it.next();
+			exportList.put(e, e.getOriginalPort());
+		}
+		for (Export e : exportList.keySet())
+		{
+			NodeInst dummyNi = NodeInst.newInstance(Generic.tech().universalPinNode, ep, EPoint.ORIGIN, 0, 0, topology.cell);
+			boolean ok = e.move(dummyNi.getOnlyPortInst());
+			assert (!ok);
+		}
+		assert !hasExports();
+//		List<Variable> parList = new ArrayList<Variable>();
+//		if (preserveParameters)
+//		{
+//			for(Iterator<Variable> it = getParameters(); it.hasNext(); ) parList.add(it.next());
+//		}
+		kill();
 
-                ArcInst newAi2 = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), pinPi, newPortInst[ArcInst.TAILEND], new Point2D.Double(cX, cY),
-                        newPoint[ArcInst.TAILEND], null, ArcInst.DEFAULTANGLE);
-                if (newAi2 == null) {
-                    throw new IllegalArgumentException();
-                }
-                newAi2.copyConstraintsFrom(ai);
-                if (newPortInst[ArcInst.TAILEND].getNodeInst() == this) {
-                    ArcInst aiSwap = newAi;
-                    newAi = newAi2;
-                    newAi2 = aiSwap;
-                }
-            } else {
-                // replace the arc with another arc
-                newAi = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), newPortInst[ArcInst.HEADEND], newPortInst[ArcInst.TAILEND],
-                        newPoint[ArcInst.HEADEND], newPoint[ArcInst.TAILEND], null, ArcInst.DEFAULTANGLE);
-                if (newAi == null) {
-                    throw new IllegalArgumentException();
-                }
-                newAi.copyPropertiesFrom(ai);
-            }
-            newAi.setName(ai.getName(), ep);
-        }
+		NodeInst newNi = topology.cell.addNode(newD);
+		assert newNi.d == newD && newNi.protoType.getId() == replacement.newProtoId && !newNi.validVisBounds;
 
-        // now replace all of the exports
-        for (Map.Entry<Export, PortInst> e : exportList.entrySet()) {
-            Export pp = e.getKey();
-            NodeInst dummyNi = pp.getOriginalPort().getNodeInst();
-            assert dummyNi.getProto() == Generic.tech().universalPinNode;
-            assert !dummyNi.hasConnections();
-            PortInst originalPort = e.getValue();
-            assert originalPort.getNodeInst() == this;
-            PortProtoId newProtoId = replacement.assoc[originalPort.getPortIndex()];
-            PortProto newPortProto = newProtoId != null ? newProtoId.inDatabase(database) : null;
-            if (newPortProto == null) {
-                assert allowMissingPorts;
-                pp.kill();
-                continue;
-            }
-            PortInst newPi = newNi.findPortInstFromProto(newPortProto);
-            assert newPi != null;
-            if (pp.move(newPi)) {
-                pp.kill();
-            }
-            assert (!dummyNi.hasExports());
-            dummyNi.kill();
-        }
+//		// replace parameters
+//		for(Variable var : parList)
+//		{
+//			Variable newVar = newNi.getParameter(var.getKey());
+//			if (newVar != null) newNi.delParameter(var.getKey());
+//			newNi.addParameter(var);
+//		}
 
-        // If name was temporary, rename it
-        Name basename = getBasename();
-        if (newD.name.isTempname() && newD.name.getBasename() != basename) {
-            newNi.setName(topology.getNodeAutoname(basename).toString());
-        }
-        return newNi;
-    }
+		// now replace all of the arcs
+		for (ArcInst ai : arcList)
+		{
+			PortInst[] newPortInst = new PortInst[2];
+			EPoint[] newPoint = new EPoint[2];
+			int otherEnd = 0;
+			for (int e = 0; e < 2; e++)
+			{
+				PortInst pi = ai.getPortInst(e);
+				if (pi.getNodeInst() != this)
+				{
+					// end of arc connected elsewhere: keep the information
+					newPortInst[e] = pi;
+					newPoint[e] = ai.getLocation(e);
+					otherEnd = e;
+				} else
+				{
+					// end of arc connected to replaced node: translate to new node
+					PortProtoId newPortId = replacement.assoc[pi.getPortIndex()];
+					PortProto newPort = newPortId != null ? newPortId.inDatabase(database) : null;
+					if (newPort == null)
+					{
+						assert allowMissingPorts;
+						continue;
+					}
+
+					// make sure the arc can connect to this type of port
+					PortInst opi = newNi.findPortInstFromProto(newPort);
+					assert opi != null;
+					newPortInst[e] = opi;
+					Poly poly = opi.getPoly();
+					EPoint newLoc = ai.getLocation(e);
+					newPoint[e] = poly.isInside(newLoc) ? newLoc : EPoint.fromLambda(poly.getCenterX(), poly.getCenterY());
+				}
+			}
+			if (newPortInst[ArcInst.TAILEND] == null || newPortInst[ArcInst.HEADEND] == null)
+				continue;
+
+			// see if a bend must be made in the wire
+			boolean zigzag = false;
+			if (ai.isFixedAngle())
+			{
+				if (newPoint[0].getX() != newPoint[1].getX() || newPoint[0].getY() != newPoint[1].getY())
+				{
+					int ii = DBMath.figureAngle(newPoint[0], newPoint[1]);
+					int ang = ai.getDefinedAngle();
+					if ((ii % 1800) != (ang % 1800)) zigzag = true;
+				}
+			}
+
+			// see if a bend can be a straight by some simple manipulations
+			if (zigzag && !ai.isRigid() && (ai.getDefinedAngle() % 900) == 0)
+			{
+				// find the node at the other end
+				NodeInst adjustThisNode = ai.getPortInst(otherEnd).getNodeInst();
+				if (!adjustThisNode.hasExports())
+				{
+					// other end not exported, see if all arcs can be adjusted
+					boolean adjustable = true;
+					for (Iterator<Connection> oIt = adjustThisNode.getConnections(); oIt.hasNext();)
+					{
+						Connection otherCon = oIt.next();
+						ArcInst otherArc = otherCon.getArc();
+						if (otherArc == ai) continue;
+						if (otherArc.isRigid())
+						{
+							adjustable = false;
+							break;
+						}
+						if (otherArc.getDefinedAngle() % 900 != 0)
+						{
+							adjustable = false;
+							break;
+						}
+						if (((ai.getDefinedAngle() / 900) & 1) == ((otherArc.getDefinedAngle() / 900) & 1))
+						{
+							adjustable = false;
+							break;
+						}
+					}
+					if (adjustable)
+					{
+						double dX = 0, dY = 0;
+						if ((ai.getDefinedAngle() % 1800) == 0)
+						{
+							// horizontal arc: move the other node vertically
+							dY = newPoint[1 - otherEnd].getY() - newPoint[otherEnd].getY();
+							newPoint[otherEnd] = EPoint.fromLambda(newPoint[otherEnd].getX(), newPoint[1 - otherEnd].getY());
+						} else
+						{
+							// vertical arc: move the other node horizontally
+							dX = newPoint[1 - otherEnd].getX() - newPoint[otherEnd].getX();
+							newPoint[otherEnd] = EPoint.fromLambda(newPoint[1 - otherEnd].getX(), newPoint[otherEnd].getY());
+						}
+
+						// special case where the old arc must be deleted first so that the other node can move
+						adjustThisNode.move(dX, dY);
+						ArcInst newAi = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), newPortInst[ArcInst.HEADEND], newPortInst[ArcInst.TAILEND],
+							newPoint[ArcInst.HEADEND], newPoint[ArcInst.TAILEND], ai.getName(), ArcInst.DEFAULTANGLE);
+						if (newAi == null)
+							throw new IllegalArgumentException();
+						newAi.copyPropertiesFrom(ai);
+						continue;
+					}
+				}
+			}
+
+			ArcInst newAi;
+			if (zigzag)
+			{
+				// make that two wires
+				double cX = newPoint[0].getX();
+				double cY = newPoint[1].getY();
+				NodeProto pinNp = ai.getProto().findOverridablePinProto(ep);
+				double psx = pinNp.getDefWidth(ep);
+				double psy = pinNp.getDefHeight(ep);
+				NodeInst pinNi = NodeInst.newInstance(pinNp, ep, new Point2D.Double(cX, cY), psx, psy, topology.cell);
+				PortInst pinPi = pinNi.getOnlyPortInst();
+				newAi = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), newPortInst[ArcInst.HEADEND], pinPi, newPoint[ArcInst.HEADEND],
+					new Point2D.Double(cX, cY), null, ArcInst.DEFAULTANGLE);
+				if (newAi == null)
+					throw new IllegalArgumentException();
+				newAi.copyPropertiesFrom(ai);
+				
+				ArcInst newAi2 = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), pinPi, newPortInst[ArcInst.TAILEND], new Point2D.Double(cX, cY),
+					newPoint[ArcInst.TAILEND], null, ArcInst.DEFAULTANGLE);
+				if (newAi2 == null)
+					throw new IllegalArgumentException();
+				newAi2.copyConstraintsFrom(ai);
+				if (newPortInst[ArcInst.TAILEND].getNodeInst() == this)
+				{
+					ArcInst aiSwap = newAi;
+					newAi = newAi2;
+					newAi2 = aiSwap;
+				}
+			} else
+			{
+				// replace the arc with another arc
+				newAi = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), newPortInst[ArcInst.HEADEND], newPortInst[ArcInst.TAILEND],
+					newPoint[ArcInst.HEADEND], newPoint[ArcInst.TAILEND], null, ArcInst.DEFAULTANGLE);
+				if (newAi == null)
+					throw new IllegalArgumentException();
+				newAi.copyPropertiesFrom(ai);
+			}
+			newAi.setName(ai.getName(), ep);
+		}
+
+		// now replace all of the exports
+		for (Map.Entry<Export, PortInst> e : exportList.entrySet())
+		{
+			Export pp = e.getKey();
+			NodeInst dummyNi = pp.getOriginalPort().getNodeInst();
+			assert dummyNi.getProto() == Generic.tech().universalPinNode;
+			assert !dummyNi.hasConnections();
+			PortInst originalPort = e.getValue();
+			assert originalPort.getNodeInst() == this;
+			PortProtoId newProtoId = replacement.assoc[originalPort.getPortIndex()];
+			PortProto newPortProto = newProtoId != null ? newProtoId.inDatabase(database) : null;
+			if (newPortProto == null)
+			{
+				assert allowMissingPorts;
+				pp.kill();
+				continue;
+			}
+			PortInst newPi = newNi.findPortInstFromProto(newPortProto);
+			assert newPi != null;
+			if (pp.move(newPi))
+				pp.kill();
+			assert (!dummyNi.hasExports());
+			dummyNi.kill();
+		}
+
+		// If name was temporary, rename it
+		Name basename = getBasename();
+		if (newD.name.isTempname() && newD.name.getBasename() != basename) {
+			newNi.setName(topology.getNodeAutoname(basename).toString());
+		}
+		return newNi;
+	}
 
     /****************************** LOW-LEVEL IMPLEMENTATION ******************************/
     /**
