@@ -4,6 +4,8 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+IMP: (4/17/2022, SMR) "Shorted Selected Arcs" now lists the arcs that got shortened.
+
 IMP: (3/8/2022, SMR) Change command highlights arcs that are troublesome.
 
 IMP: (3/8/2022, SMR) Cleaned up distinction between Preferences and Settings.

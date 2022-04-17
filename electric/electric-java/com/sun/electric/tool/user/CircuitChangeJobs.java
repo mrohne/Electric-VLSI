@@ -84,6 +84,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1875,9 +1876,9 @@ public class CircuitChangeJobs
 			// make sure shortening is allowed
 			if (cantEdit(cell, null, true, false, true) != 0) return false;
 
-			int l = 0;
 			double [] dX = new double[2];
 			double [] dY = new double[2];
+			List<String> arcsShortened = new ArrayList<String>();
 			for(ArcInst ai : selected)
 			{
 				for(int j=0; j<2; j++)
@@ -1892,10 +1893,15 @@ public class CircuitChangeJobs
 				if (dX[0] != 0 || dY[0] != 0 || dX[1] != 0 || dY[1] != 0)
 				{
 					ai.modify(dX[ArcInst.HEADEND], dY[ArcInst.HEADEND], dX[ArcInst.TAILEND], dY[ArcInst.TAILEND]);
-					l++;
+					arcsShortened.add(ai.describe(false));
 				}
 			}
-			System.out.println("Shortened " + l + " arcs");
+			int count = arcsShortened.size();
+			String msg = "Shortened " + count + " arcs";
+			if (count > 0) msg += ":";
+			System.out.println(msg);
+			Collections.sort(arcsShortened);
+			for(String arcName : arcsShortened) System.out.println("   " + arcName);
 			return true;
 		}
 	}
