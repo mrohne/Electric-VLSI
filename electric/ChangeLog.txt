@@ -4,6 +4,9 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+BUG: (5/18/2022, SMR) DRC crashes while gathering DRC exclusion nodes.
+FIX: In tool.drc.Quick.accumulateExclusion(), ensure that Areas are non-empty and rectangular.
+
 IMP: (4/17/2022, SMR) "Shorted Selected Arcs" now lists the arcs that got shortened.
 
 IMP: (3/8/2022, SMR) Change command highlights arcs that are troublesome.

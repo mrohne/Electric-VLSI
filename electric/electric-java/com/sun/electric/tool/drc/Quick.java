@@ -4560,8 +4560,11 @@ public class Quick
 	            subRot.preConcatenate(trans);
 				list[0].transform(subRot);
 	            Area thisArea = new Area(list[0]);
-	            if (area == null) area = thisArea; else
-	            	area.add(thisArea);
+	            if (!thisArea.isEmpty() && thisArea.isRectangular())
+	            {
+		            if (area == null) area = thisArea; else
+		            	area.add(thisArea);
+	            }
 			}
 
 			if (ni.isCellInstance())
