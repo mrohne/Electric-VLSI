@@ -4,6 +4,9 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+BUG: (9/28/2023, SMR) Carbon Nanotube transistors cause DRC to crash.
+FIX: In technology.AbstractShapeBuilder.genShapeOfNode() move Carbon Nanotube test code before calling "skipLayer()".
+
 BUG: (5/18/2022, SMR) DRC crashes while gathering DRC exclusion nodes.
 FIX: In tool.drc.Quick.accumulateExclusion(), ensure that Areas are non-empty and rectangular.
 

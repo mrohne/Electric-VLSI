@@ -205,31 +205,32 @@ public abstract class AbstractShapeBuilder {
      * @param graphicsOverride the graphics override to use for all generated polygons (if not null).
      * The prototype of this NodeInst must be a PrimitiveNode and not a Cell.
      */
-    public void genShapeOfNode(ImmutableNodeInst n, PrimitiveNode np, Technology.NodeLayer[] primLayers, EGraphics graphicsOverride) {
+    public void genShapeOfNode(ImmutableNodeInst n, PrimitiveNode np, Technology.NodeLayer[] primLayers, EGraphics graphicsOverride)
+    {
         pointCount = 0;
         curNode = n;
         curArc = null;
         // add in the basic polygons
-        for (int i = 0; i < primLayers.length; i++) {
+        for (int i = 0; i < primLayers.length; i++)
+        {
             Technology.NodeLayer primLayer = primLayers[i];
             Layer layer = primLayer.getLayer();
-            if (skipLayer(layer)) {
-                continue;
-            }
             Poly.Type style = primLayer.getStyle();
             PrimitivePort pp = primLayer.getPort(np);
-            if (layer.isCarbonNanotubeLayer()
-                    && (np.getFunction() == PrimitiveNode.Function.TRANMOSCN || np.getFunction() == PrimitiveNode.Function.TRAPMOSCN)) {
+            if (layer.isCarbonNanotubeLayer() &&
+            	(np.getFunction() == PrimitiveNode.Function.TRANMOSCN || np.getFunction() == PrimitiveNode.Function.TRAPMOSCN))
+            {
                 CarbonNanotube cnd = new CarbonNanotube(n, primLayer);
-                for (int j = 0; j < cnd.numTubes; j++) {
+                for (int j = 0; j < cnd.numTubes; j++)
                     cnd.fillCutPoly(j, style, layer, pp);
-                }
                 assert graphicsOverride == null;
                 continue;
             }
+            if (skipLayer(layer)) continue;
 
             int representation = primLayer.getRepresentation();
-            if (representation == Technology.NodeLayer.BOX) {
+            if (representation == Technology.NodeLayer.BOX)
+            {
                 EdgeH leftEdge = primLayer.getLeftEdge();
                 EdgeH rightEdge = primLayer.getRightEdge();
                 EdgeV topEdge = primLayer.getTopEdge();
@@ -242,27 +243,31 @@ public abstract class AbstractShapeBuilder {
                 pushPoint(portHighX, portLowY);
                 pushPoint(portHighX, portHighY);
                 pushPoint(portLowX, portHighY);
-            } else if (representation == Technology.NodeLayer.POINTS) {
+            } else if (representation == Technology.NodeLayer.POINTS)
+            {
                 Technology.TechPoint[] points = primLayer.getPoints();
-                for (int j = 0; j < points.length; j++) {
+                for (int j = 0; j < points.length; j++)
+                {
                     long x = points[j].getX().getFixpValue(n.size);
                     long y = points[j].getY().getFixpValue(n.size);
                     pushPoint(x, y);
                 }
-            } else if (representation == Technology.NodeLayer.MULTICUTBOX) {
+            } else if (representation == Technology.NodeLayer.MULTICUTBOX)
+            {
                 MultiCutData mcd = new MultiCutData(n, primLayer);
                 int numExtraLayers = reasonable ? mcd.cutsReasonable : mcd.cutsTotal;
-                for (int j = 0; j < numExtraLayers; j++) {
+                for (int j = 0; j < numExtraLayers; j++)
                     mcd.fillCutPoly(j, style, layer, pp);
-                }
                 assert graphicsOverride == null;
                 continue;
             }
 
-            if (style.isText()) {
+            if (style.isText())
+            {
                 assert graphicsOverride == null;
                 pushTextPoly(style, layer, pp, primLayer.getMessage(), primLayer.getDescriptor());
-            } else {
+            } else
+            {
                 pushPoly(style, layer, graphicsOverride, pp);
             }
         }
