@@ -1712,6 +1712,7 @@ public class CircuitChangeJobs
 			if (numNodesDeleted > 0 && numArcsDeleted > 0) msg += " and";
 			if (numArcsDeleted == 1) msg += " 1 arc"; else
 				if (numArcsDeleted > 1) msg += " " + numArcsDeleted + " arcs";
+			msg += " in cell " + cell.describe(false);
 			System.out.println(msg);
 		}
 	}

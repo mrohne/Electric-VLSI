@@ -698,6 +698,7 @@ public class Library extends ElectricObject implements Comparable<Library> {
             if (repair) {
                 System.out.print(" for repair");
             }
+            System.out.println();
         }
 
         for (Iterator<Cell> it = getCells(); it.hasNext();) {

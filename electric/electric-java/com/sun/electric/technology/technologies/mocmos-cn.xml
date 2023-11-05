@@ -1685,8 +1685,8 @@
   <LayersRule ruleName="2.2e Mosis-cn" layerNames="{N-Active,P-Active-Well}" type="SPACING" when="ALL" value="3.0" /> 
   <LayersRule ruleName="2.2f Mosis-cn" layerNames="{P-Active-CN,P-Active-Well}" type="SPACING" when="ALL" value="3.0" /> 
   <LayersRule ruleName="2.2g Mosis-cn" layerNames="{N-Active-CN,P-Active-Well}" type="SPACING" when="ALL" value="3.0" /> 
-  <LayersRule ruleName="2.2h Mosis-cn" layerNames="{N-Active-CN,N-Active-Well}" type="SPACING" when="ALL" value="3.0" /> 
-  <LayersRule ruleName="2.2i Mosis-cn" layerNames="{P-Active-CN,N-Active-Well}" type="SPACING" when="ALL" value="3.0" /> 
+<!--  <LayersRule ruleName="2.2h Mosis-cn" layerNames="{N-Active-CN,N-Active-Well}" type="SPACING" when="ALL" value="3.0" /> --> 
+<!--  <LayersRule ruleName="2.2i Mosis-cn" layerNames="{P-Active-CN,N-Active-Well}" type="SPACING" when="ALL" value="3.0" />  -->
   <NodeLayersRule ruleName="2.3 Mosis-cn" layerNames="{N-Well,P-Active}" type="SURROUND" when="DE|SU" value="6.0" nodeName="Metal-1-P-Active-Con" /> 
   <NodeLayersRule ruleName="2.3 Mosis-cn" layerNames="{N-Well,P-Active}" type="SURROUND" when="DE|SU" value="6.0" nodeName="PCN-Transistor" /> 
   <NodeLayersRule ruleName="2.3 Mosis-cn" layerNames="{N-Well,P-Active}" type="ASURROUND" when="DE|SU" value="6.0" nodeName="P-Active" /> 
