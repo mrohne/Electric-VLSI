@@ -4,6 +4,9 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+BUG: (11/14/2023, SMR) Very long library or cell names trigger Preferences key limit.
+FIX: In database.text.Pref, added checks and warnings.
+
 BUG: (9/28/2023, SMR) Carbon Nanotube transistors cause DRC to crash.
 FIX: In technology.AbstractShapeBuilder.genShapeOfNode() move Carbon Nanotube test code before calling "skipLayer()".
 

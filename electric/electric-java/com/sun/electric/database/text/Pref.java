@@ -40,6 +40,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -136,7 +137,7 @@ public class Pref {
 
         private void putValue(String key, Object value) {
             if (preferences == null) {
-                preferences = getPrefRoot().node(relativePath);
+                preferences = getPrefRoot().node(getValidKey(relativePath));
             }
             putValue(preferences, key, value);
             if (doFlushing) {
@@ -163,14 +164,14 @@ public class Pref {
 
         private Object getValue(String key, Object def) {
             if (preferences == null) {
-                preferences = getPrefRoot().node(relativePath);
+                preferences = getPrefRoot().node(getValidKey(relativePath));
             }
             return getValueImpl(preferences, key, def);
         }
 
         private void remove(String key) {
             if (preferences == null) {
-                preferences = getPrefRoot().node(relativePath);
+                preferences = getPrefRoot().node(getValidKey(relativePath));
             }
             remove(preferences, key);
             if (doFlushing) {
@@ -221,6 +222,7 @@ public class Pref {
     private static Set<Preferences> queueForFlushing;
     private static boolean lockCreation;
     private static final HashSet<Pref> reportedAccess = new HashSet<Pref>();
+    private static Map<String,String> keyNameAbbreviation = new HashMap<String,String>();
 
     /**
      * The constructor for the Pref.
@@ -323,7 +325,7 @@ public class Pref {
     private static void clearPrefs(Preferences topNode) throws BackingStoreException {
         topNode.clear();
         for (String child : topNode.childrenNames()) {
-            clearPrefs(topNode.node(child));
+            clearPrefs(topNode.node(getValidKey(child)));
         }
     }
 
@@ -670,7 +672,7 @@ public class Pref {
     }
 
     public Object getValue(Preferences prefRoot) {
-        return getValueImpl(prefRoot.node(group.relativePath), name, factoryObj);
+        return getValueImpl(prefRoot.node(getValidKey(group.relativePath)), name, factoryObj);
     }
 
     private static Object getValueImpl(Preferences preferences, String key, Object def) {
@@ -772,7 +774,7 @@ public class Pref {
      * @return the root of Preferences subtree with Electric options for a specified LibId.
      */
     public static Preferences getLibraryPreferences(LibId libId) {
-        return Pref.getPrefRoot().node("database/hierarchy/" + libId.libName);
+        return Pref.getPrefRoot().node(getValidKey("database/hierarchy/" + libId.libName));
     }
 
     /**
@@ -855,7 +857,7 @@ public class Pref {
      * @param v the new boolean value of this Pref object.
      */
     public void putBoolean(Preferences prefRoot, boolean removeDefaults, boolean v) {
-        Preferences prefs = prefRoot.node(group.relativePath);
+        Preferences prefs = prefRoot.node(getValidKey(group.relativePath));
         if (removeDefaults && v == ((Boolean) factoryObj).booleanValue()) {
             prefs.remove(name);
         } else {
@@ -868,7 +870,7 @@ public class Pref {
      * @param v the new integer value of this Pref object.
      */
     public void putInt(Preferences prefRoot, boolean removeDefaults, int v) {
-        Preferences prefs = prefRoot.node(group.relativePath);
+        Preferences prefs = prefRoot.node(getValidKey(group.relativePath));
         if (removeDefaults && v == ((Integer) factoryObj).intValue()) {
             prefs.remove(name);
         } else {
@@ -881,7 +883,7 @@ public class Pref {
      * @param v the new long value of this Pref object.
      */
     public void putLong(Preferences prefRoot, boolean removeDefaults, long v) {
-        Preferences prefs = prefRoot.node(group.relativePath);
+        Preferences prefs = prefRoot.node(getValidKey(group.relativePath));
         if (removeDefaults && v == ((Long) factoryObj).longValue()) {
             prefs.remove(name);
         } else {
@@ -894,7 +896,7 @@ public class Pref {
      * @param v the new double value of this Pref object.
      */
     public void putDouble(Preferences prefRoot, boolean removeDefaults, double v) {
-        Preferences prefs = prefRoot.node(group.relativePath);
+        Preferences prefs = prefRoot.node(getValidKey(group.relativePath));
         if (removeDefaults && v == ((Double) factoryObj).doubleValue()) {
             prefs.remove(name);
         } else {
@@ -907,7 +909,7 @@ public class Pref {
      * @param str the new string value of this Pref object.
      */
     public void putString(Preferences prefRoot, boolean removeDefaults, String str) {
-        Preferences prefs = prefRoot.node(group.relativePath);
+        Preferences prefs = prefRoot.node(getValidKey(group.relativePath));
         if (removeDefaults && str.equals(factoryObj)) {
             prefs.remove(name);
         } else {
@@ -1000,7 +1002,7 @@ public class Pref {
 //            String childName = children[i];
 //            numStrings++;
 //            lenStrings += children[i].length();
-//            Preferences childNode = topNode.node(childName);
+//            Preferences childNode = topNode.node(getValidKey(childName));
 //            gatherPrefs(out, level + 1, childNode, ks);
 //        }
 //    }
@@ -1016,6 +1018,26 @@ public class Pref {
 //            out.println((i++) + "\t" + setting.getXmlPath() + " " + settings.get(setting));
 //    }
     /****************************** private methods ******************************/
+
+    /**
+     * Method to ensure key lengths are not too long.
+     * @param key the intended key.
+     * @return the proper key to use.
+     */
+    private static String getValidKey(String key)
+    {
+    	if (key.length() <= Preferences.MAX_KEY_LENGTH) return key;
+		String validKey = keyNameAbbreviation.get(key);
+		if (validKey == null)
+		{
+			validKey = key.substring(0, Preferences.MAX_KEY_LENGTH);
+			keyNameAbbreviation.put(key, validKey);
+			System.out.println("WARNING: Key '" + key + "' is too long for Java Preferences (limit is " +
+				Preferences.MAX_KEY_LENGTH + "). Shortening the name.");
+		}
+		return validKey;
+    }
+
     /**
      * Method to force all Preferences to be saved.
      */
