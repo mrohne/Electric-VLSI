@@ -1851,16 +1851,20 @@ public class EDIF extends Input<Object>
 			plp.createdPort.newVar(stripPercentEscapes(property.name), stripPercentEscapes(property.val.toString()), ep);
 		}
 		
-		/// creating generic arcs to connect exports that had same names needed to be split
+		// creating generic arcs to connect exports that had same names needed to be split
 		List<PlannedPort> toRemove = new ArrayList<PlannedPort>();
 		for (PlannedPort p : plp.exportsToConnect)
 		{
-			// Time to build arc
+			// time to build arc
 			if (p.alreadyThere != null)
 			{
-				ArcInst.makeInstance(Generic.tech().universal_arc, ep, p.alreadyThere.getOnlyPortInst(), 
-						plp.alreadyThere.getOnlyPortInst());
-				toRemove.add(p); p.exportsToConnect.remove(plp);
+				PortInst onlyPi = p.alreadyThere.getOnlyPortInst();
+				PortInst onlyOtherPi = plp.alreadyThere.getOnlyPortInst();
+				if (onlyPi != null && onlyOtherPi != null)
+				{
+					ArcInst.makeInstance(Generic.tech().universal_arc, ep, onlyPi, onlyOtherPi);
+					toRemove.add(p); p.exportsToConnect.remove(plp);
+				}
 			}
 		}
 		plp.exportsToConnect.removeAll(toRemove);
