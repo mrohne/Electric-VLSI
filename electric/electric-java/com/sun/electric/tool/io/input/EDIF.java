@@ -1823,6 +1823,7 @@ public class EDIF extends Input<Object>
 		{
 			System.out.println("Error, line " + lineReader.getLineNumber() + ": could not create port <" + name + ">");
 			errorCount++;
+			return;
 		}
 		TextDescriptor td = plp.createdPort.getTextDescriptor(Export.EXPORT_NAME);
 		td = td.withPos(TextDescriptor.Position.UP);
