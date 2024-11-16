@@ -432,6 +432,9 @@ public class Spice extends Topology
                 break;
         }
 
+		System.out.println("Netlist target:     "+preferedEngineTemplateKey);
+		System.out.println("Layout Technology:  "+layoutTechnology);
+
 		// start writing the spice deck
 		if (useCDL)
 		{
@@ -891,7 +894,7 @@ public class Spice extends Topology
                     } else
                     {
                         String name = getPortName(cs);
-                        if (parasiticInfo != null)
+                        if (segmentedNets != null)
                         {
                             name = segmentedNets.getNetName(no.getNodeInst().findPortInstFromEquivalentProto(pp));
                         }
@@ -2176,10 +2179,8 @@ public class Spice extends Topology
                         } else {
                             pVal = String.valueOf(context.evalVar(attrVar, no));
                         }
-//                    if (attrVar.getCode() != TextDescriptor.Code.NONE)
-                        if (infstr.inQuotes()) pVal = trimSingleQuotes(pVal); else
-                            pVal = formatParam(pVal, attrVar.getUnit(), infstr.inParens());
                     }
+					pVal = trimSingleQuotes(pVal);
                     infstr.append(pVal);
                 }
             } else {
@@ -2485,8 +2486,11 @@ public class Spice extends Topology
 	{
 		// skip if there is a template
         Variable varTemplate = null;
-        varTemplate = getEngineTemplate(cell);
-        if (varTemplate != null) return true;
+		// I think both of these could be useful 
+		// SPICE_template determines how this file is instantiated
+		// SPICE_netlist_file overrides the netlist for the file
+        // varTemplate = getEngineTemplate(cell);
+        // if (varTemplate != null) return true;
 
 		// look for a model file for the current cell, can come from preference or on cell
         String fileName = null;
@@ -2514,7 +2518,7 @@ public class Spice extends Topology
                     Cell verilogCell = cell.otherView(View.VERILOG);
                     if (verilogCell == null)
                     {
-                    	System.out.println("Verilog cell for " + cell.describe(false) + " requested but it does not exist");
+                    	reportWarning("Verilog cell for " + cell.describe(false) + " requested but it does not exist", cell);
                     	return false;
                     }
                     File spiceFile = new File(filePath);
@@ -2529,7 +2533,7 @@ public class Spice extends Topology
                 		printWriter.close();
                 	} catch (IOException e)
                 	{
-                		System.out.println("Error writing Verilog file");
+						reportWarning("Error writing Verilog file", cell);
                 	}
                     isVerilog = true;
                 } else
@@ -2553,6 +2557,7 @@ public class Spice extends Topology
                 }
                 modelOverrides.put(cell, absFileName);
             }
+			reportWarning("Skipping cell " + cell.describe(false), cell);
             return true;
         }
 
@@ -2646,7 +2651,14 @@ public class Spice extends Topology
 	protected int maxNameLength() { if (useCDL) return CDLMAXLENSUBCKTNAME; return SPICEMAXLENSUBCKTNAME; }
 
     protected boolean enumerateLayoutView(Cell cell) {
-        return CellModelPrefs.isUseLayoutView(localPrefs.modelFiles.get(cell));
+		if (CellModelPrefs.isUseLayoutView(localPrefs.modelFiles.get(cell))) {
+			reportWarning("Using layout " + cell.describe(false), cell);
+			return true;
+		}
+		else {
+			reportWarning("Using schematic " + cell.describe(false), cell);
+			return false;
+		}
     }
 
     private Netlist.ShortResistors getShortResistorsFlat() {
