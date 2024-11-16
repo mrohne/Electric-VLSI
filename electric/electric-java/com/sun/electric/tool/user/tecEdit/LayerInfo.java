@@ -399,9 +399,16 @@ public class LayerInfo extends Info
 			var = ni.getVar(Artwork.ART_PATTERN);
 			if (var != null)
 			{
-				Short [] pat = (Short [])var.getObject();
 				boolean nonZero = false;
-				for(int i=0; i<pat.length; i++) if (pat[i].shortValue() != 0) { nonZero = true;   break; }
+				Object obj = var.getObject();
+				if (obj instanceof Short[]) {
+					Short [] pat = (Short [])obj;
+					for(int i=0; i<pat.length; i++) if (pat[i].shortValue() != 0) { nonZero = true;   break; }
+				}
+				if (obj instanceof Integer[]) {
+					Integer [] pat = (Integer [])obj;
+					for(int i=0; i<pat.length; i++) if (pat[i].shortValue() != 0) { nonZero = true;   break; }
+				}
 				if (!nonZero) continue;
 			}
 			Rectangle2D niBounds = ni.getBounds();

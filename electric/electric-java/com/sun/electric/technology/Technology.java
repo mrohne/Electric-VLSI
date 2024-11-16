@@ -2526,8 +2526,10 @@ public class Technology implements Comparable<Technology>, Serializable {
      * @param np the PrimitiveNode to be added to this Technology.
      */
     public void addNodeProto(PrimitiveNode np) {
-    	if (Job.getDebug() && findNodeProto(np.getName()) != null)
+    	if (findNodeProto(np.getName()) != null) {
     		System.out.println(np.getName() + " is already defined as primitive node");
+			return;
+		}
         assert findNodeProto(np.getName()) == null;
         np.setPrimNodeIndexInTech(nodeIndex++);
         nodes.put(np.getName(), np);
@@ -4433,7 +4435,7 @@ public class Technology implements Comparable<Technology>, Serializable {
             ap.check();
         }
 
-        if (!isNonStandard() && isScaleRelevant() && Job.getDebug()) {
+        if (!isNonStandard() && isScaleRelevant()) {
             Map<Layer, ArcProto.Function> layToArcFunction = new HashMap<Layer, ArcProto.Function>();
             for (ArcProto ap : arcs.values()) {
                 for (int i = 0; i < ap.getNumArcLayers(); i++) {
