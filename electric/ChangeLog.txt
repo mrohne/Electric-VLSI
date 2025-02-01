@@ -4,6 +4,8 @@ NOTE: Please place changes under the version that will be released next.
 
 ************************* Version 9.08-e: ******************************
 
+IMP: (1/29/2025, SMR) Reimplemented Macintosh interface.
+
 BUG: (10/10/2024, SMR) EDIF input can crash if improper pins are used.
 FIX: In tool.io.EDIF.instantiatePlannedPort(), test results of getOnlyPortInst().
 

@@ -22,7 +22,7 @@
 package com.sun.electric.tool.user;
 
 import com.sun.electric.database.text.TextUtils;
-import com.sun.electric.Launcher;
+import com.sun.electric.Electric;
 
 import java.net.URL;
 
@@ -81,7 +81,7 @@ public class Resources {
         Class<?> theClass = null;
 		try
         {
-            theClass = Launcher.classFromPlugins(plugin + "." + name);
+            theClass = Electric.classFromPlugins(plugin + "." + name);
         } catch (ClassNotFoundException e)
         {
         	TextUtils.recordMissingComponent(name);

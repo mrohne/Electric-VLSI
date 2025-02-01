@@ -22,7 +22,9 @@
 package com.sun.electric.tool.user.dialogs;
 
 import com.sun.electric.tool.user.User;
+import com.sun.electric.tool.user.menus.MenuCommands;
 import com.sun.electric.tool.user.ui.TopLevel;
+import com.sun.electric.util.ClientOS;
 
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -57,6 +59,8 @@ public class EModelessDialog extends JFrame
 		{
 			public void actionPerformed(ActionEvent event) { escapePressed(); }
 		});
+		if (ClientOS.isOSMac())
+			setJMenuBar(MenuCommands.menuBar().genInstance());
 
 		Point pt = EDialog.getDialogLocation(getClass());
 		setLocation(pt.x, pt.y);

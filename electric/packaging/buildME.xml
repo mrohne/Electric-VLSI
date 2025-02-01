@@ -124,7 +124,6 @@
 			</packageset>
 			<classpath>
 				<pathelement location="${beanshell}" />
-				<pathelement location="${AppleJava}" />
 			</classpath>
 			<sourcepath>
 				<pathelement location="electric-java" />
@@ -146,7 +145,6 @@
 		<!-- the location of various JAR files -->
 		<property name="beanshell"          value="${packaging}/bsh-2.0b4.jar" />
 		<property name="jython"             value="${packaging}/jython.jar" />
-		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions-1.4.jar" />
 		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.7.jar" />
 		<property name="slf4j-simple"       value="${packaging}/slf4j-simple-1.7.7.jar" />
 		<property name="junit"              value="${packaging}/junit-4.10.jar" />
@@ -185,7 +183,6 @@
                                 <pathelement location="${scala-library}" />
 				<pathelement location="${beanshell}" />
 				<pathelement location="${jython}" />
-				<pathelement location="${AppleJava}" />
 				<pathelement location="${junit}" />
 				<pathelement location="${j3dcore}" />
 				<pathelement location="${j3dutils}" />
@@ -222,7 +219,6 @@
 				<pathelement location="${slf4j-simple}" />
 				<pathelement location="${beanshell}" />
 				<pathelement location="${jython}" />
-				<pathelement location="${AppleJava}" />
 				<pathelement location="${junit}" />
 				<pathelement location="${j3dcore}" />
 				<pathelement location="${j3dutils}" />
@@ -250,10 +246,7 @@
 		</copy>
 	</target>
 
-	<target name="copyPrivateJARs" description="Copy Jar files for Apple stubs and Bean Shell">
-		<unjar dest="${antBuild}" src="${AppleJava}">
-			<patternset> <include name="com/"/> </patternset>
-		</unjar>
+	<target name="copyPrivateJARs" description="Copy Jar files for Bean Shell">
 		<unjar dest="${antBuild}" src="${beanshell}">
 			<patternset> <include name="bsh/"/> </patternset>
 		</unjar>

@@ -43,7 +43,10 @@ import com.sun.electric.tool.Job;
 import com.sun.electric.tool.Listener;
 import com.sun.electric.tool.Tool;
 import com.sun.electric.tool.ToolSettings;
+import com.sun.electric.tool.user.dialogs.PreferencesFrame;
 import com.sun.electric.tool.user.dialogs.Progress;
+import com.sun.electric.tool.user.menus.FileMenu;
+import com.sun.electric.tool.user.menus.HelpMenu;
 import com.sun.electric.tool.user.ui.ClickZoomWireListener;
 import com.sun.electric.tool.user.ui.EditWindow;
 import com.sun.electric.tool.user.ui.ErrorLoggerTree;
@@ -60,11 +63,19 @@ import com.sun.electric.util.math.FixpTransform;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.AboutHandler;
+import java.awt.desktop.PreferencesEvent;
+import java.awt.desktop.PreferencesHandler;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitHandler;
+import java.awt.desktop.QuitResponse;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.Point2D;
@@ -90,6 +101,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.EventListenerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,25 +121,20 @@ public class UserInterfaceMain extends AbstractUserInterface {
 
         MDI, SDI
     }
-//	/** Property fired if ability to Undo changes */	public static final String propUndoEnabled = "UndoEnabled";
-//	/** Property fired if ability to Redo changes */	public static final String propRedoEnabled = "RedoEnabled";
     static volatile boolean initializationFinished = false;
     private static volatile boolean undoEnabled = false;
     private static volatile boolean redoEnabled = false;
-//    private static final EventListenerList undoRedoListenerList = new EventListenerList();
     private static EventListenerList listenerList = new EventListenerList();
     private static Snapshot currentSnapshot = IdManager.stdIdManager.getInitialSnapshot();
     private static GraphicsPreferences currentGraphicsPreferences = null;
-//    private static EDatabase database = EDatabase.clientDatabase();
     /** The progress during input. */
     protected static Progress progress = null;
     private SplashWindow sw = null;
-//    private PrintStream stdout = System.out;
 
     public UserInterfaceMain(List<String> argsList, Mode mode, boolean showSplash) {
-        // Pushing new EventQueue failes on JDK 7
-        // sometimes failes if old EventQueue hasn't init EventDispatchThread
-        // So we push a dummy Runnable to init it
+        // Pushing new EventQueue fails on JDK 7
+        // sometimes fails if old EventQueue hasn't initialized EventDispatchThread
+        // So we push a dummy Runnable to initialize it
         logger.trace("enter UserInterfaceMain constructor");
         try {
             EventQueue.invokeAndWait(new Runnable() {
@@ -154,9 +162,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
                 } catch (Throwable ex) {
                     logger.error("dispatchEvent", ex);
                     ActivityLogger.logException(ex);
-//                    if (ex instanceof Error && (!(ex instanceof AssertionError))) {
-//                        throw (Error)ex;
-//                    }
                 }
                 if (logger.isTraceEnabled()) {
                     logger.trace("exiting dispatchEvent");
@@ -222,7 +227,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
                 try {
 					throw new Exception("Can't start GUI");
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					ActivityLogger.logException(e);
 				}
                 return;
@@ -301,48 +305,12 @@ public class UserInterfaceMain extends AbstractUserInterface {
         SwingUtilities.invokeLater(serverEvent);
     }
 
-    private static String getMacClassName() {
-        return "com.sun.electric.tool.user.MacOSXInterface";
-    }
-
-//    private class InitializationSetJob implements Runnable {
-//        Job initJob;
-//        public InitializationSetJob(Job job)
-//        {
-//            this.initJob = job;
-//        }
-//        public void run()
-//        {
-//            if (!Client.isOSMac()) return;
-//
-//            try {
-//                Class<?> osXClass = Class.forName(getMacClassName());
-//                Method osXSetJobMethod = null;
-//
-//                // find the necessary methods on the Mac OS/X class
-//                try {
-//                    osXSetJobMethod = osXClass.getMethod("setInitJob", new Class[] {Job.class});
-//                } catch (NoSuchMethodException e) {
-//                    osXSetJobMethod = null;
-//                }
-//                if (osXSetJobMethod != null) {
-//                    try {
-//                        osXSetJobMethod.invoke(osXClass, new Object[] {initJob});
-//                    } catch (Exception e) {
-//                        System.out.println("Error initializing Mac OS/X interface");
-//                    }
-//                }
-//            } catch (ClassNotFoundException e) {}
-//        }
-//    }
-    private class InitializationRun implements Runnable {
-
-        List<String> argsList;
+    private class InitializationRun implements Runnable
+    {
         Mode mode;
         boolean showSplash;
 
         InitializationRun(List<String> argsList, Mode mode, boolean showSplash) {
-            this.argsList = argsList;
             this.mode = mode;
             this.showSplash = showSplash;
         }
@@ -353,30 +321,43 @@ public class UserInterfaceMain extends AbstractUserInterface {
             TechPool techPool = new TechPool(IdManager.stdIdManager);
             EditingPreferences.lowLevelSetThreadLocalEditingPreferences(lastSavedEp = new EditingPreferences(true, techPool));
             currentGraphicsPreferences = new GraphicsPreferences(true, techPool);
+
             // see if there is a Macintosh OS/X interface
-            if (ClientOS.isOSMac()) {
-                try {
-                    Class<?> osXClass = Class.forName(getMacClassName());
-                    Method osXRegisterMethod = null;
+            if (ClientOS.isOSMac())
+            {
+        		// tell it to use the system menu bar
+        		System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+        		System.setProperty("apple.awt.application.menuBar.visible", "true");
+        		System.setProperty("apple.laf.useScreenMenuBar", "true");
 
-                    // find the necessary methods on the Macintosh OS/X class
-                    try {
-                        osXRegisterMethod = osXClass.getMethod("registerMacOSXApplication", new Class[]{List.class});
-                    } catch (NoSuchMethodException e) {
-                        osXRegisterMethod = null;
-                    }
-                    if (osXRegisterMethod != null) {
-                        try {
-                            osXRegisterMethod.invoke(osXClass, new Object[]{argsList});
-                        } catch (Exception e) {
-                            System.out.println("Error initializing Mac OS/X interface");
-                        }
-                    }
-                } catch (ClassNotFoundException e) {
-                }
+        		// set the name of the leftmost pulldown menu (under the apple) to "Electric"
+//            	System.setProperty("apple.awt.application.name", "Electric");
+//        		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Electric");
+
+        		// set the proper look-and-feel
+        		try
+				{
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				} catch (Exception e)
+				{
+				}
+
+        		// plug appropriate operations into the "Electric" menu
+        		Desktop desktop = Desktop.getDesktop();
+        		if (desktop.isSupported(Desktop.Action.APP_ABOUT))
+        			desktop.setAboutHandler(new AboutHandler() {
+        				public void handleAbout(AboutEvent e) { HelpMenu.aboutCommand(); }
+        		});
+        		if (desktop.isSupported(Desktop.Action.APP_PREFERENCES))
+        			desktop.setPreferencesHandler(new PreferencesHandler() {
+        				public void handlePreferences(PreferencesEvent e) { PreferencesFrame.preferencesCommand(); }
+        		});
+        		if (desktop.isSupported(Desktop.Action.APP_QUIT_HANDLER))
+        			desktop.setQuitHandler(new QuitHandler() {
+        				public void handleQuitRequestWith(QuitEvent e, QuitResponse r)
+        				{ FileMenu.quitCommand(); }
+        		});
             }
-
-            //runThreadStatusTimer();
 
             if (showSplash) {
                 sw = new SplashWindow();
@@ -483,11 +464,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
         WindowFrame.repaintAllWindows();
     }
 
-//    public void loadComponentMenuForTechnology()
-//    {
-//        WindowFrame wf = WindowFrame.getCurrentWindowFrame(false);
-//        if (wf != null) wf.loadComponentMenuForTechnology();
-//    }
     public int getDefaultTextSize() {
         return EditWindow.getDefaultFontSize();
     }
@@ -636,27 +612,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
                     } else {
                         highlighter.ensureHighlightingSeen(wnd.getWindowFrame());
                     }
-
-//                    // make sure the selection is visible
-//                    Rectangle2D hBounds = highlighter.getHighlightedArea(wnd);
-//                    Rectangle2D shown = wnd.getDisplayedBounds();
-//            		if (wnd.isInPlaceEdit())
-//            		{
-//            			Point2D llPt = new Point2D.Double(shown.getMinX(), shown.getMinY());
-//            			Point2D urPt = new Point2D.Double(shown.getMaxX(), shown.getMaxY());
-//            			AffineTransform intoCell = wnd.getInPlaceTransformIn();
-//            			intoCell.transform(llPt, llPt);
-//            			intoCell.transform(urPt, urPt);
-//            			double lX = Math.min(llPt.getX(), urPt.getX());
-//            			double hX = Math.max(llPt.getX(), urPt.getX());
-//            			double lY = Math.min(llPt.getY(), urPt.getY());
-//            			double hY = Math.max(llPt.getY(), urPt.getY());
-//            			shown = new Rectangle2D.Double(lX, lY, hX-lX, hY-lY);
-//            		}
-//                    if (!shown.intersects(hBounds))
-//                    {
-//                        wnd.focusOnHighlighted();
-//                    }
                 }
                 nothingDone = false;
             }
@@ -1000,7 +955,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
         EDatabase database = EDatabase.clientDatabase();
         database.lock(true);
         try {
-//                database.checkFresh(oldSnapshot);
             database.lowLevelSetCanUndoing(true);
             try {
                 database.undo(newSnapshot);
@@ -1031,14 +985,12 @@ public class UserInterfaceMain extends AbstractUserInterface {
             listener.endBatch(oldSnapshot, newSnapshot, undoRedo);
         }
         fireDatabaseChangeEvent(event);
-//        SwingUtilities.invokeLater(new DatabaseChangeRun(newSnapshot, undoRedo));
     }
 
     @Override
     public void beep() {
         if (Job.isClientThread()) {
             User.playSound();
-//            Toolkit.getDefaultToolkit().beep();
         } else {
             SwingUtilities.invokeLater(new Runnable() {
 
@@ -1067,19 +1019,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
         return redoEnabled;
     }
 
-//	/** Add a property change listener. This generates Undo and Redo enabled property changes */
-//	public static synchronized void addUndoRedoListener(PropertyChangeListener l)
-//	{
-//        assert SwingUtilities.isEventDispatchThread();
-//		undoRedoListenerList.add(PropertyChangeListener.class, l);
-//	}
-//
-//	/** Remove a property change listener. */
-//	public static synchronized void removeUndoRedoListener(PropertyChangeListener l)
-//	{
-//        assert SwingUtilities.isEventDispatchThread();
-//		undoRedoListenerList.remove(PropertyChangeListener.class, l);
-//	}
     private static void firePropertyChange(PropertyChangeEvent e) {
         assert Job.isClientThread();
         ToolBar.updateUndoRedoButtons(getUndoEnabled(), getRedoEnabled());
@@ -1099,15 +1038,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
                 content.fullRepaint();
             }
         }
-//        Object[] listeners;
-//        synchronized (UserInterfaceMain.class) {
-//            listeners = undoRedoListenerList.getListenerList();
-//        }
-//        // Process the listeners last to first, notifying those that are interested in this event
-//        for (int i = listeners.length-2; i>=0; i-=2) {
-//            if (listeners[i] == PropertyChangeListener.class)
-//                ((PropertyChangeListener)listeners[i+1]).propertyChange(e);
-//        }
     }
 
     private static class PropertyChangeRun implements Runnable {
@@ -1312,28 +1242,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
         }
     }
 
-//    private static void runThreadStatusTimer() {
-//        int delay = 1000*60*10; // milliseconds
-//        ElapseTimer timer = new ElapseTimer(delay, new ThreadStatusTask());
-//        timer.start();
-//    }
-//
-//    private static class ThreadStatusTask implements ActionListener {
-//        public void actionPerformed(ActionEvent e) {
-//            Thread t = Thread.currentThread();
-//            ThreadGroup group = t.getThreadGroup();
-//            // get the top level group
-//            while (group.getParent() != null)
-//                group = group.getParent();
-//            Thread [] threads = new Thread[200];
-//            int numThreads = group.enumerate(threads, true);
-//            StringBuffer buf = new StringBuffer();
-//            for (int i=0; i<numThreads; i++) {
-//                buf.append("Thread["+i+"] "+threads[i]+": alive: "+threads[i].isAlive()+", interrupted: "+threads[i].isInterrupted()+"\n");
-//            }
-//            ActivityLogger.logThreadMessage(buf.toString());
-//        }
-//    }
     /**
      * Method to start the display of a progress dialog.
      * @param msg the message to show in the progress dialog.

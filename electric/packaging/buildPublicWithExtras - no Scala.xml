@@ -45,7 +45,6 @@
 		<!-- the location of various JAR files -->
 		<property name="beanshell"          value="${packaging}/bsh-2.0b4.jar" />
 		<property name="jython"             value="${packaging}/jython.jar" />
-		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions-1.4.jar" />
 		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.7.jar" />
 		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.7.jar" />
 		<property name="junit"              value="${packaging}/junit-4.10.jar" />
@@ -71,13 +70,12 @@
 	<target name="commpileCode" description="Compile the public part of Electric">
 		<!-- deprecation flag: deprecation="true" -->
 		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}" fork="true" memoryMaximumSize="1024m"
-		       encoding="UTF-8" source="1.8" target="1.8">
+			release="21">
 			<classpath>
 				<pathelement location="${slf4j-api}" />
 				<pathelement location="${slf4j-jdk}" />
 				<pathelement location="${beanshell}" />
 				<pathelement location="${jython}" />
-				<pathelement location="${AppleJava}" />
 				<pathelement location="${junit}" />
 				<pathelement location="${j3dcore}" />
 				<pathelement location="${j3dutils}" />
@@ -97,9 +95,6 @@
 		</unjar>
 		<unjar src="${slf4j-jdk}" dest="${antBuild}">
 			<patternset> <include name="org/"/> </patternset>
-		</unjar>
-		<unjar dest="${antBuild}" src="${AppleJava}">
-			<patternset> <include name="com/"/> </patternset>
 		</unjar>
 		<unjar dest="${antBuild}" src="${beanshell}">
 			<patternset> <include name="bsh/"/> </patternset>

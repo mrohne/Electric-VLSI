@@ -357,16 +357,14 @@ public class FileMenu {
             new EMenuItem("_Print...") { public void run() {
                 printCommand(); }},
 
-            SEPARATOR,
+            ClientOS.isOSMac() ? null : SEPARATOR,
 
-			ToolBar.preferencesCommand, // R
-//            new EMenuItem("Pro_ject Settings...") { public void run() {
-//                ProjectSettingsFrame.projectSettingsCommand(); }},
+            ClientOS.isOSMac() ? null : ToolBar.preferencesCommand, // R
 
             SEPARATOR,
 
-            !ClientOS.isOSMac() ?	new EMenuItem("_Quit", 'Q') { public void run() {
-                quitCommand(); }} : null,
+            ClientOS.isOSMac() ? null : new EMenuItem("_Quit", 'Q') { public void run() {
+                quitCommand(); }},
             new EMenuItem("Force Q_uit (and Save)") { public void run() {
                 forceQuit(); }});
     }

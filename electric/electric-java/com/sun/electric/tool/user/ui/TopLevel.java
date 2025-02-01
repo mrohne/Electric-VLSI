@@ -26,8 +26,10 @@ import com.sun.electric.tool.user.ActivityLogger;
 import com.sun.electric.tool.user.Resources;
 import com.sun.electric.tool.user.User;
 import com.sun.electric.tool.user.UserInterfaceMain;
+import com.sun.electric.tool.user.dialogs.PreferencesFrame;
 import com.sun.electric.tool.user.menus.EMenuBar;
 import com.sun.electric.tool.user.menus.FileMenu;
+import com.sun.electric.tool.user.menus.HelpMenu;
 import com.sun.electric.tool.user.menus.MenuCommands;
 import com.sun.electric.util.ClientOS;
 import com.sun.electric.util.TextUtils;
@@ -36,6 +38,7 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -43,6 +46,13 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
+//import java.awt.desktop.AboutEvent;
+//import java.awt.desktop.AboutHandler;
+//import java.awt.desktop.PreferencesEvent;
+//import java.awt.desktop.PreferencesHandler;
+//import java.awt.desktop.QuitEvent;
+//import java.awt.desktop.QuitHandler;
+//import java.awt.desktop.QuitResponse;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -302,7 +312,6 @@ public class TopLevel extends JFrame
             {
                 case WINDOWS:
                     osMode = UserInterfaceMain.Mode.MDI;
-
                     scrnSize.height -= 30;
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                     break;
@@ -311,9 +320,26 @@ public class TopLevel extends JFrame
                     //UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                     break;
-                case MACINTOSH:
+                case MACINTOSH:			// TODO: finish new implementation
                     osMode = UserInterfaceMain.Mode.SDI;
                     UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.MacLookAndFeel");
+//					System.setProperty("apple.laf.useScreenMenuBar", "true");
+//					System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+//					System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Electric");
+//					Desktop desktop = Desktop.getDesktop();
+//					desktop.setAboutHandler(new AboutHandler()
+//					{
+//						public void handleAbout(AboutEvent e) { HelpMenu.aboutCommand(); }
+//					});
+//					desktop.setPreferencesHandler(new PreferencesHandler()
+//					{
+//						public void handlePreferences(PreferencesEvent e) { PreferencesFrame.preferencesCommand(); }
+//					});
+//					desktop.setQuitHandler(new QuitHandler()
+//					{
+//						public void handleQuitRequestWith(QuitEvent e, QuitResponse r) { FileMenu.quitCommand(); }
+//					});
+//					desktop.setDefaultMenuBar(MenuCommands.menuBar().genInstance());
                     break;
 			}
 		} catch(Exception e) {}

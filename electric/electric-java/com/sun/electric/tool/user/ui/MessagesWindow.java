@@ -27,6 +27,9 @@ import com.sun.electric.tool.user.ActivityLogger;
 import com.sun.electric.tool.user.User;
 import com.sun.electric.tool.user.dialogs.EDialog;
 import com.sun.electric.tool.user.dialogs.OpenFile;
+import com.sun.electric.tool.user.menus.EMenuBar;
+import com.sun.electric.tool.user.menus.MenuCommands;
+import com.sun.electric.util.ClientOS;
 import com.sun.electric.util.TextUtils;
 
 import java.awt.BorderLayout;
@@ -120,6 +123,8 @@ public class MessagesWindow
 			JFrame jFrame = new JFrame("Electric Messages");
 			jf = jFrame;
 			jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			if (ClientOS.isOSMac())
+				jFrame.setJMenuBar(MenuCommands.menuBar().genInstance());
 			contentFrame = jFrame.getContentPane();
 			jFrame.setIconImage(TopLevel.getFrameIcon().getImage());
 			Point pt = User.getDefaultMessagesPos();

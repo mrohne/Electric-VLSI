@@ -30,6 +30,8 @@ import javax.swing.*;
 
 import com.sun.electric.tool.ncc.NccOptions;
 import com.sun.electric.tool.user.ui.TopLevel;
+import com.sun.electric.util.ClientOS;
+import com.sun.electric.tool.user.menus.MenuCommands;
 import com.sun.electric.tool.user.menus.WindowMenu;
 
 /**
@@ -59,6 +61,8 @@ public class NccMsgsFrame {
             jInternalFrame.setFrameIcon(TopLevel.getFrameIcon());
         } else {
             JFrame jFrame = new JFrame("NCC Messages");
+			if (ClientOS.isOSMac())
+				jFrame.setJMenuBar(MenuCommands.menuBar().genInstance());
             jFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
             frame = jFrame;
             contentPane = jFrame.getContentPane();

@@ -141,27 +141,6 @@ public final class Main
         List<String> argsList = new ArrayList<String>();
         for (int i=0; i<args.length; i++) argsList.add(args[i]);
 
-//        if (ClientOS.os == ClientOS.OS.MACINTOSH)		// TODO: debug Macintosh
-//        {
-//			System.setProperty("apple.laf.useScreenMenuBar", "true");
-//			System.setProperty("com.apple.macos.useScreenMenuBar", "true");
-//			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Electric");
-//			Desktop desktop = Desktop.getDesktop();
-//			desktop.setAboutHandler(new AboutHandler()
-//			{
-//				public void handleAbout(AboutEvent e) { HelpMenu.aboutCommand(); }
-//			});
-//			desktop.setPreferencesHandler(new PreferencesHandler()
-//			{
-//				public void handlePreferences(PreferencesEvent e) { PreferencesFrame.preferencesCommand(); }
-//			});
-//			desktop.setQuitHandler(new QuitHandler()
-//			{
-//				public void handleQuitRequestWith(QuitEvent e, QuitResponse r) { FileMenu.quitCommand(); }
-//			});
-//			desktop.setDefaultMenuBar(MenuCommands.menuBar().genInstance());
-//        }
-
         // -v (short version)
 		if (hasCommandLineOption(argsList, "-v"))
 		{
@@ -387,7 +366,7 @@ public final class Main
             javaOptions.add("-Xdebug");
             javaOptions.add("-Xrunjdwp:transport=dt_socket,server=n,address=localhost:35856");
         }
-        return Launcher.invokePipeserver(javaOptions, electricOptions);
+        return Electric.invokePipeserver(javaOptions, electricOptions);
     }
 
     public static class UserInterfaceDummy extends AbstractUserInterface
@@ -636,15 +615,12 @@ public final class Main
             } else {
             	// make sure library isn't already there
             	boolean alreadyThere = false;
-//System.out.println("CHECKING REDUNDANCY FOR LIBRARY "+url.toString());
             	for(Iterator<Library> it = Library.getLibraries(); it.hasNext(); )
             	{
             		Library lib = it.next();
             		URL lURL = lib.getLibFile();
-//System.out.println("   FOUND LIBRARY "+lib.getName()+" ("+lURL+")");
             		if (lURL != null && lURL.equals(url))
             		{
-//System.out.println("SKIPPING "+url);		// TODO: debug
             			alreadyThere = true;  break;
             		}
             	}
@@ -672,7 +648,6 @@ public final class Main
         @Override
 		public boolean doIt() throws JobException
 		{
-            //System.out.println("InitDatabase");
             // initialize all of the technologies
             Technology.initPreinstalledTechnologies(getDatabase(), paramValuesByXmlPath);
 

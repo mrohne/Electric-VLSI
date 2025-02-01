@@ -50,14 +50,14 @@ import org.slf4j.LoggerFactory;
  * too small. Then it loads com.sun.electric.Main class in a new ClassLoader.
  * The new ClassLoader is aware of jars with Electric plugins and dependencies.
  */
-public final class Launcher {
+public final class Electric {
     private static final boolean enableAssertions = true;
-    private static final Logger logger = LoggerFactory.getLogger(Launcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(Electric.class);
 //    private static LocalLogger logger = new LocalLogger(Launcher.class);
 
     private static final String[] propertiesToCopy = { "user.home" };
 
-    private Launcher() {
+    private Electric() {
     }
 
     /**
@@ -200,7 +200,7 @@ public final class Launcher {
     }
 
     private static int getUserInt(String key, int def) {
-        return Preferences.userNodeForPackage(Launcher.class).node(StartupPrefs.USER_NODE).getInt(key, def);
+        return Preferences.userNodeForPackage(Electric.class).node(StartupPrefs.USER_NODE).getInt(key, def);
     }
 
     private static boolean invokeRegression(String[] args) {
@@ -251,7 +251,7 @@ public final class Launcher {
         procArgs.add("-Djava.util.prefs.PreferencesFactory=com.sun.electric.database.text.EmptyPreferencesFactory");
         procArgs.addAll(javaOptions);
         procArgs.add("-cp");
-        procArgs.add(Launcher.getJarLocation());
+        procArgs.add(Electric.getJarLocation());
         procArgs.add("com.sun.electric.Launcher");
         procArgs.addAll(electricOptions);
         procArgs.add("-pipeserver");
@@ -278,7 +278,7 @@ public final class Launcher {
     }
 
     private static void initClasspath(boolean loadDependencies) {
-        ClassLoader launcherLoader = Launcher.class.getClassLoader();
+        ClassLoader launcherLoader = Electric.class.getClassLoader();
         pluginClassLoader = launcherLoader;
         if (loadDependencies) {
             initClasspath(readAdditionalFolder(), launcherLoader);

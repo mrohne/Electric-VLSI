@@ -21,7 +21,7 @@
  */
 package com.sun.electric.tool.user.dialogs;
 
-import com.sun.electric.Launcher;
+import com.sun.electric.Electric;
 import com.sun.electric.api.minarea.MinAreaChecker;
 import com.sun.electric.database.CellRevision;
 import com.sun.electric.database.geometry.bool.LayoutMergerFactory;
@@ -1233,7 +1233,7 @@ public class About extends EDialog
         }
 		try
 		{
-			URLClassLoader cl = (URLClassLoader)Launcher.class.getClassLoader();
+			URLClassLoader cl = (URLClassLoader)Electric.class.getClassLoader();
 			while (cl != null)
 			{
 				model.addElement("ClassLoader: " + cl.getClass());

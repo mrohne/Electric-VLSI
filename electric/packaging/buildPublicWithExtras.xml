@@ -40,13 +40,13 @@
 	<target name="initialize" description="Initiaize file locations, JAR locations, and the Electric version">
 		<property name="packaging"          value="packaging" />
 		<property name="antBuild"           value="${packaging}/antBuild" />
-		<property name="ElectricJavaLoc"    value="${user.dir}/../electric-java" />
-		<property name="ElectricScalaLoc"   value="${user.dir}/../electric-scala" />
+		<property name="topDirectory"       value="${user.dir}" />
+		<property name="ElectricJavaLoc"    value="${topDirectory}/../electric-java" />
+		<property name="ElectricScalaLoc"   value="${topDirectory}/../electric-scala" />
 
 		<!-- the location of various JAR files -->
 		<property name="beanshell"          value="${packaging}/bsh-2.0b4.jar" />
 		<property name="jython"             value="${packaging}/jython.jar" />
-		<property name="AppleJava"          value="${packaging}/AppleJavaExtensions-1.4.jar" />
 		<property name="slf4j-api"          value="${packaging}/slf4j-api-1.7.7.jar" />
 		<property name="slf4j-jdk"          value="${packaging}/slf4j-jdk14-1.7.7.jar" />
 		<property name="junit"              value="${packaging}/junit-4.10.jar" />
@@ -82,7 +82,6 @@
                 <pathelement location="${scala-library}" />
 				<pathelement location="${beanshell}" />
 				<pathelement location="${jython}" />
-				<pathelement location="${AppleJava}" />
 				<pathelement location="${junit}" />
 				<pathelement location="${j3dcore}" />
 				<pathelement location="${j3dutils}" />
@@ -125,9 +124,6 @@
 		<copy todir="${antBuild}/META-INF">
 			<fileset dir="${ElectricScalaLoc}/META-INF" />
 		</copy>
-		<unjar dest="${antBuild}" src="${AppleJava}">
-			<patternset> <include name="com/"/> </patternset>
-		</unjar>
 		<unjar dest="${antBuild}" src="${beanshell}">
 			<patternset> <include name="bsh/"/> </patternset>
 		</unjar>
