@@ -54,7 +54,10 @@
       <li>Right-click the "electric-java" project and choose <b>Run As / Java Application</b>
         <ul>
           <li>Choose the main class: "Electric (com.sun.electric)"</li>
+          <li>3D rendering will crash unless you add this to the VM Arguments:<br/>
+	--add-opens=java.desktop/sun.awt=ALL-UNNAMED</li>
         </ul>
+
       </li>
     </ul>
   </li>
