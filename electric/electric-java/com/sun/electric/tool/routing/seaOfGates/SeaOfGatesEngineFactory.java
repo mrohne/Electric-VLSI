@@ -41,7 +41,7 @@ public class SeaOfGatesEngineFactory {
     }
 
     public static SeaOfGatesEngine createSeaOfGatesEngine(SeaOfGatesEngineType version) {
-        SeaOfGatesEngine result = null;
+//        SeaOfGatesEngine result = null;
 
         switch (version) {
             case batchInfrastructure:

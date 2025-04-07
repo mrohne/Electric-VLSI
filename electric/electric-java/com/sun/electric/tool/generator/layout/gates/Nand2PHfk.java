@@ -98,17 +98,17 @@ public class Nand2PHfk {
 		k.connect(new PortInst[] {invK.findPortInst("in"),
 								  inv1.findPortInst("out")});
 		// exports
-		Export.newInstance(nand, inv2i.findPortInst("in[p]"), "inb", ep)
+		Export.newInst(nand, inv2i.findPortInst("in[p]"), "inb", ep)
 			.setCharacteristic(PortCharacteristic.IN);
-		Export.newInstance(nand, inv2i.findPortInst("in[n]"), "resetN", ep)
+		Export.newInst(nand, inv2i.findPortInst("in[n]"), "resetN", ep)
 			.setCharacteristic(PortCharacteristic.IN);
-		Export.newInstance(nand, pms1.findPortInst("g"), "ina", ep)
+		Export.newInst(nand, pms1.findPortInst("g"), "ina", ep)
 			.setCharacteristic(PortCharacteristic.IN);
-		Export.newInstance(nand, inv2i.findPortInst("out"), "out", ep)
+		Export.newInst(nand, inv2i.findPortInst("out"), "out", ep)
 			.setCharacteristic(PortCharacteristic.OUT);
-		Export.newInstance(nand, inv2i.findPortInst(vddName), vddName, ep)
+		Export.newInst(nand, inv2i.findPortInst(vddName), vddName, ep)
 			.setCharacteristic(vddRole);
-		Export.newInstance(nand, inv2i.findPortInst(gndName), gndName, ep)
+		Export.newInst(nand, inv2i.findPortInst(gndName), gndName, ep)
 			.setCharacteristic(gndRole);
 
 		// add essential bounds

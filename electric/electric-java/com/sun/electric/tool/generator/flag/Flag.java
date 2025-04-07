@@ -61,7 +61,7 @@ public class Flag {
 		prln("Generate layout for Cell: "+groupName);
 		prln("Using layout generator: "+className);
 
-        Cell layCell = Cell.newInstance(autoLib, groupName+"{lay}");
+        Cell layCell = Cell.newInst(autoLib, groupName+"{lay}");
         layCell.setTechnology(Technology.getCMOS90Technology());
         
         try {

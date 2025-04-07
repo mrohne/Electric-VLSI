@@ -45,20 +45,20 @@ public class ShortCircuitCheck implements WellCheckAnalysisStrategy {
 		System.out.println("Checking short circuits in " + parameter.getWellCons().size() + " well contacts");
 
 		for (WellCon wc : parameter.getWellCons()) {
-			Integer wellIndex = new Integer(wc.getWellNum().getIndex());
+			Integer wellIndex = Integer.valueOf(wc.getWellNum().getIndex());
 			WellCon other = wellContacts.get(wellIndex);
 			if (other == null)
 				wellContacts.put(wellIndex, wc);
 			else {
 				if (wc.getNetNum() != other.getNetNum() && wc.getNi() != other.getNi()) {
-					Integer wcNetNum = new Integer(wc.getNetNum());
+					Integer wcNetNum = Integer.valueOf(wc.getNetNum());
 					Set<Integer> shortsInWC = wellShorts.get(wcNetNum);
 					if (shortsInWC == null) {
 						shortsInWC = new HashSet<Integer>();
 						wellShorts.put(wcNetNum, shortsInWC);
 					}
 
-					Integer otherNetNum = new Integer(other.getNetNum());
+					Integer otherNetNum = Integer.valueOf(other.getNetNum());
 					Set<Integer> shortsInOther = wellShorts.get(otherNetNum);
 					if (shortsInOther == null) {
 						shortsInOther = new HashSet<Integer>();

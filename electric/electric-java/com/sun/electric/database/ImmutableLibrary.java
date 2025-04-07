@@ -28,8 +28,10 @@ import com.sun.electric.database.id.IdWriter;
 import com.sun.electric.database.id.LibId;
 import com.sun.electric.database.text.Version;
 import com.sun.electric.database.variable.Variable;
+import com.sun.electric.util.TextUtils;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
@@ -50,7 +52,7 @@ public class ImmutableLibrary extends ImmutableElectricObject {
     public final Set<CellId> delibCells;
 
     /**
-     * The private constructor of ImmutableLibrary. Use the factory "newInstance" instead.
+     * The private constructor of ImmutableLibrary. Use the factory "newInst" instead.
      * @param libId id of this ImmutableLibrary.
      * @param libFile file location of this ImmutableLibrary.
      * @param version version of Electric which wrote this ImmutableLibrary.
@@ -73,7 +75,7 @@ public class ImmutableLibrary extends ImmutableElectricObject {
      * @return new ImmutableLibrary object.
      * @throws NullPointerException if libId is null.
      */
-    public static ImmutableLibrary newInstance(LibId libId, URL libFile, Version version) {
+    public static ImmutableLibrary newInst(LibId libId, URL libFile, Version version) {
         if (libId == null) {
             throw new NullPointerException("libId");
         }
@@ -209,7 +211,9 @@ public class ImmutableLibrary extends ImmutableElectricObject {
     static ImmutableLibrary read(IdReader reader) throws IOException {
         LibId libId = reader.readLibId();
         String libFileString = reader.readString();
-        URL libFile = libFileString.length() > 0 ? new URL(libFileString) : null;
+        URL libFile = null;
+        if (libFileString.length() > 0) libFile = TextUtils.getURLFromString(libFileString);
+//        URL libFile = libFileString.length() > 0 ? new URL(libFileString) : null;
         String versionString = reader.readString();
         Version version = versionString.length() > 0 ? Version.parseVersion(versionString) : null;
         int flags = reader.readInt();

@@ -253,7 +253,7 @@ public abstract class Netlist {
      * @return Nodable for given NodeInst and array index.
      */
     public static Nodable getNodableFor(NodeInst ni, int arrayIndex) {
-        Cell parent = ni.getParent();
+//        Cell parent = ni.getParent();
         if (ni instanceof IconNodeInst) {
             if (ni.isIconOfParent() || arrayIndex < 0 || arrayIndex >= ni.getNameKey().busWidth()) {
                 return null;

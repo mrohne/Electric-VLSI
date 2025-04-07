@@ -73,7 +73,7 @@ public class PrimitivePort implements PortProto, Comparable<PrimitivePort>, Seri
 
     // ---------------------- protected and private methods ----------------
     /**
-     * The constructor is only called from the factory method "newInstance".
+     * The constructor is only called from the factory method "newInst".
      */
     protected PrimitivePort(PrimitiveNode parent, ArcProto[] portArcs, String protoName, boolean isSingle,
             int portAngle, int portRange, int portTopology, PortCharacteristic characteristic, boolean isolated, boolean negatable,
@@ -234,10 +234,10 @@ public class PrimitivePort implements PortProto, Comparable<PrimitivePort>, Seri
      * @param top is an EdgeV that describes the top side of the port in a scalable way.
      * @return the newly created PrimitivePort.
      */
-    public static PrimitivePort newInstance(PrimitiveNode parent, ArcProto[] portArcs, String protoName,
+    public static PrimitivePort newInst(PrimitiveNode parent, ArcProto[] portArcs, String protoName,
             int portAngle, int portRange, int portTopology, PortCharacteristic characteristic,
             EdgeH left, EdgeV bottom, EdgeH right, EdgeV top) {
-        return newInstance(parent, portArcs, protoName, false,
+        return newInst(parent, portArcs, protoName, false,
                 portAngle, portRange, portTopology, characteristic, false, false,
                 left, bottom, right, top);
     }
@@ -268,7 +268,7 @@ public class PrimitivePort implements PortProto, Comparable<PrimitivePort>, Seri
     public static PrimitivePort single(PrimitiveNode parent, ArcProto[] portArcs, String protoName,
             int portAngle, int portRange, int portTopology, PortCharacteristic characteristic,
             EdgeH left, EdgeV bottom, EdgeH right, EdgeV top) {
-        return newInstance(parent, portArcs, protoName, true,
+        return newInst(parent, portArcs, protoName, true,
                 portAngle, portRange, portTopology, characteristic, false, false,
                 left, bottom, right, top);
     }
@@ -297,7 +297,7 @@ public class PrimitivePort implements PortProto, Comparable<PrimitivePort>, Seri
      * @param top is an EdgeV that describes the top side of the port in a scalable way.
      * @return the newly created PrimitivePort.
      */
-    public static PrimitivePort newInstance(PrimitiveNode parent, ArcProto[] portArcs,
+    public static PrimitivePort newInst(PrimitiveNode parent, ArcProto[] portArcs,
             String protoName, boolean isSingle,
             int portAngle, int portRange, int portTopology,
             PortCharacteristic characteristic, boolean isolated, boolean negatable,

@@ -1103,8 +1103,8 @@ public class Analyzer implements IAnalyzer.EngineIRSIM, SimAPI.Analyzer
 		}
 
 		// print out what we found
-		int total = 0;
-		for(int i = 0; i < NBUCKETS; i++) total += table[i];
+//		int total = 0;
+//		for(int i = 0; i < NBUCKETS; i++) total += table[i];
 
 		System.out.println("Histogram of circuit activity: " + deltaToNS(begin) +
 			" . " + deltaToNS(end) + "ns (bucket size = " + deltaToNS(size) + ")");

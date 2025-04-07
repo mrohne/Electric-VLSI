@@ -82,7 +82,7 @@ public class DistanceCheck implements WellCheckAnalysisStrategy {
 			for (WellCon wc : parameter.getWellCons()) {
 				if (wc.getWellNum() == null)
 					continue;
-				Integer netNUM = new Integer(wc.getWellNum().getIndex());
+				Integer netNUM = Integer.valueOf(wc.getWellNum().getIndex());
 				WellNet wn = wellNets.get(netNUM);
 				if (wn == null) {
 					wn = new WellNet(new ArrayList<Point2D>(), new ArrayList<WellCon>(), wc.getFun());
@@ -138,7 +138,7 @@ public class DistanceCheck implements WellCheckAnalysisStrategy {
 				WellBound child = rtree.getChildLeaf(j);
 				if (child.getNetID() == null)
 					continue;
-				Integer netNUM = new Integer(child.getNetID().getIndex());
+				Integer netNUM = Integer.valueOf(child.getNetID().getIndex());
 				WellNet wn = wellNets.get(netNUM);
 				if (wn == null)
 					continue;

@@ -114,22 +114,6 @@ public class BitVector {
     public static int noNameSeverity = Infrastructure.SEVERITY_WARNING;
 
     /**
-     * Deprecated. Constructor creates an unnamed vector of <code>numBits</code>
-     * bits, set to the <tt>invalid</tt> state.
-     * 
-     * @param numBits
-     *            number of bits in the vector
-     * @deprecated
-     */
-    public BitVector(int numBits) {
-        this(numBits, "unnamed");
-        Infrastructure.error(noNameSeverity,
-                "Warning: creating unnamed length-" + numBits
-                        + " bit vector, use "
-                        + "two-parameter BitVector constructor instead");
-    }
-
-    /**
      * Main constructor creates a vector of <code>numBits</code> bits, set to
      * the <tt>invalid</tt> state.
      * 
@@ -147,20 +131,6 @@ public class BitVector {
         this.bitSet = new BitSet(numBits);
         this.valid = new BitSet(numBits);
         this.name = name;
-    }
-
-    /**
-     * Deprecated. Convenience constructor creates a bit vector from the input
-     * string. The length of the string is used for the length of the bit
-     * vector.
-     * 
-     * @param bitString
-     *            bit sequence to initialize vector to
-     * @deprecated
-     */
-    public BitVector(String bitString) {
-        this(bitString.length());
-        this.put(0, bitString);
     }
 
     /**

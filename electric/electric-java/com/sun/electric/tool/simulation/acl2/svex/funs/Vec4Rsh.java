@@ -35,7 +35,7 @@ import java.math.BigInteger;
 import java.util.Map;
 
 /**
- * Right “arithmetic” shift of 4vecs.
+ * Right "arithmetic" shift of 4vecs.
  * See<http://www.cs.utexas.edu/users/moore/acl2/manuals/current/manual/?topic=SV____4VEC-RSH>.
  * @param <N> Type of name of Svex variables
  */

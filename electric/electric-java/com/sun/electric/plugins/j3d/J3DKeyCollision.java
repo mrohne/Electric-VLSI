@@ -23,7 +23,8 @@
 
 package com.sun.electric.plugins.j3d;
 
-import javax.media.j3d.*;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
 
 /** Inspired in example found in Daniel Selman's book "Java 3D Programming"
  * For more information about the original example, contact Daniel Selman: daniel@selman.org

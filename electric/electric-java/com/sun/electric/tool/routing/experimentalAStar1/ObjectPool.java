@@ -22,6 +22,8 @@
  */
 package com.sun.electric.tool.routing.experimentalAStar1;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Implements object pooling by collecting unneeded objects and 
  * handing them out later
@@ -42,9 +44,9 @@ public class ObjectPool<T extends Poolable<T>> {
 		if(listHead == null)
 			try {
 				//Can't use "new T()", because generics don't allow it
-				return instanceCreator.newInstance();
+				return instanceCreator.getDeclaredConstructor().newInstance();
 			}
-			catch(InstantiationException e) {
+			catch(InstantiationException | InvocationTargetException | NoSuchMethodException e) {
 				return null;
 			}
 			catch(IllegalAccessException e) {

@@ -331,7 +331,7 @@ public class EDIF extends Input<Object>
 
 	// geometric path constructors ...
 	/** the width of the path */				private double pathWidth;
-	/** extend path end flag */					private boolean extendEnd;
+//	/** extend path end flag */					private boolean extendEnd;
 
 	// array variables ...
 	/** set if truely an array */				private boolean isArray;
@@ -1677,10 +1677,10 @@ public class EDIF extends Input<Object>
 				}
 				if (valEnd < val)
 				{
-					for(int i=val; i>=valEnd; i--) indices.add(new Integer(i));
+					for(int i=val; i>=valEnd; i--) indices.add(Integer.valueOf(i));
 				} else
 				{
-					for(int i=val; i<=valEnd; i++) indices.add(new Integer(i));
+					for(int i=val; i<=valEnd; i++) indices.add(Integer.valueOf(i));
 				}
 				continue;
 			}
@@ -1933,7 +1933,7 @@ public class EDIF extends Input<Object>
 	                number += 1;
 	                name = name + "_" + number;
 	            }
-	            uniqueExportNames.put(name, new Integer(number));
+	            uniqueExportNames.put(name, Integer.valueOf(number));
 	            found = plp;
 				break;
 			}
@@ -1990,117 +1990,117 @@ public class EDIF extends Input<Object>
 		protected void pop() throws IOException {}
 	}
 
-	private EDIFKEY KUNKNOWN = new EDIFKEY("");
-	private EDIFKEY KINIT = new EDIFKEY("");
-	private EDIFKEY KANNOTATE = new EDIFKEY("annotate");
-	private EDIFKEY KARC = new KeyArc();
-	private EDIFKEY KARRAY = new KeyArray();
-	private EDIFKEY KAUTHOR = new EDIFKEY ("author");
-	private EDIFKEY KBOOLEAN = new EDIFKEY ("boolean");
-	private EDIFKEY KBOOLEANMAP = new EDIFKEY("booleanMap");
-	private EDIFKEY KBORDERPATTERN = new EDIFKEY ("borderpattern");
-	private EDIFKEY KBOUNDINGBOX = new KeyBoundingBox();
-	private EDIFKEY KCELL = new KeyCell();
-	private EDIFKEY KCELLREF = new KeyCellRef();
-	private EDIFKEY KCELLTYPE = new EDIFKEY("cellType");
-	private EDIFKEY KCIRCLE = new KeyCircle();
-	private EDIFKEY KCOLOR = new EDIFKEY("color");
-	private EDIFKEY KCOMMENT = new EDIFKEY("comment");
-	private EDIFKEY KCOMMENTGRAPHICS = new KeyCommentGraphics(); //new EDIFKEY("commentGraphics");
-	private EDIFKEY KCONNECTLOCATION = new EDIFKEY("connectLocation");
-	private EDIFKEY KCONTENTS = new KeyContents();
-	private EDIFKEY KCORNERTYPE = new KeyCornerType();
-	private EDIFKEY KCRITICALITY = new EDIFKEY("criticality");
-	private EDIFKEY KCURVE = new EDIFKEY("curve");
-	private EDIFKEY KDATAORIGIN = new EDIFKEY("dataOrigin");
-	private EDIFKEY KDCFANOUTLOAD = new EDIFKEY("dcFanoutLoad");
-	private EDIFKEY KDCMAXFANOUT = new EDIFKEY("dcMaxFanout");
-	private EDIFKEY KDELTA = new KeyDelta();
-	private EDIFKEY KDESIGN = new KeyDesign();
-	private EDIFKEY KDESIGNATOR = new EDIFKEY("designator");
-	private EDIFKEY KDIRECTION = new KeyDirection();
-	private EDIFKEY KDISPLAY = new EDIFKEY("display");
-	private EDIFKEY KDOT = new KeyDot();
-	private EDIFKEY KSCALEDINTEGER = new EDIFKEY("e");
-	private EDIFKEY KEDIF = new EDIFKEY("edif");
-	private EDIFKEY KEDIFLEVEL = new EDIFKEY("edifLevel");
-	private EDIFKEY KEDIFVERSION = new EDIFKEY("edifVersion");
-	private EDIFKEY KENDTYPE = new KeyEndType();
-	private EDIFKEY KEXTERNAL = new KeyExternal();
-	private EDIFKEY KFABRICATE = new KeyFabricate();
-	private EDIFKEY KFALSE = new KeyFalse();
-	private EDIFKEY KFIGURE = new KeyFigure();
-	private EDIFKEY KFIGUREGROUP = new KeyFigureGroup();
-	private EDIFKEY KFIGUREGROUPOVERRIDE = new KeyFigureGroupOverride();
-	private EDIFKEY KFILLPATTERN = new EDIFKEY("fillpattern");
-	private EDIFKEY KGRIDMAP = new EDIFKEY("gridMap");
-	private EDIFKEY KINSTANCE = new KeyInstance();
-	private EDIFKEY KINSTANCEREF = new KeyInstanceRef();
-	private EDIFKEY KINTEGER = new KeyInteger();
-	private EDIFKEY KINTERFACE = new KeyInterface();
-	private EDIFKEY KJOINED = new KeyJoined();
-	private EDIFKEY KJUSTIFY = new KeyJustify();
-	private EDIFKEY KKEYWORDDISPLAY = new EDIFKEY("keywordDisplay");
-	private EDIFKEY KEDIFKEYLEVEL = new EDIFKEY("keywordLevel");
-	private EDIFKEY KEDIFKEYMAP = new EDIFKEY("keywordMap");
-	private EDIFKEY KLIBRARY = new KeyLibrary();
-	private EDIFKEY KLIBRARYREF = new LibraryRef();
-	private EDIFKEY KLISTOFNETS = new EDIFKEY("listOfNets");
-	private EDIFKEY KLISTOFPORTS = new EDIFKEY("listOfPorts");
-	private EDIFKEY KLOGICVALUE = new EDIFKEY("logicValue");
-	private EDIFKEY KMEMBER = new KeyMember();
-	private EDIFKEY KNAME = new KeyName();
-	private EDIFKEY KNET = new KeyNet();
-	private EDIFKEY KNETBUNDLE = new KeyNetBundle();
-	private EDIFKEY KNUMBER = new KeyNumber();
-	private EDIFKEY KNUMBERDEFINITION = new EDIFKEY("numberDefinition");
-	private EDIFKEY KOPENSHAPE = new KeyOpenShape();
-	private EDIFKEY KORIENTATION = new KeyOrientation();
-	private EDIFKEY KORIGIN = new EDIFKEY("origin");
-	private EDIFKEY KOWNER = new EDIFKEY("owner");
-	private EDIFKEY KPAGE = new EDIFKEY("page");
-	private EDIFKEY KPAGESIZE = new EDIFKEY("pageSize");
-	private EDIFKEY KPATH = new KeyPath();
-	private EDIFKEY KPATHWIDTH = new KeyPathWidth();
-	private EDIFKEY KPOINT = new EDIFKEY("point");
-	private EDIFKEY KPOINTLIST = new EDIFKEY("pointList");
-	private EDIFKEY KPOLYGON = new KeyPolygon();
-	private EDIFKEY KPORT = new KeyPort();
-	private EDIFKEY KPORTBUNDLE = new EDIFKEY("portBundle");
-	private EDIFKEY KPORTIMPLEMENTATION = new KeyPortImplementation();
-	private EDIFKEY KPORTINSTANCE = new EDIFKEY("portInstance");
-	private EDIFKEY KPORTLIST = new KeyPortList();
-	private EDIFKEY KPORTREF = new KeyPortRef();
-	private EDIFKEY KPROGRAM = new KeyProgram();
-	private EDIFKEY KPROPERTY = new KeyProperty();
-	private EDIFKEY KPROPERTYDISPLAY = new EDIFKEY("propertyDisplay");
-	private EDIFKEY KPROTECTIONFRAME = new KeyProtectionFrame();
-	private EDIFKEY KPT = new KeyPt();
-	private EDIFKEY KRECTANGLE = new KeyRectangle();
-	private EDIFKEY KRENAME = new KeyRename();
-	private EDIFKEY KSCALE = new EDIFKEY("scale");
-	private EDIFKEY KSCALEX = new EDIFKEY("scaleX");
-	private EDIFKEY KSCALEY = new EDIFKEY("scaleY");
-	private EDIFKEY KSHAPE = new EDIFKEY("shape");
-	private EDIFKEY KSIMULATIONINFO = new EDIFKEY("simulationInfo");
-	private EDIFKEY KSTATUS = new EDIFKEY("status");
-	private EDIFKEY KSTRING = new KeyString();
-	private EDIFKEY KSTRINGDISPLAY = new KeyStringDisplay();
-	private EDIFKEY KSYMBOL = new KeySymbol();
-	private EDIFKEY KTECHNOLOGY = new EDIFKEY("technology");
-	private EDIFKEY KTEXTHEIGHT = new KeyTextHeight();
-	private EDIFKEY KTIMESTAMP = new EDIFKEY("timestamp");
-	private EDIFKEY KTRANSFORM = new EDIFKEY("transform");
-	private EDIFKEY KTRUE = new KeyTrue();
-	private EDIFKEY KUNIT = new KeyUnit();
-	private EDIFKEY KUNUSED = new KeyUnused();		// TODO: fix
-	private EDIFKEY KUSERDATA = new EDIFKEY("userData");
-	private EDIFKEY KVERSION = new EDIFKEY("version");
-	private EDIFKEY KVIEW = new KeyView();
-	private EDIFKEY KVIEWREF = new ViewRef();
-	private EDIFKEY KVIEWTYPE = new KeyViewType();
-	private EDIFKEY KVISIBLE = new EDIFKEY("visible");
-	private EDIFKEY KWRITTEN = new EDIFKEY("written");
+							    private EDIFKEY KUNKNOWN = new EDIFKEY("");
+							    private EDIFKEY KINIT = new EDIFKEY("");
+								private EDIFKEY KANNOTATE = new EDIFKEY("annotate");
+	@SuppressWarnings("unused")	private EDIFKEY KARC = new KeyArc();
+								private EDIFKEY KARRAY = new KeyArray();
+								private EDIFKEY KAUTHOR = new EDIFKEY ("author");
+	@SuppressWarnings("unused")	private EDIFKEY KBOOLEAN = new EDIFKEY ("boolean");
+	@SuppressWarnings("unused")	private EDIFKEY KBOOLEANMAP = new EDIFKEY("booleanMap");
+	@SuppressWarnings("unused")	private EDIFKEY KBORDERPATTERN = new EDIFKEY ("borderpattern");
+								private EDIFKEY KBOUNDINGBOX = new KeyBoundingBox();
+								private EDIFKEY KCELL = new KeyCell();
+								private EDIFKEY KCELLREF = new KeyCellRef();
+								private EDIFKEY KCELLTYPE = new EDIFKEY("cellType");
+	@SuppressWarnings("unused")	private EDIFKEY KCIRCLE = new KeyCircle();
+	@SuppressWarnings("unused")	private EDIFKEY KCOLOR = new EDIFKEY("color");
+	@SuppressWarnings("unused")	private EDIFKEY KCOMMENT = new EDIFKEY("comment");
+								private EDIFKEY KCOMMENTGRAPHICS = new KeyCommentGraphics(); //new EDIFKEY("commentGraphics");
+	@SuppressWarnings("unused")	private EDIFKEY KCONNECTLOCATION = new EDIFKEY("connectLocation");
+								private EDIFKEY KCONTENTS = new KeyContents();
+	@SuppressWarnings("unused")	private EDIFKEY KCORNERTYPE = new KeyCornerType();
+	@SuppressWarnings("unused")	private EDIFKEY KCRITICALITY = new EDIFKEY("criticality");
+	@SuppressWarnings("unused")	private EDIFKEY KCURVE = new EDIFKEY("curve");
+	@SuppressWarnings("unused")	private EDIFKEY KDATAORIGIN = new EDIFKEY("dataOrigin");
+	@SuppressWarnings("unused")	private EDIFKEY KDCFANOUTLOAD = new EDIFKEY("dcFanoutLoad");
+	@SuppressWarnings("unused")	private EDIFKEY KDCMAXFANOUT = new EDIFKEY("dcMaxFanout");
+								private EDIFKEY KDELTA = new KeyDelta();
+								private EDIFKEY KDESIGN = new KeyDesign();
+	@SuppressWarnings("unused")	private EDIFKEY KDESIGNATOR = new EDIFKEY("designator");
+								private EDIFKEY KDIRECTION = new KeyDirection();
+	@SuppressWarnings("unused")	private EDIFKEY KDISPLAY = new EDIFKEY("display");
+	@SuppressWarnings("unused")	private EDIFKEY KDOT = new KeyDot();
+	@SuppressWarnings("unused")	private EDIFKEY KSCALEDINTEGER = new EDIFKEY("e");
+								private EDIFKEY KEDIF = new EDIFKEY("edif");
+								private EDIFKEY KEDIFLEVEL = new EDIFKEY("edifLevel");
+	@SuppressWarnings("unused")	private EDIFKEY KEDIFVERSION = new EDIFKEY("edifVersion");
+	@SuppressWarnings("unused")	private EDIFKEY KENDTYPE = new KeyEndType();
+								private EDIFKEY KEXTERNAL = new KeyExternal();
+	@SuppressWarnings("unused")	private EDIFKEY KFABRICATE = new KeyFabricate();
+	@SuppressWarnings("unused")	private EDIFKEY KFALSE = new KeyFalse();
+	@SuppressWarnings("unused")	private EDIFKEY KFIGURE = new KeyFigure();
+	@SuppressWarnings("unused")	private EDIFKEY KFIGUREGROUP = new KeyFigureGroup();
+	@SuppressWarnings("unused")	private EDIFKEY KFIGUREGROUPOVERRIDE = new KeyFigureGroupOverride();
+	@SuppressWarnings("unused")	private EDIFKEY KFILLPATTERN = new EDIFKEY("fillpattern");
+	@SuppressWarnings("unused")	private EDIFKEY KGRIDMAP = new EDIFKEY("gridMap");
+								private EDIFKEY KINSTANCE = new KeyInstance();
+								private EDIFKEY KINSTANCEREF = new KeyInstanceRef();
+	@SuppressWarnings("unused")	private EDIFKEY KINTEGER = new KeyInteger();
+								private EDIFKEY KINTERFACE = new KeyInterface();
+								private EDIFKEY KJOINED = new KeyJoined();
+	@SuppressWarnings("unused")	private EDIFKEY KJUSTIFY = new KeyJustify();
+	@SuppressWarnings("unused")	private EDIFKEY KKEYWORDDISPLAY = new EDIFKEY("keywordDisplay");
+	@SuppressWarnings("unused")	private EDIFKEY KEDIFKEYLEVEL = new EDIFKEY("keywordLevel");
+								private EDIFKEY KEDIFKEYMAP = new EDIFKEY("keywordMap");
+								private EDIFKEY KLIBRARY = new KeyLibrary();
+								private EDIFKEY KLIBRARYREF = new LibraryRef();
+								private EDIFKEY KLISTOFNETS = new EDIFKEY("listOfNets");
+								private EDIFKEY KLISTOFPORTS = new EDIFKEY("listOfPorts");
+	@SuppressWarnings("unused")	private EDIFKEY KLOGICVALUE = new EDIFKEY("logicValue");
+								private EDIFKEY KMEMBER = new KeyMember();
+								private EDIFKEY KNAME = new KeyName();
+								private EDIFKEY KNET = new KeyNet();
+								private EDIFKEY KNETBUNDLE = new KeyNetBundle();
+	@SuppressWarnings("unused")	private EDIFKEY KNUMBER = new KeyNumber();
+								private EDIFKEY KNUMBERDEFINITION = new EDIFKEY("numberDefinition");
+	@SuppressWarnings("unused")	private EDIFKEY KOPENSHAPE = new KeyOpenShape();
+	@SuppressWarnings("unused")	private EDIFKEY KORIENTATION = new KeyOrientation();
+	@SuppressWarnings("unused")	private EDIFKEY KORIGIN = new EDIFKEY("origin");
+	@SuppressWarnings("unused")	private EDIFKEY KOWNER = new EDIFKEY("owner");
+								private EDIFKEY KPAGE = new EDIFKEY("page");
+								private EDIFKEY KPAGESIZE = new EDIFKEY("pageSize");
+	@SuppressWarnings("unused")	private EDIFKEY KPATH = new KeyPath();
+	@SuppressWarnings("unused")	private EDIFKEY KPATHWIDTH = new KeyPathWidth();
+	@SuppressWarnings("unused")	private EDIFKEY KPOINT = new EDIFKEY("point");
+	@SuppressWarnings("unused")	private EDIFKEY KPOINTLIST = new EDIFKEY("pointList");
+								private EDIFKEY KPOLYGON = new KeyPolygon();
+								private EDIFKEY KPORT = new KeyPort();
+	@SuppressWarnings("unused")	private EDIFKEY KPORTBUNDLE = new EDIFKEY("portBundle");
+								private EDIFKEY KPORTIMPLEMENTATION = new KeyPortImplementation();
+	@SuppressWarnings("unused")	private EDIFKEY KPORTINSTANCE = new EDIFKEY("portInstance");
+	@SuppressWarnings("unused")	private EDIFKEY KPORTLIST = new KeyPortList();
+								private EDIFKEY KPORTREF = new KeyPortRef();
+	@SuppressWarnings("unused")	private EDIFKEY KPROGRAM = new KeyProgram();
+								private EDIFKEY KPROPERTY = new KeyProperty();
+	@SuppressWarnings("unused")	private EDIFKEY KPROPERTYDISPLAY = new EDIFKEY("propertyDisplay");
+								private EDIFKEY KPROTECTIONFRAME = new KeyProtectionFrame();
+	@SuppressWarnings("unused")	private EDIFKEY KPT = new KeyPt();
+	@SuppressWarnings("unused")	private EDIFKEY KRECTANGLE = new KeyRectangle();
+								private EDIFKEY KRENAME = new KeyRename();
+								private EDIFKEY KSCALE = new EDIFKEY("scale");
+	@SuppressWarnings("unused")	private EDIFKEY KSCALEX = new EDIFKEY("scaleX");
+	@SuppressWarnings("unused")	private EDIFKEY KSCALEY = new EDIFKEY("scaleY");
+	@SuppressWarnings("unused")	private EDIFKEY KSHAPE = new EDIFKEY("shape");
+	@SuppressWarnings("unused")	private EDIFKEY KSIMULATIONINFO = new EDIFKEY("simulationInfo");
+								private EDIFKEY KSTATUS = new EDIFKEY("status");
+	@SuppressWarnings("unused")	private EDIFKEY KSTRING = new KeyString();
+	@SuppressWarnings("unused")	private EDIFKEY KSTRINGDISPLAY = new KeyStringDisplay();
+								private EDIFKEY KSYMBOL = new KeySymbol();
+								private EDIFKEY KTECHNOLOGY = new EDIFKEY("technology");
+	@SuppressWarnings("unused")	private EDIFKEY KTEXTHEIGHT = new KeyTextHeight();
+								private EDIFKEY KTIMESTAMP = new EDIFKEY("timestamp");
+	@SuppressWarnings("unused")	private EDIFKEY KTRANSFORM = new EDIFKEY("transform");
+	@SuppressWarnings("unused")	private EDIFKEY KTRUE = new KeyTrue();
+								private EDIFKEY KUNIT = new KeyUnit();
+								private EDIFKEY KUNUSED = new KeyUnused();		// TODO: fix
+	@SuppressWarnings("unused")	private EDIFKEY KUSERDATA = new EDIFKEY("userData");
+	@SuppressWarnings("unused")	private EDIFKEY KVERSION = new EDIFKEY("version");
+								private EDIFKEY KVIEW = new KeyView();
+								private EDIFKEY KVIEWREF = new ViewRef();
+								private EDIFKEY KVIEWTYPE = new KeyViewType();
+	@SuppressWarnings("unused")	private EDIFKEY KVISIBLE = new EDIFKEY("visible");
+								private EDIFKEY KWRITTEN = new EDIFKEY("written");
 
 	private class KeyArc extends EDIFKEY
 	{
@@ -2487,8 +2487,8 @@ public class EDIF extends Input<Object>
 			throws IOException
 		{
 			// get the endtype
-			String type = getToken((char)0);
-			if (type.equalsIgnoreCase("EXTEND")) extendEnd = true;
+			/* String type = */ getToken((char)0);
+//			if (type.equalsIgnoreCase("EXTEND")) extendEnd = true;
 		}
 	}
 
@@ -2502,7 +2502,7 @@ public class EDIF extends Input<Object>
 			String libName = getToken((char)0);
 			curLibrary = Library.findLibrary(libName);
 			if (curLibrary == null)
-				curLibrary = Library.newInstance(libName, null);
+				curLibrary = Library.newInst(libName, null);
 		}
 	}
 
@@ -2528,7 +2528,7 @@ public class EDIF extends Input<Object>
 		private KeyFalse() { super("false"); }
 		protected void push()
 		{
-            propertyValue = new Boolean(false);
+            propertyValue = Boolean.valueOf(false);
         }
 	}
 
@@ -2539,7 +2539,7 @@ public class EDIF extends Input<Object>
 			throws IOException
 		{
 			makeFigure();
-			extendEnd = false;
+//			extendEnd = false;
 			pathWidth = 0;
 		}
 
@@ -2953,7 +2953,7 @@ public class EDIF extends Input<Object>
 			if (value.isEmpty() || value.startsWith(")"))
 				throw new IOException("Error reading integer '" + value + "' in line " + lineReader.getLineNumber());
 
-			propertyValue = new Integer(TextUtils.atoi(value));
+			propertyValue = Integer.valueOf(TextUtils.atoi(value));
 		}
 	}
 
@@ -3081,7 +3081,7 @@ public class EDIF extends Input<Object>
 			String libName = getToken((char)0);
 			curLibrary = Library.findLibrary(libName);
 			if (curLibrary == null)
-				curLibrary = Library.newInstance(libName, null);
+				curLibrary = Library.newInst(libName, null);
 		}
 	}
 
@@ -3324,7 +3324,7 @@ public class EDIF extends Input<Object>
 		protected void push()
 			throws IOException
 		{
-			propertyValue = new Double(getNumber());
+			propertyValue = Double.valueOf(getNumber());
 		}
 	}
 
@@ -3647,7 +3647,7 @@ public class EDIF extends Input<Object>
 			else
 			{
 				// treating the information as for an open polygon
-				NodeInst bbNi = NodeInst.newInstance(Artwork.tech().openedThickerPolygonNode, ep, new Point2D.Double(0,5), 10, 10, curCell);
+				NodeInst bbNi = NodeInst.newInst(Artwork.tech().openedThickerPolygonNode, ep, new Point2D.Double(0,5), 10, 10, curCell);
 				EPoint[] boxOutline = new EPoint[curPoints.size()];
 				for (int i=0; i<curPoints.size(); i++)
 				{
@@ -4252,7 +4252,7 @@ public class EDIF extends Input<Object>
 				{
 					TextDescriptor td = ep.getCellTextDescriptor().withDispPart(TextDescriptor.DispPos.NAMEVALUE).
 						withInherit(true).withParam(true).withDispPart(TextDescriptor.DispPos.NAMEVALUE);
-					Variable param = Variable.newInstance(Variable.newKey("ATTR_" + propertyReference), propertyValue, td);
+					Variable param = Variable.newInst(Variable.newKey("ATTR_" + propertyReference), propertyValue, td);
 					curCell.getCellGroup().addParam(param);
 				}
 			}
@@ -4721,7 +4721,7 @@ public class EDIF extends Input<Object>
 		private KeyTrue() { super("true"); }
 		protected void push()
 		{
-            propertyValue = new Boolean(true);
+            propertyValue = Boolean.valueOf(true);
         }
 	}
 

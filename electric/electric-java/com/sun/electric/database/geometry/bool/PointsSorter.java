@@ -224,6 +224,7 @@ public class PointsSorter
                 DataInputStream inp = new DataInputStream(new BufferedInputStream(new FileInputStream(files.get(i))));
                 inps[i] = inp;
                 inpH[i] = inp.readLong();
+                inp.close();
             }
         }
         outC = 0;

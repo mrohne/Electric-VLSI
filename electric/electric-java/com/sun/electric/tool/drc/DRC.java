@@ -76,7 +76,7 @@ public class DRC extends Listener
 
     private static final boolean THREAD_SAFE_DRC = true;
      // Client static variables
-    /** for logging incremental errors */                    private static ErrorLogger errorLoggerIncremental = ErrorLogger.newInstance("DRC (incremental)", true);
+    /** for logging incremental errors */                    private static ErrorLogger errorLoggerIncremental = ErrorLogger.newInst("DRC (incremental)", true);
 	/** map of cells and their objects to DRC */		     private static Map<Cell,Set<Geometric>> cellsToCheck = new HashMap<Cell,Set<Geometric>>();
     /** flag to show that incremental DRC is running */    private static boolean incrementalRunning = false;
 
@@ -1175,6 +1175,8 @@ public class DRC extends Listener
                 if (errorLogger.getGroupName(sortKey) == null) // only if nothing was found
                     errorLogger.setGroupName(sortKey, theRuleName);
                 break;
+            default:
+            	break;
         }
 
         errorLogger.logMessage(errorMessage.toString(), geomList, polyList, cell, sortKey, !onlyWarning);
@@ -1229,7 +1231,7 @@ public class DRC extends Listener
     private static final int DRC_BIT_ST_FOUNDRY = 04; /* For ST foundry selection */
     private static final int DRC_BIT_TSMC_FOUNDRY = 010; /* For TSMC foundry selection */
     private static final int DRC_BIT_MOSIS_FOUNDRY = 020; /* For Mosis foundry selection */
-    private static final int DRC_BIT_NONE_FOUNDRY = 040; /* For NONE foundry selection */
+//    private static final int DRC_BIT_NONE_FOUNDRY = 040; /* For NONE foundry selection */
 
     public enum DRCCheckMinArea
     {
@@ -1393,7 +1395,7 @@ public class DRC extends Listener
     public static ErrorLogger getDRCErrorLogger(boolean layout, String extraMsg)
     {
         String title = (layout) ? "Layout " : "Schematic ";
-        return ErrorLogger.newInstance(title + "DRC (full)" + ((extraMsg != null) ? extraMsg:""));
+        return ErrorLogger.newInst(title + "DRC (full)" + ((extraMsg != null) ? extraMsg:""));
     }
 
     public static ErrorLogger getDRCIncrementalLogger() {

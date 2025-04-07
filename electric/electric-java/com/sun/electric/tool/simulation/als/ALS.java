@@ -374,7 +374,7 @@ public class ALS implements Engine
 
 				Func funcHead = (Func)primHead.ptr;
 				double time = als.timeAbs + (funcHead.delta * targetNode.load);
-				scheduleNodeUpdate(primHead, otherSide, '=', new Integer(state), strength, time);
+				scheduleNodeUpdate(primHead, otherSide, '=', Integer.valueOf(state), strength, time);
 			}
 		}
 	}
@@ -486,7 +486,7 @@ public class ALS implements Engine
 			Link vectPtr2 = new Link();
 			vectPtr2.type = 'N';
 			vectPtr2.ptr = nodeHead;
-			vectPtr2.state = new Integer(Stimuli.LOGIC_HIGH);
+			vectPtr2.state = Integer.valueOf(Stimuli.LOGIC_HIGH);
 			vectPtr2.strength = Stimuli.VDD_STRENGTH;
 			vectPtr2.priority = 1;
 			vectPtr2.time = time;
@@ -495,7 +495,7 @@ public class ALS implements Engine
 			Link vectPtr1 = new Link();
 			vectPtr1.type = 'N';
 			vectPtr1.ptr = nodeHead;
-			vectPtr1.state = new Integer(Stimuli.LOGIC_LOW);
+			vectPtr1.state = Integer.valueOf(Stimuli.LOGIC_LOW);
 			vectPtr1.strength = Stimuli.VDD_STRENGTH;
 			vectPtr1.priority = 1;
 			vectPtr1.time = period / 2.0;
@@ -517,7 +517,7 @@ public class ALS implements Engine
 			Link setHead = new Link();
 			setHead.type = 'C';
 			setHead.ptr = clokHead;
-			setHead.state = new Integer(0);
+			setHead.state = Integer.valueOf(0);
 			setHead.priority = 1;
 			setHead.time = time;
 			setHead.right = null;
@@ -847,7 +847,7 @@ public class ALS implements Engine
 			Link setHead = new Link();
 			setHead.type = 'N';
 			setHead.ptr = nodeHead;
-			setHead.state = new Integer(state);
+			setHead.state = Integer.valueOf(state);
 			setHead.strength = strength;
 			setHead.priority = 2;
 			setHead.time = time;
@@ -1079,7 +1079,7 @@ public class ALS implements Engine
 				setHead.type = 'C';
 				Row clokHead = new Row();
 				setHead.ptr = clokHead;
-				setHead.state = new Integer(TextUtils.atoi(parts[13]));
+				setHead.state = Integer.valueOf(TextUtils.atoi(parts[13]));
 				setHead.priority = 1;
 				setHead.time = TextUtils.atof(parts[11]);
 				setHead.right = null;
@@ -1114,7 +1114,7 @@ public class ALS implements Engine
 					Link vectPtr2 = new Link();
 					vectPtr2.type = 'N';
 					vectPtr2.ptr = nodeHead;
-					vectPtr2.state = new Integer(Stimuli.parseLevel(com));
+					vectPtr2.state = Integer.valueOf(Stimuli.parseLevel(com));
 					vectPtr2.strength = strength;
 					vectPtr2.priority = 1;
 					vectPtr2.time = TextUtils.atof(parts[1]);
@@ -1140,7 +1140,7 @@ public class ALS implements Engine
 				Link setHead = new Link();
 				setHead.type = 'N';
 				setHead.ptr = nodeHead;
-				setHead.state = new Integer(Stimuli.parseLevel(parts[2]));
+				setHead.state = Integer.valueOf(Stimuli.parseLevel(parts[2]));
 				setHead.strength = Stimuli.indexToStrength(TextUtils.atoi(parts[3]));
 				setHead.priority = 2;
 				setHead.time = TextUtils.atof(parts[5]);
@@ -1561,7 +1561,7 @@ public class ALS implements Engine
 			}
 			if (s1.equals("L") || s1.equals("X") || s1.equals("H"))
 			{
-				ioPtr2.operand = new Integer(Stimuli.parseLevel(s1));
+				ioPtr2.operand = Integer.valueOf(Stimuli.parseLevel(s1));
 			} else
 			{
 				--iPtr;
@@ -2050,7 +2050,7 @@ public class ALS implements Engine
 			s1 += s2;
 		}
 
-		return new Integer(TextUtils.atoi(s1));
+		return Integer.valueOf(TextUtils.atoi(s1));
 	}
 
 	/**
@@ -2073,7 +2073,7 @@ public class ALS implements Engine
 
 		if (!s1.endsWith("E"))
 		{
-			return new Double(TextUtils.atof(s1));
+			return Double.valueOf(TextUtils.atof(s1));
 		}
 
 		String s2 = getAString();
@@ -2087,7 +2087,7 @@ public class ALS implements Engine
 			s1 += s3;
 		}
 
-		return new Double(TextUtils.atof(s1));
+		return Double.valueOf(TextUtils.atof(s1));
 	}
 
 	/**

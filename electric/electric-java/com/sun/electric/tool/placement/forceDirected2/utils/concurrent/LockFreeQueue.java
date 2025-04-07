@@ -59,7 +59,7 @@ public class LockFreeQueue<T> extends IStructure<T> {
 				if (next == null) {
 					if (last.next.compareAndSet(next, node)) {
 						this.tail.compareAndSet(last, node);
-						this.size = new Integer(this.size.intValue() + 1);
+						this.size = Integer.valueOf(this.size.intValue() + 1);
 						return;
 					}
 				} else {
@@ -87,7 +87,7 @@ public class LockFreeQueue<T> extends IStructure<T> {
 				} else {
 					T value = next.value;
 					if (this.head.compareAndSet(first, next)) {
-						this.size = new Integer(this.size.intValue() - 1);
+						this.size = Integer.valueOf(this.size.intValue() - 1);
 						return value;
 					}
 				}

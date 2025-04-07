@@ -40,7 +40,7 @@ class ChainModel extends ChainControl {
     /** Cruft necessary for TreeModel implementation, should try to remove */
     private ArrayList treeModelListeners;
 
-    private boolean isWorker = false; // true if worker is working
+//    private boolean isWorker = false; // true if worker is working
 
     /**
      * Creates a new instance of ChainModel, with the scan chain hierarchy

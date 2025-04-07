@@ -181,7 +181,7 @@ public class Control extends PlacementFrameElectric
 	public Boolean getColumnPlacement(Cell cell)
 	{
 		// make sure cells have the same girth
-		Double commonWid = new Double(-1), commonHei = new Double(-1);
+		Double commonWid = Double.valueOf(-1), commonHei = Double.valueOf(-1);
 		boolean foundCells = false;
 		for(Iterator<NodeInst> it = cell.getNodes(); it.hasNext(); )
 		{
@@ -190,12 +190,12 @@ public class Control extends PlacementFrameElectric
 			foundCells = true;
 			if (commonWid != null)
 			{
-				if (commonWid.doubleValue() < 0) commonWid = new Double(ni.getXSize());
+				if (commonWid.doubleValue() < 0) commonWid = Double.valueOf(ni.getXSize());
 				if (commonWid.doubleValue() != ni.getXSize()) commonWid = null;
 			}
 			if (commonHei != null)
 			{
-				if (commonHei.doubleValue() < 0) commonHei = new Double(ni.getYSize());
+				if (commonHei.doubleValue() < 0) commonHei = Double.valueOf(ni.getYSize());
 				if (commonHei.doubleValue() != ni.getYSize()) commonHei = null;
 			}
 		}

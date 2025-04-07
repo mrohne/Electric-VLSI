@@ -54,7 +54,7 @@ public class TrackRouterV extends TrackRouter {
         EPoint centerP = newPort.getCenter();
 		// if center isn't set explicitly then infer from first pin
 		if (center==null)
-			center = new Double(centerP.getX()); // LayoutLib.roundCenterX(newPort));
+			center = Double.valueOf(centerP.getX()); // LayoutLib.roundCenterX(newPort));
 
 		ArcProto portLyr = tech.closestLayer(newPort.getPortProto(), layer);
 

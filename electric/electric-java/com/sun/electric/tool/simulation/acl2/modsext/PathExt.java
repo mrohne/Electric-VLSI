@@ -228,7 +228,6 @@ public abstract class PathExt implements SvarName
             return (DriverExt)driver;
         }
 
-        @SuppressWarnings("unchecked")
         Lhs<PathExt> getDriverLhs()
         {
             assert driver instanceof Lhs;

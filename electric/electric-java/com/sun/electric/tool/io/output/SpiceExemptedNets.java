@@ -59,10 +59,11 @@ class SpiceExemptedNets
 		netsByCell = new HashMap<Cell,List<Net>>();
 		exemptedNetIDs = new TreeSet<Integer>();
 
+		BufferedReader br;
 		try
 		{
 			FileReader reader = new FileReader(file);
-			BufferedReader br = new BufferedReader(reader);
+			br = new BufferedReader(reader);
 			String line;
 			int lineno = 1;
 			System.out.println("Using exempted nets file "+file.getAbsolutePath());
@@ -71,6 +72,7 @@ class SpiceExemptedNets
 				processLine(line, lineno);
 				lineno++;
 			}
+			br.close();
 		} catch (IOException e)
 		{
 			System.out.println(e.getMessage());
@@ -153,7 +155,7 @@ class SpiceExemptedNets
 			// get the global ID
 			System.out.println("exemptedNets: specified net "+cell.describe(false)+" "+netName);
 			int netID = info.getNetID(net);
-			exemptedNetIDs.add(new Integer(netID));
+			exemptedNetIDs.add(Integer.valueOf(netID));
 		}
 	}
 
@@ -169,7 +171,7 @@ class SpiceExemptedNets
 
 	public boolean isExempted(int netID)
 	{
-		return exemptedNetIDs.contains(new Integer(netID));
+		return exemptedNetIDs.contains(Integer.valueOf(netID));
 	}
 
 	public double getReplacementCap(Cell cell, Network net)

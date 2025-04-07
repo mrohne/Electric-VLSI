@@ -134,12 +134,10 @@ public class RTNode<T extends RTBounds> extends AbstractFixpRectangle {
         return pointers[index];
     }
 
-    @SuppressWarnings("unchecked")
     public T getChildLeaf(int index) {
         return (T)pointers[index];
     }
 
-    @SuppressWarnings("unchecked")
     public RTNode<T> getChildTree(int index) {
         return (RTNode<T>)pointers[index];
     }
@@ -491,11 +489,9 @@ public class RTNode<T extends RTBounds> extends AbstractFixpRectangle {
             // find the element farthest from new object
             AbstractFixpRectangle bounds;
             if (rtnInsert instanceof RTBounds) {
-                @SuppressWarnings("unchecked")
                 T leaf = (T) rtnInsert;
                 bounds = leaf.getBounds();
             } else {
-                @SuppressWarnings("unchecked")
                 RTNode<T> tree = (RTNode<T>) rtnInsert;
                 bounds = tree;
             }
@@ -921,7 +917,6 @@ public class RTNode<T extends RTBounds> extends AbstractFixpRectangle {
         /** current depth of search */
         private int depth;
         /** RTNode stack of search */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         private final RTNode<T>[] rtn = new RTNode[MAXDEPTH];;
         /** index stack of search */
         private int[] position = new int[MAXDEPTH];

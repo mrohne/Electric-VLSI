@@ -250,7 +250,7 @@ public class UpdateJob extends Job
 						if (subLib == null)
 						{
 							// find a new library in the repository
-							subLib = Library.newInstance(subLibName, null);
+							subLib = Library.newInst(subLibName, null);
 							String projFile = Project.getRepositoryLocation() + File.separator + subLibName + File.separator + Project.PROJECTFILE;
 							File pf = new File(projFile);
 							if (!pf.exists())

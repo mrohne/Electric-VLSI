@@ -22,10 +22,11 @@
  */
 package com.sun.electric.plugins.j3d.utils;
 
-import javax.media.j3d.Alpha;
-import javax.swing.event.ChangeListener;
+import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
-import javax.swing.*;
+import javax.swing.event.ChangeListener;
+
+import org.jogamp.java3d.Alpha;
 
 /**
  * Alpha class to control motion with JSlider class

@@ -180,9 +180,9 @@ public class RoutingFrameSeaOfGates extends RoutingFrame
 		{
 			Map<Double,Set<Double>> plane = searchVertexPlanesDBL[z];
 			if (plane == null) return false;
-			Set<Double> row = plane.get(new Double(y));
+			Set<Double> row = plane.get(Double.valueOf(y));
 			if (row == null) return false;
-			boolean found = row.contains(new Double(x));
+			boolean found = row.contains(Double.valueOf(x));
 			return found;
 		}
 
@@ -200,14 +200,14 @@ public class RoutingFrameSeaOfGates extends RoutingFrame
 				plane = new HashMap<Double,Set<Double>>();
 				searchVertexPlanesDBL[z] = plane;
 			}
-			Double iY = new Double(y);
+			Double iY = Double.valueOf(y);
 			Set<Double> row = plane.get(iY);
 			if (row == null)
 			{
 				row = new HashSet<Double>();
 				plane.put(iY, row);
 			}
-			row.add(new Double(x));
+			row.add(Double.valueOf(x));
 		}
 
 		/**
@@ -224,8 +224,8 @@ public class RoutingFrameSeaOfGates extends RoutingFrame
 			if (length < 0) length = 50;
 
 			// convert these to the next largest integers
-			Double wid = new Double(upToGrain(width));
-			Double len = new Double(upToGrain(length));
+			Double wid = Double.valueOf(upToGrain(width));
+			Double len = Double.valueOf(upToGrain(length));
 
 			// see if the rule is cached6
 			Map<Double,Double> widMap = layerSurround[layer].get(wid);
@@ -240,7 +240,7 @@ public class RoutingFrameSeaOfGates extends RoutingFrame
 				// rule not cached: compute it
 				RoutingLayer lay = metalLayers[layer];
 				double v = lay.getMinSpacing(lay);
-				value = new Double(v);
+				value = Double.valueOf(v);
 				widMap.put(len, value);
 			}
 			return value.doubleValue();
@@ -338,7 +338,7 @@ public class RoutingFrameSeaOfGates extends RoutingFrame
 		Job.getUserInterface().setProgressNote("Building blockage information...");
 
 		// create an error logger
-		errorLogger = ErrorLogger.newInstance("Routing (Sea of gates) " + cell.describe(false));
+		errorLogger = ErrorLogger.newInst("Routing (Sea of gates) " + cell.describe(false));
 
 		// get all blockage information into R-Trees
 		metalTrees = new HashMap<RoutingLayer, RTNode<SOGBound>>();

@@ -150,7 +150,7 @@ class EClassLoader extends URLClassLoader {
     protected final Method Cell_lowLevelAllocate = getDeclaredMethod(classCell, "lowLevelAllocate", classLibrary);
     protected final Method Cell_lowLevelLink = getDeclaredMethod(classCell, "lowLevelLink");
     protected final Method Cell_lowLevelPopulate = getDeclaredMethod(classCell, "lowLevelPopulate", String.class);
-    protected final Method Cell_newInstance = getMethod(classCell, "newInstance", classLibrary, String.class);
+    protected final Method Cell_newInstance = getMethod(classCell, "newInst", classLibrary, String.class);
     protected final Method CellVersionGroup_add = getDeclaredMethod(classCellVersionGroup, "add", classCell);
     protected final Method EDatabase_lock = getMethod(classEDatabase, "lock", Boolean.TYPE);
     protected final Method EDatabase_lowLevelBeginChanges = getMethod(classEDatabase, "lowLevelBeginChanging", classTool);
@@ -158,7 +158,7 @@ class EClassLoader extends URLClassLoader {
     protected final Method EDatabase_serverDatabase = getMethod(classEDatabase, "serverDatabase");
     protected final Method Library_getLibraries = getMethod(classLibrary, "getLibraries");
     protected final Method Library_getName = getMethod(classLibrary, "getName");
-    protected final Method Library_newInstance = getMethod(classLibrary, "newInstance", String.class, URL.class);
+    protected final Method Library_newInstance = getMethod(classLibrary, "newInst", String.class, URL.class);
     protected final Method Pref_getFactoryValue = getMethod(classPref, "getFactoryValue");
     protected final Method Pref_getMeaning = getMethod(classPref, "getMeaning");
     protected final Method Pref_getPrefName = getMethod(classPref, "getPrefName");
@@ -170,8 +170,8 @@ class EClassLoader extends URLClassLoader {
     protected final Method NodeInst_getAngle = getMethod(classNodeInst, "getAngle");
     protected final Method NodeInst_getFunction = getMethod(classNodeInst, "getFunction");
     protected final Method NodeInst_getProto = getMethod(classNodeInst, "getProto");
-    protected final Method NodeInst_newInstance1 = getMethod(classNodeInst, "newInstance", classNodeProto, Point2D.class, Double.TYPE, Double.TYPE, classCell);
-    protected final Method NodeInst_newInstance2 = getMethod(classNodeInst, "newInstance", classNodeProto, Point2D.class, Double.TYPE, Double.TYPE, Integer.TYPE, classCell, String.class);
+    protected final Method NodeInst_newInstance1 = getMethod(classNodeInst, "newInst", classNodeProto, Point2D.class, Double.TYPE, Double.TYPE, classCell);
+    protected final Method NodeInst_newInstance2 = getMethod(classNodeInst, "newInst", classNodeProto, Point2D.class, Double.TYPE, Double.TYPE, Integer.TYPE, classCell, String.class);
     protected final Method ElectricObject_getVariables = getMethod(classElectricObject, "getVariables");
     protected final Method TextDescriptor_getSize = getDeclaredMethod(classAbstractTextDescriptor != null ? classAbstractTextDescriptor : classTextDescriptor, "getSize");
     protected final Method TextDescriptorSize_getSize = getMethod(classTextDescriptorSize, "getSize");

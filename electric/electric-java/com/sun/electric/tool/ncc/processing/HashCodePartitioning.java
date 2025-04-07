@@ -305,7 +305,7 @@ public class HashCodePartitioning {
 
 		if (done())	return;
 		
-		Date d1 = new Date();
+//		Date d1 = new Date();
 
 		hashProp = new HashCodePropagator(globals);
 		hashFrontier(hashProp);

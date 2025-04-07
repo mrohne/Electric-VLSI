@@ -567,7 +567,7 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 			popup.addItem("In node center");
 			popup.addItem("At node edges");
 			popup.addItem("In node corner");
-			initialPopupIndex = ni.getVarValue(NodeLayer.CUT_ALIGNMENT, Integer.class, new Integer(NodeLayer.MULTICUT_CENTERED)).intValue();
+			initialPopupIndex = ni.getVarValue(NodeLayer.CUT_ALIGNMENT, Integer.class, Integer.valueOf(NodeLayer.MULTICUT_CENTERED)).intValue();
 			popup.setSelectedIndex(initialPopupIndex);
 
 			textField1Label.setText("Cut spacing:");
@@ -1128,7 +1128,7 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 				{
 					double width = TextUtils.atofDistance(currentTextField1, tech);
 					Variable oldVar = ni.getVar(Schematics.ATTR_WIDTH);
-					Variable var = ni.updateVar(Schematics.ATTR_WIDTH, new Double(width), ep);
+					Variable var = ni.updateVar(Schematics.ATTR_WIDTH, Double.valueOf(width), ep);
 					if (var != null && oldVar == null)
 					{
 						ni.addVar(var.withDisplay(true).withDispPart(TextDescriptor.DispPos.NAMEVALUE));
@@ -1142,7 +1142,7 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 				{
 					if (currentTextField1.length() == 0)
 						ni.delVar(extrafields.extraField1.getKey()); else
-							ni.newVar(extrafields.extraField1.getKey(), new Double(TextUtils.atof(currentTextField1)), ep);
+							ni.newVar(extrafields.extraField1.getKey(), Double.valueOf(TextUtils.atof(currentTextField1)), ep);
 				}
 			}
 			if (extrafields.extraField2 != null)
@@ -1151,7 +1151,7 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 				{
 					if (currentTextField2.length() == 0)
 						ni.delVar(extrafields.extraField2.getKey()); else
-							ni.newVar(extrafields.extraField2.getKey(), new Double(TextUtils.atof(currentTextField2)), ep);
+							ni.newVar(extrafields.extraField2.getKey(), Double.valueOf(TextUtils.atof(currentTextField2)), ep);
 				}
 			}
 
@@ -1161,7 +1161,7 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 				{
 					if (currentTextField1.equals("DEFAULT") || currentTextField1.length() == 0)
 						ni.delVar(NodeLayer.CUT_SPACING); else
-							ni.newVar(NodeLayer.CUT_SPACING, new Double(TextUtils.atofDistance(currentTextField1, tech)), ep);
+							ni.newVar(NodeLayer.CUT_SPACING, Double.valueOf(TextUtils.atofDistance(currentTextField1, tech)), ep);
 				}
 				if (currentPopupIndex != initialPopupIndex)
 				{
@@ -1179,13 +1179,13 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 				{
 					if (currentTextField1.equals("DEFAULT") || currentTextField1.length() == 0)
 						ni.delVar(NodeLayer.CARBON_NANOTUBE_COUNT); else
-							ni.newVar(NodeLayer.CARBON_NANOTUBE_COUNT, new Integer(TextUtils.atoi(currentTextField1)), ep);
+							ni.newVar(NodeLayer.CARBON_NANOTUBE_COUNT, Integer.valueOf(TextUtils.atoi(currentTextField1)), ep);
 				}
 				if (!currentTextField2.equals(initialTextField2))
 				{
 					if (currentTextField2.equals("DEFAULT") || currentTextField2.length() == 0)
 						ni.delVar(NodeLayer.CARBON_NANOTUBE_PITCH); else
-							ni.newVar(NodeLayer.CARBON_NANOTUBE_PITCH, new Double(TextUtils.atofDistance(currentTextField2, tech)), ep);
+							ni.newVar(NodeLayer.CARBON_NANOTUBE_PITCH, Double.valueOf(TextUtils.atofDistance(currentTextField2, tech)), ep);
 				}
 			}
 
@@ -1285,19 +1285,19 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 			if (swapXY)
 			{
 				// get true size minus offset (this is the size the user sees)
-				currXSize = TextUtils.atof(currentYSize, new Double(ni.getLambdaBaseXSize()), TextDescriptor.Unit.DISTANCE, tech);
-				currYSize = TextUtils.atof(currentXSize, new Double(ni.getLambdaBaseYSize()), TextDescriptor.Unit.DISTANCE, tech);
-				initXSize = TextUtils.atof(initialYSize, new Double(currXSize), TextDescriptor.Unit.DISTANCE, tech);
-				initYSize = TextUtils.atof(initialXSize, new Double(currYSize), TextDescriptor.Unit.DISTANCE, tech);
+				currXSize = TextUtils.atof(currentYSize, Double.valueOf(ni.getLambdaBaseXSize()), TextDescriptor.Unit.DISTANCE, tech);
+				currYSize = TextUtils.atof(currentXSize, Double.valueOf(ni.getLambdaBaseYSize()), TextDescriptor.Unit.DISTANCE, tech);
+				initXSize = TextUtils.atof(initialYSize, Double.valueOf(currXSize), TextDescriptor.Unit.DISTANCE, tech);
+				initYSize = TextUtils.atof(initialXSize, Double.valueOf(currYSize), TextDescriptor.Unit.DISTANCE, tech);
 
 				// mirror
 				orient = Orientation.fromJava(currentRotation, currentMirrorY, currentMirrorX);
 			} else
 			{
-				currXSize = TextUtils.atof(currentXSize, new Double(ni.getLambdaBaseXSize()), TextDescriptor.Unit.DISTANCE, tech);
-				currYSize = TextUtils.atof(currentYSize, new Double(ni.getLambdaBaseYSize()), TextDescriptor.Unit.DISTANCE, tech);
-				initXSize = TextUtils.atof(initialXSize, new Double(currXSize), TextDescriptor.Unit.DISTANCE, tech);
-				initYSize = TextUtils.atof(initialYSize, new Double(currYSize), TextDescriptor.Unit.DISTANCE, tech);
+				currXSize = TextUtils.atof(currentXSize, Double.valueOf(ni.getLambdaBaseXSize()), TextDescriptor.Unit.DISTANCE, tech);
+				currYSize = TextUtils.atof(currentYSize, Double.valueOf(ni.getLambdaBaseYSize()), TextDescriptor.Unit.DISTANCE, tech);
+				initXSize = TextUtils.atof(initialXSize, Double.valueOf(currXSize), TextDescriptor.Unit.DISTANCE, tech);
+				initYSize = TextUtils.atof(initialYSize, Double.valueOf(currYSize), TextDescriptor.Unit.DISTANCE, tech);
 
 				// mirror
 				orient = Orientation.fromJava(currentRotation, currentMirrorX, currentMirrorY);
@@ -1323,7 +1323,7 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 							width = Variable.withCode(currentXSize, ni.getCode(Schematics.ATTR_WIDTH));
 						} else
 						{
-							width = new Double(w);
+							width = Double.valueOf(w);
 						}
 
 						double l = TextUtils.atofDistance(currentYSize, tech);
@@ -1333,7 +1333,7 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 							length = Variable.withCode(currentYSize, ni.getCode(Schematics.ATTR_LENGTH));
 						} else
 						{
-							length = new Double(l);
+							length = Double.valueOf(l);
 						}
 						ni.setPrimitiveNodeSize(width, length, ep);
 					}
@@ -1344,7 +1344,7 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 					{
 						// serpentine transistors can only set length
 						double initialLength = ni.getSerpentineTransistorLength();
-						double length = TextUtils.atof(currentYSize, new Double(initialLength), TextDescriptor.Unit.DISTANCE, tech);
+						double length = TextUtils.atof(currentYSize, Double.valueOf(initialLength), TextDescriptor.Unit.DISTANCE, tech);
 						if (length != initialLength)
 							ni.setSerpentineTransistorLength(length, ep);
 					} else
@@ -1352,8 +1352,8 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 						// set length and width by node size for layout transistors
 						double initialWidth = size.getDoubleWidth();
 						double initialLength = size.getDoubleLength();
-						double width = TextUtils.atof(currentXSize, new Double(initialWidth), TextDescriptor.Unit.DISTANCE, tech);
-						double length = TextUtils.atof(currentYSize, new Double(initialLength), TextDescriptor.Unit.DISTANCE, tech);
+						double width = TextUtils.atof(currentXSize, Double.valueOf(initialWidth), TextDescriptor.Unit.DISTANCE, tech);
+						double length = TextUtils.atof(currentYSize, Double.valueOf(initialLength), TextDescriptor.Unit.DISTANCE, tech);
 						if (!DBMath.doublesEqual(width, initialWidth) ||
 							!DBMath.doublesEqual(length, initialLength))
 						{
@@ -2004,9 +2004,9 @@ public class GetInfoNode extends EModelessDialog implements HighlightListener, D
 		if (shownNode == null) return;
 
 		Technology tech = shownNode.getParent().getTechnology();
-		double currentXPos = TextUtils.atof(xPos.getText(), new Double(initialXPos), TextDescriptor.Unit.DISTANCE, tech);
-		double currentYPos = TextUtils.atof(yPos.getText(), new Double(initialYPos), TextDescriptor.Unit.DISTANCE, tech);
-		int currentRotation = (int)(TextUtils.atof(rotation.getText(), new Double(initialRotation)) * 10);
+		double currentXPos = TextUtils.atof(xPos.getText(), Double.valueOf(initialXPos), TextDescriptor.Unit.DISTANCE, tech);
+		double currentYPos = TextUtils.atof(yPos.getText(), Double.valueOf(initialYPos), TextDescriptor.Unit.DISTANCE, tech);
+		int currentRotation = (int)(TextUtils.atof(rotation.getText(), Double.valueOf(initialRotation)) * 10);
 
 		new ChangeNode(shownNode,
 			initialXPos, currentXPos, initialYPos, currentYPos,

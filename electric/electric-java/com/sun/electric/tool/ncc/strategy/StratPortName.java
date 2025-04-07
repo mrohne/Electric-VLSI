@@ -149,7 +149,7 @@ public class StratPortName extends Strategy {
 				//yes it does
 				i++;
 				for (Wire w : wires) {
-					out.put(w, new Integer(i));
+					out.put(w, Integer.valueOf(i));
 				}
 			}
 		}
@@ -188,7 +188,7 @@ public class StratPortName extends Strategy {
 		numWiresProcessed++;
 		Wire w= (Wire)n;
 		Integer i= theMap.get(w);
-		return i!=null ? i : new Integer(0);
+		return i!=null ? i : Integer.valueOf(0);
 	}
 	
 }

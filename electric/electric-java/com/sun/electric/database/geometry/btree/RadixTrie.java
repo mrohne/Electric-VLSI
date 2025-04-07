@@ -118,7 +118,7 @@ public class RadixTrie<V> {
                 scores[newnode.firstChar & 0xffff]++;
             }
         }
-        private int size() { return children==null ? 0 : children.size(); }
+//        private int size() { return children==null ? 0 : children.size(); }
         public V get(String key) {
             if (key.length()==0) return entry;
             if (children==null) return null;

@@ -231,14 +231,14 @@ public class CompileVHDL
 		/** identifier */				String			value;
 		/** type of item */				int				type;
 		/** pointer to item */			Object			pointer;
-		/** flag for deallocation */	int             seen;
+//		/** flag for deallocation */	int             seen;
 	};
 
 	private static class SymbolList
 	{
 		/** the symbol table map */		HashMap<String,SymbolTree> sym;
 		/** previous in stack */		SymbolList		           last;
-		/** next in list */				SymbolList		           next;
+//		/** next in list */				SymbolList		           next;
 	};
 
 	/********** Unresolved Reference List **********************************/
@@ -268,7 +268,7 @@ public class CompileVHDL
 	{
 		/** name of interface */		String			name;
 		/** list of ports */			DBPortList		ports;
-		/** interface declarations */	Object			interfacef;
+//		/** interface declarations */	Object			interfacef;
 		/** for later code gen */		int				flags;
 		/** associated bodies */		DBBody			bodies;
 		/** local symbols */			SymbolList		symbols;
@@ -286,7 +286,7 @@ public class CompileVHDL
 		/** name of port */				String			name;
 		/** mode of port */				int				mode;
 		/** type of port */				DBLType			type;
-		/** general flags */			int				flags;
+//		/** general flags */			int				flags;
 		/** next in port list */		DBPortList		next;
 	};
 
@@ -298,7 +298,7 @@ public class CompileVHDL
 		/** name of type */				String			name;
 		/** type of type */				int				type;
 		/** pointer to info */			Object			pointer;
-		/** possible subtype */			DBLType			subType;
+//		/** possible subtype */			DBLType			subType;
 	};
 
 	/********** Bodies *****************************************************/
@@ -306,11 +306,11 @@ public class CompileVHDL
 	private static class DBBody
 	{
 		/** name of body: identifier */	String			name;
-		/** parent entity of body */	String			entity;
+//		/** parent entity of body */	String			entity;
 		/** declarations */				DBBodyDelcare	declare;
 		/** statements in body */		DBStatements	statements;
-		/** pointer to parent */		DBInterface		parent;
-		/** bodies of same parent */	DBBody			sameParent;
+//		/** pointer to parent */		DBInterface		parent;
+//		/** bodies of same parent */	DBBody			sameParent;
 		/** next body */				DBBody			next;
 	};
 
@@ -353,7 +353,7 @@ public class CompileVHDL
 	{
 		/** name of port */				DBName			name;
 		/** pointer to port on comp */	DBPortList		port;
-		/** flags for processing */		int				flags;
+//		/** flags for processing */		int				flags;
 		/** next in list */				DBAPortList		next;
 	};
 
@@ -376,7 +376,7 @@ public class CompileVHDL
 	private static class DBExprList
 	{
 		/** value */					int				value;
-		/** next in list */				DBExprList		next;
+//		/** next in list */				DBExprList		next;
 	};
 
 	private static class DBDiscreteRange
@@ -419,7 +419,7 @@ public class CompileVHDL
 	{
 		/** package name */				TokenList		name;
 		/** package declare part */		PackagedPart	declare;
-		/** package declare items */	List			packagedParts;
+//		/** package declare items */	List			packagedParts;
 	};
 
 	private static class PackagedPart
@@ -440,7 +440,7 @@ public class CompileVHDL
 	{
 		/** name of entity */			TokenList		name;
 		/** list of ports */			FPortList		ports;
-		/** interface declarations */	Object			interfacef;
+//		/** interface declarations */	Object			interfacef;
 	};
 
 	private static final int MODE_IN			= 1;
@@ -531,7 +531,7 @@ public class CompileVHDL
 	private static class ConstantDeclare
 	{
 		/** name of constant */			TokenList		identifier;
-		/** subtype indicator */		SubTypeInd		subType;
+//		/** subtype indicator */		SubTypeInd		subType;
 		/** expression */				Expression		expression;
 	};
 
@@ -606,13 +606,13 @@ public class CompileVHDL
 		/** ports on instance */		APortList		ports;
 	};
 
-	private static final int APORTLIST_NAME			= 1;
+//	private static final int APORTLIST_NAME			= 1;
 //	private static final int APORTLIST_TYPE_NAME	= 2;
 //	private static final int APORTLIST_EXPRESSION	= 3;
 
 	private static class APortList
 	{
-		/** type of actual port */		int				type;
+//		/** type of actual port */		int				type;
 		/** pointer to parse tree */	Object			pointer;
 		/** next in list */				APortList		next;
 	};
@@ -683,11 +683,11 @@ public class CompileVHDL
 	private static class ExprList
 	{
 		/** expression */				Expression		expression;
-        /** direction
-         * -1 downto
-         *  0 nothing
-         * +1 to
-         */                             int             direction;
+//        /** direction
+//         * -1 downto
+//         *  0 nothing
+//         * +1 to
+//         */                             int             direction;
         /** range end expression */     Expression      expressionRangeEnd;
 		/** next in list */				ExprList		next;
 	};
@@ -1091,7 +1091,7 @@ public class CompileVHDL
 						// character literal
 						if (bufPos+2 < buf.length() && buf.charAt(bufPos+2) == '\'')
 						{
-							new TokenList(TOKEN_CHAR, new Character(buf.charAt(bufPos+1)), lineNum, space);
+							new TokenList(TOKEN_CHAR, Character.valueOf(buf.charAt(bufPos+1)), lineNum, space);
 							bufPos += 3;
 						} else
 							bufPos++;
@@ -1434,7 +1434,7 @@ public class CompileVHDL
 		VInterface interfacef = new VInterface();
 		interfacef.name = name;
 		interfacef.ports = ports;
-		interfacef.interfacef = null;
+//		interfacef.interfacef = null;
 		return interfacef;
 	}
 
@@ -1917,7 +1917,7 @@ public class CompileVHDL
 
 		// should be at least one port association
 		APortList apList = new APortList();
-		apList.type = APORTLIST_NAME;
+//		apList.type = APORTLIST_NAME;
 		if (nextToken.token != TOKEN_COMMA && nextToken.token != TOKEN_RIGHTBRACKET)
 		{
 			if (isKeySame(nextToken, KEY_OPEN))
@@ -1943,7 +1943,7 @@ public class CompileVHDL
 		{
 			getNextToken();
 			APortList newPort = new APortList();
-			newPort.type = APORTLIST_NAME;
+//			newPort.type = APORTLIST_NAME;
 			if (nextToken.token != TOKEN_COMMA && nextToken.token != TOKEN_RIGHTBRACKET)
 			{
 				if (isKeySame(nextToken, KEY_OPEN))
@@ -2510,7 +2510,7 @@ public class CompileVHDL
 		getNextToken();
 
 		// parse subtype indication
-		SubTypeInd ind = parseSubtypeIndication();
+		/* SubTypeInd ind = */ parseSubtypeIndication();
 
 		// should be at assignment symbol
 		if (nextToken.token != TOKEN_VARASSIGN)
@@ -2531,7 +2531,7 @@ public class CompileVHDL
 
 		constant = new ConstantDeclare();
 		constant.identifier = ident;
-		constant.subType = ind;
+//		constant.subType = ind;
 		constant.expression = expr;
 
 		return constant;
@@ -2924,12 +2924,12 @@ public class CompileVHDL
             if (isKeySame(nextToken, KEY_TO))
             {
                 getNextToken();
-                eList.direction = +1;
+//                eList.direction = +1;
                 eList.expressionRangeEnd = parseExpression();
             } else if (isKeySame(nextToken, KEY_DOWNTO))
             {
                 getNextToken();
-                eList.direction = -1;
+//                eList.direction = -1;
                 eList.expressionRangeEnd = parseExpression();
             }
         }
@@ -2949,12 +2949,12 @@ public class CompileVHDL
                 if (isKeySame(nextToken, KEY_TO))
                 {
                     getNextToken();
-                    eList.direction = +1;
+//                    eList.direction = +1;
                     eList.expressionRangeEnd = parseExpression();
                 } else if (isKeySame(nextToken, KEY_DOWNTO))
                 {
                     getNextToken();
-                    eList.direction = +1;
+//                    eList.direction = +1;
                     eList.expressionRangeEnd = parseExpression();
                 }
             }
@@ -3290,7 +3290,7 @@ public class CompileVHDL
 	{
 		int value = TextUtils.atoi((String)nextToken.pointer);
 		getNextToken();
-		return new Integer(value);
+		return Integer.valueOf(value);
 	}
 
 	/**
@@ -3649,11 +3649,11 @@ public class CompileVHDL
 		// create dbbody
 		dbBody = new DBBody();
 		dbBody.name = (String)body.name.pointer;
-		dbBody.entity = null;
+//		dbBody.entity = null;
 		dbBody.declare = null;
 		dbBody.statements = null;
-		dbBody.parent = null;
-		dbBody.sameParent = null;
+//		dbBody.parent = null;
+//		dbBody.sameParent = null;
 		dbBody.next = null;
 		addSymbol(dbBody.name, SYMBOL_BODY, dbBody, globalSymbols);
 
@@ -3669,12 +3669,12 @@ public class CompileVHDL
 			return dbBody;
 		} else
 		{
-			dbBody.entity = symbol.value;
-			dbBody.parent = (DBInterface)symbol.pointer;
+//			dbBody.entity = symbol.value;
+//			dbBody.parent = (DBInterface)symbol.pointer;
 			if (symbol.pointer != null)
 			{
 				// add interfacef-body reference to list
-				dbBody.sameParent = ((DBInterface)(symbol.pointer)).bodies;
+//				dbBody.sameParent = ((DBInterface)(symbol.pointer)).bodies;
 				((DBInterface)(symbol.pointer)).bodies = dbBody;
 			}
 		}
@@ -3729,30 +3729,30 @@ public class CompileVHDL
 			switch (state.type)
 			{
 				case ARCHSTATE_INSTANCE:
-					DBInstance newInstance = semInstance((VInstance)state.pointer);
+					DBInstance newInst = semInstance((VInstance)state.pointer);
 					if (endInstance == null)
 					{
-						dbStates.instances = endInstance = newInstance;
+						dbStates.instances = endInstance = newInst;
 					} else
 					{
-						endInstance.next = newInstance;
-						endInstance = newInstance;
+						endInstance.next = newInst;
+						endInstance = newInst;
 					}
 					break;
 				case ARCHSTATE_GENERATE:
 					DBStatements newState = semGenerate((Generate)state.pointer);
 					if (newState != null)
 					{
-						for (newInstance = newState.instances; newInstance != null;
-						newInstance = newInstance.next)
+						for (newInst = newState.instances; newInst != null;
+						newInst = newInst.next)
 						{
 							if (endInstance == null)
 							{
-								dbStates.instances = endInstance = newInstance;
+								dbStates.instances = endInstance = newInst;
 							} else
 							{
-								endInstance.next = newInstance;
-								endInstance = newInstance;
+								endInstance.next = newInst;
+								endInstance = newInst;
 							}
 						}
 					}
@@ -3822,7 +3822,7 @@ public class CompileVHDL
 				DBInstance endInst = null;
 				for (int temp = dRange.start; temp <= dRange.end; temp++)
 				{
-					symbol.pointer = new Integer(temp);
+					symbol.pointer = Integer.valueOf(temp);
 					dbStates = semSetOfStatements(gen.statements);
 					++forLoopTags[forLoopLevel];
 					if (dbStates != null)
@@ -3972,7 +3972,7 @@ public class CompileVHDL
 			{
 				pList = pList.next;
 			}
-			dbAPort.flags = 0;
+//			dbAPort.flags = 0;
 			dbAPort.next = null;
 			if (endDBAPort == null)
 			{
@@ -4120,13 +4120,13 @@ public class CompileVHDL
 			}
 			DBExprList nExpr = new DBExprList();
 			nExpr.value = value;
-			nExpr.next = null;
+//			nExpr.next = null;
 			if (endExpr == null)
 			{
 				dbExpr = endExpr = nExpr;
 			} else
 			{
-				endExpr.next = nExpr;
+//				endExpr.next = nExpr;
 				endExpr = nExpr;
 			}
 			indexR = indexR.next;
@@ -4494,7 +4494,7 @@ public class CompileVHDL
 		dbType.type = DBTYPE_ARRAY;
 		DBIndexRange endRange = null;
 		dbType.pointer = null;
-		dbType.subType = null;
+//		dbType.subType = null;
 
 		// check index constraint
 		for (IndexConstraint indexC = constr.constraint; indexC != null; indexC = indexC.next)
@@ -4513,7 +4513,7 @@ public class CompileVHDL
 			}
 		}
 		// check subtype indication
-		dbType.subType = semSubtypeIndication(constr.subType);
+		/* dbType.subType = */ semSubtypeIndication(constr.subType);
 
 		return dbType;
 	}
@@ -4643,7 +4643,7 @@ public class CompileVHDL
 		{
 			int value = evalExpression(constant.expression);
 			addSymbol((String)constant.identifier.pointer, SYMBOL_CONSTANT,
-				new Integer(value), localSymbols);
+				Integer.valueOf(value), localSymbols);
 		}
 	}
 
@@ -5086,7 +5086,7 @@ public class CompileVHDL
 					{
 						newPort.type = null;
 					}
-					newPort.flags = 0;
+//					newPort.flags = 0;
 					newPort.next = null;
 					if (endPort == null)
 					{

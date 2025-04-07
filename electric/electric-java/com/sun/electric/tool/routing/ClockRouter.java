@@ -2239,7 +2239,7 @@ public class ClockRouter
 //							distance += Math.abs(pt1.getX() - pt2.getX()) * 100;
 //					}
 //				}
-//				Double dist = new Double(distance);
+//				Double dist = Double.valueOf(distance);
 //				List<PortPair> pairsThisDist = allConnections.get(dist);
 //				if (pairsThisDist == null) allConnections.put(dist, pairsThisDist = new ArrayList<PortPair>());
 //				pairsThisDist.add(new PortPair(spi1, spi2));

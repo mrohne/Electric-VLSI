@@ -92,7 +92,7 @@ public class IRSIM implements Engine, IAnalyzer.GUI {
         if (instance == null && !IRSIMChecked) {
 			try {
 		    	Class<?> clz = Class.forName("com.sun.electric.plugins.irsim.IAnalyzerImpl");
-		    	if (clz != null) instance = (IAnalyzer)clz.newInstance();
+		    	if (clz != null) instance = (IAnalyzer)clz.getDeclaredConstructor().newInstance();
 			} catch (Exception e) {}
 
             if (instance == null) {

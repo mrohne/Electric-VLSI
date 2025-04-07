@@ -85,13 +85,13 @@ public class VectorCache {
 
     private static class CellLayer {
 
-        final Layer layer;
+//        final Layer layer;
         int[] boxCoords = NULL_INT_ARRAY;
         ERectangle localBounds;
-        ArrayList<MyVectorPolygon> polys = new ArrayList<MyVectorPolygon>();
+//        ArrayList<MyVectorPolygon> polys = new ArrayList<MyVectorPolygon>();
 
         private CellLayer(Layer layer) {
-            this.layer = layer;
+//            this.layer = layer;
         }
 
         private void setBoxCoords(int[] boxCoords) {
@@ -410,7 +410,6 @@ public class VectorCache {
                 return false;
             }
 
-//            System.out.println("numPoints="+numPoints);
             TreeMap<Integer, Integer> xcoords = new TreeMap<Integer, Integer>();
             TreeMap<Integer, Integer> ycoords = new TreeMap<Integer, Integer>();
             int minI = 0;
@@ -441,7 +440,6 @@ public class VectorCache {
                 int xv = e.getKey();
                 xvals[ix] = xv;
                 e.setValue(Integer.valueOf(ix));
-//                System.out.println("x"+ix+"="+xv);
                 ix++;
             }
             int[] yvals = new int[ycoords.size()];
@@ -450,7 +448,6 @@ public class VectorCache {
                 int yv = e.getKey();
                 yvals[iy] = yv;
                 e.setValue(Integer.valueOf(iy));
-//                System.out.println("y"+iy+"="+yv);
                 iy++;
             }
 
@@ -494,7 +491,6 @@ public class VectorCache {
                 }
             }
             for (int x = 0; x < accum.size(); x++) {
-//                System.out.print("a" + x + ":");
                 List<Long> yl = accum.get(x);
                 Collections.sort(yl);
                 Integer prevY = null;
@@ -507,17 +503,14 @@ public class VectorCache {
                         for (int yi = prevY; yi < thisY; yi++) {
                             putBox(layer, boxBuilders, xvals[x], yvals[yi], xvals[x + 1], yvals[yi + 1]);
                         }
-//                        System.out.print(" " + thisY + ")");
                         prevY = null;
                     } else {
                         if (prevY != null) {
                             return false;
                         }
                         prevY = thisY;
-//                        System.out.print(" (" + thisY);
                     }
                 }
-//                System.out.println();
             }
             return true;
         }
@@ -525,7 +518,7 @@ public class VectorCache {
 
     private void badLayer(Layer layer) {
         if (badLayers.add(layer)) {
-            layer = layer;
+//            layer = layer;
         }
     }
 

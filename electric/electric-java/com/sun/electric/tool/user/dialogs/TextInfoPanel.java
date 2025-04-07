@@ -103,7 +103,7 @@ public class TextInfoPanel extends javax.swing.JPanel
         for (int i=0; i<TextDescriptor.Rotation.getNumRotations(); i++) {
             TextDescriptor.Rotation rot = TextDescriptor.Rotation.getRotationAt(i);
             // rotations stored as integers, retrieve by Rotation.getIndex()
-            rotation.addItem(new Integer(rot.getAngle()));
+            rotation.addItem(Integer.valueOf(rot.getAngle()));
         }
 
         // populate Anchor combo box
@@ -571,8 +571,8 @@ public class TextInfoPanel extends javax.swing.JPanel
         if (newPosition == TextDescriptor.Position.BOXED) {
             Double width, height;
             try {
-                width = new Double(boxedWidth.getText());
-                height = new Double(boxedHeight.getText());
+                width = Double.valueOf(boxedWidth.getText());
+                height = Double.valueOf(boxedHeight.getText());
                 newBoxedWidth = width.doubleValue();
                 newBoxedHeight = height.doubleValue();
             } catch (java.lang.NumberFormatException e) {
@@ -630,8 +630,8 @@ public class TextInfoPanel extends javax.swing.JPanel
         // changes made: generate job and update initial values
         Integer absSize = null;
         Double relSize = null;
-        if (newSize.isAbsolute()) absSize = new Integer((int)newSize.getSize()); else
-        	relSize = new Double(newSize.getSize());
+        if (newSize.isAbsolute()) absSize = Integer.valueOf((int)newSize.getSize()); else
+        	relSize = Double.valueOf(newSize.getSize());
         new ChangeText(
                 owner,
 				unTransformNi,

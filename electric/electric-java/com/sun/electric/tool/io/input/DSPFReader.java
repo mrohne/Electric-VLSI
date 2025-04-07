@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 public class DSPFReader extends Input<Object>
 {
-    private DSPFReaderPreferences localPrefs;
+//    private DSPFReaderPreferences localPrefs;
 
      static class DSPFReaderPreferences extends InputPreferences
     {
@@ -120,15 +120,15 @@ public class DSPFReader extends Input<Object>
     {
         DSPNode pin1, pin2;
         ParasiticType type;
-        private float value;
-        private String name;
+//        private float value;
+//        private String name;
 
         DSPFParaElem(String n, DSPNode s1, DSPNode s2, double v, ParasiticType t)
         {
-            name = n;
+//            name = n;
             pin1 = s1;
             pin2 = s2;
-            value = (float)v;
+//            value = (float)v;
             type = t;
         }
     }
@@ -255,14 +255,14 @@ public class DSPFReader extends Input<Object>
     @Override
 	protected Library importALibrary(Library lib, Technology tech, Map<Library,Cell> currentCells)
     {
-        DSPFData data = parseDSPFFile(null);
+        /* DSPFData data = */ parseDSPFFile(null);
         return null;
     }
 
     DSPFReader(EditingPreferences ep, DSPFReaderPreferences prefs)
     {
         super(ep);
-        localPrefs = prefs;
+//        localPrefs = prefs;
     }
 
     /**
@@ -402,7 +402,7 @@ public class DSPFReader extends Input<Object>
                 if (key.startsWith("CC"))
                 {
                     String line = getRestOfLine();
-                    StringTokenizer parse = new StringTokenizer(line, " ", false);
+                    /* StringTokenizer parse = */ new StringTokenizer(line, " ", false);
 
                     assert(false); // implement
 //                    DParaNode p1 = null, p2 = null;

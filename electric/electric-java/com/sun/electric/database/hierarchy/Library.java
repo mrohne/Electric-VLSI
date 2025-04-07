@@ -94,7 +94,7 @@ public class Library extends ElectricObject implements Comparable<Library> {
 
     // ----------------- private and protected methods --------------------
     /**
-     * The constructor is never called.  Use the factor method "newInstance" instead.
+     * The constructor is never called.  Use the factor method "newInst" instead.
      */
     Library(EDatabase database, ImmutableLibrary d) {
         if (database == null) {
@@ -116,7 +116,7 @@ public class Library extends ElectricObject implements Comparable<Library> {
      * can be told to read that file and populate the Library.
      * @return the Library object.
      */
-    public static Library newInstance(String libName, URL libFile) {
+    public static Library newInst(String libName, URL libFile) {
         // make sure the name is legal
         String legalName = LibId.legalLibraryName(libName);
         if (legalName == null) {
@@ -135,7 +135,7 @@ public class Library extends ElectricObject implements Comparable<Library> {
         }
 
         // create the library
-        return newInstance(database, database.getIdManager().newLibId(legalName), libFile);
+        return newInst(database, database.getIdManager().newLibId(legalName), libFile);
     }
 
     /**
@@ -149,9 +149,9 @@ public class Library extends ElectricObject implements Comparable<Library> {
      * @return the Library object.
      * @throws NullPointerException if libId or legalName is null.
      */
-    private static Library newInstance(EDatabase edb, LibId libId, URL libFile) {
+    private static Library newInst(EDatabase edb, LibId libId, URL libFile) {
         // create the library
-        ImmutableLibrary d = ImmutableLibrary.newInstance(libId, libFile, null);
+        ImmutableLibrary d = ImmutableLibrary.newInst(libId, libFile, null);
         Library lib = new Library(edb, d);
 
         // add the library to the global list
@@ -678,7 +678,7 @@ public class Library extends ElectricObject implements Comparable<Library> {
     }
     
     public static void repairAllLibraries(EditingPreferences ep) {
-        ErrorLogger errorLogger = ErrorLogger.newInstance("Repair Libraries");
+        ErrorLogger errorLogger = ErrorLogger.newInst("Repair Libraries");
         for (Iterator<Library> it = Library.getLibraries(); it.hasNext();) {
             Library l = it.next();
             l.checkAndRepair(true, errorLogger, ep);

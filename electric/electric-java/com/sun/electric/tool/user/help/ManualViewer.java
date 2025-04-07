@@ -306,35 +306,6 @@ public class ManualViewer extends EModelessDialog
 		}
 	}
 
-	/**
-	 * Method to animate the 3D view of current layout cell
-	 * @param demoName name of j3d file containing the demo
-	 */
-	public static void animate3DSample(String demoName)
-	{
-		String fileName = "helphtml/" + demoName;
-		URL url = ManualViewer.class.getResource(fileName);
-		if (url == null)
-		{
-			System.out.println("Can't open 3D demo file '" + fileName + "'");
-			return;
-		}
-		Class<?> plugin3D = Resources.get3DClass("ui.J3DDemoDialog");
-		if (plugin3D != null)
-		{
-			// Adding 3D/Demo menu
-			try {
-				Method createMethod = plugin3D.getDeclaredMethod("create3DDemoDialog",
-					new Class[] {java.awt.Frame.class, URL.class});
-				createMethod.invoke(plugin3D, new Object[] {TopLevel.getCurrentJFrame(), url});
-			} catch (Exception e)
-			{
-				System.out.println("Can't open 3D demo dialog: " + e.getMessage());
-				ActivityLogger.logException(e);
-			}
-		}
-	}
-
     private static boolean j3DAvailable;
     private static boolean j3DChecked = false;
 
@@ -447,7 +418,7 @@ public class ManualViewer extends EModelessDialog
 				pi.url = htmlBaseClass.getResource(htmlDirectory + "/" + fileName + ".html");
 				if (pi.url == null)
 					System.out.println("NULL URL to "+fileName);
-				DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Integer(pageSequence.size()));
+				DefaultMutableTreeNode node = new DefaultMutableTreeNode(Integer.valueOf(pageSequence.size()));
 				if (preference != null && pi.fileName.equals(prefFileName))
 				{
 					currentIndex = pageSequence.size();
@@ -774,7 +745,7 @@ public class ManualViewer extends EModelessDialog
 	private void loadPage(int index, String highlightThis)
 	{
 		// add to browsing history
-		history.add(new Integer(index));
+		history.add(Integer.valueOf(index));
 
 		currentIndex = index;
 		lastPageVisited = index;
@@ -1086,7 +1057,6 @@ public class ManualViewer extends EModelessDialog
 		usedFiles.add("iconcontarrow.png");
 		usedFiles.add("samples.jelib");
 		usedFiles.add("floatingGates.jelib");
-		usedFiles.add("demoCage.j3d");
 		usedFiles.add("electric.html");
 		String classPath = htmlBaseClass.getPackage().getName() + "." + htmlDirectory;
 		List<String> manFiles = TextUtils.getAllResources(classPath);
@@ -1098,6 +1068,7 @@ public class ManualViewer extends EModelessDialog
 		for(String s : usedFiles)
 		{
 			if (manFiles.contains(s)) continue;
+			if (s.startsWith("https://")) continue;
 			System.out.println("File " + s + " is missing");
 		}
 	}

@@ -538,8 +538,8 @@ public class PLA
 			if (newNode == null) return null;
 			if (lastNode == null)
 			{
-				Export.newInstance(cell, newNode.findPortInstFromProto(invPwrW), "PWR.m-2.w", ep);
-				Export.newInstance(cell, newNode.findPortInstFromProto(invGnd1W), "GND.m-2.w", ep);
+				Export.newInst(cell, newNode.findPortInstFromProto(invPwrW), "PWR.m-2.w", ep);
+				Export.newInst(cell, newNode.findPortInstFromProto(invGnd1W), "GND.m-2.w", ep);
 
 				// Put in GND bar pin (metal-2)
 				Poly poly = newNode.findPortInstFromProto(invGnd1W).getPoly();
@@ -572,7 +572,7 @@ public class PLA
 				Export nPort = ioInv4.findExport("in" + (x%4) + ".m-1.n");
 				Export outPort = ioInv4.findExport("out" + (x % 4) + "-bar.m-1.s");
 				if (outPort != null)
-					Export.newInstance(cell, newNode.findPortInstFromProto(outPort), "out" + (invCnt + (x % 4)) + ".m-1." + side, ep);
+					Export.newInst(cell, newNode.findPortInstFromProto(outPort), "out" + (invCnt + (x % 4)) + ".m-1." + side, ep);
 				if (pPort != null && nPort != null)
 					makeWire(m1Arc, 4, orNode, pPort, newNode, nPort, cell);
 			}
@@ -586,10 +586,10 @@ public class PLA
 			pwrNode1 = makePin(cell, highX+13, pwrY, 14, m2Pin);
 			if (pwrNode1 == null) return null;
 			makeWire(m2Arc, 14, lastNode, invPwrE, pwrNode1, pwrNode1.getProto().getPort(0), cell);
-			Export.newInstance(cell, lastNode.findPortInstFromProto(invPwrE), "PWR.m-2.e", ep);
+			Export.newInst(cell, lastNode.findPortInstFromProto(invPwrE), "PWR.m-2.e", ep);
 		}
 		if (invGnd1W != null)
-			Export.newInstance(cell, lastNode.findPortInstFromProto(invGnd1E), "GND.m-2.e", ep);
+			Export.newInst(cell, lastNode.findPortInstFromProto(invGnd1E), "GND.m-2.e", ep);
 
 		// OK PUT in the PULLUPS
 		newNode = null;
@@ -635,8 +635,8 @@ public class PLA
 			if (newNode == null) return null;
 			if (lastNode == null)
 			{
-				Export.newInstance(cell, newNode.findPortInstFromProto(pullUpsPwrW), "PWR0.m-2.w", ep);
-				Export.newInstance(cell, newNode.findPortInstFromProto(pullUpsGnd1W), "GND0.m-1.w", ep);
+				Export.newInst(cell, newNode.findPortInstFromProto(pullUpsPwrW), "PWR0.m-2.w", ep);
+				Export.newInst(cell, newNode.findPortInstFromProto(pullUpsGnd1W), "GND0.m-1.w", ep);
 				PortInst pi = newNode.findPortInstFromProto(pullUpsGnd1W);
 				Poly poly = pi.getPoly();
 				double pwrY = poly.getCenterY();
@@ -685,16 +685,16 @@ public class PLA
 			makeWire(m2Arc, 14, lastNode, pullUpsPwrE, pwrNode2, pwrNode2.getProto().getPort(0), cell);
 			makeWire(m2Arc, 14, pwrNode1, pwrNode1.getProto().getPort(0), pwrNode2,
 				pwrNode2.getProto().getPort(0), cell);
-			Export.newInstance(cell, lastNode.findPortInstFromProto(pullUpsPwrE), "PWR0.m-2.e", ep);
+			Export.newInst(cell, lastNode.findPortInstFromProto(pullUpsPwrE), "PWR0.m-2.e", ep);
 		}
 		if (pullUpsGnd1E != null)
-			Export.newInstance(cell, lastNode.findPortInstFromProto(pullUpsGnd1E), "GND0.m-1.e", ep);
+			Export.newInst(cell, lastNode.findPortInstFromProto(pullUpsGnd1E), "GND0.m-1.e", ep);
 		int x = 0;
 		String aName = "ACCESS" + x + ".p.w";
 		PortProto pPort = orCell.findPortProto(aName);
 		while (pPort != null)
 		{
-			Export.newInstance(cell, orNode.findPortInstFromProto(pPort), aName, ep);
+			Export.newInst(cell, orNode.findPortInstFromProto(pPort), aName, ep);
 			x++;
 			aName = "ACCESS" + x + ".p.w";
 			pPort = orCell.findPortProto(aName);

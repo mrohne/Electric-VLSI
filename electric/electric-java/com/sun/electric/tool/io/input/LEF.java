@@ -438,7 +438,7 @@ public class LEF extends LEFDEF
 			PrimitiveNode pnp = Generic.tech().universalPinNode;
 			NodeInst ni = NodeInst.makeInstance(pnp, ep, ctr, pnp.getDefWidth(ep), pnp.getDefHeight(ep), cell);
 			PortInst pi = ni.getOnlyPortInst();
-			Export e = Export.newInstance(cell, pi, "viaPort", ep);
+			Export e = Export.newInst(cell, pi, "viaPort", ep);
 			if (vd.gLay1 != null && vd.gLay2 != null)
 			{
 				String[] preferredArcs = new String[2];
@@ -625,8 +625,8 @@ public class LEF extends LEFDEF
 				double hei = convertLEFString(key);		// get height
 
 				// this data is ignored
-				cell.newVar(prXkey, new Double(wid), ep);
-				cell.newVar(prYkey, new Double(hei), ep);
+				cell.newVar(prXkey, Double.valueOf(wid), ep);
+				cell.newVar(prYkey, Double.valueOf(hei), ep);
 
 				if (ignoreToSemicolon("SIZE", cell)) return true;
 
@@ -1323,7 +1323,7 @@ public class LEF extends LEFDEF
 			if (e == null)
 			{
 				PortInst pi = ni.findPortInstFromProto(pp);
-				Export ex = Export.newInstance(cell, pi, portName, ep);
+				Export ex = Export.newInst(cell, pi, portName, ep);
 				return ex;
 			}
 
@@ -1397,12 +1397,12 @@ public class LEF extends LEFDEF
 		ArcProto ap = li.arc;
 		if (defWidth > 0)
 		{
-			if (ap != null) widthsFromLEF.put(ap, new Double(defWidth));
+			if (ap != null) widthsFromLEF.put(ap, Double.valueOf(defWidth));
 			else 
 			{ 
 				if (layerWidthsFromLEF == null)
 					layerWidthsFromLEF = new HashMap<String,Double>();
-				layerWidthsFromLEF.put(layerName, new Double(defWidth));
+				layerWidthsFromLEF.put(layerName, Double.valueOf(defWidth));
 			}
 		}
 		return false;

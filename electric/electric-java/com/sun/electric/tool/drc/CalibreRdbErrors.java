@@ -26,7 +26,7 @@ public class CalibreRdbErrors {
     private ErrorLogger logger;
     private BufferedReader in;
     private int lineno;
-    private Map<Cell,String> mangledNames;
+//    private Map<Cell,String> mangledNames;
     private int errorCount;
 
     private static final String spaces = "[\\s\\t ]+";
@@ -38,7 +38,7 @@ public class CalibreRdbErrors {
      * to display the errors in the error log.
      */
     public CalibreRdbErrors() {
-        logger = ErrorLogger.newInstance("Calibre Antenna DRC Errors");
+        logger = ErrorLogger.newInst("Calibre Antenna DRC Errors");
         errorCount = 0;
     }
 
@@ -49,7 +49,7 @@ public class CalibreRdbErrors {
      */
     public void importErrors(String filename, Map<Cell,String> mangledNames) {
         lineno = 1;
-        this.mangledNames = mangledNames;
+//        this.mangledNames = mangledNames;
         try {
             System.out.println("Reading RDB file "+filename);
             FileReader reader = new FileReader(filename);

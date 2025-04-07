@@ -103,7 +103,7 @@ public abstract class ErrorHighlight implements Serializable {
             if (geom == null) // try arc instead
                 geom = curCell.findArc(geomName);
             if (geom != null)
-                list.add(ErrorHighlight.newInstance(null, geom));
+                list.add(ErrorHighlight.newInst(null, geom));
             else
             {
                 System.out.println("Invalid geometry " + geomName + " in " + curCell);
@@ -142,25 +142,25 @@ public abstract class ErrorHighlight implements Serializable {
 
     public void addToHighlighter(Highlighter h, EDatabase database) {;}
 
-    public static ErrorHighlight newInstance(VarContext cont, Geometric geom) {
+    public static ErrorHighlight newInst(VarContext cont, Geometric geom) {
         if (geom instanceof NodeInst)
             return new ErrorHighNode(cont, (NodeInst)geom);
         return new ErrorHighArc(cont, (ArcInst)geom);
     }
 
-    public static ErrorHighlight newInstance(CellId cellId, ImmutableNodeInst n) {
+    public static ErrorHighlight newInst(CellId cellId, ImmutableNodeInst n) {
         return new ErrorHighNode(cellId, n.nodeId);
     }
 
-    public static ErrorHighlight newInstance(Cell cell, Point2D p1, Point2D p2) {
+    public static ErrorHighlight newInst(Cell cell, Point2D p1, Point2D p2) {
         return new ErrorHighLine(cell, EPoint.snap(p1), EPoint.snap(p2), false);
     }
 
-    public static ErrorHighlight newInstance(Cell cell, Point2D pt) {
+    public static ErrorHighlight newInst(Cell cell, Point2D pt) {
         return new ErrorHighPoint(cell, EPoint.snap(pt));
     }
 
-    public static ErrorHighlight newInstance(Export e) {
+    public static ErrorHighlight newInst(Export e) {
         return new ErrorHighExport(null, e);
     }
     

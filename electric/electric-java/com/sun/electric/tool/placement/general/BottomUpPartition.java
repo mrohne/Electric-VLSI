@@ -106,7 +106,7 @@ public class BottomUpPartition extends PlacementFrameElectric
 		for(int i=0; i<densities.length; i++)
 		{
 			double curDensity = densities[i];
-			List<PNPair> pairs = allDensities.get(new Double(curDensity));
+			List<PNPair> pairs = allDensities.get(Double.valueOf(curDensity));
 			for(PNPair pair : pairs)
 			{
 				// cluster these two nodes
@@ -168,7 +168,7 @@ public class BottomUpPartition extends PlacementFrameElectric
 			String libName = "PlacementResult" + i;
 			if (Library.findLibrary(libName) == null)
 			{
-				lib = Library.newInstance(libName, null);
+				lib = Library.newInst(libName, null);
 				break;
 			}
 		}
@@ -247,7 +247,7 @@ public class BottomUpPartition extends PlacementFrameElectric
 						exportNum++;
 						exportNames.put(pNet, exportName);
 					}
-					Export.newInstance(newCell, lastPI, exportName, ep);
+					Export.newInst(newCell, lastPI, exportName, ep);
 				}
 			}
 
@@ -258,7 +258,7 @@ public class BottomUpPartition extends PlacementFrameElectric
 				if (ni == null) continue;
 				PlacementAdapter.PlacementPort app = (PlacementAdapter.PlacementPort)pp;
 				PortInst pi = ni.findPortInstFromEquivalentProto(app.getPortProto());
-				Export.newInstance(newCell, pi, pe.getName(), ep);
+				Export.newInst(newCell, pi, pe.getName(), ep);
 			}
 		}
 
@@ -509,7 +509,7 @@ private static final boolean NEWCLUSTERMETHOD = true;
 			for(PlacementNode oNode : nodeMap.keySet())
 			{
 				MutableDouble md = nodeMap.get(oNode);
-				Double key = new Double(md.doubleValue());
+				Double key = Double.valueOf(md.doubleValue());
 				List<PNPair> pairs = allDensities.get(key);
 				if (pairs == null) allDensities.put(key, pairs = new ArrayList<PNPair>());
 				pairs.add(new PNPair(pNode, oNode));

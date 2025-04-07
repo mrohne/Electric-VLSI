@@ -81,7 +81,7 @@ public class CompareXML {
             Infrastructure.exit(1);
         }
 
-        String[] adamChips = new String[nchip1];
+//        String[] adamChips = new String[nchip1];
 
         for (int ichip = 0; ichip < nchip1; ichip++) {
             ChipNode chip1 = (ChipNode) system1.getChildAt(ichip);
@@ -93,8 +93,7 @@ public class CompareXML {
     /** Compares two XML files provided on the command line. */
     public static void main(String[] args) {
         if (args.length != 2) {
-            Infrastructure
-                    .fatal("Must enter exactly two file names on command line");
+            Infrastructure.fatal("Must enter exactly two file names on command line");
         }
         CompareXML comparer = new CompareXML(args[0], args[1]);
         comparer.diffChips();

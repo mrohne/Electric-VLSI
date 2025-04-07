@@ -68,6 +68,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -1725,7 +1726,7 @@ public class GDS extends Geometry
 			for(int i=0; i<8; i++) outputByte((byte)0);
 			return;
 		}
-		BigDecimal reg = new BigDecimal(data).setScale(64, BigDecimal.ROUND_HALF_EVEN);
+		BigDecimal reg = new BigDecimal(data).setScale(64, RoundingMode.HALF_EVEN);
 
 		boolean negSign = false;
 		if (reg.doubleValue() < 0)
@@ -1739,7 +1740,7 @@ public class GDS extends Geometry
 			reg = reg.multiply(new BigDecimal(16.0));
 		if (exponent == 0) System.out.println("Exponent underflow");
 		for(; (reg.doubleValue() >= 1) && (exponent < 128); exponent++)
-			reg = reg.divide(new BigDecimal(16.0), BigDecimal.ROUND_HALF_EVEN);
+			reg = reg.divide(new BigDecimal(16.0), RoundingMode.HALF_EVEN);
 		if (exponent > 127) System.out.println("Exponent overflow");
 		if (negSign) exponent |= 0x00000080;
 		BigDecimal f_mantissa = reg.subtract(new BigDecimal(reg.intValue()));

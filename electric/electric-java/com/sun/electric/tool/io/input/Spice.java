@@ -203,7 +203,7 @@ public class Spice extends Input
 				td.drain = traPieces[1];
 				td.gate = traPieces[2];
 				td.source = traPieces[3];
-				td.bias = traPieces[4];
+//				td.bias = traPieces[4];
 				td.type = traPieces[5].toLowerCase();
 				for(int i=6; i<traPieces.length; i++)
 				{
@@ -305,7 +305,7 @@ public class Spice extends Input
 				PortInst pi2 = ni2.getOnlyPortInst();
 				ArcProto ap = Schematics.tech().wire_arc;
 				ArcInst.makeInstance(ap, ep, pi1, pi2);
-				Export e = Export.newInstance(cell, pi1, export, ep, PortCharacteristic.UNKNOWN);
+				Export e = Export.newInst(cell, pi1, export, ep, PortCharacteristic.UNKNOWN);
 				TextDescriptor newTD = e.getTextDescriptor(Export.EXPORT_NAME).withPos(TextDescriptor.Position.LEFT);
 				e.setTextDescriptor(Export.EXPORT_NAME, newTD);
 				yPos += 2;
@@ -596,7 +596,7 @@ public class Spice extends Input
 //				dummyPos += 10;
 //				PrimitiveNode np = Schematics.tech().wirePinNode;
 //				NodeInst ni = NodeInst.makeInstance(np, ctr, np.getDefWidth(), np.getDefHeight(), cell);
-//				Export.newInstance(cell, ni.getOnlyPortInst(), export, PortCharacteristic.UNKNOWN);
+//				Export.newInst(cell, ni.getOnlyPortInst(), export, PortCharacteristic.UNKNOWN);
 //			}
 		}
 	}
@@ -639,7 +639,7 @@ public class Spice extends Input
 //		if (exports.contains(name) && !usedExports.contains(name))
 //		{
 //			usedExports.add(name);
-//			Export.newInstance(cell, pi2, name, PortCharacteristic.UNKNOWN);
+//			Export.newInst(cell, pi2, name, PortCharacteristic.UNKNOWN);
 //		} else
 //		{
 //			ai.setName(name);
@@ -705,7 +705,7 @@ public class Spice extends Input
 	{
 		String name;
 		String source, gate, drain;
-		String bias;
+//		String bias;
 		String type;
 		String width, length;
 	}

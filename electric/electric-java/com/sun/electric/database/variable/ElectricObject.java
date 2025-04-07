@@ -691,17 +691,6 @@ public abstract class ElectricObject implements Serializable {
      * Method to create a non-displayable Variable on this ElectricObject with the specified values.
      * @param name the name of the Variable.
      * @param value the object to store in the Variable.
-     * @return the Variable that has been created.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public Variable newVar(String name, Object value) {
-        return newVar(name, value, EditingPreferences.getInstance());
-    }
-
-    /**
-     * Method to create a non-displayable Variable on this ElectricObject with the specified values.
-     * @param name the name of the Variable.
-     * @param value the object to store in the Variable.
      * @param ep EditingPreferences with default TextDescriptors
      * @return the Variable that has been created.
      */
@@ -713,34 +702,11 @@ public abstract class ElectricObject implements Serializable {
      * Method to create a displayable Variable on this ElectricObject with the specified values.
      * @param key the key of the Variable.
      * @param value the object to store in the Variable.
-     * @return the Variable that has been created.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public Variable newDisplayVar(Variable.Key key, Object value) {
-        return newDisplayVar(key, value, EditingPreferences.getInstance());
-    }
-
-    /**
-     * Method to create a displayable Variable on this ElectricObject with the specified values.
-     * @param key the key of the Variable.
-     * @param value the object to store in the Variable.
      * @param ep EditingPreferences with default TextDescriptors
      * @return the Variable that has been created.
      */
     public Variable newDisplayVar(Variable.Key key, Object value, EditingPreferences ep) {
         return newVar(key, value, ep, true);
-    }
-
-    /**
-     * Method to create a non-displayable Variable on this ElectricObject with the specified values.
-     * Notify to observers as well.
-     * @param key the key of the Variable.
-     * @param value the object to store in the Variable.
-     * @return the Variable that has been created.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public Variable newVar(Variable.Key key, Object value) {
-        return newVar(key, value, EditingPreferences.getInstance());
     }
 
     /**
@@ -797,7 +763,7 @@ public abstract class ElectricObject implements Serializable {
         }
         Variable var = null;
         try {
-            var = Variable.newInstance(key, value, td);
+            var = Variable.newInst(key, value, td);
         } catch (IllegalArgumentException e) {
             ActivityLogger.logException(e);
             return null;

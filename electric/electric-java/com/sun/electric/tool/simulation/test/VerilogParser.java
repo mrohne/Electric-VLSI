@@ -115,7 +115,7 @@ public class VerilogParser {
         public static final int OUTPUT = 1;
         public static final int INOUT = 2;
 
-        private static final Pattern bussed = Pattern.compile("(\\w+)\\[(\\d+):(\\d+)\\]");
+//        private static final Pattern bussed = Pattern.compile("(\\w+)\\[(\\d+):(\\d+)\\]");
         private static final Pattern bussedSig = Pattern.compile("(\\w+)\\[(\\d+)\\]");
 
         public Port(String name, int type, int start, int end, boolean containsSpecialChars) {
@@ -192,7 +192,7 @@ public class VerilogParser {
                         break;
                     }
                     case '`': {
-                        int t = st.nextToken();
+                        /* int t = */ st.nextToken();
                         if (st.sval.equals("include")) {
                             st.nextToken();     // grab file name
                         } else if (st.sval.equals("define")) {

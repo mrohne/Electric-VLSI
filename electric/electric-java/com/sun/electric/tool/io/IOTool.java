@@ -302,7 +302,7 @@ public class IOTool extends Tool
             Output out = null;
             try
     		{
-    			out = (Output)pnrOutputMethod.invoke(pnrClass, new Object[] {allGeometry, new Double(scale), filePath, clockTreeTask});
+    			out = (Output)pnrOutputMethod.invoke(pnrClass, new Object[] {allGeometry, Double.valueOf(scale), filePath, clockTreeTask});
     		} catch (Exception e)
     		{
                 String msg = "Unable to run the PnR output module: " + e.getMessage();
@@ -1588,7 +1588,7 @@ public class IOTool extends Tool
 	 */
 	public static void setPrintEPSScale(Cell cell, double scale)
 	{
-		tool.setVarInJob(cell, POSTSCRIPT_EPS_SCALE, new Double(scale));
+		tool.setVarInJob(cell, POSTSCRIPT_EPS_SCALE, Double.valueOf(scale));
 	}
 
 	public static final Variable.Key POSTSCRIPT_FILENAME = Variable.newKey("IO_postscript_filename");
@@ -1654,8 +1654,8 @@ public class IOTool extends Tool
 	{
 		long iVal = date.getTime();
 		Integer [] dateArray = new Integer[2];
-		dateArray[0] = new Integer((int)(iVal >> 32));
-		dateArray[1] = new Integer((int)(iVal & 0xFFFFFFFF));
+		dateArray[0] = Integer.valueOf((int)(iVal >> 32));
+		dateArray[1] = Integer.valueOf((int)(iVal & 0xFFFFFFFF));
 		tool.setVarInJob(cell, POSTSCRIPT_FILEDATE, dateArray);
 	}
 

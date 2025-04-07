@@ -24,12 +24,19 @@
 package com.sun.electric.plugins.j3d;
 
 import java.awt.AWTEvent;
-import java.awt.event.*;
-import java.util.Enumeration;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import java.util.Iterator;
 
-import javax.media.j3d.*;
-import javax.vecmath.*;
+import org.jogamp.java3d.Behavior;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.WakeupCondition;
+import org.jogamp.java3d.WakeupCriterion;
+import org.jogamp.java3d.WakeupOnAWTEvent;
+import org.jogamp.java3d.WakeupOr;
+import org.jogamp.vecmath.Matrix4d;
+import org.jogamp.vecmath.Vector3d;
 
 /** Inspired in example found in Daniel Selman's book "Java 3D Programming"
  * For more information about the original example, contact Daniel Selman: daniel@selman.org
@@ -74,14 +81,14 @@ public class J3DKeyBehavior extends Behavior
 		wakeupOn(keyCriterion);
 	}
 
-	public void processStimulus(Enumeration criteria)
+	public void processStimulus(Iterator<WakeupCriterion> criteria)
 	{
 		WakeupCriterion wakeup;
 		AWTEvent[] event;
 
-		while(criteria.hasMoreElements( ))
+		while(criteria.hasNext())
 		{
-			wakeup = (WakeupCriterion) criteria.nextElement( );
+			wakeup = (WakeupCriterion) criteria.next();
 
 			if( !(wakeup instanceof WakeupOnAWTEvent) )	
 				continue;

@@ -492,7 +492,7 @@ public class CIF extends Input<Object>
 				cellBeingBuilt = lib.findNodeProto("TOP_LEVEL_UNNAMED{lay}");
 				if (cellBeingBuilt == null)
 				{
-					cellBeingBuilt = Cell.newInstance(lib, "TOP_LEVEL_UNNAMED{lay}");
+					cellBeingBuilt = Cell.newInst(lib, "TOP_LEVEL_UNNAMED{lay}");
 					if (cellBeingBuilt == null) break;
 					currentBackCell = makeBackCIFCell(9999);
 				}
@@ -535,7 +535,7 @@ public class CIF extends Input<Object>
 			properName.append(chr);
 		}
 		currentNodeProtoName = properName.toString();
-		cifCell.addr = Cell.newInstance(lib, currentNodeProtoName + "{lay}");
+		cifCell.addr = Cell.newInst(lib, currentNodeProtoName + "{lay}");
 		if (cifCell.addr == null)
 		{
 			System.out.println("Cannot create the cell " + currentNodeProtoName);
@@ -675,7 +675,7 @@ public class CIF extends Input<Object>
         double x = convertFromCentimicrons(gn.cx);
         double y = convertFromCentimicrons(gn.cy);
 		NodeInst newni = NodeInst.makeInstance(np, ep, new Point2D.Double(x, y), 0, 0, currentBackCell.addr);
-        Export.newInstance(currentBackCell.addr, newni.getOnlyPortInst(), name, ep);
+        Export.newInst(currentBackCell.addr, newni.getOnlyPortInst(), name, ep);
         return false;
     }
 
@@ -789,14 +789,14 @@ public class CIF extends Input<Object>
 
 	private BackCIFCell findBackCIFCell(int cIndex)
 	{
-		return cifCellMap.get(new Integer(cIndex));
+		return cifCellMap.get(Integer.valueOf(cIndex));
 	}
 
 	private BackCIFCell makeBackCIFCell(int cIndex)
 	{
 		BackCIFCell newCC = new BackCIFCell();
 		newCC.addr = null;
-		cifCellMap.put(new Integer(cIndex), newCC);
+		cifCellMap.put(Integer.valueOf(cIndex), newCC);
 
 		currentBackCell = newCC;
 		return newCC;
@@ -1684,7 +1684,7 @@ public class CIF extends Input<Object>
 											command = GEONAME;
                                             getSignedInteger(); // skip Index
 											namePoint = getPoint(); if (errorFound) return reportError();
-                                            int w = getSignedInteger();
+                                            /* int w = */ getSignedInteger();
                                             getUserText();
 											lName = currentLayer != null ? currentLayer.getCIFLayer() : null;
 											break;
@@ -2545,12 +2545,12 @@ public class CIF extends Input<Object>
 	 */
 	private FrontSymbol lookupSymbol(int sym)
 	{
-		FrontSymbol val = symbolTable.get(new Integer(sym));
+		FrontSymbol val = symbolTable.get(Integer.valueOf(sym));
 		if (val == null)
 		{
 			// create a new entry
 			val = new FrontSymbol(sym);
-			symbolTable.put(new Integer(sym), val);
+			symbolTable.put(Integer.valueOf(sym), val);
 		}
 		return val;
 	}

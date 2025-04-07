@@ -180,7 +180,7 @@ public class BatchChanges
                 }
                 newTechBits = pn.getPrimitiveFunctionBits(newFunction);
             }
-            ImmutableNodeInst newD = ImmutableNodeInst.newInstance(oldD.nodeId, newProtoId,
+            ImmutableNodeInst newD = ImmutableNodeInst.newInst(oldD.nodeId, newProtoId,
                 oldD.name, oldD.nameDescriptor, oldD.orient, oldD.anchor, newSize, oldD.flags, newTechBits, oldD.protoDescriptor);
             for (Iterator<Variable> it = oldD.getVariables(); it.hasNext();)
             {

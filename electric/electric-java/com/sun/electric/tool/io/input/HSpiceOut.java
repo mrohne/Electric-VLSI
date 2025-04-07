@@ -35,6 +35,7 @@ import com.sun.electric.util.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -181,10 +182,8 @@ public class HSpiceOut extends Input<Stimuli>
 		URL mtURL = null;
 		try
 		{
-			mtURL = new URL(fileURL.getProtocol(), fileURL.getHost(), fileURL.getPort(), fileBase + "." + mtExtension);
-		} catch (java.net.MalformedURLException e)
-		{
-		}
+			mtURL = new URI(fileURL.getProtocol(), null, fileURL.getHost(), fileURL.getPort(), fileBase + "." + mtExtension, null, null).toURL();
+		} catch (Exception e) {}
 		if (mtURL == null) return;
 		if (!TextUtils.URLExists(mtURL)) return;
 		if (openTextInput(mtURL)) return;
@@ -237,7 +236,7 @@ public class HSpiceOut extends Input<Stimuli>
 				if (keywords[i].length() == 0) continue;
 				String mName = measurementNames.get(index++);
 				List<Double> mData = measurementData.get(mName);
-				mData.add(new Double(TextUtils.atof(keywords[i])));
+				mData.add(Double.valueOf(TextUtils.atof(keywords[i])));
 			}
 			for(;;)
 			{
@@ -251,7 +250,7 @@ public class HSpiceOut extends Input<Stimuli>
 					if (keywords[i].length() == 0) continue;
 					String mName = measurementNames.get(index++);
 					List<Double> mData = measurementData.get(mName);
-					mData.add(new Double(TextUtils.atof(keywords[i])));
+					mData.add(Double.valueOf(TextUtils.atof(keywords[i])));
 				}
 			}
 			lastLine = null;
@@ -327,8 +326,8 @@ public class HSpiceOut extends Input<Stimuli>
 			URL trURL = null;
 			try
 			{
-				trURL = new URL(fileURL.getProtocol(), fileURL.getHost(), fileURL.getPort(), trFile);
-			} catch (java.net.MalformedURLException e) {}
+				trURL = new URI(fileURL.getProtocol(), null, fileURL.getHost(), fileURL.getPort(), trFile, null, null).toURL();
+			} catch (Exception e) {}
 			if (trURL == null) return;
 			if (!TextUtils.URLExists(trURL)) return;
 
@@ -350,8 +349,8 @@ public class HSpiceOut extends Input<Stimuli>
 		URL swURL = null;
 		try
 		{
-			swURL = new URL(fileURL.getProtocol(), fileURL.getHost(), fileURL.getPort(), fileBase + "." + swExtension);
-		} catch (java.net.MalformedURLException e) {}
+			swURL = new URI(fileURL.getProtocol(), null, fileURL.getHost(), fileURL.getPort(), fileBase + "." + swExtension, null, null).toURL();
+		} catch (Exception e) {}
 		if (swURL != null && TextUtils.URLExists(swURL))
 		{
 			// process the DC data
@@ -363,8 +362,8 @@ public class HSpiceOut extends Input<Stimuli>
 		URL icURL = null;
 		try
 		{
-			icURL = new URL(fileURL.getProtocol(), fileURL.getHost(), fileURL.getPort(), fileBase + "." + icExtension);
-		} catch (java.net.MalformedURLException e) {}
+			icURL = new URI(fileURL.getProtocol(), null, fileURL.getHost(), fileURL.getPort(), fileBase + "." + icExtension, null, null).toURL();
+		} catch (Exception e) {}
 		if (icURL != null && TextUtils.URLExists(icURL))
 		{
 			// can't process the DC data
@@ -387,8 +386,8 @@ public class HSpiceOut extends Input<Stimuli>
 		URL acURL = null;
 		try
 		{
-			acURL = new URL(fileURL.getProtocol(), fileURL.getHost(), fileURL.getPort(), fileBase + "." + acExtension);
-		} catch (java.net.MalformedURLException e) {}
+			acURL = new URI(fileURL.getProtocol(), null, fileURL.getHost(), fileURL.getPort(), fileBase + "." + acExtension, null, null).toURL();
+		} catch (Exception e) {}
 		if (acURL == null) return;
 		if (!TextUtils.URLExists(acURL)) return;
 
@@ -409,8 +408,8 @@ public class HSpiceOut extends Input<Stimuli>
 		URL paURL = null;
 		try
 		{
-			paURL = new URL(fileURL.getProtocol(), fileURL.getHost(), fileURL.getPort(), fileBase + "." + paExtension);
-		} catch (java.net.MalformedURLException e) {}
+			paURL = new URI(fileURL.getProtocol(), null, fileURL.getHost(), fileURL.getPort(), fileBase + "." + paExtension, null, null).toURL();
+		} catch (Exception e) {}
 		if (paURL == null) return null;
 		if (!TextUtils.URLExists(paURL)) return null;
 		if (openTextInput(paURL)) return null;

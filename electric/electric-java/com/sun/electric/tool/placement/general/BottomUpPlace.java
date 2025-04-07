@@ -156,7 +156,7 @@ public class BottomUpPlace extends PlacementFrameElectric
 		Map<Double,List<PlacementNode>> instSizes = new TreeMap<Double,List<PlacementNode>>();
 		for(PlacementNode pn : placementNodes)
 		{
-			Double size = new Double(pn.getWidth() * pn.getHeight());
+			Double size = Double.valueOf(pn.getWidth() * pn.getHeight());
 			List<PlacementNode> nodes = instSizes.get(size);
 			if (nodes == null) instSizes.put(size, nodes = new ArrayList<PlacementNode>());
 			nodes.add(pn);
@@ -168,7 +168,7 @@ public class BottomUpPlace extends PlacementFrameElectric
 		for(int i=0; i<bigSizes.length; i++)
 		{
 			if (i != 0 && bigSizes[i] <= bigSizes[i-1]/2) break;
-			List<PlacementNode> nodes = instSizes.get(new Double(bigSizes[i]));
+			List<PlacementNode> nodes = instSizes.get(Double.valueOf(bigSizes[i]));
 			for(PlacementNode pn : nodes) bigNodes.add(pn);
 		}
 
@@ -183,7 +183,7 @@ public class BottomUpPlace extends PlacementFrameElectric
 				List<PNPair> thisPairSet = new ArrayList<PNPair>();
 				for(int i=0; i<allDensities.size(); i++)
 				{
-					List<PNPair> pairsAtLevel = allDensities.get(new Double(clusteringDensities[i]));
+					List<PNPair> pairsAtLevel = allDensities.get(Double.valueOf(clusteringDensities[i]));
 					for(PNPair pnp : pairsAtLevel) thisPairSet.add(pnp);
 				}
 				if (thisPairSet.size() > 0) orderedPairGroups.add(thisPairSet);
@@ -194,7 +194,7 @@ public class BottomUpPlace extends PlacementFrameElectric
 				thisPairSet = new ArrayList<PNPair>();
 				for(int i=0; i<allDensities.size(); i++)
 				{
-					List<PNPair> pairsAtLevel = allDensities.get(new Double(clusteringDensities[i]));
+					List<PNPair> pairsAtLevel = allDensities.get(Double.valueOf(clusteringDensities[i]));
 					for(PNPair pnp : pairsAtLevel)
 					{
 						if (bigNodes.contains(pnp.n1) && bigNodes.contains(pnp.n2)) thisPairSet.add(pnp);
@@ -206,7 +206,7 @@ public class BottomUpPlace extends PlacementFrameElectric
 				thisPairSet = new ArrayList<PNPair>();
 				for(int i=0; i<allDensities.size(); i++)
 				{
-					List<PNPair> pairsAtLevel = allDensities.get(new Double(clusteringDensities[i]));
+					List<PNPair> pairsAtLevel = allDensities.get(Double.valueOf(clusteringDensities[i]));
 					for(PNPair pnp : pairsAtLevel)
 					{
 						if (!bigNodes.contains(pnp.n1) || !bigNodes.contains(pnp.n2)) thisPairSet.add(pnp);
@@ -219,7 +219,7 @@ public class BottomUpPlace extends PlacementFrameElectric
 				// first the big-size group
 				for(int i=0; i<allDensities.size(); i++)
 				{
-					List<PNPair> pairsAtLevel = allDensities.get(new Double(clusteringDensities[i]));
+					List<PNPair> pairsAtLevel = allDensities.get(Double.valueOf(clusteringDensities[i]));
 					thisPairSet = new ArrayList<PNPair>();
 					for(PNPair pnp : pairsAtLevel)
 					{
@@ -231,7 +231,7 @@ public class BottomUpPlace extends PlacementFrameElectric
 				// next the small-size group
 				for(int i=0; i<allDensities.size(); i++)
 				{
-					List<PNPair> pairsAtLevel = allDensities.get(new Double(clusteringDensities[i]));
+					List<PNPair> pairsAtLevel = allDensities.get(Double.valueOf(clusteringDensities[i]));
 					thisPairSet = new ArrayList<PNPair>();
 					for(PNPair pnp : pairsAtLevel)
 					{
@@ -387,14 +387,14 @@ public class BottomUpPlace extends PlacementFrameElectric
 		Rectangle2D bound;
 		Set<PlacementNode> moveSet;
 		List<PlacementNode> toMove;
-		String side;
+//		String side;
 
 		public CompactionEdge(String side, List<CompactionEdge> edges)
 		{
 			bound = null;
 			moveSet = new HashSet<PlacementNode>();
 			toMove = new ArrayList<PlacementNode>();
-			this.side = side;
+//			this.side = side;
 			if (edges != null) edges.add(this);
 		}
 
@@ -1121,10 +1121,10 @@ String explanation = "MOVED NODE: "+pnp1.getNodeName() + " AT ("+pnp1.getX()+","
 			Set<Double> yCoords = new TreeSet<Double>();
 			for(ProxyNode pNode : mainCluster.getNodesInCluster())
 			{
-				xCoords.add(new Double(pNode.getX() - pNode.getWidth()/2));
-				xCoords.add(new Double(pNode.getX() + pNode.getWidth()/2));
-				yCoords.add(new Double(pNode.getY() - pNode.getHeight()/2));
-				yCoords.add(new Double(pNode.getY() + pNode.getHeight()/2));
+				xCoords.add(Double.valueOf(pNode.getX() - pNode.getWidth()/2));
+				xCoords.add(Double.valueOf(pNode.getX() + pNode.getWidth()/2));
+				yCoords.add(Double.valueOf(pNode.getY() - pNode.getHeight()/2));
+				yCoords.add(Double.valueOf(pNode.getY() + pNode.getHeight()/2));
 			}
 
 			// iterate over remaining clusters from largest on down
@@ -1174,10 +1174,10 @@ String explanation = "MOVED NODE: "+pnp1.getNodeName() + " AT ("+pnp1.getX()+","
 				for(ProxyNode pNode : otherCluster.getNodesInCluster())
 				{
 					pNode.setLocation(pNode.getX() + bestDX, pNode.getY() + bestDY);
-					xCoords.add(new Double(pNode.getX() - pNode.getWidth()/2));
-					xCoords.add(new Double(pNode.getX() + pNode.getWidth()/2));
-					yCoords.add(new Double(pNode.getY() - pNode.getHeight()/2));
-					yCoords.add(new Double(pNode.getY() + pNode.getHeight()/2));
+					xCoords.add(Double.valueOf(pNode.getX() - pNode.getWidth()/2));
+					xCoords.add(Double.valueOf(pNode.getX() + pNode.getWidth()/2));
+					yCoords.add(Double.valueOf(pNode.getY() - pNode.getHeight()/2));
+					yCoords.add(Double.valueOf(pNode.getY() + pNode.getHeight()/2));
 				}
 
 				// merge the clusters
@@ -2009,7 +2009,7 @@ aspectRatioImprovement *= aspectRatioWeight;
 	private void showProposal(ProposedPlacement pp)
 	{
 		showIndex++;
-		Cell cell = Cell.newInstance(Library.getCurrent(), "DEBUG"+showIndex);
+		Cell cell = Cell.newInst(Library.getCurrent(), "DEBUG"+showIndex);
 		Point2D fromPt = new Point2D.Double(0, 0);
 		Point2D toPt = new Point2D.Double(0, 0);
 		ProxyNode fromPN = pp.proxyMap.get(pp.movedPair.n1);
@@ -2068,7 +2068,7 @@ aspectRatioImprovement *= aspectRatioWeight;
 				NodeInst newNI = NodeInst.makeInstance(Artwork.tech().openedPolygonNode, ep, EPoint.fromLambda(cX, cY),
 					pb.getBounds2D().getWidth()-INDENTPOLY*2, pb.getBounds2D().getHeight()-INDENTPOLY*2, cell);
 				newNI.setTrace(newPts);
-				newNI.newVar(Artwork.ART_COLOR, new Integer(EGraphics.RED), ep);
+				newNI.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.RED), ep);
 			}
 		}
 
@@ -2076,7 +2076,7 @@ aspectRatioImprovement *= aspectRatioWeight;
 		NodeInst arrowHead = NodeInst.makeInstance(Artwork.tech().pinNode, ep, fromPt, 0, 0, cell);
 		NodeInst arrowTail = NodeInst.makeInstance(Artwork.tech().pinNode, ep, toPt, 0, 0, cell);
 		ArcInst ai = ArcInst.makeInstance(Artwork.tech().thickerArc, ep, arrowHead.getOnlyPortInst(), arrowTail.getOnlyPortInst());
-		ai.newVar(Artwork.ART_COLOR, new Integer(EGraphics.GREEN), ep);
+		ai.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.GREEN), ep);
 		int angle = DBMath.figureAngle(toPt, fromPt);
 		int ang1 = (angle + 450) % 3600;
 		int ang2 = (angle + 3150) % 3600;
@@ -2091,9 +2091,9 @@ aspectRatioImprovement *= aspectRatioWeight;
 		NodeInst arrowEnd1 = NodeInst.makeInstance(Artwork.tech().pinNode, ep, EPoint.fromLambda(x1, y1), 0, 0, cell);
 		NodeInst arrowEnd2 = NodeInst.makeInstance(Artwork.tech().pinNode, ep, EPoint.fromLambda(x2, y2), 0, 0, cell);
 		ai = ArcInst.makeInstance(Artwork.tech().thickerArc, ep, arrowCtr.getOnlyPortInst(), arrowEnd1.getOnlyPortInst());
-		ai.newVar(Artwork.ART_COLOR, new Integer(EGraphics.GREEN), ep);
+		ai.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.GREEN), ep);
 		ai = ArcInst.makeInstance(Artwork.tech().thickerArc, ep, arrowCtr.getOnlyPortInst(), arrowEnd2.getOnlyPortInst());
-		ai.newVar(Artwork.ART_COLOR, new Integer(EGraphics.GREEN), ep);
+		ai.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.GREEN), ep);
 
 		// write text at top describing what happened
 		double x = cell.getBounds().getCenterX();

@@ -41,7 +41,8 @@ public abstract class Path implements SvarName
     public static Path fromACL2(ACL2Object impl)
     {
         Path result;
-        if (consp(impl).bool() && !Util.KEYWORD_ANONYMOIUS.equals(car(impl).bool()))
+//        if (consp(impl).bool() && !Util.KEYWORD_ANONYMOIUS.equals(car(impl).bool()))
+        if (consp(impl).bool() && Util.KEYWORD_ANONYMOIUS.bool() != car(impl).bool())
         {
             Name namespace = Name.fromACL2(car(impl));
             Path scope = fromACL2(cdr(impl));

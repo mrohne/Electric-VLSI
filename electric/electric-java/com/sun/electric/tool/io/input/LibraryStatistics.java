@@ -545,7 +545,7 @@ public class LibraryStatistics implements Serializable {
             LibId libId = idManager.newLibId(LibId.legalLibraryName(libName));
             URL fileUrl = file.toURI().toURL();
 
-            JelibParser parser = JelibParser.parse(libId, fileUrl, fileType, false, errorLogger);
+            /* JelibParser parser = */ JelibParser.parse(libId, fileUrl, fileType, false, errorLogger);
         } catch (Exception e) {
             System.out.println("Error reading " + file + " " + e.getMessage());
             e.printStackTrace();
@@ -1091,13 +1091,13 @@ public class LibraryStatistics implements Serializable {
             stat.directories.put(dirName, this);
         }
 
-        String getName() {
-            return dirName;
-        }
+//        String getName() {
+//            return dirName;
+//        }
 
-        Iterator<FileInstance> getFiles() {
-            return files.values().iterator();
-        }
+//        Iterator<FileInstance> getFiles() {
+//            return files.values().iterator();
+//        }
     }
 
     private static class LibraryName implements Serializable {
@@ -1105,7 +1105,7 @@ public class LibraryStatistics implements Serializable {
         final LibraryStatistics stat;
         final String name;
         final List<FileContents> versions = new ArrayList<>();
-        TreeMap<String, LibraryUse> references;
+//        TreeMap<String, LibraryUse> references;
 
         LibraryName(LibraryStatistics stat, String name) {
             this.stat = stat;
@@ -1133,10 +1133,10 @@ public class LibraryStatistics implements Serializable {
 
     private static class LibraryUse implements Serializable {
 
-        Directory dir;
-        LibraryName libName;
-        String fullName;
-        FileContents from;
+//        Directory dir;
+//        LibraryName libName;
+//        String fullName;
+//        FileContents from;
     }
 
     static class ExternalCell implements Serializable {
@@ -1191,13 +1191,13 @@ public class LibraryStatistics implements Serializable {
             fileLength = f.fileLength;
             crc = f.crc;
             lastModified = f.lastModified;
-            f.contents = this;
+//            f.contents = this;
             instances.add(f);
         }
 
         void add(FileInstance f) {
             assert f.fileLength == fileLength && f.crc == crc;
-            f.contents = this;
+//            f.contents = this;
             instances.add(f);
             if (f.lastModified < lastModified) {
                 lastModified = f.lastModified;
@@ -1228,7 +1228,7 @@ public class LibraryStatistics implements Serializable {
     private static class FileInstance implements Comparable, Serializable {
 
         private static final long serialVersionUID = -5726569346410497467L;
-        private FileContents contents;
+//        private FileContents contents;
         private String fileName;
         private final File file;
         private long fileLength;
@@ -1611,32 +1611,32 @@ public class LibraryStatistics implements Serializable {
         }
     }
 
-    private class StatisticsOutputVariableNames extends Output {
-
-        StatisticsOutputVariableNames(String filePath)
-                throws IOException {
-            if (openBinaryOutputStream(filePath)) {
-                throw new IOException("openStatisticsOutputSerialized");
-            }
-            try {
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(dataOutputStream);
-                objectOutputStream.writeObject(varStat);
-                objectOutputStream.close();
-                int total = 0;
-                for (Iterator it = varStat.varBag.values().iterator(); it.hasNext();) {
-                    total += ((VarDesc) it.next()).count;
-                }
-                System.out.println(varStat.varBag.size() + " (" + total + ") variable descriptors");
-            } finally {
-                closeBinaryOutputStream();
-            }
-// 			if (openTextOutputStream(filePath)) throw new IOException("openStatisticsOutputVariableNames");
-// 			try
-// 			{
-// 				totalLibraryContents.printJelibVariableNames(printWriter);
-// 			} finally {
-// 				closeTextOutputStream();
-// 			}
-        }
-    }
+//    private class StatisticsOutputVariableNames extends Output {
+//
+//        StatisticsOutputVariableNames(String filePath)
+//                throws IOException {
+//            if (openBinaryOutputStream(filePath)) {
+//                throw new IOException("openStatisticsOutputSerialized");
+//            }
+//            try {
+//                ObjectOutputStream objectOutputStream = new ObjectOutputStream(dataOutputStream);
+//                objectOutputStream.writeObject(varStat);
+//                objectOutputStream.close();
+//                int total = 0;
+//                for (Iterator it = varStat.varBag.values().iterator(); it.hasNext();) {
+//                    total += ((VarDesc) it.next()).count;
+//                }
+//                System.out.println(varStat.varBag.size() + " (" + total + ") variable descriptors");
+//            } finally {
+//                closeBinaryOutputStream();
+//            }
+//// 			if (openTextOutputStream(filePath)) throw new IOException("openStatisticsOutputVariableNames");
+//// 			try
+//// 			{
+//// 				totalLibraryContents.printJelibVariableNames(printWriter);
+//// 			} finally {
+//// 				closeTextOutputStream();
+//// 			}
+//        }
+//    }
 }

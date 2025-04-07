@@ -46,10 +46,10 @@ public class DataGrid extends HashMap<Double, Map<Double, Rating>> {
 	 * @return true, if point has been visited, false otherwise.
 	 */
 	public boolean isPointVisited(double x, double y) {
-		Map<Double, Rating> row = this.get(new Double(y));
+		Map<Double, Rating> row = this.get(Double.valueOf(y));
 		if (row == null)
 			return false;
-		Rating r = row.get(new Double(x));
+		Rating r = row.get(Double.valueOf(x));
 		if (r == null)
 			return false;
 		return true;
@@ -66,13 +66,13 @@ public class DataGrid extends HashMap<Double, Map<Double, Rating>> {
 	 *            The rating of the point.
 	 */
 	public void visit(double x, double y, Rating r) {
-		Double Y = new Double(y);
+		Double Y = Double.valueOf(y);
 		Map<Double, Rating> row = this.get(Y);
 		if (row == null) {
 			row = new HashMap<Double, Rating>();
 			this.put(Y, row);
 		}
-		row.put(new Double(x), r);
+		row.put(Double.valueOf(x), r);
 	}
 
 	/**
@@ -85,9 +85,9 @@ public class DataGrid extends HashMap<Double, Map<Double, Rating>> {
 	 * @return The rating of the point.
 	 */
 	public Rating getRating(double x, double y) {
-		Map<Double, Rating> row = this.get(new Double(y));
+		Map<Double, Rating> row = this.get(Double.valueOf(y));
 		if (row == null)
 			return null;
-		return row.get(new Double(x));
+		return row.get(Double.valueOf(x));
 	}
 }

@@ -23,10 +23,10 @@
 
 package com.sun.electric.plugins.j3d;
 
-import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
+import java.awt.Component;
 
-import javax.vecmath.Vector3d;
-import java.awt.*;
+import org.jogamp.java3d.utils.behaviors.mouse.MouseTranslate;
+import org.jogamp.vecmath.Vector3d;
 
 /**
  * Extending original translate class to allow panning

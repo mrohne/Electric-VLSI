@@ -687,7 +687,7 @@ public class FillGenDialog extends EDialog {
         for (int i = 0; i < tiledCells.length; i++)
             {
             if (tiledCells[i].getModel().isSelected())
-                items.add(new Integer(i+2));
+                items.add(Integer.valueOf(i+2));
         }
         int[] cells = null;
         if (items.size() > 0)

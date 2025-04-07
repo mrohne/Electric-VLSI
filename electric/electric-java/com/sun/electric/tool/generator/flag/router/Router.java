@@ -576,7 +576,7 @@ public class Router {
 		return closest;
 	}
 	private static class ClosestClusters {
-		public int ndx1, ndx2;
+//		public int ndx1, ndx2;
 		public PortPair pair = new PortPair();
 	}
 	private ClosestClusters findClosest(List<List<PortInst>> portLists) {
@@ -587,8 +587,8 @@ public class Router {
 				PortPair pair = findClosest(portLists.get(i), portLists.get(j));
 				if (pair.dist<closest.pair.dist) {
 					closest.pair = pair;
-					closest.ndx1 = i;
-					closest.ndx2 = j;
+//					closest.ndx1 = i;
+//					closest.ndx2 = j;
 				}
 			}
 		}
@@ -666,17 +666,17 @@ public class Router {
 	}
 
 	
-	private void getM3PwrGndExports(Map<Double, PortInst> pwr, Map<Double, PortInst> gnd, 
-			                        NodeInst ni, double y) {
-		for (Iterator piIt=ni.getPortInsts(); piIt.hasNext();) {
-			PortInst pi = (PortInst) piIt.next();
-			if (pi.getCenter().getY()!=y) continue;
-			if (!connectsToM3(pi)) continue;
-			double x  = pi.getCenter().getX();
-			if (Utils.isPwr(pi)) pwr.put(x, pi);
-			else if (Utils.isGnd(pi)) gnd.put(x, pi);
-		}
-	}
+//	private void getM3PwrGndExports(Map<Double, PortInst> pwr, Map<Double, PortInst> gnd, 
+//			                        NodeInst ni, double y) {
+//		for (Iterator piIt=ni.getPortInsts(); piIt.hasNext();) {
+//			PortInst pi = (PortInst) piIt.next();
+//			if (pi.getCenter().getY()!=y) continue;
+//			if (!connectsToM3(pi)) continue;
+//			double x  = pi.getCenter().getX();
+//			if (Utils.isPwr(pi)) pwr.put(x, pi);
+//			else if (Utils.isGnd(pi)) gnd.put(x, pi);
+//		}
+//	}
 	
 	private void route(List<ToConnect> toConns, LayerChannels m2Chan,	 
 			           LayerChannels m3Chan) {

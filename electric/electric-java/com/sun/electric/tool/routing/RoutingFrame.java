@@ -1088,7 +1088,7 @@ public abstract class RoutingFrame {
 				double length = 50;
 				DRCTemplate rule = DRC.getSpacingRule(layer, null, oLayer, null, false, -1, width, length);
 				if (rule != null)
-					rl.minSpacing.put(oRl, new Double(rule.getValue(0)));
+					rl.minSpacing.put(oRl, Double.valueOf(rule.getValue(0)));
 			}
 		}
 
@@ -1363,7 +1363,7 @@ public abstract class RoutingFrame {
 					addGeometry(cell, polys[i], blockages, netID);
 				}
 				if (info.isRootCell() && ai.getProto() == Generic.tech().unrouted_arc)
-					netIDs.put(ai, new Integer(netID));
+					netIDs.put(ai, Integer.valueOf(netID));
 			}
 			for (Iterator<NodeInst> it = cell.getNodes(); it.hasNext();) {
 				NodeInst ni = it.next();

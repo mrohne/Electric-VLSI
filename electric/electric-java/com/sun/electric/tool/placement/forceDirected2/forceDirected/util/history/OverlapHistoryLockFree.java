@@ -41,9 +41,9 @@ public class OverlapHistoryLockFree extends OverlapHistory<PlacementNode> {
 	public static OverlapHistoryLockFree getInstance(int id) {
 
 		OverlapHistoryLockFree history;
-		if ((history = histories.get(new Integer(id))) == null) {
+		if ((history = histories.get(Integer.valueOf(id))) == null) {
 			history = new OverlapHistoryLockFree();
-			histories.put(new Integer(id), history);
+			histories.put(Integer.valueOf(id), history);
 		}
 
 		return history;

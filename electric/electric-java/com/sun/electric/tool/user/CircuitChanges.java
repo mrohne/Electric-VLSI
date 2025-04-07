@@ -128,7 +128,7 @@ public class CircuitChanges
 		// if zero rotation, prompt for amount
 		if (amount == 0)
 		{
-			String val = JOptionPane.showInputDialog("Amount to rotate", new Double(lastRotationAmount));
+			String val = JOptionPane.showInputDialog("Amount to rotate", Double.valueOf(lastRotationAmount));
 			if (val == null) return;
 			double fAmount = TextUtils.atof(val);
 			if (fAmount == 0)
@@ -1341,7 +1341,7 @@ public class CircuitChanges
 						area = GenMath.getAreaOfPoints(points);
 					}
 				}
-				pureAreas.put(ni, new Double(area));
+				pureAreas.put(ni, Double.valueOf(area));
 				root = RTNode.linkGeom(null, root, ni);
 			}
 

@@ -188,7 +188,7 @@ public class LibData
         }
 
         public void putAttribute(String name, double value) {
-            Value val = new Value(ValueType.DOUBLE, new Double(value));
+            Value val = new Value(ValueType.DOUBLE, Double.valueOf(value));
             putAttribute(new Attribute(name, val));
         }
 
@@ -198,7 +198,7 @@ public class LibData
         }
 
         public void putAttribute(String name, int value) {
-            Value val = new Value(ValueType.INT, new Integer(value));
+            Value val = new Value(ValueType.INT, Integer.valueOf(value));
             putAttribute(new Attribute(name, val));
         }
 
@@ -403,7 +403,7 @@ public class LibData
         /** Get the integer value. Returns null if not an integer */
         public Integer getInt() {
             if (value == null || type != ValueType.DOUBLE) return null;
-            return new Integer(((Double)value).intValue());
+            return Integer.valueOf(((Double)value).intValue());
         }
 
         /** Get the double value. Returns null if not a double */

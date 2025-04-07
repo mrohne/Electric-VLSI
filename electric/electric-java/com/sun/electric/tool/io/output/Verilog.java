@@ -463,8 +463,8 @@ public class Verilog extends Topology
 				}
 
 				// must create implicit inverter here
-				if (e == ArcInst.HEADEND) implicitHeadInverters.put(ai, new Integer(impInvCount)); else
-					implicitTailInverters.put(ai, new Integer(impInvCount));
+				if (e == ArcInst.HEADEND) implicitHeadInverters.put(ai, Integer.valueOf(impInvCount)); else
+					implicitTailInverters.put(ai, Integer.valueOf(impInvCount));
 				if (ai.getProto() != Schematics.tech().bus_arc) impInvCount++; else
 				{
 					int wid = cni.getNetList().getBusWidth(ai);

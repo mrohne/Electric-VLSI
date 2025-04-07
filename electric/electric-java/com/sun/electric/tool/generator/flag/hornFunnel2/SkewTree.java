@@ -39,7 +39,7 @@ public class SkewTree {
     private final EditingPreferences ep;
 
 	private void drawTree(Library outLib, BinaryTree tree, int pass) {
-		Cell c = Cell.newInstance(outLib, "skewTree"+tree.getHeight()+
+		Cell c = Cell.newInst(outLib, "skewTree"+tree.getHeight()+
 				                  "pass"+pass+"{sch}");
 		prln("");
 		prln("Skewed tree height "+tree.getHeight()+" pass "+pass);
@@ -214,7 +214,7 @@ public class SkewTree {
 		int segLen = t.getLowBoundWireLen();
 		prln("Lower bound on wire length: "+segLen);
 
-		Cell c = Cell.newInstance(outLib, "skewTree"+height+"pass0{sch}");
+		Cell c = Cell.newInst(outLib, "skewTree"+height+"pass0{sch}");
 		
 		prln("Symmetric tree of height "+height);
 		t.draw(c);

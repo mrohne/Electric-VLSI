@@ -49,24 +49,12 @@ import com.sun.electric.tool.user.ErrorLogger;
 import com.sun.electric.tool.user.MessagesStream;
 import com.sun.electric.tool.user.User;
 import com.sun.electric.tool.user.UserInterfaceMain;
-import com.sun.electric.tool.user.dialogs.PreferencesFrame;
 import com.sun.electric.tool.user.menus.FileMenu;
-import com.sun.electric.tool.user.menus.HelpMenu;
-import com.sun.electric.tool.user.menus.MenuCommands;
 import com.sun.electric.tool.util.concurrent.runtime.taskParallel.SimpleWorker;
 import com.sun.electric.tool.util.concurrent.runtime.taskParallel.ThreadPool;
-import com.sun.electric.util.ClientOS;
 import com.sun.electric.util.TextUtils;
 import com.sun.electric.util.UsageFormatter;
 
-import java.awt.Desktop;
-//import java.awt.desktop.AboutEvent;
-//import java.awt.desktop.AboutHandler;
-//import java.awt.desktop.PreferencesEvent;
-//import java.awt.desktop.PreferencesHandler;
-//import java.awt.desktop.QuitEvent;
-//import java.awt.desktop.QuitHandler;
-//import java.awt.desktop.QuitResponse;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -83,9 +71,8 @@ import javax.swing.JFrame;
 
 /**
  * This class initializes Electric and starts the system. How to run Electric:
- * <P>
  * <P> <CODE>java -jar electric.jar [electric-options]</CODE> without plugins
- * <P> <CODE>java -classpath electric.jar<i>delim</i>{list of plugins} com.sun.electric.Launcher [electric-options]</CODE>
+ * <P> <CODE>java -classpath electric.jar<i>delim</i>{list of plugins} com.sun.electric.Electric [electric-options]</CODE>
  * otherwise, where <i>delim</i> is OS-dependant separator
  * <P> And Electric options are:
  * <P> <CODE>         -mdi: multiple document interface mode </CODE>
@@ -97,7 +84,6 @@ import javax.swing.JFrame;
  * <P> <CODE>         -debug: debug mode. Extra information is available </CODE>
  * <P> <CODE>         -server: dump strace of snapshots</CODE>
  * <P> <CODE>         -help: this message </CODE>
- * <P> <P>
  * See manual for more instructions.
  */
 public final class Main
@@ -165,7 +151,7 @@ public final class Main
 	        System.out.println("\tjava -jar electric.jar [electric-options] [electric-libraries]");
 	        System.out.println("\t\twhere [electric-libraries] is list of library files to read");
 	        System.out.println("Usage (with plugins):");
-	        System.out.println("\tjava -classpath electric.jar[electric-plugins] com.sun.electric.Launcher [electric-options] [electric-libraries]");
+	        System.out.println("\tjava -classpath electric.jar[electric-plugins] com.sun.electric.Electric [electric-options] [electric-libraries]");
 	        System.out.println("\t\twhere [electric-plugins] is list of JAR files separated by OS-dependant separator (colon or semicolon)");
 	        System.out.println("\nElectric-options:");
 	        System.out.println("\t-batch: batch mode implies 'no GUI', and nothing more");
@@ -227,7 +213,7 @@ public final class Main
             }  else
                 System.out.println("Invalid option -socket " + socketString);
         }
-        hasCommandLineOption(argsList, "-NOMINMEM"); // do nothing, just consume option: handled in Launcher
+        hasCommandLineOption(argsList, "-NOMINMEM"); // do nothing, just consume option: handled in Electric
 
         // The server runs in subprocess
         if (hasCommandLineOption(argsList, "-pipeserver")) {
@@ -652,13 +638,13 @@ public final class Main
             Technology.initPreinstalledTechnologies(getDatabase(), paramValuesByXmlPath);
 
             // open no name library first
-            Library clipLib = Library.newInstance(Clipboard.CLIPBOARD_LIBRAY_NAME, null);
+            Library clipLib = Library.newInst(Clipboard.CLIPBOARD_LIBRAY_NAME, null);
             clipLib.setHidden();
-            Cell clipCell = Cell.newInstance(clipLib, Clipboard.CLIPBOARD_CELL_NAME);
+            Cell clipCell = Cell.newInst(clipLib, Clipboard.CLIPBOARD_CELL_NAME);
             assert clipCell.getId().cellIndex == Clipboard.CLIPBOARD_CELL_INDEX;
             clipCell.setTechnology(getTechPool().getGeneric());
 
-            mainLib = Library.newInstance("noname", null);
+            mainLib = Library.newInst("noname", null);
             if (mainLib == null) return false;
             fieldVariableChanged("mainLib");
             mainLib.clearChanged();
@@ -728,7 +714,8 @@ public final class Main
 	 */
 	private static class InitClient extends Job
 	{
-        private Setting.SettingChangeBatch changeBatch = new Setting.SettingChangeBatch();
+//        private Setting.SettingChangeBatch changeBatch = new Setting.SettingChangeBatch();
+        static { new Setting.SettingChangeBatch(); }
 		List<String> argsList;
 
 		private InitClient(List<String> argsList)

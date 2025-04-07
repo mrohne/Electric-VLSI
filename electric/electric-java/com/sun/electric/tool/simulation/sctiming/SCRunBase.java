@@ -148,7 +148,7 @@ public class SCRunBase {
         }
 
 
-        boolean warned = false;
+//        boolean warned = false;
         // Characterize all cells in library for which we have characterization settings
         List<String> messages = new ArrayList<String>();
         for (Iterator<Cell> it = lib.getCells(); it.hasNext(); ) {
@@ -386,6 +386,7 @@ public class SCRunBase {
             //case FLOPDDR: return getSetupFlopDDR(settings);
             //case SDR: return getSetupFlopSDR(settings);
             //case FLOPSDR: return getSetupFlopSDR(settings);
+            default: break;
         }
         return null;
     }
@@ -730,9 +731,9 @@ public class SCRunBase {
         double minStepup = 0.5;
         double maxStepup = 12;
 
-        double minSize = xsize*minStepup;
-        double maxSize = xsize*maxStepup;
-        double stepX = (maxSize - minSize) / numSizes;
+//        double minSize = xsize*minStepup;
+//        double maxSize = xsize*maxStepup;
+//        double stepX = (maxSize - minSize) / numSizes;
         double su = Math.pow(maxStepup/minStepup, 1.0/(numSizes-1));
 
         StringBuffer loads = new StringBuffer();

@@ -103,7 +103,7 @@ public class EvalJavaBsh {
 
         // create the BSH object
         try {
-            envObject = interpreterClass.newInstance();
+            envObject = interpreterClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             System.out.println("Can't create an instance of the Bean Shell: " + e.getMessage());
             envObject = null;
@@ -318,7 +318,6 @@ public class EvalJavaBsh {
         return new runScriptJob(script);
     }
 
-    @SuppressWarnings("serial")
 	private static class runScriptJob extends Job {
 
         private String script;

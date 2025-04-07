@@ -165,7 +165,7 @@ public class SpiceOut extends Input<Stimuli>
 					while (ptr < len && Character.isWhitespace(line.charAt(ptr))) ptr++;
 					int start = ptr;
 					while (ptr < len && !Character.isWhitespace(line.charAt(ptr))) ptr++;
-					numbers.add(new Double(TextUtils.atof(line.substring(start, ptr))));
+					numbers.add(Double.valueOf(TextUtils.atof(line.substring(start, ptr))));
 					ptr++;
 				}
 				if (numbers.size() > mostSignals) mostSignals = numbers.size();

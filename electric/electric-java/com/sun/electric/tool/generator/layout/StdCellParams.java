@@ -282,7 +282,7 @@ public class StdCellParams {
 		// tracks in PMOS region
 		for (double y = pmosTrackOffset; y < pmosWellHeight; y += trackPitch) {
 			if (!blockages.isBlocked(y, trackWidth))
-				pmosTracks.add(new Double(y));
+				pmosTracks.add(Double.valueOf(y));
 		}
 
 		// tracks in NMOS region
@@ -290,7 +290,7 @@ public class StdCellParams {
 			y > -nmosWellHeight;
 			y -= trackPitch) {
 			if (!blockages.isBlocked(y, trackWidth))
-				nmosTracks.add(new Double(y));
+				nmosTracks.add(Double.valueOf(y));
 		}
 	}
 
@@ -699,7 +699,7 @@ public class StdCellParams {
 	  HashMap yCoords = new HashMap();
 	  for (String key : physTracks.keySet();) {
 	    int physTrk = physTracks.get(key).intValue();
-	    Double y = new Double(getPhysTrackY(physTrk));
+	    Double y = Double.valueOf(getPhysTrackY(physTrk));
 	    yCoords.put(key, y);
 	  }
 	  return yCoords;
@@ -1022,7 +1022,7 @@ public class StdCellParams {
 			NodeInst pinProt = LayoutLib.newNodeInst(tech.m2pin(), ep, x,
 			                                         busY, DEF_SIZE, DEF_SIZE, 0, f);
 			PortInst pin = pinProt.getOnlyPortInst();
-			Export e = Export.newInstance(f, pin, exportNm, ep);
+			Export e = Export.newInst(f, pin, exportNm, ep);
 			PortCharacteristic role =	
 				mos instanceof FoldedPmos ? vddExportRole : gndExportRole;
 			e.setCharacteristic(role);
@@ -1127,7 +1127,7 @@ public class StdCellParams {
 	}
 	public Cell newPart(String partNm) {
 		error(findPart(partNm) != null, "Cell already exists: " + partNm);
-		Cell p = Cell.newInstance(layoutLib, partNm);
+		Cell p = Cell.newInst(layoutLib, partNm);
         p.setTechnology(tech.getTechnology());
 		return p;
 	}

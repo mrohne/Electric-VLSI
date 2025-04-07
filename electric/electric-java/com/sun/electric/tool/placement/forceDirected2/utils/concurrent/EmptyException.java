@@ -31,7 +31,6 @@ package com.sun.electric.tool.placement.forceDirected2.utils.concurrent;
  * 
  * Exception
  */
-@SuppressWarnings("serial")
 public class EmptyException extends Exception {
 
 }

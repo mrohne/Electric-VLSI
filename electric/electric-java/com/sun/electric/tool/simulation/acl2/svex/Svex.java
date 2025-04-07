@@ -142,7 +142,6 @@ public abstract class Svex<N extends SvarName> implements ACL2Backed
         return sb.toString();
     }
 
-    @SuppressWarnings("unchecked")
     public static <N extends SvarName> Svex<N>[] newSvexArray(int length)
     {
         return new Svex[length];

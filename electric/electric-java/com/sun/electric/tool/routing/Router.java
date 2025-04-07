@@ -113,8 +113,8 @@ public abstract class Router {
                 e.doAction(ep);
                 RouteElementPort rep = (RouteElementPort)e;
                 Integer i = nodesCreatedMap.get(rep.getPortProto().getParent());
-                if (i == null) i = new Integer(0);
-                i = new Integer(i.intValue() + 1);
+                if (i == null) i = Integer.valueOf(0);
+                i = Integer.valueOf(i.intValue() + 1);
                 nodesCreatedMap.put(rep.getPortProto().getParent(), i);
             }
         }
@@ -130,8 +130,8 @@ public abstract class Router {
             	if (result == null) return null;
                 RouteElementArc rea = (RouteElementArc)e;
                 Integer i = arcsCreatedMap.get(rea.getArcProto());
-                if (i == null) i = new Integer(0);
-                i = new Integer(i.intValue() + 1);
+                if (i == null) i = Integer.valueOf(0);
+                i = Integer.valueOf(i.intValue() + 1);
                 arcsCreatedMap.put(rea.getArcProto(), i);
             }
         }

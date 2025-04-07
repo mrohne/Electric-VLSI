@@ -256,52 +256,6 @@ public class HP80000 extends Equipment {
         write(":PATT:MOD? "+start+","+end);
         String s = read(400);
         System.out.println(s);
-/*
-        String vectors [] = s.split(",");
-        for (int i=0; i<numSignals; i++) {
-            System.out.print("Signal"+i+": ");
-            int mask = 1 << i;
-            for (int j=0; j<vectors.length; j++) {
-                if ((Integer.valueOf(vectors[j]) & mask) == 0)
-                    System.out.print("0");
-                else
-                    System.out.print("1");
-            }
-            System.out.println();
-        }
-*/
-    }
-
-    /**
-     * Set the data for the given channel
-     * @param signal which signal in the group
-     * @param dataPat string of 1's and 0's of length "length" specified by setPatternCycle
-     * @deprecated can't get it to work
-     */
-    private void setPatternData(int signal, String dataPat) {
-        if (!isSelectedInstDataGen()) return;
-        write(":FORM PACK,1");
-        write(":PATT:DATA"+signal+" "+dataPat);
-        write(":PATT:UPD");
-    }
-
-    /**
-     * Print the data for the given channel
-     * @param signal which signal in the group
-     * @param start start
-     * @param end end
-     * @deprecated useless
-     */
-    private void printPatternData(int signal, int start, int end) {
-        if (!isSelectedInstDataGen()) return;
-        write(":FORM HEX,8");
-        //write(":PATT:DATA"+signal+"?");
-        //write(":PATT:DATA?");
-        write(":PATT:DATA"+signal+"? "+start+","+end);
-        try { Thread.sleep(2000); } catch (InterruptedException e) { }
-        String s = read(600);
-        System.out.println("Data for signal "+signal+" is: (len="+s.length()+")");
-        System.out.println(s);
     }
 
     /**
@@ -547,19 +501,19 @@ public class HP80000 extends Equipment {
 
     //------------------------------------------------------------------------------
 
-    private void printResponse() {
-        String s = read(200);
-        System.out.println(s);
-    }
+//    private void printResponse() {
+//        String s = read(200);
+//        System.out.println(s);
+//    }
 
-    private boolean isSelectedInstSystem() {
-        if (selectedInst != HP80000.SYSTEM) {
-            System.out.println("Error, issuing SYSTEM related command when currently " +
-                    "selected instrument is not SYSTEM");
-            return false;
-        }
-        return true;
-    }
+//    private boolean isSelectedInstSystem() {
+//        if (selectedInst != HP80000.SYSTEM) {
+//            System.out.println("Error, issuing SYSTEM related command when currently " +
+//                    "selected instrument is not SYSTEM");
+//            return false;
+//        }
+//        return true;
+//    }
 
     private boolean isSelectedInstSystemClock() {
         if (selectedInst != HP80000.SYSTEMCLOCK) {
@@ -579,11 +533,11 @@ public class HP80000 extends Equipment {
         return true;
     }
 
-    private void printErrorQueue() {
-        write(":SYST:ERR?");
-        String s = read(200);
-        System.out.println(s);
-    }
+//    private void printErrorQueue() {
+//        write(":SYST:ERR?");
+//        String s = read(200);
+//        System.out.println(s);
+//    }
 
     // ------------------------------- Main ---------------------------------
 

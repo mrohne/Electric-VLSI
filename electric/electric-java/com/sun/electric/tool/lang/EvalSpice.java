@@ -132,7 +132,7 @@ public class EvalSpice {
                     openParens++;
                     Object arg = evalEq().eval();
                     if (arg instanceof Double) {
-                        arg = new Double(Math.sin(((Double) arg).doubleValue()));
+                        arg = Double.valueOf(Math.sin(((Double) arg).doubleValue()));
                     } else {
                         arg = "sin" + format(arg);
                     }
@@ -145,7 +145,7 @@ public class EvalSpice {
                     if ((m1 instanceof Double) && (m2 instanceof Double)) {
                         double a = ((Double) m1).doubleValue();
                         double b = ((Double) m2).doubleValue();
-                        m1 = new Double(Math.min(a, b));
+                        m1 = Double.valueOf(Math.min(a, b));
                     } else {
                         String m2str = format(m2);
                         // remove extraneous ()'s
@@ -163,7 +163,7 @@ public class EvalSpice {
                     if ((m1 instanceof Double) && (m2 instanceof Double)) {
                         double a = ((Double) m1).doubleValue();
                         double b = ((Double) m2).doubleValue();
-                        m1 = new Double(Math.max(a, b));
+                        m1 = Double.valueOf(Math.max(a, b));
                     } else {
                         String m2str = format(m2);
                         // remove extraneous ()'s
@@ -178,7 +178,7 @@ public class EvalSpice {
                     openParens++;
                     Object arg = evalEq().eval();
                     if (arg instanceof Double) {
-                        arg = new Double(Math.abs(((Double) arg).doubleValue()));
+                        arg = Double.valueOf(Math.abs(((Double) arg).doubleValue()));
                     } else {
                         arg = "abs" + format(arg);
                     }
@@ -188,7 +188,7 @@ public class EvalSpice {
                     openParens++;
                     Object arg = evalEq().eval();
                     if (arg instanceof Double) {
-                        arg = new Double(Math.sqrt(((Double) arg).doubleValue()));
+                        arg = Double.valueOf(Math.sqrt(((Double) arg).doubleValue()));
                     } else {
                         arg = "sqrt" + format(arg);
                     }
@@ -198,7 +198,7 @@ public class EvalSpice {
                     openParens++;
                     Object arg = evalEq().eval();
                     if (arg instanceof Double) {
-                        arg = new Double((int) (((Double) arg).doubleValue()));
+                        arg = Double.valueOf((int) (((Double) arg).doubleValue()));
                     } else {
                         arg = "int" + format(arg);
                     }
@@ -296,7 +296,7 @@ public class EvalSpice {
             }
             tokenizer.wordChars('e', 'e');
             tokenizer.wordChars('E', 'E');
-            return new Double(val);
+            return Double.valueOf(val);
         }
         throw new ParseException("Expected number");
     }
@@ -309,7 +309,6 @@ public class EvalSpice {
     }
 
     // ==================== Parsable Objects ========================
-    @SuppressWarnings("serial")
 	public static class ParseException extends Exception {
 
         public ParseException(String msg) {
@@ -346,8 +345,8 @@ public class EvalSpice {
         public static final Op CONDCHOICE = new Op(":", 12);
         public static final Op COND = new Op("?", 13);
     }
-    private static final Double ONE = new Double(1);
-    private static final Double ZERO = new Double(0);
+    private static final Double ONE = Double.valueOf(1);
+    private static final Double ZERO = Double.valueOf(0);
 
     /**
      * A simple equation consists of two Identifiers (operands)
@@ -493,13 +492,13 @@ public class EvalSpice {
                     rh = -1.0 * rh;
                 }
                 if (op == Op.MULT) {
-                    return new Double(lh * rh);
+                    return Double.valueOf(lh * rh);
                 } else if (op == Op.DIV) {
-                    return new Double(lh / rh);
+                    return Double.valueOf(lh / rh);
                 } else if (op == Op.PLUS) {
-                    return new Double(lh + rh);
+                    return Double.valueOf(lh + rh);
                 } else if (op == Op.MINUS) {
-                    return new Double(lh - rh);
+                    return Double.valueOf(lh - rh);
                 } else if (op == Op.LT) {
                     return lh < rh ? ONE : ZERO;
                 } else if (op == Op.LTOE) {

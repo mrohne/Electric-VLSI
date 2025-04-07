@@ -198,12 +198,12 @@ public abstract class MultiTaskJob<TaskKey, TaskResult, Result> extends Job {
 
     private class Task {
 
-        private final String taskName;
+//        private final String taskName;
         private final TaskKey taskKey;
         private TaskResult taskResult;
 
         private Task(String taskName, TaskKey taskKey) {
-            this.taskName = taskName;
+//            this.taskName = taskName;
             this.taskKey = taskKey;
         }
     }

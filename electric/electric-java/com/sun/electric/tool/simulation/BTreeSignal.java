@@ -71,11 +71,11 @@ abstract class BTreeSignal<S extends Sample> extends MutableSignal<S>
 		};
 	}
 
-	public S getSample(double time) { return tree.getValFromKey(new Double(time)); }
+	public S getSample(double time) { return tree.getValFromKey(Double.valueOf(time)); }
 
 	public void addSample(double time, S sample)
 	{
-		tree.insert(new Double(time), sample);
+		tree.insert(Double.valueOf(time), sample);
 		minTime = Math.min(minTime, time);
 		maxTime = Math.max(maxTime, time);
 		minValue = Math.min(minValue, sample.getMinValue());
@@ -84,7 +84,7 @@ abstract class BTreeSignal<S extends Sample> extends MutableSignal<S>
 
 	public void replaceSample(double time, S sample)
 	{
-		tree.replace(new Double(time), sample);
+		tree.replace(Double.valueOf(time), sample);
 		minTime = Math.min(minTime, time);
 		maxTime = Math.max(maxTime, time);
 		minValue = Math.min(minValue, sample.getMinValue());
@@ -130,8 +130,8 @@ abstract class BTreeSignal<S extends Sample> extends MutableSignal<S>
 
 		public BTreeRasterView(double t0, double t1, int numRegions)
 		{
-			Double t0_ = new Double(Math.min(t0, t1));
-			Double t1_ = new Double(Math.max(t0, t1));
+			Double t0_ = Double.valueOf(Math.min(t0, t1));
+			Double t1_ = Double.valueOf(Math.max(t0, t1));
 			t0_ord = tree.getOrdFromKeyFloor(t0_);
 			t1_ord = tree.getOrdFromKeyFloor(t1_);
 
@@ -190,8 +190,8 @@ abstract class BTreeSignal<S extends Sample> extends MutableSignal<S>
 				S sample = tree.getValFromOrd(t0_ord+index);
 				return sample == null ? null : new RangeSample<S>(sample, sample);
 			}
-			Double tfirst = new Double(getTime(index));
-			Double tsecond = new Double(getTime(index+1));
+			Double tfirst = Double.valueOf(getTime(index));
+			Double tsecond = Double.valueOf(getTime(index+1));
 			if (tfirst.doubleValue() == tsecond.doubleValue())
 			{
 				// this case can occur if the signal's samples

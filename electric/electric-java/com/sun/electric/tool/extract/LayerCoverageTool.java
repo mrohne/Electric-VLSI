@@ -673,7 +673,7 @@ public class LayerCoverageTool extends Tool
         public boolean doIt() throws JobException
         {
             EditingPreferences ep = getEditingPreferences();
-            ErrorLogger errorLogger = ErrorLogger.newInstance("Area Coverage");
+            ErrorLogger errorLogger = ErrorLogger.newInst("Area Coverage");
             Rectangle2D bBoxOrig = curCell.getBounds();
             double maxY = bBoxOrig.getMaxY();
             double maxX = bBoxOrig.getMaxX();
@@ -712,7 +712,7 @@ public class LayerCoverageTool extends Tool
                         double newV = area.doubleValue();
                         if (oldV != null)
                             newV += oldV.doubleValue();
-                        internalMap.put(layer, new Double(newV));
+                        internalMap.put(layer, Double.valueOf(newV));
                     }
                 }
             }
@@ -1132,8 +1132,8 @@ public class LayerCoverageTool extends Tool
             assert(layer != null);
             if (onlyThisLayer != null && layer != onlyThisLayer) return; // skip this one
 	        layers.add(layer);
-	        areas.add(new Double(area));
-	        halfPerimeters.add(new Double(halfperimeter));
+	        areas.add(Double.valueOf(area));
+	        halfPerimeters.add(Double.valueOf(halfperimeter));
 
 	        Layer.Function func = layer.getFunction();
 	        // accumulate total wire length on all metal/poly layers

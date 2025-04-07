@@ -101,7 +101,7 @@ public class HP81250 extends Equipment {
         System.out.println("number of modules " + s);
         //loop over modules
 
-        Integer iObj = new Integer(s);
+        Integer iObj = Integer.valueOf(s);
 
         for (int i = 1; i <= (iObj.intValue()); i++) {
             //find out how many connectors
@@ -210,28 +210,28 @@ public class HP81250 extends Equipment {
         try { Thread.sleep(100); } catch (InterruptedException e) { }
     }//end stop
 
-    private void stepThruRefresh() {
-        run(true);
-        run(false);
-    }
+//    private void stepThruRefresh() {
+//        run(true);
+//        run(false);
+//    }
 
-    private void checkConnectors() {
-        start();
-        list();
-        load_setting("try2");
-        setFreq(20);
-        switchConnector("3", "1", "on");
-        switchConnector("3", "2", "on");
-        run(true);
-        run(false);
-        switchConnector("3", "1", "off");
-        switchConnector("3", "2", "off");
-        destroyHandle();
-    }
+//    private void checkConnectors() {
+//        start();
+//        list();
+//        load_setting("try2");
+//        setFreq(20);
+//        switchConnector("3", "1", "on");
+//        switchConnector("3", "2", "on");
+//        run(true);
+//        run(false);
+//        switchConnector("3", "1", "off");
+//        switchConnector("3", "2", "off");
+//        destroyHandle();
+//    }
 
     public static void main(String args[]) {
         //boolean onlyKill = false;
-        boolean onlyKill = true;
+//        boolean onlyKill = true;
 
         HP81250 bert = new HP81250("hp81250");
         bert.init("HANDLEA");

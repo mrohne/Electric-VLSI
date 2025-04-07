@@ -385,14 +385,14 @@ public class FileType implements Serializable {
 	private static class FileFilterAWT implements FilenameFilter
 	{
 		/** list of valid extensions */				private String[] extensions;
-		/** description of filter */				private String desc;
+//		/** description of filter */				private String desc;
 		/** true to allow digits in extension */	private boolean allowNumbers;
 
 		/** Creates a new instance of FileFilterAWT */
 		public FileFilterAWT(String[] extensions, String desc, boolean allowNumbers)
 		{
 			this.extensions = extensions;
-			this.desc = desc;
+//			this.desc = desc;
 			this.allowNumbers = allowNumbers;
 		}
 
@@ -405,7 +405,7 @@ public class FileType implements Serializable {
 			return matches(fileName, extensions, allowNumbers);
 		}
 
-		public String getDescription() { return desc; }
+//		public String getDescription() { return desc; }
 	}
 
 	private static boolean matches(String fileName, String [] extensions, boolean allowNumbers)

@@ -116,7 +116,7 @@ class SpiceSegmentedNets
 		Integer i = netCounters.get(net);
 		if (i == null)
 		{
-			i = new Integer(0);
+			i = Integer.valueOf(0);
 			netCounters.put(net, i);
 		}
 
@@ -138,7 +138,7 @@ class SpiceSegmentedNets
 				else
 					name = cs.getName() + "#" + i.intValue();
 			}
-			i = new Integer(i.intValue() + 1);
+			i = Integer.valueOf(i.intValue() + 1);
 			netCounters.put(net, i);
 		}
 		//System.out.println("Created new segmented net name "+name+" for port "+pi.getPortProto().getName()+
@@ -206,7 +206,7 @@ class SpiceSegmentedNets
 			shortSegments(ai.getHeadPortInst(), ai.getTailPortInst());
 			return;
 		}
-		arcRes.put(ai, new Double(res));
+		arcRes.put(ai, Double.valueOf(res));
 	}
 
 	public Double getRes(ArcInst ai) { return arcRes.get(ai); }
@@ -258,7 +258,7 @@ class SpiceSegmentedNets
 	// multiple PI models.  So, we need to store the cap associated with the arc
 	public void addArcCap(ArcInst ai, double cap)
 	{
-		longArcCaps.put(ai, new Double(cap));
+		longArcCaps.put(ai, Double.valueOf(cap));
 	}
 
 	public double getArcCap(ArcInst ai)

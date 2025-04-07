@@ -398,10 +398,11 @@ public class CompileVerilogStruct
     public CompileVerilogStruct(File f, boolean verbose, ErrorLogger logger)
     {
         this.verbose = verbose;
+        LineNumberReader lineReader;
         try
         {
             InputStreamReader is = new InputStreamReader(new FileInputStream(f));
-            LineNumberReader lineReader = new LineNumberReader(is);
+            lineReader = new LineNumberReader(is);
             List<String> stringList = new ArrayList<String>();
             for (;;)
             {
@@ -1196,7 +1197,7 @@ public class CompileVerilogStruct
                         // character literal
                         if (bufPos + 2 < buf.length() && buf.charAt(bufPos + 2) == '\'')
                         {
-                            new TokenList(TokenType.CHAR, new Character(buf.charAt(bufPos + 1)), lineNum, space);
+                            new TokenList(TokenType.CHAR, Character.valueOf(buf.charAt(bufPos + 1)), lineNum, space);
                             bufPos += 3;
                         } else
                         {
@@ -2310,7 +2311,7 @@ public class CompileVerilogStruct
             else
             {
                 if (errorLogger == null)
-                    errorLogger = ErrorLogger.newInstance("Compile Verilog");
+                    errorLogger = ErrorLogger.newInst("Compile Verilog");
                 errorLogger.logError(msg, 0);
             }
             return;
@@ -2333,7 +2334,7 @@ public class CompileVerilogStruct
         } else
         {
             if (errorLogger == null)
-                errorLogger = ErrorLogger.newInstance("Compile Verilog");
+                errorLogger = ErrorLogger.newInst("Compile Verilog");
             errorLogger.logWarning(msg + " " + buffer.toString(), null, 0);
         }
     }
@@ -2350,7 +2351,7 @@ public class CompileVerilogStruct
             else
             {
                 if (errorLogger == null)
-                    errorLogger = ErrorLogger.newInstance("Compile Verilog");
+                    errorLogger = ErrorLogger.newInst("Compile Verilog");
                 errorLogger.logError(msg, 0);
             }
         }
@@ -2364,7 +2365,7 @@ public class CompileVerilogStruct
             else
             {
                 if (errorLogger == null)
-                    errorLogger = ErrorLogger.newInstance("Compile Verilog");
+                    errorLogger = ErrorLogger.newInst("Compile Verilog");
                 errorLogger.logError(msg, 0);
             }
             return;
@@ -2387,7 +2388,7 @@ public class CompileVerilogStruct
         } else
         {
             if (errorLogger == null)
-                errorLogger = ErrorLogger.newInstance("Compile Verilog");
+                errorLogger = ErrorLogger.newInst("Compile Verilog");
             errorLogger.logError(msg + " " + buffer.toString(), 0);
         }
     }
@@ -2444,13 +2445,13 @@ public class CompileVerilogStruct
                             characteristic = PortCharacteristic.BIDIR;
                             break;
                     }
-                    Export e = Export.newInstance(mod.cell, ni.getOnlyPortInst(), portName, ep, characteristic);
+                    Export e = Export.newInst(mod.cell, ni.getOnlyPortInst(), portName, ep, characteristic);
                     TextDescriptor td = e.getTextDescriptor(Export.EXPORT_NAME).withPos(TextDescriptor.Position.LEFT);
                     e.setTextDescriptor(Export.EXPORT_NAME, td);
                 }
                 double xSize = YSPACING * 2;
                 double ySize = yPos - YSPACING / 2;
-                NodeInst bbNi = NodeInst.newInstance(Artwork.tech().openedThickerPolygonNode, ep, new Point2D.Double(0, ySize / 2), xSize, ySize, mod.cell);
+                NodeInst bbNi = NodeInst.newInst(Artwork.tech().openedThickerPolygonNode, ep, new Point2D.Double(0, ySize / 2), xSize, ySize, mod.cell);
                 if (bbNi == null)
                     return null;
                 EPoint[] boxOutline = new EPoint[5];
@@ -2674,7 +2675,7 @@ public class CompileVerilogStruct
                     EPoint piLoc = pi.getCenter();
                     EPoint busPinLoc = EPoint.fromLambda(piLoc.getLambdaX() + 5, piLoc.getLambdaY());
                     assert in.ports.size() == 1;
-                    VPort vPort = in.ports.keySet().iterator().next();
+//                    VPort vPort = in.ports.keySet().iterator().next();
                     String[] signals = in.ports.values().iterator().next();
                     assert signals.length == 1;
                     PrimitiveNode np = Schematics.tech().busPinNode;
@@ -2925,7 +2926,7 @@ public class CompileVerilogStruct
                                     }
                                 }
                             }
-                            Export.newInstance(cell, pi, thisPortName, ep, pc);
+                            Export.newInst(cell, pi, thisPortName, ep, pc);
                             allExports.put(thisPortName, pi);
                         }
                         continue;
@@ -2957,7 +2958,7 @@ public class CompileVerilogStruct
                         }
                     }
                 }
-                Export.newInstance(cell, pi, portName, ep, pc);
+                Export.newInst(cell, pi, portName, ep, pc);
                 allExports.put(portName, pi);
             }
 

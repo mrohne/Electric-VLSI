@@ -112,7 +112,7 @@ public class Bipolar extends Part {
 			hc += pins[i].hashCode() * PIN_COEFFS[i];
 		// include whether its NPN or PNP
 		hc += type().hashCode();
-		return new Integer(hc);
+		return Integer.valueOf(hc);
 	}
 
 	// merge into this transistor
@@ -169,7 +169,7 @@ public class Bipolar extends Part {
 //		for (int i=0; i<pins.length; i++){
 //			sum += pins[i].getCode() * PIN_COEFFS[i];
 //		}
-//		return new Integer(sum);
+//		return Integer.valueOf(sum);
 //	}
 
 }

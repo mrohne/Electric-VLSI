@@ -522,7 +522,7 @@ public class ManipulateExports extends EDialog implements DatabaseChangeListener
 	        	if (evt.getStateChange() == ItemEvent.SELECTED)
 	        	{
 	        		Integer lastIndex = lastIndices.get(cb);
-	        		if (lastIndex == null) lastIndices.put(cb, lastIndex = new Integer(cb.getSelectedIndex()));
+	        		if (lastIndex == null) lastIndices.put(cb, lastIndex = Integer.valueOf(cb.getSelectedIndex()));
 	        		if (lastIndex.intValue() != cb.getSelectedIndex())
 	        		{
 	        			ExportEntry thisEE = null;
@@ -543,7 +543,7 @@ public class ManipulateExports extends EDialog implements DatabaseChangeListener
 	        			}
 	        			etm.fireTableDataChanged();
 	        		}
-	        		lastIndices.put(cb, new Integer(cb.getSelectedIndex()));
+	        		lastIndices.put(cb, Integer.valueOf(cb.getSelectedIndex()));
 	        	}
 	        }
 		}

@@ -1104,7 +1104,7 @@ public class SeaOfGates
 							{
 								double v = TextUtils.atof(parts[i+1]);
 								v = TextUtils.convertFromDistance(v, curTech, UnitScale.MICRO);
-								widthsToOverride.put(ap, new Double(v));
+								widthsToOverride.put(ap, Double.valueOf(v));
 							}
 						}
 						continue;
@@ -1120,7 +1120,7 @@ public class SeaOfGates
 							{
 								double v = TextUtils.atof(parts[i+1]);
 								v = TextUtils.convertFromDistance(v, curTech, UnitScale.MICRO);
-								spacingsToOverride.put(ap, new Double(v));
+								spacingsToOverride.put(ap, Double.valueOf(v));
 							}
 						}
 						continue;
@@ -1164,7 +1164,7 @@ public class SeaOfGates
 		    				cellData.put(metNo, metData = new HashMap<Double,Map<Integer,MutableInteger>>());
 
 		    			// get the geometry data for this coordinate
-		    			Double coordVal = new Double(val);
+		    			Double coordVal = Double.valueOf(val);
 		    			Map<Integer,MutableInteger> coordData = metData.get(coordVal);
 		    			if (coordData == null)
 		    				metData.put(coordVal, coordData = new HashMap<Integer,MutableInteger>());
@@ -1286,7 +1286,7 @@ public class SeaOfGates
 				cellData.put(metNo, metData = new HashMap<Double,Map<Integer,MutableInteger>>());
 
 			// get the geometry data for this coordinate
-			Double coordVal = new Double((horEven == ((metNo+1)%2==0))? bounds.getCenterY() : bounds.getCenterX());
+			Double coordVal = Double.valueOf((horEven == ((metNo+1)%2==0))? bounds.getCenterY() : bounds.getCenterX());
 			Map<Integer,MutableInteger> coordData = metData.get(coordVal);
 			if (coordData == null)
 				metData.put(coordVal, coordData = new HashMap<Integer,MutableInteger>());

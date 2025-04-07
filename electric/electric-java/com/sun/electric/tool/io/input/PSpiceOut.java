@@ -145,7 +145,7 @@ public class PSpiceOut extends Input<Stimuli>
 				int start = ptr;
 				while (ptr < line.length() && !Character.isWhitespace(line.charAt(ptr))) ptr++;
 				double value = TextUtils.atof(line.substring(start, ptr));
-				values[position++].add(new Double(value));
+				values[position++].add(Double.valueOf(value));
 			}
 			if (position != numSignals)
 			{

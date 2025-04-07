@@ -197,7 +197,7 @@ public abstract class AbstractUserInterface extends Client implements UserInterf
     protected synchronized EJob removeProcessingEJob(Job.Key jobKey) {
         EJob ejob = processingEJobs.remove(jobKey);
         if (ejob != null && !jobKey.doItOnServer) {
-            boolean removed = clientJobs.remove(ejob);
+//            boolean removed = clientJobs.remove(ejob);
 //            assert removed;
             showJobQueue();
         }

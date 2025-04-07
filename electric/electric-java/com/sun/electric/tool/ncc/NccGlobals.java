@@ -57,7 +57,7 @@ class NccRandom {
 
 	public int next() {
 		while (true) {
-			Integer r = new Integer(randGen.nextInt());
+			Integer r = Integer.valueOf(randGen.nextInt());
 			if (!randoms.contains(r)) {
 				randoms.add(r);
 				return r.intValue();

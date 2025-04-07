@@ -33,6 +33,7 @@ import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.hierarchy.EDatabase;
 import com.sun.electric.database.id.CellId;
 import com.sun.electric.database.id.PrimitivePortId;
+import com.sun.electric.database.prototype.NodeProto;
 import com.sun.electric.database.prototype.PortProto;
 import com.sun.electric.database.text.Name;
 import com.sun.electric.database.text.TextUtils;
@@ -49,6 +50,7 @@ import com.sun.electric.technology.technologies.Schematics;
 import com.sun.electric.tool.user.ErrorLogger;
 import com.sun.electric.util.math.DBMath;
 import com.sun.electric.util.math.FixpTransform;
+import com.sun.electric.util.math.Orientation;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -220,18 +222,23 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
     /**
      * **************************** CREATE, DELETE, MODIFY *****************************
      */
+
     /**
      * Method to create a new ArcInst with appropriate defaults, connecting two PortInsts.
      * Since no coordinates are given, the ArcInst connects to the center of the PortInsts.
      * @param type the prototype of the new ArcInst.
+     * @param ep EditingPreferences with default sizes and text descriptors.
      * @param head the head end PortInst.
      * @param tail the tail end PortInst.
      * @return the newly created ArcInst, or null if there is an error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
+     * @deprecated but kept around for Python and BSH access
      */
+    @Deprecated
     public static ArcInst makeInstance(ArcProto type, PortInst head, PortInst tail) {
-        return makeInstance(type, EditingPreferences.getInstance(), head, tail);
-    }
+    	EditingPreferences ep = EditingPreferences.getInstance();
+	    ImmutableArcInst a = type.getDefaultInst(ep);
+	    return newInstanceBase(type, ep, type.getDefaultLambdaBaseWidth(ep), head, tail, null, null, null, DEFAULTANGLE, a.flags);
+	}
 
     /**
      * Method to create a new ArcInst with appropriate defaults, connecting two PortInsts.
@@ -246,20 +253,6 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
             PortInst head, PortInst tail) {
         ImmutableArcInst a = type.getDefaultInst(ep);
         return newInstanceBase(type, ep, type.getDefaultLambdaBaseWidth(ep), head, tail, null, null, null, DEFAULTANGLE, a.flags);
-    }
-
-    /**
-     * Method to create a new ArcInst with appropriate defaults, connecting two PortInsts.
-     * Since no coordinates are given, the ArcInst connects to the center of the PortInsts.
-     * @param type the prototype of the new ArcInst.
-     * @param baseWidth the base width of the new ArcInst. The width must be > 0.
-     * @param head the head end PortInst.
-     * @param tail the tail end PortInst.
-     * @return the newly created ArcInst, or null if there is an error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static ArcInst makeInstanceBase(ArcProto type, double baseWidth, PortInst head, PortInst tail) {
-        return makeInstanceBase(type, EditingPreferences.getInstance(), baseWidth, head, tail);
     }
 
     /**
@@ -282,23 +275,6 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
      * Method to create a new ArcInst with appropriate defaults, connecting two PortInsts at specified locations.
      * This is more general than the version that does not take coordinates.
      * @param type the prototype of the new ArcInst.
-     * @param head the head end PortInst.
-     * @param tail the tail end PortInst.
-     * @param headPt the coordinate of the head end PortInst.
-     * @param tailPt the coordinate of the tail end PortInst.
-     * @param name the name of the new ArcInst
-     * @return the newly created ArcInst, or null if there is an error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static ArcInst makeInstance(ArcProto type, PortInst head, PortInst tail,
-            Point2D headPt, Point2D tailPt, String name) {
-        return makeInstance(type, EditingPreferences.getInstance(), head, tail, headPt, tailPt, name);
-    }
-
-    /**
-     * Method to create a new ArcInst with appropriate defaults, connecting two PortInsts at specified locations.
-     * This is more general than the version that does not take coordinates.
-     * @param type the prototype of the new ArcInst.
      * @param ep EditingPreferences with default sizes and text descriptors.
      * @param head the head end PortInst.
      * @param tail the tail end PortInst.
@@ -312,24 +288,6 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
             Point2D headPt, Point2D tailPt, String name) {
         ImmutableArcInst a = type.getDefaultInst(ep);
         return newInstanceBase(type, ep, type.getDefaultLambdaBaseWidth(ep), head, tail, headPt, tailPt, name, DEFAULTANGLE, a.flags);
-    }
-
-    /**
-     * Method to create a new ArcInst with appropriate defaults, connecting two PortInsts at specified locations.
-     * This is more general than the version that does not take coordinates.
-     * @param type the prototype of the new ArcInst.
-     * @param baseWidth the base width of the new ArcInst. The width must be > 0.
-     * @param head the head end PortInst.
-     * @param tail the tail end PortInst.
-     * @param headPt the coordinate of the head end PortInst.
-     * @param tailPt the coordinate of the tail end PortInst.
-     * @param name the name of the new ArcInst
-     * @return the newly created ArcInst, or null if there is an error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static ArcInst makeInstanceBase(ArcProto type, double baseWidth, PortInst head, PortInst tail,
-            Point2D headPt, Point2D tailPt, String name) {
-        return makeInstanceBase(type, EditingPreferences.getInstance(), baseWidth, head, tail, headPt, tailPt, name);
     }
 
     /**
@@ -356,20 +314,6 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
      * Method to create a new ArcInst connecting two PortInsts.
      * Since no coordinates are given, the ArcInst connects to the center of the PortInsts.
      * @param type the prototype of the new ArcInst.
-     * @param baseWidth the base width of the new ArcInst. The width must be > 0.
-     * @param head the head end PortInst.
-     * @param tail the tail end PortInst.
-     * @return the newly created ArcInst, or null if there is an error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static ArcInst newInstanceBase(ArcProto type, double baseWidth, PortInst head, PortInst tail) {
-        return newInstanceBase(type, EditingPreferences.getInstance(), baseWidth, head, tail);
-    }
-
-    /**
-     * Method to create a new ArcInst connecting two PortInsts.
-     * Since no coordinates are given, the ArcInst connects to the center of the PortInsts.
-     * @param type the prototype of the new ArcInst.
      * @param ep EditingPreferences with default sizes and text descriptors.
      * @param baseWidth the base width of the new ArcInst. The width must be > 0.
      * @param head the head end PortInst.
@@ -379,25 +323,6 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
     public static ArcInst newInstanceBase(ArcProto type, EditingPreferences ep,
             double baseWidth, PortInst head, PortInst tail) {
         return newInstanceBase(type, ep, baseWidth, head, tail, null, null, null, DEFAULTANGLE, ImmutableArcInst.DEFAULT_FLAGS);
-    }
-
-    /**
-     * Method to create a new ArcInst connecting two PortInsts at specified locations.
-     * This is more general than the version that does not take coordinates.
-     * @param type the prototype of the new ArcInst.
-     * @param baseWidth the base width of the new ArcInst. The width must be > 0.
-     * @param head the head end PortInst.
-     * @param tail the tail end PortInst.
-     * @param headPt the coordinate of the head end PortInst.
-     * @param tailPt the coordinate of the tail end PortInst.
-     * @param name the name of the new ArcInst
-     * @param defAngle default angle in case port points coincide
-     * @return the newly created ArcInst, or null if there is an error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static ArcInst newInstanceBase(ArcProto type, double baseWidth, PortInst head, PortInst tail,
-            Point2D headPt, Point2D tailPt, String name, int defAngle) {
-        return newInstanceBase(type, EditingPreferences.getInstance(), baseWidth, head, tail, headPt, tailPt, name, defAngle);
     }
 
     /**
@@ -418,26 +343,6 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
             double baseWidth, PortInst head, PortInst tail,
             Point2D headPt, Point2D tailPt, String name, int defAngle) {
         return newInstanceBase(type, ep, baseWidth, head, tail, headPt, tailPt, name, defAngle, ImmutableArcInst.DEFAULT_FLAGS);
-    }
-
-    /**
-     * Method to create a new ArcInst connecting two PortInsts at specified locations.
-     * This is more general than the version that does not take coordinates.
-     * @param type the prototype of the new ArcInst.
-     * @param baseWidth the base width of the new ArcInst. The width must be > 0.
-     * @param head the head end PortInst.
-     * @param tail the tail end PortInst.
-     * @param headPt the coordinate of the head end PortInst.
-     * @param tailPt the coordinate of the tail end PortInst.
-     * @param name the name of the new ArcInst
-     * @param defAngle default angle in case port points coincide
-     * @param flags flags of the new ArcInst
-     * @return the newly created ArcInst, or null if there is an error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static ArcInst newInstanceBase(ArcProto type, double baseWidth, PortInst head, PortInst tail,
-            Point2D headPt, Point2D tailPt, String name, int defAngle, int flags) {
-        return newInstanceBase(type, EditingPreferences.getInstance(), baseWidth, head, tail, headPt, tailPt, name, defAngle, flags);
     }
 
     /**
@@ -468,7 +373,7 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
 //		if (gridFullWidth < type.getMaxLayerGridOffset())
 //			gridFullWidth = type.getDefaultGridFullWidth();
 
-        // if points are null, create them as would newInstance
+        // if points are null, create them as would newInst
         EPoint headP;
         if (headPt == null) {
             headP = head.getCenter();
@@ -623,7 +528,7 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
         do {
             arcId = parentId.newArcId();
         } while (parent.getArcById(arcId) != null);
-        ImmutableArcInst d = ImmutableArcInst.newInstance(arcId, protoType.getId(), nameKey, nameDescriptor,
+        ImmutableArcInst d = ImmutableArcInst.newInst(arcId, protoType.getId(), nameKey, nameDescriptor,
                 tailPort.getNodeInst().getNodeId(), tailProto.getId(), tailPt,
                 headPort.getNodeInst().getNodeId(), headProto.getId(), headPt,
                 gridExtendOverMin, angle, flags);
@@ -1020,7 +925,7 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
     public Poly curvedArcLambdaOutline(Poly.Type style, long gridWidth, long gridRadius) {
         Poly.Builder polyBuilder = Poly.threadLocalLambdaBuilder();
         polyBuilder.setup(topology.cell);
-        Variable radius = Variable.newInstance(ImmutableArcInst.ARC_RADIUS, new Double(DBMath.gridToLambda(gridRadius)), TextDescriptor.EMPTY);
+        Variable radius = Variable.newInst(ImmutableArcInst.ARC_RADIUS, DBMath.gridToLambda(gridRadius), TextDescriptor.EMPTY);
         return polyBuilder.makePoly(getD().withVariable(radius), gridWidth, style);
     }
 
@@ -1268,17 +1173,6 @@ public class ArcInst extends Geometric implements Comparable<ArcInst> {
      */
     public Name getNameKey() {
         return d.name;
-    }
-
-    /**
-     * Method to rename this ArcInst.
-     * This ArcInst must be linked to database.
-     * @param name new name of this geometric.
-     * @return true on error
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public boolean setName(String name) {
-        return setName(name, EditingPreferences.getInstance());
     }
 
     /**

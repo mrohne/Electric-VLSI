@@ -38,7 +38,7 @@ import com.sun.electric.database.topology.NodeInst;
  */
 public class ViaAmountMetric extends RoutingMetric<Integer> {
 	
-	private static Logger logger = LoggerFactory.getLogger(ViaAmountMetric.class);
+//	private static Logger logger = LoggerFactory.getLogger(ViaAmountMetric.class);
 
 	/* (non-Javadoc)
 	 * @see com.sun.electric.tool.routing.metrics.RoutingMetric#calculate(com.sun.electric.database.hierarchy.Cell)

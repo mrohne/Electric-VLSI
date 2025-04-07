@@ -44,6 +44,8 @@ public class ErrorLoggerCSVFile extends AbstractErrorLogger {
 
 	public void printReports(long time) {
 
+		CSVInput input;
+		CSVWriter writer;
 		try {
 			List<String> csvEntry = new LinkedList<String>();
 			csvEntry.add(String.valueOf(time));
@@ -54,13 +56,13 @@ public class ErrorLoggerCSVFile extends AbstractErrorLogger {
 			CSVFile csvFile = new CSVFile(';');
 			File file = new File(this.fileName);
 			if (file.exists()) {
-				CSVInput input = new CSVInput(file);
+				input = new CSVInput(file);
 				csvFile = input.readCSVFile(';', false);
 			}
 
 			csvFile.addLine(csvEntry);
 
-			CSVWriter writer = new CSVWriter(file);
+			writer = new CSVWriter(file);
 			writer.printCSVFile(csvFile);
 		} catch (Exception ex) {
 			ex.printStackTrace();

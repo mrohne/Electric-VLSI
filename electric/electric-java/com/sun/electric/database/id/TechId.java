@@ -144,7 +144,7 @@ public final class TechId implements Serializable {
     }
 
     LayerId newLayerIdInternal(String layerName) {
-        int chronIndex = layerIds.size();
+//        int chronIndex = layerIds.size();
         LayerId layerId = new LayerId(this, layerName, layerIds.size());
         layerIds.add(layerId);
         layerIdsByName.put(layerName, layerId);
@@ -187,7 +187,7 @@ public final class TechId implements Serializable {
     }
 
     ArcProtoId newArcProtoIdInternal(String arcProtoName) {
-        int chronIndex = arcProtoIds.size();
+//        int chronIndex = arcProtoIds.size();
         ArcProtoId arcProtoId = new ArcProtoId(this, arcProtoName, arcProtoIds.size());
         arcProtoIds.add(arcProtoId);
         arcProtoIdsByName.put(arcProtoName, arcProtoId);
@@ -230,7 +230,7 @@ public final class TechId implements Serializable {
     }
 
     PrimitiveNodeId newPrimitiveNodeIdInternal(String primitiveNodeName) {
-        int chronIndex = primitiveNodeIds.size();
+//        int chronIndex = primitiveNodeIds.size();
         PrimitiveNodeId primitiveNodeId = new PrimitiveNodeId(this, primitiveNodeName, primitiveNodeIds.size());
         primitiveNodeIds.add(primitiveNodeId);
         primitiveNodeIdsByName.put(primitiveNodeName, primitiveNodeId);

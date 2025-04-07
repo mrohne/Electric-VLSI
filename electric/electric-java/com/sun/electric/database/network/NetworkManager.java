@@ -59,12 +59,12 @@ public class NetworkManager {
 
     void pushHighlight(Export e) {
 //        assert e.getParent() == currentErrorCell;
-        errorHighlights.add(ErrorHighlight.newInstance(e));
+        errorHighlights.add(ErrorHighlight.newInst(e));
     }
 
     void pushHighlight(Geometric geom) {
         assert geom.getParent() == currentErrorCell;
-        errorHighlights.add(ErrorHighlight.newInstance(null, geom));
+        errorHighlights.add(ErrorHighlight.newInst(null, geom));
     }
 
     void pushHighlight(PortInst pi) {
@@ -75,7 +75,7 @@ public class NetworkManager {
             if (i == 0) {
                 prev = points.length - 1;
             }
-            errorHighlights.add(ErrorHighlight.newInstance(currentErrorCell, points[prev], points[i]));
+            errorHighlights.add(ErrorHighlight.newInst(currentErrorCell, points[prev], points[i]));
         }
 
     }

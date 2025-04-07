@@ -24,6 +24,7 @@ package com.sun.electric.database.hierarchy;
 import com.sun.electric.database.EObjectInputStream;
 import com.sun.electric.database.EObjectOutputStream;
 import com.sun.electric.database.EditingPreferences;
+import com.sun.electric.database.ImmutableArcInst;
 import com.sun.electric.database.ImmutableExport;
 import com.sun.electric.database.constraint.Constraints;
 import com.sun.electric.database.geometry.Poly;
@@ -72,8 +73,7 @@ import java.util.List;
  * An Export therefore belongs to the NodeInst that is its source and also to the Cell
  * that the NodeInst belongs to.
  * The data structures look like this:
- * <P>
- * <CENTER><IMG SRC="doc-files/Export-1.gif"></CENTER>
+ * <P style="text-align:center"><IMG SRC="doc-files/Export-1.gif">
  */
 public class Export extends ElectricObject implements PortProto, Comparable<Export> {
 
@@ -95,7 +95,7 @@ public class Export extends ElectricObject implements PortProto, Comparable<Expo
 
     // -------------------- protected and private methods --------------
     /**
-     * The constructor of Export. Use the factory "newInstance" instead.
+     * The constructor of Export. Use the factory "newInst" instead.
      * @param d persistent data of this Export.
      * @param parent the Cell in which this Export will reside.
      */
@@ -144,11 +144,11 @@ public class Export extends ElectricObject implements PortProto, Comparable<Expo
      * @param portInst the PortInst to export
      * @param protoName the name of this Export.
      * It may not have unprintable characters, spaces, or tabs in it.
+     * @param ep EditingPreferences with default sizes and text descriptors.
      * @return the newly created Export.
-     * @deprecated Use method with explicit EditingPreferences parameter.
      */
-    public static Export newInstance(Cell parent, PortInst portInst, String protoName) {
-        return newInstance(parent, portInst, protoName, EditingPreferences.getInstance());
+    public static Export newInst(Cell parent, PortInst portInst, String protoName, EditingPreferences ep) {
+        return newInst(parent, portInst, protoName, ep, null);
     }
 
     /**
@@ -158,25 +158,13 @@ public class Export extends ElectricObject implements PortProto, Comparable<Expo
      * @param protoName the name of this Export.
      * It may not have unprintable characters, spaces, or tabs in it.
      * @param ep EditingPreferences with default sizes and text descriptors.
-     * @return the newly created Export.
-     */
-    public static Export newInstance(Cell parent, PortInst portInst, String protoName, EditingPreferences ep) {
-        return newInstance(parent, portInst, protoName, ep, null);
-    }
-
-    /**
-     * Method to create an Export with the specified values.
-     * @param parent the Cell in which this Export resides.
-     * @param portInst the PortInst to export
-     * @param protoName the name of this Export.
-     * It may not have unprintable characters, spaces, or tabs in it.
      * @param characteristic the characteristic (input, output) of this Export.
-     * @return the newly created Export.
-     * @deprecated Use method with explicit EditingPreferences parameter.
+     * @deprecated but kept around for Python and BSH access
      */
-    public static Export newInstance(Cell parent, PortInst portInst, String protoName, PortCharacteristic characteristic) {
-        return newInstance(parent, portInst, protoName, EditingPreferences.getInstance(), characteristic);
-    }
+    @Deprecated
+    public static Export newInst(Cell parent, PortInst portInst, String protoName, PortCharacteristic characteristic) {
+	    return newInst(parent, portInst, protoName, EditingPreferences.getInstance(), characteristic);
+	}
 
     /**
      * Method to create an Export with the specified values.
@@ -188,7 +176,7 @@ public class Export extends ElectricObject implements PortProto, Comparable<Expo
      * @param characteristic the characteristic (input, output) of this Export.
      * @return the newly created Export.
      */
-    public static Export newInstance(Cell parent, PortInst portInst, String protoName, EditingPreferences ep,
+    public static Export newInst(Cell parent, PortInst portInst, String protoName, EditingPreferences ep,
             PortCharacteristic characteristic) {
         Export export = newInstanceNoIcon(parent, portInst, protoName, ep, characteristic);
         if (export == null) {
@@ -240,27 +228,6 @@ public class Export extends ElectricObject implements PortProto, Comparable<Expo
             }
         }
         return export;
-    }
-
-    /**
-     * Method to create an Export with the specified values.
-     * @param parent the Cell in which this Export resides.
-     * @param portInst the PortInst to export
-     * @param protoName the name of this Export.
-     * It may not have unprintable characters, spaces, or tabs in it.
-     * @param characteristic the characteristic (input, output) of this Export.
-     * @param createOnIcon true to create an equivalent export on any associated icon.
-     * @return the newly created Export.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static Export newInstance(Cell parent, PortInst portInst, String protoName,
-            PortCharacteristic characteristic, boolean createOnIcon) {
-        EditingPreferences ep = EditingPreferences.getInstance();
-        if (createOnIcon) {
-            return newInstance(parent, portInst, protoName, ep, characteristic);
-        } else {
-            return newInstanceNoIcon(parent, portInst, protoName, ep, characteristic);
-        }
     }
 
     /**
@@ -387,7 +354,7 @@ public class Export extends ElectricObject implements PortProto, Comparable<Expo
         if (nameTextDescriptor == null) {
             throw new NullPointerException();
         }
-        ImmutableExport d = ImmutableExport.newInstance(exportId, Name.findName(name), nameTextDescriptor,
+        ImmutableExport d = ImmutableExport.newInst(exportId, Name.findName(name), nameTextDescriptor,
                 originalNode.getNodeId(), subpp.getId(), alwaysDrawn, bodyOnly, characteristic);
         Export e = parent.addExport(d);
         assert e.getOriginalPort() == originalPort;

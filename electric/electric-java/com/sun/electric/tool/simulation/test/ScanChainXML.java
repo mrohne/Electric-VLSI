@@ -166,7 +166,7 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
                     System.out.println("No context found for starter "+s.getKey());
                     continue;
                 }
-                String hier = context.getInstPath(".");
+                /* String hier = */ context.getInstPath(".");
                 //System.out.println("Starter "+s.getKey()+" has context "+hier);
                 boolean used = false;
                 for (JtagInstance inst : jtags) {
@@ -904,7 +904,7 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
                 flatCount += (ii * ni.getNameKey().busWidth());
             }
         }
-        elementsFlatCount.put(info.getCell(), new Integer(flatCount));
+        elementsFlatCount.put(info.getCell(), Integer.valueOf(flatCount));
 
         // instances with no input are starters.
         // also, instances with no previous are local starters (their input is likely exported)
@@ -926,7 +926,7 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
         if (instanceElementPresent) {
             entName = info.getContext().getInstPath(".");
         }
-        int startercount = 0;
+//        int startercount = 0;
 
         // find the start instances
         for (Instance inst : instancesWithNoInput) {
@@ -964,7 +964,7 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
                 //        ", in="+inex+", out="+outex+", chain="+oldStart.chain);
 
                 starters.put((Starter)ent, (Starter)ent);
-                startercount++;
+//                startercount++;
 
                 //starters.remove(inst.e);
                 entity = "Starter";
@@ -1179,31 +1179,31 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
 //        return null;
 //    }
 
-    private void checkBadFanout(Instance prev, Instance next1, Instance next2) {
-        if (next1 == null || next2 == null) return;
-        if (prev == null) return;
-        // all non-null, issue error
-        System.out.println("Error! Chain branches from: "+prev.describeOutput());
-        System.out.println("       into: "+next1.describeInput());
-        System.out.println("       into: "+next2.describeInput());
-    }
+//    private void checkBadFanout(Instance prev, Instance next1, Instance next2) {
+//        if (next1 == null || next2 == null) return;
+//        if (prev == null) return;
+//        // all non-null, issue error
+//        System.out.println("Error! Chain branches from: "+prev.describeOutput());
+//        System.out.println("       into: "+next1.describeInput());
+//        System.out.println("       into: "+next2.describeInput());
+//    }
 
-    private void checkBadFanin(Instance prev1, Instance prev2, Instance next) {
-        if (prev1 == null || prev2 == null) return;
-        if (next == null) return;
-        // all non-null, issue error
-        System.out.println("Error! Chain merges into "+next.describeInput());
-        System.out.println("       from: "+prev1.describeOutput());
-        System.out.println("       from: "+prev2.describeOutput());
-    }
+//    private void checkBadFanin(Instance prev1, Instance prev2, Instance next) {
+//        if (prev1 == null || prev2 == null) return;
+//        if (next == null) return;
+//        // all non-null, issue error
+//        System.out.println("Error! Chain merges into "+next.describeInput());
+//        System.out.println("       from: "+prev1.describeOutput());
+//        System.out.println("       from: "+prev2.describeOutput());
+//    }
 
-    private HashMap<Nodable,String> jtagControllerNames = new HashMap<Nodable,String>();
-    private void setJtagControllerName(Nodable no, String name) {
-        jtagControllerNames.put(no, name);
-    }
-    private String getJtagControllerName(Nodable no) {
-        return jtagControllerNames.get(no);
-    }
+//    private HashMap<Nodable,String> jtagControllerNames = new HashMap<Nodable,String>();
+//    private void setJtagControllerName(Nodable no, String name) {
+//        jtagControllerNames.put(no, name);
+//    }
+//    private String getJtagControllerName(Nodable no) {
+//        return jtagControllerNames.get(no);
+//    }
 
     private void printFlatCount(Cell cell, int indent, Map<Cell,Cell> alreadyPrinted) {
         if (elementsFlatCount.get(cell) == null) return;
@@ -1259,7 +1259,7 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
             return getKey(cell, inport, hierInstanceName);
         }
         public String getInstanceName() { return hierInstanceName; }
-        public void setInstanceName(String name) { hierInstanceName = name; }
+//        public void setInstanceName(String name) { hierInstanceName = name; }
         public Cell getCell() { return cell; }
         public int compareTo(Object o) {
             TraceElement e = (TraceElement)o;
@@ -1347,10 +1347,10 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
          * writable, I for inverted. Should be encased in parenthesis, such as
          * (RW).
          */
-        public DataNet(String net, String options) {
-            this.net = net;
-            this.options = options;
-        }
+//        public DataNet(String net, String options) {
+//            this.net = net;
+//            this.options = options;
+//        }
 
         public String toString() { return net+options; }
         public String getName() { return net; }
@@ -1501,21 +1501,21 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
             }
             return realinstances;
         }
-        protected List<Instance> getFlatInstances() {
-            List<Instance> flatinstances = new ArrayList<Instance>();
-            for (Instance inst : instances) {
-                TraceElement e = inst.e;
-                if (e.isPassThrough()) continue;
-                if (e instanceof Entity) {
-                    Entity ent = (Entity)e;
-                    flatinstances.addAll(ent.getFlatInstances());
-                }
-                else {
-                    flatinstances.add(inst);
-                }
-            }
-            return flatinstances;
-        }
+//        protected List<Instance> getFlatInstances() {
+//            List<Instance> flatinstances = new ArrayList<Instance>();
+//            for (Instance inst : instances) {
+//                TraceElement e = inst.e;
+//                if (e.isPassThrough()) continue;
+//                if (e instanceof Entity) {
+//                    Entity ent = (Entity)e;
+//                    flatinstances.addAll(ent.getFlatInstances());
+//                }
+//                else {
+//                    flatinstances.add(inst);
+//                }
+//            }
+//            return flatinstances;
+//        }
         public List<VarContext> getContextsOfJtagInstances() {
             List<VarContext> contexts = new ArrayList<VarContext>();
             getContextsOfJtagInstances(contexts, VarContext.globalContext);
@@ -1594,13 +1594,13 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
             indent.setLength(indent.length() - 1);
             out.println(indent+"</chain>");
         }
-        public void writeData(PrintWriter out, StringBuffer indent, VarContext context, HashMap<String,String> dataNetMap) {
-            out.println(indent+"<chain name=\""+chain+"\" opcode=\""+Integer.toBinaryString(opcode)+"\">");
-            indent.append("\t");
-            writeDataNets(out, indent, context, dataNetMap);
-            indent.setLength(indent.length() - 1);
-            out.println(indent+"</chain>");
-        }
+//        public void writeData(PrintWriter out, StringBuffer indent, VarContext context, HashMap<String,String> dataNetMap) {
+//            out.println(indent+"<chain name=\""+chain+"\" opcode=\""+Integer.toBinaryString(opcode)+"\">");
+//            indent.append("\t");
+//            writeDataNets(out, indent, context, dataNetMap);
+//            indent.setLength(indent.length() - 1);
+//            out.println(indent+"</chain>");
+//        }
         public String getKey() {
             return getKey(getCell(), getOrigStarterInstanceName()+"_"+chain, getInstanceName());
         }
@@ -1772,7 +1772,7 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
             super(cell, inport, outport, passThrough, null);
             this.lengthIR = lengthIR;
         }
-        public int getLengthIR() { return lengthIR; }
+//        public int getLengthIR() { return lengthIR; }
     }
 
     private static class JtagInstance {
@@ -1805,7 +1805,7 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
         }
         public int getStart() { return start; }
         public int getEnd() { return end; }
-        public int getRange() { return Math.abs(end-start); }
+//        public int getRange() { return Math.abs(end-start); }
         /**
          * Return true if the order is ascending (start < end),
          * or false otherwise.
@@ -2052,20 +2052,20 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
         }
 
         /** Unit Test */
-        public static void main(String [] args) {
-            ArrayedName n1 = new ArrayedName("foo[1]");
-            ArrayedName n2 = new ArrayedName("foo[2]");
-            printTest(n1, n2, 0);
-            printTest(n1, n2, 1);
-
-            n1 = new ArrayedName("foo[1:2][5:4][1:2]");
-            n2 = new ArrayedName("foo[1:2][3:1][1:2]");
-            printTest(n1, n2, 1);
-            printTest(n1, n2, 2);
-        }
-        public static void printTest(ArrayedName n1, ArrayedName n2, int dim) {
-            System.out.println("Combining dimension "+dim+" of: "+n1+" and "+ n2+" --> "+n1.combineSequentialNumeric(n2, dim));
-        }
+//        public static void main(String [] args) {
+//            ArrayedName n1 = new ArrayedName("foo[1]");
+//            ArrayedName n2 = new ArrayedName("foo[2]");
+//            printTest(n1, n2, 0);
+//            printTest(n1, n2, 1);
+//
+//            n1 = new ArrayedName("foo[1:2][5:4][1:2]");
+//            n2 = new ArrayedName("foo[1:2][3:1][1:2]");
+//            printTest(n1, n2, 1);
+//            printTest(n1, n2, 2);
+//        }
+//        public static void printTest(ArrayedName n1, ArrayedName n2, int dim) {
+//            System.out.println("Combining dimension "+dim+" of: "+n1+" and "+ n2+" --> "+n1.combineSequentialNumeric(n2, dim));
+//        }
     }
 
     // Parses a string of the form: ArrayedName,ArrayedName,....ArrayedName.
@@ -2145,25 +2145,25 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
         }
 
         /** Unit Test */
-        public static void main(String [] args) {
-            ArrayedNameList n1 = new ArrayedNameList("foo[1],foo[2]");
-            ArrayedNameList n2 = new ArrayedNameList("foo[3],foo[4]");
-            printTest(n1, n2, 0);
-            printTest(n1, n2, 1);
-
-            n1 = new ArrayedNameList("foo[1,a],bar[2:4]");
-            n2 = new ArrayedNameList("bar[5],xxx[2]");
-            printTest(n1, n2, 0);
-            printTest(n1, n2, 1);
-
-            n1 = new ArrayedNameList("foo[1,a],bar[3:5][2:4]");
-            n2 = new ArrayedNameList("bar[6][2:4],xxx[2]");
-            printTest(n1, n2, 0);
-            printTest(n1, n2, 1);
-        }
-        public static void printTest(ArrayedNameList n1, ArrayedNameList n2, int dim) {
-            System.out.println("Combining dimension "+dim+" of: "+n1+" and "+ n2+" --> "+n1.combineSequentialNumeric(n2, dim));
-        }
+//        public static void main(String [] args) {
+//            ArrayedNameList n1 = new ArrayedNameList("foo[1],foo[2]");
+//            ArrayedNameList n2 = new ArrayedNameList("foo[3],foo[4]");
+//            printTest(n1, n2, 0);
+//            printTest(n1, n2, 1);
+//
+//            n1 = new ArrayedNameList("foo[1,a],bar[2:4]");
+//            n2 = new ArrayedNameList("bar[5],xxx[2]");
+//            printTest(n1, n2, 0);
+//            printTest(n1, n2, 1);
+//
+//            n1 = new ArrayedNameList("foo[1,a],bar[3:5][2:4]");
+//            n2 = new ArrayedNameList("bar[6][2:4],xxx[2]");
+//            printTest(n1, n2, 0);
+//            printTest(n1, n2, 1);
+//        }
+//        public static void printTest(ArrayedNameList n1, ArrayedNameList n2, int dim) {
+//            System.out.println("Combining dimension "+dim+" of: "+n1+" and "+ n2+" --> "+n1.combineSequentialNumeric(n2, dim));
+//        }
 
     }
 
@@ -2173,11 +2173,11 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
      * Optimize the specification of the entities and scan chain
      */
     private void optimize(List<Starter> chains) {
-        int done = 1;
+//        int done = 1;
         //while (done != 0) {
-            done = 0;
-            done += flatten(chains);
-            done += combineInstances();
+//            done = 0;
+            /* done += */ flatten(chains);
+            /* done += */ combineInstances();
         //}
     }
 
@@ -2213,44 +2213,44 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
     /**
      * A Port holds information about a single port, that may be part of a bussed portinst
      */
-    private static class Port {
-        private PortProto pp;
-        private int index;
-        private Name name;
-        private Nodable no;
+//    private static class Port {
+//        private PortProto pp;
+//        private int index;
+//        private Name name;
+//        private Nodable no;
+//
+//        private Port(Name name, Nodable no, PortProto pp, int index) {
+//            this.name = name;
+//            this.no = no;
+//            this.pp = pp;
+//            this.index = index;
+//        }
+//        public String toString() { if (name == null) return null; return no.getName() +":"+name.toString(); }
+////        public void print() {
+////            System.out.println("  Name: "+name);
+////            System.out.println("  No: "+no);
+////            System.out.println("  int: "+index);
+////            System.out.println("  pp: "+pp);
+////        }
+//    }
 
-        private Port(Name name, Nodable no, PortProto pp, int index) {
-            this.name = name;
-            this.no = no;
-            this.pp = pp;
-            this.index = index;
-        }
-        public String toString() { if (name == null) return null; return no.getName() +":"+name.toString(); }
-        public void print() {
-            System.out.println("  Name: "+name);
-            System.out.println("  No: "+no);
-            System.out.println("  int: "+index);
-            System.out.println("  pp: "+pp);
-        }
-    }
-
-    private static class ExPort {
-        private Export ex;
-        private int index;
-        private Name name;
-
-        private ExPort(Name name, Export ex, int index) {
-            this.name = name;
-            this.ex = ex;
-            this.index = index;
-        }
-        public String toString() { if (name == null) return null; return name.toString(); }
-        public void print() {
-            System.out.println("  Name: "+name);
-            System.out.println("  Ex: "+ex);
-            System.out.println("  int: "+index);
-        }
-    }
+//    private static class ExPort {
+//        private Export ex;
+//        private int index;
+//        private Name name;
+//
+//        private ExPort(Name name, Export ex, int index) {
+//            this.name = name;
+//            this.ex = ex;
+//            this.index = index;
+//        }
+//        public String toString() { if (name == null) return null; return name.toString(); }
+////        public void print() {
+////            System.out.println("  Name: "+name);
+////            System.out.println("  Ex: "+ex);
+////            System.out.println("  int: "+index);
+////        }
+//    }
 
 //    private ExPort getExportedPort(Port port) {
 //        if (port == null) return null;
@@ -2307,21 +2307,21 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
      * @param portName the port name including bus index, such as foo[1][2]
      * @return a Port, or null if none found
      */
-    private static Port getPort(Nodable no, String portName) {
-        if (portName == null) return null;
-        for (Iterator<PortProto> it = no.getProto().getPorts(); it.hasNext(); ) {
-            PortProto pp = it.next();
-            Name name = pp.getNameKey();
-            for (int i=0; i<name.busWidth(); i++) {
-                Name subname = name.subname(i);
-                if (subname.toString().equals(portName)) {
-                    return new Port(subname, no, pp, i);
-                }
-            }
-        }
-        System.out.println("Could not find "+portName+" on "+no.getName());
-        return null;
-    }
+//    private static Port getPort(Nodable no, String portName) {
+//        if (portName == null) return null;
+//        for (Iterator<PortProto> it = no.getProto().getPorts(); it.hasNext(); ) {
+//            PortProto pp = it.next();
+//            Name name = pp.getNameKey();
+//            for (int i=0; i<name.busWidth(); i++) {
+//                Name subname = name.subname(i);
+//                if (subname.toString().equals(portName)) {
+//                    return new Port(subname, no, pp, i);
+//                }
+//            }
+//        }
+//        System.out.println("Could not find "+portName+" on "+no.getName());
+//        return null;
+//    }
 
     /**
      * Get an export in a cell from a exportName. The export
@@ -2330,18 +2330,18 @@ public class ScanChainXML extends HierarchyEnumerator.Visitor {
      * @param exportName the export name
      * @return an ExPort
      */
-    private static ExPort getExPort(Cell cell, String exportName) {
-        for (Iterator<PortProto> it = cell.getPorts(); it.hasNext(); ) {
-            Export ex = (Export)it.next();
-            Name name = ex.getNameKey();
-            for (int i=0; i<name.busWidth(); i++) {
-                Name subname = name.subname(i);
-                if (subname.toString().equals(exportName)) {
-                    return new ExPort(subname, ex, i);
-                }
-            }
-        }
-        return null;
-    }
+//    private static ExPort getExPort(Cell cell, String exportName) {
+//        for (Iterator<PortProto> it = cell.getPorts(); it.hasNext(); ) {
+//            Export ex = (Export)it.next();
+//            Name name = ex.getNameKey();
+//            for (int i=0; i<name.busWidth(); i++) {
+//                Name subname = name.subname(i);
+//                if (subname.toString().equals(exportName)) {
+//                    return new ExPort(subname, ex, i);
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
 }

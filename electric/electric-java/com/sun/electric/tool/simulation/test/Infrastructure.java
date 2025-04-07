@@ -64,7 +64,7 @@ public class Infrastructure {
     public static int[] gpibControllers;
 
     /** Whether to output verbose diagnostics about scan chain operations */
-    private static boolean log = false;
+//    private static boolean log = false;
 
     /**
      * Default Vdd increment for Schmoo plots or other voltage sweeps, in mV
@@ -147,20 +147,6 @@ public class Infrastructure {
     }
 
     /**
-     * Display message <code>msg</code> on <code>stdout</code> when
-     * <code>log</code> is <tt>true</tt>
-     * 
-     * @param msg
-     *            message to print
-     * @deprecated
-     */
-    public static void log(String msg) {
-        if (log == true) {
-            System.out.println(msg);
-        }
-    }
-
-    /**
      * Returns next line from System.in
      * 
      * @return next line from System.in
@@ -230,17 +216,6 @@ public class Infrastructure {
 		buf.append(seconds + " secs");
 		return buf.toString();
 	}
-
-    /**
-     *
-     * Pause for the specified number of seconds
-     * 
-     * @param seconds number of seconds to wait
-     * @deprecated Replaced by ChipModel.wait()
-     */
-    public static void waitSeconds(float seconds) {
-        wait(seconds);
-    }
 
     protected static void wait(float seconds) {
         float milliSec = seconds * 1000;

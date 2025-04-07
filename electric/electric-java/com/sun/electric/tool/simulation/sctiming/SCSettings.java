@@ -471,7 +471,7 @@ public class SCSettings {
         library.putAttributeComplex("technology", "cmos");
         library.putAttribute("delay_model", "table_lookup");
         List<LibData.Value> attrList = new ArrayList<LibData.Value>();
-        attrList.add(new LibData.Value(LibData.ValueType.INT, new Integer(1)));
+        attrList.add(new LibData.Value(LibData.ValueType.INT, Integer.valueOf(1)));
         attrList.add(new LibData.Value(LibData.ValueType.STRING, getUnitScale(capUnit)+"f"));
         LibData.Head h = new LibData.Head("capacitive_load_unit", attrList);
         library.putAttribute(new LibData.Attribute("capacitive_load_unit", h));

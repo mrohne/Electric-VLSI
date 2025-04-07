@@ -57,6 +57,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -100,7 +101,7 @@ public class ACL2DesignJobs
             try
             {
                 ACL2Object.initHonsMananger(saoFile.getName());
-                DesignHints designHints = cls.newInstance();
+                DesignHints designHints = cls.getDeclaredConstructor().newInstance();
                 ACL2Reader sr = new ACL2Reader(saoFile);
                 DesignExt design = new DesignExt(sr.root, designHints);
                 GenFsmNew gen = new GenFsmNew(designHints);
@@ -131,7 +132,7 @@ public class ACL2DesignJobs
                         out.println("// clock=" + clockName);
                     }
                 }
-            } catch (InstantiationException | IllegalAccessException | IOException e)
+            } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
             {
                 return false;
             } finally
@@ -573,9 +574,9 @@ public class ACL2DesignJobs
             try
             {
                 ACL2Object.initHonsMananger(outFileName);
-                GenFsm gen = cls.newInstance();
+                GenFsm gen = cls.getDeclaredConstructor().newInstance();
                 gen.gen(saoFile, outFileName);
-            } catch (InstantiationException | IllegalAccessException | IOException e)
+            } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
             {
                 System.out.println(e.getMessage());
                 return false;
@@ -609,11 +610,11 @@ public class ACL2DesignJobs
             try
             {
                 ACL2Object.initHonsMananger(saoFile.getName());
-                DesignHints designHints = cls.newInstance();
+                DesignHints designHints = cls.getDeclaredConstructor().newInstance();
                 GenFsmNew gen = new GenFsmNew(designHints);
                 gen.scanLib(saoFile);
                 gen.showLibs();
-            } catch (InstantiationException | IllegalAccessException | IOException e)
+            } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
             {
                 System.out.println(e.getMessage());
                 return false;
@@ -656,7 +657,7 @@ public class ACL2DesignJobs
             try
             {
                 ACL2Object.initHonsMananger("Compare Svex Libs");
-                DesignHints designHints = cls.newInstance();
+                DesignHints designHints = cls.getDeclaredConstructor().newInstance();
                 GenFsmNew gen = new GenFsmNew(designHints);
                 Map<ModName, Module<Address>> modMap = new HashMap<>();
                 for (File saoFile : saoFiles)
@@ -687,7 +688,7 @@ public class ACL2DesignJobs
                     }
                 }
                 gen.showLibs();
-            } catch (InstantiationException | IllegalAccessException | IOException e)
+            } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
             {
                 System.out.println(e.getMessage());
                 return false;
@@ -1330,9 +1331,9 @@ public class ACL2DesignJobs
             "bbus"
         };
 
-        public Alu()
-        {
-        }
+//        public Alu()
+//        {
+//        }
 
         @Override
         protected boolean ignore_wire(WireExt w)

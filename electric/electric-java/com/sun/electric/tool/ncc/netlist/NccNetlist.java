@@ -374,7 +374,7 @@ class Visitor extends HierarchyEnumerator.Visitor {
 	                               NccCellInfo rootInfo) {
 		for (Iterator<ExportGlobal> it=rootInfo.getExportsAndGlobals(); it.hasNext();) {
 			ExportGlobal eg = it.next();
-			if (pattern.matches(eg.name)) netIDs.add(new Integer(eg.netID));			 								
+			if (pattern.matches(eg.name)) netIDs.add(Integer.valueOf(eg.netID));			 								
 		}
 	}
 	private void doExportsConnAnnot(TransitiveRelation<Integer> mergedNetIDs,

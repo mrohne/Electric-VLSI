@@ -39,7 +39,7 @@ public class ReportHashCodeFailure {
 	private List<EquivRecReport> badParts = new ArrayList<EquivRecReport>();
 	private List<EquivRecReport> badWires = new ArrayList<EquivRecReport>();
 	
-	private static void pr(String s) {System.out.print(s);}
+//	private static void pr(String s) {System.out.print(s);}
 	private static void prln(String s) {System.out.println(s);}
 
 //	private static class GetNotMatched extends Strategy {

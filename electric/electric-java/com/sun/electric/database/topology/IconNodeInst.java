@@ -44,7 +44,7 @@ public class IconNodeInst extends NodeInst {
     private IconNodable[] nodables;
 
     /**
-     * The constructor of IconNodeInst. Use the factory "newInstance" instead.
+     * The constructor of IconNodeInst. Use the factory "newInst" instead.
      * @param d persistent data of this IconNodeInst.
      * @param topology the Topology in which this IconNodeInst will reside.
      */
@@ -327,7 +327,7 @@ public class IconNodeInst extends NodeInst {
     @Override
     public Variable updateVar(Variable.Key key, Object value, EditingPreferences ep) {
         if (isParam(key)) {
-            Variable param = getParameter(key);
+            /* Variable param = */ getParameter(key);
             addParameter(getParameter(key).withObject(value));
             return getParameter(key);
         }
@@ -345,7 +345,7 @@ public class IconNodeInst extends NodeInst {
     @Override
     public Variable updateParam(Variable.Key key, Object value, EditingPreferences ep) {
         if (isParam(key)) {
-            Variable param = getParameter(key);
+            /* Variable param = */ getParameter(key);
             addParameter(getParameter(key).withObject(value));
             return getParameter(key);
         }
@@ -364,7 +364,7 @@ public class IconNodeInst extends NodeInst {
     @Override
     public Variable updateVarText(Variable.Key key, String text, EditingPreferences ep) {
         if (isParam(key)) {
-            Variable param = getParameter(key);
+            /* Variable param = */ getParameter(key);
             addParameter(getParameter(key).withText(text));
             return getParameter(key);
         }
@@ -382,7 +382,7 @@ public class IconNodeInst extends NodeInst {
     @Override
     public Variable updateVarCode(Variable.Key key, CodeExpression.Code code) {
         if (isParam(key)) {
-            Variable param = getParameter(key);
+            /* Variable param = */ getParameter(key);
             addParameter(getParameter(key).withCode(code));
             return getParameter(key);
         }

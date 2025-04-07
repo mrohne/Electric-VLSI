@@ -115,7 +115,7 @@ public class LayoutLib {
 //		if (lib!=null)  return lib;
 //
 //		// create a new Library
-//		lib = Library.newInstance(libName, libFileURL);
+//		lib = Library.newInst(libName, libFileURL);
 //
 //		error(lib==null, "can't open Library for modify: "+libName);
 //		return lib;
@@ -126,7 +126,7 @@ public class LayoutLib {
 		if (lib!=null)  return lib;
 
 		// create a new Library
-		lib = Library.newInstance(libName, null);
+		lib = Library.newInst(libName, null);
         URL libURL = TextUtils.makeURLToFile(libName);
         lib.setLibFile(libURL);
 		Job.error(lib==null, "can't open Library for modify: "+libName);
@@ -178,7 +178,7 @@ public class LayoutLib {
 		double h = np.getDefHeight(ep) - so.getLowYOffset() - so.getHighYOffset();
 		return DBMath.round(h);
 	}
-	private static void prln(String msg) {System.out.println(msg);}
+//	private static void prln(String msg) {System.out.println(msg);}
 	/**
 	 * Find the width of the widest wire connected hierarchically to port.
 	 *
@@ -289,7 +289,7 @@ public class LayoutLib {
 	 * coordinate space of the parent.
 	 * </ol>
 	 *
-	 * The newNodeInst method differs from NodeInst.newInstance in the
+	 * The newNodeInst method differs from NodeInst.newInst in the
 	 * following ways:
 	 *
 	 * <ul>
@@ -343,7 +343,7 @@ public class LayoutLib {
         double height = rect.getHeight();
 
         Orientation orient = Orientation.fromJava((int)Math.round(angle*10), width < 0, height < 0);
-		NodeInst ni = NodeInst.newInstance(np, ep, new Point2D.Double(x, y), Math.abs(width), Math.abs(height),
+		NodeInst ni = NodeInst.newInst(np, ep, new Point2D.Double(x, y), Math.abs(width), Math.abs(height),
                 parent, orient, null);
 		Job.error(ni==null, "newNodeInst failed");
 
@@ -436,7 +436,7 @@ public class LayoutLib {
 	}
 
 	/**
-	 * Create a new ArcInst. This differs from ArcInst.newInstance in that
+	 * Create a new ArcInst. This differs from ArcInst.newInst in that
 	 * the "width-offset" is added to the width parameter. The result is an
 	 * ArcInst that the GUI reports is width wide.
 	 * @param ap the ArcProto to instantiate
@@ -479,7 +479,7 @@ public class LayoutLib {
 	}
 
 	/**
-	 * Create a new ArcInst. This differs from ArcInst.newInstance in that
+	 * Create a new ArcInst. This differs from ArcInst.newInst in that
 	 * the "width-offset" is added to the width parameter. The result is an
 	 * ArcInst that the GUI reports is width wide.
 	 *
@@ -570,7 +570,7 @@ public class LayoutLib {
 		NodeInst ni = LayoutLib.newNodeInst(np, ep, x, y, defSz, defSz, 0, cell);
         LayoutLib.newArcInst(ap, ep, w, ni.getOnlyPortInst(), ni.getOnlyPortInst());
 
-		Export e = Export.newInstance(cell, ni.getOnlyPortInst(), name, ep);
+		Export e = Export.newInst(cell, ni.getOnlyPortInst(), name, ep);
 		e.setCharacteristic(role);
 		return e;
 	}

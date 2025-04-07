@@ -65,7 +65,7 @@ public class ParasiticTool extends Tool {
 
     /** The Parasitic Extraction tool */              private static ParasiticTool tool = new ParasiticTool();
 
-    private static ErrorLogger errorLogger = ErrorLogger.newInstance("Parasitics Extraction");;
+    private static ErrorLogger errorLogger = ErrorLogger.newInst("Parasitics Extraction");;
 
     private ParasiticTool() { super("parasitic");}
 

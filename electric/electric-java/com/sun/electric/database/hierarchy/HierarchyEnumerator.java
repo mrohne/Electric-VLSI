@@ -162,8 +162,8 @@ public final class HierarchyEnumerator {
     private Visitor visitor;
     private boolean caching;
     private int curNetId = 0;
-    private int cellCnt = 0; // For statistics
-    private int instCnt = 0; // For statistics
+//    private int cellCnt = 0; // For statistics
+//    private int instCnt = 0; // For statistics
     private Map<Integer, NetDescription> netIdToNetDesc =
             new HashMap<Integer, NetDescription>();
     private HashMap<Cell, int[]> cellExternalIds = new HashMap<Cell, int[]>();
@@ -307,7 +307,7 @@ public final class HierarchyEnumerator {
         int firstNetID = curNetId;
         int[] netNdxToNetID = numberNets(cell, netlist, portNdxToNetIDs, info);
         int lastNetIDPlusOne = curNetId;
-        cellCnt++;
+//        cellCnt++;
         info.init(parentInst, cell, context, netlist, netNdxToNetID,
                 portNdxToNetIDs, xformToRoot, netIdToNetDesc, parent);
 
@@ -347,7 +347,7 @@ public final class HierarchyEnumerator {
 
     private void visitThisNode(Nodable ni, VarContext context, Netlist netlist, CellInfo info,
             int[] netNdxToNetID, FixpTransform xformToRoot) {
-        instCnt++;
+//        instCnt++;
         boolean descend = visitor.visitNodeInst(ni, info);
         NodeProto np = ni.getProto();
         if (descend && ni.isCellInstance()) {
@@ -932,7 +932,7 @@ public final class HierarchyEnumerator {
 
     /** Experimental. Optionally caches results of variable evaluation. */
     public static void enumerateCell(Netlist rootNetlist, VarContext context, Visitor visitor, boolean caching) {
-        Netlist.ShortResistors shortResistors = rootNetlist.getShortResistors();
+//        Netlist.ShortResistors shortResistors = rootNetlist.getShortResistors();
         (new HierarchyEnumerator()).doIt(rootNetlist.getCell(), context, rootNetlist, visitor, caching, null);
     }
 

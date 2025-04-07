@@ -177,7 +177,7 @@ public abstract class TrackRouter {
 		parent = parnt;
 		layer = lay;
 		width = wid;
-		center = new Double(centerVal);
+		center = Double.valueOf(centerVal);
         endsExtend = true;
         this.tech = tech;
         this.ep = ep;

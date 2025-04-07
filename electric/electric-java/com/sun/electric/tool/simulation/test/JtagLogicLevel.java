@@ -44,24 +44,6 @@ public class JtagLogicLevel implements LogicSettable {
      * index values are <tt>0..1</tt> for {@link Netscan}&nbsp;and
      * {@link MockJtag}, and <tt>0..2</tt> for {@link Netscan4}.
      * 
-     * @param control
-     *            Control for JTAG tester in question
-     * @param index
-     *            Index of output on the TAP, 0..(N-1)
-     *
-     * @deprecated instead use {@link JtagLogicLevel#JtagLogicLevel(JtagTester, int)}
-     */
-    public JtagLogicLevel(ChainControl control, int index) {
-        this.jtag = control.getJtag();
-        this.index = index;
-    }
-
-    /**
-     * Creates a {@link LogicSettable}&nbsp;that controls a single parallel
-     * output or GPIO pin on the TAP connector for a JTAG tester port. Allowed
-     * index values are <tt>0..1</tt> for {@link Netscan}&nbsp;and
-     * {@link MockJtag}, and <tt>0..2</tt> for {@link Netscan4}.
-     * 
      * @param jtag
      *            JTAG tester in question
      * @param index
@@ -70,16 +52,6 @@ public class JtagLogicLevel implements LogicSettable {
     public JtagLogicLevel(JtagTester jtag, int index) {
         this.jtag = jtag;
         this.index = index;
-    }
-
-    /**
-     * For the love of god, don't use this constructor! Mountains may crumble,
-     * rivers may flood, fires may rage!
-     * 
-     * @deprecated
-     */
-    public JtagLogicLevel(ChainControl control, String chipPath, int index) {
-        this(control.getJtag(), index);
     }
 
     /**

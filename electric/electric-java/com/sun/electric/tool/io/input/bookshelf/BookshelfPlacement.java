@@ -51,43 +51,44 @@ public class BookshelfPlacement
 			File file = new File(plFile);
 			FileReader freader = new FileReader(file);
 			rin = new BufferedReader(freader);
+
+			// skip the first line
+			rin.readLine();
+
+			for(;;)
+			{
+				String line = rin.readLine();
+				if (line == null) break;
+				if (line.length() == 0) continue;
+				if (line.charAt(0) == '#') continue;
+
+				StringTokenizer tokenizer = new StringTokenizer(line, " ");
+				int i = 0;
+				String name = "";
+				double x = 0;
+				double y = 0;
+				while (tokenizer.hasMoreTokens())
+				{
+					if (i == 0) {
+						name = tokenizer.nextToken();
+					} else if (i == 1) {
+						x = TextUtils.atof(tokenizer.nextToken());
+					} else if (i == 2) {
+						y = TextUtils.atof(tokenizer.nextToken());
+					} else {
+						tokenizer.nextToken();
+					}
+					i++;
+				}
+				
+				BookshelfNode bn = BookshelfNode.findNode(name);
+				if (bn != null)
+					bn.setLocation(x, y);
+			}
+			rin.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("ERROR: Cannot find Bookshelf Placement file: " + plFile);
 			return;
-		}
-
-		// skip the first line
-		rin.readLine();
-
-		for(;;)
-		{
-			String line = rin.readLine();
-			if (line == null) break;
-			if (line.length() == 0) continue;
-			if (line.charAt(0) == '#') continue;
-
-			StringTokenizer tokenizer = new StringTokenizer(line, " ");
-			int i = 0;
-			String name = "";
-			double x = 0;
-			double y = 0;
-			while (tokenizer.hasMoreTokens())
-			{
-				if (i == 0) {
-					name = tokenizer.nextToken();
-				} else if (i == 1) {
-					x = TextUtils.atof(tokenizer.nextToken());
-				} else if (i == 2) {
-					y = TextUtils.atof(tokenizer.nextToken());
-				} else {
-					tokenizer.nextToken();
-				}
-				i++;
-			}
-			
-			BookshelfNode bn = BookshelfNode.findNode(name);
-			if (bn != null)
-				bn.setLocation(x, y);
 		}
 	}
 }

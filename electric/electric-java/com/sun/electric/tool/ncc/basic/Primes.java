@@ -31,7 +31,7 @@ public class Primes {
 	private static int trial = 3;
 	private static ArrayList<Integer> primes = new ArrayList<Integer>();
 	static {
-		primes.add(new Integer(2));
+		primes.add(Integer.valueOf(2));
 	}
 	private static void findNextPrime() {
 		while (true) {
@@ -42,7 +42,7 @@ public class Primes {
 				int q = trial / prime;
 				// Knuth. Fundamental Algorithms. pp 142
 				if (q<=prime) {
-					primes.add(new Integer(trial));
+					primes.add(Integer.valueOf(trial));
 					trial += 2;
 					return;
 				}

@@ -69,7 +69,7 @@ public class Stage {
 			} else {
 				int i = this.balancingCounter.get(worker).intValue();
 				i++;
-				this.balancingCounter.put(worker, new Integer(i));
+				this.balancingCounter.put(worker, Integer.valueOf(i));
 			}
 		}
 		return this.input;
@@ -117,25 +117,28 @@ public class Stage {
 		}
 	}
 
-	public void stop() {
-		int sum = 0;
-		for (StageWorker worker : this.layers) {
-			worker.shutdown();
-			if (this.balancingCounter.containsKey(worker)) {
-				sum += this.balancingCounter.get(worker).intValue();
+	public void stop()
+	{
+		if (GlobalVars.showBalancing)
+		{
+			int sum = 0;
+			for (StageWorker worker : this.layers)
+			{
+				worker.shutdown();
+				if (this.balancingCounter.containsKey(worker))
+					sum += this.balancingCounter.get(worker).intValue();
 			}
-		}
-
-		if (GlobalVars.showBalancing) {
-			for (StageWorker worker : this.layers) {
-				if (this.balancingCounter.containsKey(worker)) {
+			for (StageWorker worker : this.layers)
+			{
+				if (this.balancingCounter.containsKey(worker))
+				{
 					double value = (double) this.balancingCounter.get(worker).intValue() / (double) sum;
 					System.out.println(worker.toString() + ": " + value);
-				} else {
-					System.out.println(worker.toString() + ": 0");
-				}
+				} else System.out.println(worker.toString() + ": 0");
 			}
+		} else
+		{
+			for (StageWorker worker : this.layers) worker.shutdown();
 		}
-
 	}
 }

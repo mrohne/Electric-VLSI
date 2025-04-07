@@ -48,7 +48,7 @@ import com.sun.electric.database.topology.PortInst;
  */
 public class StackedViasAmountMetric extends RoutingMetric<Integer> {
 
-	private static Logger logger = LoggerFactory.getLogger(StackedViasAmountMetric.class);
+//	private static Logger logger = LoggerFactory.getLogger(StackedViasAmountMetric.class);
 
 	/*
 	 * (non-Javadoc)

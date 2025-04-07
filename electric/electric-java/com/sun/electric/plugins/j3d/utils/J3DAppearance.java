@@ -24,12 +24,19 @@
 package com.sun.electric.plugins.j3d.utils;
 
 import com.sun.electric.database.geometry.EGraphics;
-
 import com.sun.electric.technology.Layer;
 import com.sun.electric.tool.user.User;
+
 import java.awt.Color;
-import javax.media.j3d.*;
-import javax.vecmath.Color3f;
+
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.ColoringAttributes;
+import org.jogamp.java3d.LineAttributes;
+import org.jogamp.java3d.Material;
+import org.jogamp.java3d.PolygonAttributes;
+import org.jogamp.java3d.RenderingAttributes;
+import org.jogamp.java3d.TransparencyAttributes;
+import org.jogamp.vecmath.Color3f;
 
 /**
  * Support class for 3D viewing.
@@ -155,7 +162,8 @@ public class J3DAppearance extends Appearance
 //				Material mat = new Material(objColor, black, objColor, white, 70.0f);
         if (color != null)
         {
-            Color3f objColor = new Color3f(color);
+            Color3f objColor = J3DUtils.makeColor3f(color);
+            
             // Emissive is black and specular is plastic!
             //Color3f specular = new Color3f(color.brighter());
             Material mat = new Material(objColor, J3DUtils.black, objColor, J3DUtils.plastic/*J3DUtils.white*/, 17);
@@ -244,7 +252,7 @@ public class J3DAppearance extends Appearance
     {
         Material mat = (material == null) ? getMaterial() : (Material)material;
 
-        Color3f objColor = new Color3f(color);
+        Color3f objColor = J3DUtils.makeColor3f(color);
         mat.setDiffuseColor(objColor);
         //mat.setSpecularColor(objColor);
         mat.setAmbientColor(objColor);
@@ -278,7 +286,7 @@ public class J3DAppearance extends Appearance
                 lineAttributes.setLineWidth(3.0f);
 
                 ColoringAttributes colorAttrib = new ColoringAttributes();
-                colorAttrib.setColor(new Color3f(userColor));
+                colorAttrib.setColor(J3DUtils.makeColor3f(userColor));
                 colorAttrib.setCapability(ColoringAttributes.ALLOW_COLOR_READ);
                 colorAttrib.setCapability(ColoringAttributes.ALLOW_COLOR_WRITE);
                 axisApps[i].setColoringAttributes(colorAttrib);
@@ -314,12 +322,11 @@ public class J3DAppearance extends Appearance
 
     /**
      * Method to access appearance for cells in 3D
-     * @param initValue no null if appearance has to be changed according to user value. Using
-     * this mechanism to avoid the creation of new Boolean() just for the checking
+     * @param initValue no null if appearance has to be changed according to user value.
      */
     public static void setCellAppearanceValues(Object initValue)
     {
-        Color3f userColor = new Color3f(new Color(User.getColor(User.ColorPrefType.INSTANCE_3D)));
+        Color3f userColor = J3DUtils.makeColor3f(User.ColorPrefType.INSTANCE_3D.getFactoryDefaultColor());
 
         if (cellApp == null)
         {

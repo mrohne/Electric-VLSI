@@ -72,7 +72,7 @@ public class Dummy extends Technology
             // Dummy NodeLayer to check visibility.
             new Technology.NodeLayer(lMetal1, 0, Poly.Type.FILLED, Technology.NodeLayer.BOX, new Technology.TechPoint[0])
         };
-        BigBlueNode pnp = new BigBlueNode(fullRectangle, baseRectangle, nodeLayers);
+        /* BigBlueNode pnp = */ new BigBlueNode(fullRectangle, baseRectangle, nodeLayers);
     }
 
     private class BigBlueNode extends PrimitiveNode

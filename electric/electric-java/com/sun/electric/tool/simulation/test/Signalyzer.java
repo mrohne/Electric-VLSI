@@ -63,8 +63,10 @@ public class Signalyzer extends NetscanGeneric /* even though it's not a NetScan
     public Signalyzer(int irLen) {
         try {
             PipedOutputStream pos = new PipedOutputStream();
-            br = new BufferedReader(new InputStreamReader(new PipedInputStream(pos)));
-            urjtag = new ExecProcess("jtag -q", new String[0], new File("."),
+            InputStreamReader isr = new InputStreamReader(new PipedInputStream(pos));
+            br = new BufferedReader(isr);
+            String[] command = new String[] {"jtag", "-q"};
+            urjtag = new ExecProcess(command, new String[0], new File("."),
                                      pos,
                                      new FileOutputStream("urjtag.err"));
             urjtag.setDaemon(true);
@@ -80,6 +82,7 @@ public class Signalyzer extends NetscanGeneric /* even though it's not a NetScan
             
             logicOutput = new LogicSettableArray(1);
             setLogicOutput(0, true);
+            br.close();
         } catch (Exception e) { throw new RuntimeException(e); }
     }
 

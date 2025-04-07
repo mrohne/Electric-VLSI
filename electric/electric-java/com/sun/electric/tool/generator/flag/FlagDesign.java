@@ -165,16 +165,16 @@ public class FlagDesign {
 //	}
 	
 	
-	private void fattenVerticalM3(Map<Double, PortInst> bot,
-			                      Map<Double, PortInst> top) {
-		for (Double x : bot.keySet()) {
-			PortInst piBot = bot.get(x);
-			PortInst piTop = top.get(x);
-			if (piTop==null) continue;
-			LayoutLib.newArcInst(tech().m3(), getEditingPreferences(), config.m3PwrGndWid, 
-		                         piBot, piTop);
-		}
-	}
+//	private void fattenVerticalM3(Map<Double, PortInst> bot,
+//			                      Map<Double, PortInst> top) {
+//		for (Double x : bot.keySet()) {
+//			PortInst piBot = bot.get(x);
+//			PortInst piTop = top.get(x);
+//			if (piTop==null) continue;
+//			LayoutLib.newArcInst(tech().m3(), getEditingPreferences(), config.m3PwrGndWid, 
+//		                         piBot, piTop);
+//		}
+//	}
 	
 	// Hack until I get a chance to fatten based upon need.
 //	private void fattenPwrGnd(List<NodeInst> stages) {
@@ -215,20 +215,19 @@ public class FlagDesign {
 	
 	
 	
-	private void reExportIfPortNameMatches(List<String> expNms,
-			                               List<PortInst> ports) {
-		if (ports.isEmpty()) return;
-		Cell parent = ports.get(0).getNodeInst().getParent();
-		for (Iterator<String> sIt=expNms.iterator(); sIt.hasNext();) {
-			String nm = sIt.next();
-			if (parent.findExport(nm)!=null) {
-				sIt.remove();
-			} else {
-				
-			}
-		}
-		
-	}
+//	private void reExportIfPortNameMatches(List<String> expNms,
+//			                               List<PortInst> ports) {
+//		if (ports.isEmpty()) return;
+//		Cell parent = ports.get(0).getNodeInst().getParent();
+//		for (Iterator<String> sIt=expNms.iterator(); sIt.hasNext();) {
+//			String nm = sIt.next();
+//			if (parent.findExport(nm)!=null) {
+//				sIt.remove();
+//			} else {
+//				
+//			}
+//		}
+//	}
 	/** If PortInst name matches Export name then export PortInst and
 	 * remove PortInst and export name from respective lists. */
 	private void exportPortInstsWithMatchingNames(List<String> expNames,
@@ -239,7 +238,7 @@ public class FlagDesign {
 				PortInst pi = pIt.next();
 				String portNm = pi.getPortProto().getName();
 				if (expNm.equals(portNm)) {
-					Export.newInstance(pi.getNodeInst().getParent(), 
+					Export.newInst(pi.getNodeInst().getParent(), 
 					                   pi, expNm, getEditingPreferences());
 					sIt.remove();
 					pIt.remove();
@@ -258,7 +257,7 @@ public class FlagDesign {
 				continue;
 			}
 			PortInst pi = ports.get(i);
-			Export.newInstance(pi.getNodeInst().getParent(), 
+			Export.newInst(pi.getNodeInst().getParent(), 
 	                           pi, expNm, getEditingPreferences());
 		}
 	}
@@ -386,177 +385,177 @@ public class FlagDesign {
 //	}
 	// infinityC needs its 2nd and 3rd stages overlapped. Same with the 
 	// two stages next to the last stage.
-	private void overlapInfinityC(List<NodeInst> layInsts) {
-		NodeInst dataFan = layInsts.get(1);
-		if (!dataFan.getParent().getName().contains("infinityC"))
-			return;
-
-		double h = dataFan.findEssentialBounds().getHeight();
-		for (int i=2; i<layInsts.size(); i++) {
-			NodeInst ni = layInsts.get(i);
-			ni.move(0, -h);
-		}
-		if (true) {
-			for (int i=layInsts.size()-2; i<layInsts.size(); i++) {
-				NodeInst ni = layInsts.get(i);
-				ni.move(0, -h);
-			}
-		}
-	}
+//	private void overlapInfinityC(List<NodeInst> layInsts) {
+//		NodeInst dataFan = layInsts.get(1);
+//		if (!dataFan.getParent().getName().contains("infinityC"))
+//			return;
+//
+//		double h = dataFan.findEssentialBounds().getHeight();
+//		for (int i=2; i<layInsts.size(); i++) {
+//			NodeInst ni = layInsts.get(i);
+//			ni.move(0, -h);
+//		}
+//		if (true) {
+//			for (int i=layInsts.size()-2; i<layInsts.size(); i++) {
+//				NodeInst ni = layInsts.get(i);
+//				ni.move(0, -h);
+//			}
+//		}
+//	}
 	// infinityC needs stages stacked top to bottom. Furthermore,
 	// all stages except for the first three and last three need to be
 	// mirrored top <=> bottom 
-	private void flipInfinityC(List<NodeInst> layInsts) {
-		NodeInst dataFan = layInsts.get(1);
-		if (!dataFan.getParent().getName().contains("infinityC"))
-			return;
-		Collections.reverse(layInsts);
-		int end =  3;
-		for (int i=3; i<layInsts.size()-end; i++) {
-			NodeInst ni = layInsts.get(i);
-			ni.modifyInstance(0, 0, 0, 0, Orientation.Y);
-		}
-	}
+//	private void flipInfinityC(List<NodeInst> layInsts) {
+//		NodeInst dataFan = layInsts.get(1);
+//		if (!dataFan.getParent().getName().contains("infinityC"))
+//			return;
+//		Collections.reverse(layInsts);
+//		int end =  3;
+//		for (int i=3; i<layInsts.size()-end; i++) {
+//			NodeInst ni = layInsts.get(i);
+//			ni.modifyInstance(0, 0, 0, 0, Orientation.Y);
+//		}
+//	}
 	
 	// infinityC needs scan stitched bottom to top
-	private void reverseScanListInfinityC(List<NodeInst> scanList) {
-		NodeInst first = scanList.get(1);
-		if (!first.getParent().getName().contains("infinityC"))
-			return;
-		Collections.reverse(scanList);
-	}
+//	private void reverseScanListInfinityC(List<NodeInst> scanList) {
+//		NodeInst first = scanList.get(1);
+//		if (!first.getParent().getName().contains("infinityC"))
+//			return;
+//		Collections.reverse(scanList);
+//	}
 	
-	private NodeInst findInst(String type, List<NodeInst> insts) {
-		for (NodeInst ni : insts) {
-			String t = ni.getProto().getName();
-			if (t.equals(type)) return ni;
-		}
-		return null;
-	}
+//	private NodeInst findInst(String type, List<NodeInst> insts) {
+//		for (NodeInst ni : insts) {
+//			String t = ni.getProto().getName();
+//			if (t.equals(type)) return ni;
+//		}
+//		return null;
+//	}
 	
-	private void doInfinity(Cell autoLay, Cell schCell, EditingPreferences ep) {
-        Library autoLib = autoLay.getLibrary();
-        List<Library> primLibs = new ArrayList<Library>();
-        primLibs.add(autoLib);
-        SchematicVisitor visitor = new SchematicVisitor(autoLay, ep);
-        HierarchyEnumerator.enumerateCell(schCell, VarContext.globalContext, visitor);
-
-        List<NodeInst> layInsts = visitor.getLayInsts();
-        
-		NodeInst niA = findInst("infinityA", layInsts);
-		NodeInst niB = findInst("infinityB", layInsts);
-		NodeInst niC = findInst("infinityC", layInsts);
-		
-		double colWid = niA.findEssentialBounds().getWidth();
-		double numFillCellsAcross = Math.ceil(colWid/config.fillCellWidth);
-		double columnPitch = config.fillCellWidth * numFillCellsAcross;
-		double spaceBetweenCols = config.fillCellWidth + columnPitch - colWid;
-		
-		LayoutLib.alignCorners(niC, Corner.TL, niA, Corner.TR, -spaceBetweenCols, 0);
-		LayoutLib.alignCorners(niC, Corner.BR, niB, Corner.BL, spaceBetweenCols, 0);
-		List<ArcProto> horizLayers = new ArrayList<ArcProto>();
-		horizLayers.add(tech().m2());
-		horizLayers.add(tech().m4());
-		AbutRouter.abutRouteLeftRight(niA, niC, 0, horizLayers, ep);
-		AbutRouter.abutRouteLeftRight(niC, niB, 0, horizLayers, ep);
-
-//        Rectangle2D bounds = findColBounds(layInsts);
-//        addEssentialBounds(layInsts, bounds);
-		addEssentialBounds(autoLay);
-        ExportNamer vddNm = new ExportNamer("vdd");
-        ExportNamer gndNm = new ExportNamer("gnd");
-        //exportPwrGnd(autoLay, vddNm, gndNm);
-        exportPwrGnd(layInsts,  vddNm, gndNm);
-
-        List<ToConnect> toConns = visitor.getLayoutToConnects();
-        reExport(autoLay, toConns);
-	}
-	private void doGuts(Cell autoLay, Cell schCell, EditingPreferences ep) {
-        Library autoLib = autoLay.getLibrary();
-        List<Library> primLibs = new ArrayList<Library>();
-        primLibs.add(autoLib);
-        SchematicVisitor visitor = new SchematicVisitor(autoLay, ep);
-        HierarchyEnumerator.enumerateCell(schCell, VarContext.globalContext, visitor);
-
-        List<NodeInst> layInsts = visitor.getLayInsts();
-        
-		NodeInst niI = findInst("infinity", layInsts);
-		NodeInst niC = findInst("crosser", layInsts);
-		NodeInst niR = findInst("ring", layInsts);
-		
-		double colWid = niR.findEssentialBounds().getWidth();
-		double numFillCellsAcross = Math.ceil(colWid/config.fillCellWidth);
-		double columnPitch = config.fillCellWidth * numFillCellsAcross;
-		double spaceBetweenCols = columnPitch - colWid;
-
-		LayoutLib.alignCorners(niI, Corner.BR, niC, Corner.BL, spaceBetweenCols, (670-2));
-		LayoutLib.alignCorners(niC, Corner.TL, niR, Corner.BL, 0, 0);
-		
-		List<ArcProto> horizLayers = new ArrayList<ArcProto>();
-		horizLayers.add(tech().m2());
-		horizLayers.add(tech().m4());
-
-		AbutRouter.abutRouteLeftRight(niI, niC, 0, horizLayers, ep);
-		AbutRouter.abutRouteLeftRight(niI, niR, 0, horizLayers, ep);
-	}
+//	private void doInfinity(Cell autoLay, Cell schCell, EditingPreferences ep) {
+//        Library autoLib = autoLay.getLibrary();
+//        List<Library> primLibs = new ArrayList<Library>();
+//        primLibs.add(autoLib);
+//        SchematicVisitor visitor = new SchematicVisitor(autoLay, ep);
+//        HierarchyEnumerator.enumerateCell(schCell, VarContext.globalContext, visitor);
+//
+//        List<NodeInst> layInsts = visitor.getLayInsts();
+//        
+//		NodeInst niA = findInst("infinityA", layInsts);
+//		NodeInst niB = findInst("infinityB", layInsts);
+//		NodeInst niC = findInst("infinityC", layInsts);
+//		
+//		double colWid = niA.findEssentialBounds().getWidth();
+//		double numFillCellsAcross = Math.ceil(colWid/config.fillCellWidth);
+//		double columnPitch = config.fillCellWidth * numFillCellsAcross;
+//		double spaceBetweenCols = config.fillCellWidth + columnPitch - colWid;
+//		
+//		LayoutLib.alignCorners(niC, Corner.TL, niA, Corner.TR, -spaceBetweenCols, 0);
+//		LayoutLib.alignCorners(niC, Corner.BR, niB, Corner.BL, spaceBetweenCols, 0);
+//		List<ArcProto> horizLayers = new ArrayList<ArcProto>();
+//		horizLayers.add(tech().m2());
+//		horizLayers.add(tech().m4());
+//		AbutRouter.abutRouteLeftRight(niA, niC, 0, horizLayers, ep);
+//		AbutRouter.abutRouteLeftRight(niC, niB, 0, horizLayers, ep);
+//
+////        Rectangle2D bounds = findColBounds(layInsts);
+////        addEssentialBounds(layInsts, bounds);
+//		addEssentialBounds(autoLay);
+//        ExportNamer vddNm = new ExportNamer("vdd");
+//        ExportNamer gndNm = new ExportNamer("gnd");
+//        //exportPwrGnd(autoLay, vddNm, gndNm);
+//        exportPwrGnd(layInsts,  vddNm, gndNm);
+//
+//        List<ToConnect> toConns = visitor.getLayoutToConnects();
+//        reExport(autoLay, toConns);
+//	}
+//	private void doGuts(Cell autoLay, Cell schCell, EditingPreferences ep) {
+//        Library autoLib = autoLay.getLibrary();
+//        List<Library> primLibs = new ArrayList<Library>();
+//        primLibs.add(autoLib);
+//        SchematicVisitor visitor = new SchematicVisitor(autoLay, ep);
+//        HierarchyEnumerator.enumerateCell(schCell, VarContext.globalContext, visitor);
+//
+//        List<NodeInst> layInsts = visitor.getLayInsts();
+//        
+//		NodeInst niI = findInst("infinity", layInsts);
+//		NodeInst niC = findInst("crosser", layInsts);
+//		NodeInst niR = findInst("ring", layInsts);
+//		
+//		double colWid = niR.findEssentialBounds().getWidth();
+//		double numFillCellsAcross = Math.ceil(colWid/config.fillCellWidth);
+//		double columnPitch = config.fillCellWidth * numFillCellsAcross;
+//		double spaceBetweenCols = columnPitch - colWid;
+//
+//		LayoutLib.alignCorners(niI, Corner.BR, niC, Corner.BL, spaceBetweenCols, (670-2));
+//		LayoutLib.alignCorners(niC, Corner.TL, niR, Corner.BL, 0, 0);
+//		
+//		List<ArcProto> horizLayers = new ArrayList<ArcProto>();
+//		horizLayers.add(tech().m2());
+//		horizLayers.add(tech().m4());
+//
+//		AbutRouter.abutRouteLeftRight(niI, niC, 0, horizLayers, ep);
+//		AbutRouter.abutRouteLeftRight(niI, niR, 0, horizLayers, ep);
+//	}
 	
-	private boolean portOnLayer(PortInst pi, List<ArcProto> layers) {
-		for (ArcProto ap : layers) {
-			if (pi.getPortProto().connectsTo(ap)) return true;
-		}
-		return false;
-	}
-	private void exportPwrGnd(List<NodeInst> stages, 
-			                  ExportNamer vdd, ExportNamer gnd) {
-		Rectangle2D colBounds = Utils.findBounds(stages.get(0).getParent());
-		List<ArcProto> vertLayers = new ArrayList<ArcProto>();
-		vertLayers.add(tech().m3());
-		List<ArcProto> horiLayers = new ArrayList<ArcProto>();
-		horiLayers.add(tech().m2());
-		for (NodeInst ni : stages) {
-			 for (Iterator piIt=ni.getPortInsts(); piIt.hasNext();) {
-				 PortInst pi = (PortInst) piIt.next();
-				 if (Utils.isPwrGnd(pi)) {
-					 if ((Utils.onTopOrBottom(pi, colBounds, 0) && 
-					      portOnLayer(pi, vertLayers)) ||
-						 (Utils.onLeftOrRight(pi, colBounds, 0) && 
-						  portOnLayer(pi, horiLayers))) {
-						 Cell parent = pi.getNodeInst().getParent();
-						 String exptNm;
-						 if (Utils.isPwr(pi)) {
-							 exptNm = vdd.nextName();
-						 } else {
-							 exptNm = gnd.nextName();
-						 }
-						 Export.newInstance(parent, pi, exptNm, getEditingPreferences());
-					 }
-				 }
-			 }
-		}
-	}
+//	private boolean portOnLayer(PortInst pi, List<ArcProto> layers) {
+//		for (ArcProto ap : layers) {
+//			if (pi.getPortProto().connectsTo(ap)) return true;
+//		}
+//		return false;
+//	}
+//	private void exportPwrGnd(List<NodeInst> stages, 
+//			                  ExportNamer vdd, ExportNamer gnd) {
+//		Rectangle2D colBounds = Utils.findBounds(stages.get(0).getParent());
+//		List<ArcProto> vertLayers = new ArrayList<ArcProto>();
+//		vertLayers.add(tech().m3());
+//		List<ArcProto> horiLayers = new ArrayList<ArcProto>();
+//		horiLayers.add(tech().m2());
+//		for (NodeInst ni : stages) {
+//			 for (Iterator piIt=ni.getPortInsts(); piIt.hasNext();) {
+//				 PortInst pi = (PortInst) piIt.next();
+//				 if (Utils.isPwrGnd(pi)) {
+//					 if ((Utils.onTopOrBottom(pi, colBounds, 0) && 
+//					      portOnLayer(pi, vertLayers)) ||
+//						 (Utils.onLeftOrRight(pi, colBounds, 0) && 
+//						  portOnLayer(pi, horiLayers))) {
+//						 Cell parent = pi.getNodeInst().getParent();
+//						 String exptNm;
+//						 if (Utils.isPwr(pi)) {
+//							 exptNm = vdd.nextName();
+//						 } else {
+//							 exptNm = gnd.nextName();
+//						 }
+//						 Export.newInst(parent, pi, exptNm, getEditingPreferences());
+//					 }
+//				 }
+//			 }
+//		}
+//	}
 	
 	// Re-export all PortInsts of all NodeInsts that have the power or ground
 	// characteristic that aren't connected to arcs.
-	private void exportPwrGnd(Cell c, ExportNamer vdd, ExportNamer gnd) {
-        EditingPreferences ep = getEditingPreferences();
-		for (Iterator<NodeInst> niIt=c.getNodes(); niIt.hasNext();) {
-			NodeInst ni = niIt.next();
-			if (!(ni.getProto() instanceof Cell)) continue;
-			for (Iterator<PortInst> piIt=ni.getPortInsts(); piIt.hasNext();) {
-				PortInst pi = piIt.next();
-				if (!Utils.isPwrGnd(pi)) continue;
-				if (pi.hasConnections()) continue;
-				Export e;
-				if (Utils.isPwr(pi)) {
-					e = Export.newInstance(c, pi, vdd.nextName(), ep);
-					e.setCharacteristic(PortCharacteristic.PWR);
-				} else {
-					e = Export.newInstance(c, pi, gnd.nextName(), ep);
-					e.setCharacteristic(PortCharacteristic.GND);
-				}
-			}
-		}
-	}
+//	private void exportPwrGnd(Cell c, ExportNamer vdd, ExportNamer gnd) {
+//        EditingPreferences ep = getEditingPreferences();
+//		for (Iterator<NodeInst> niIt=c.getNodes(); niIt.hasNext();) {
+//			NodeInst ni = niIt.next();
+//			if (!(ni.getProto() instanceof Cell)) continue;
+//			for (Iterator<PortInst> piIt=ni.getPortInsts(); piIt.hasNext();) {
+//				PortInst pi = piIt.next();
+//				if (!Utils.isPwrGnd(pi)) continue;
+//				if (pi.hasConnections()) continue;
+//				Export e;
+//				if (Utils.isPwr(pi)) {
+//					e = Export.newInst(c, pi, vdd.nextName(), ep);
+//					e.setCharacteristic(PortCharacteristic.PWR);
+//				} else {
+//					e = Export.newInst(c, pi, gnd.nextName(), ep);
+//					e.setCharacteristic(PortCharacteristic.GND);
+//				}
+//			}
+//		}
+//	}
 	
 	
 //	private void doInfinityABC(Cell autoLay, Cell schCell) {
@@ -697,7 +696,7 @@ public class FlagDesign {
 		for (Iterator<NodeInst> it = c.getNodes(); it.hasNext(); ) {
 			allNodes.add(it.next());
 		}
-		int num = ExportChanges.reExportNodes(c, allNodes, false, true, true, true, true, ep);
+		/* int num = */ ExportChanges.reExportNodes(c, allNodes, false, true, true, true, true, ep);
 	}
 	protected void reexportSignals(LayoutNetlist layNets) {
 		Cell layCell = layNets.getLayoutCell();

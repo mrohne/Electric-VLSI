@@ -155,7 +155,7 @@ public abstract class Part extends NetObject implements PartReportable {
 			Wire w = pins[i];
             sum += w.getCode() * codes[i];
         }
-        return new Integer(sum);
+        return Integer.valueOf(sum);
     }
 
 	/**  The Part must compute a hash code contribution for a Wire to

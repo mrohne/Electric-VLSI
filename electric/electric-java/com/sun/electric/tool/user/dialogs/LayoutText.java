@@ -526,7 +526,7 @@ public class LayoutText extends EDialog
 				{
 					if (samples[samp++] == 0 != invertDots) continue;
 					Point2D center = new Point2D.Double(x*lastScale, -(y+yOffset)*lastScale);
-					NodeInst.newInstance(primNode, ep, center, width, height, curCell);
+					NodeInst.newInst(primNode, ep, center, width, height, curCell);
 				}
 			}
 			return true;

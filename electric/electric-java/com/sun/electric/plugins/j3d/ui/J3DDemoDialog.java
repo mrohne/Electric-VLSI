@@ -21,24 +21,29 @@
  */
 package com.sun.electric.plugins.j3d.ui;
 
-import com.sun.electric.tool.user.ui.WindowFrame;
-import com.sun.electric.tool.user.ui.WindowContent;
+import com.sun.electric.plugins.j3d.View3DWindow;
+import com.sun.electric.plugins.j3d.utils.J3DSerialization;
+import com.sun.electric.plugins.j3d.utils.J3DUtils;
+import com.sun.electric.tool.io.FileType;
 import com.sun.electric.tool.user.dialogs.EDialog;
 import com.sun.electric.tool.user.dialogs.OpenFile;
-import com.sun.electric.tool.io.FileType;
+import com.sun.electric.tool.user.ui.WindowContent;
+import com.sun.electric.tool.user.ui.WindowFrame;
 import com.sun.electric.util.TextUtils;
-import com.sun.electric.plugins.j3d.View3DWindow;
-import com.sun.electric.plugins.j3d.utils.J3DUtils;
-import com.sun.electric.plugins.j3d.utils.J3DSerialization;
 
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.TransformGroup;
-import javax.media.j3d.BranchGroup;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
 
 /**
  * Class to handle the "3D View Demo Dialog" dialog.
@@ -249,14 +254,15 @@ public class J3DDemoDialog extends EDialog
         String fileName = OpenFile.chooseOutputFile(FileType.J3D, "Save 3D Demo File", "demo.j3d");
         if (fileName == null || knots == null) return;
 
+        ObjectOutputStream out;
         try
         {
             Transform3D tmpTrans = new Transform3D();
             FileOutputStream outputStream = new FileOutputStream(fileName);
-            ObjectOutputStream out = new ObjectOutputStream(outputStream);
+            out = new ObjectOutputStream(outputStream);
             view3D.getObjTransform(tmpTrans);
             boolean useViewplatform = ((String)demoMode.getSelectedItem()).equals("Viewplatform");
-            J3DSerialization serial = new J3DSerialization(new Boolean(useViewplatform), knots, tmpTrans);
+            J3DSerialization serial = new J3DSerialization(Boolean.valueOf(useViewplatform), knots, tmpTrans);
             out.writeObject(serial);
         }
         catch (Exception e)

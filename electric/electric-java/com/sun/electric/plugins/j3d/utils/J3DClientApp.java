@@ -59,9 +59,10 @@ public class J3DClientApp extends Job
 
     public boolean doIt() throws JobException
     {
+    	DatagramSocket socket;
         try
         {
-            DatagramSocket socket = new DatagramSocket();
+            socket = new DatagramSocket();
             InetAddress address = InetAddress.getByName(hostname);
             //address = InetAddress.getLocalHost();
             String localHost = address.getHostName();

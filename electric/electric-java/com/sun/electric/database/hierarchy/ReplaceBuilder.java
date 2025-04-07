@@ -335,7 +335,7 @@ public class ReplaceBuilder
 //                newTechBits = oldTechPool.getPrimitiveNode((PrimitiveNodeId)newProtoId).getPrimitiveFunctionBits(r.newFunction);
 //            }
             ImmutableNodeInst newN = r.newImmutableInst(oldSnapshot, ep).withName(newName);
-//            ImmutableNodeInst newN = ImmutableNodeInst.newInstance(
+//            ImmutableNodeInst newN = ImmutableNodeInst.newInst(
 //                n.nodeId, r.newProtoId,
 //                newName, n.nameDescriptor,
 //                n.orient, n.anchor, newSize,
@@ -516,8 +516,8 @@ public class ReplaceBuilder
                 ArcProto ap = oldTechPool.getArcProto(a.protoId);
                 PrimitiveNode pinNp = ap.findOverridablePinProto(ep);
                 PrimitivePortId pinPpId = pinNp.getPort(0).getId();
-                double psx = pinNp.getDefWidth(ep);
-                double psy = pinNp.getDefHeight(ep);
+//                double psx = pinNp.getDefWidth(ep);
+//                double psy = pinNp.getDefHeight(ep);
 
                 // create a pin
                 int pinId = ++lastNodeId;
@@ -530,18 +530,14 @@ public class ReplaceBuilder
                 int flags = 0;
                 int techBits = 0;
                 TextDescriptor protoTd = ep.getInstanceTextDescriptor();
-                ImmutableNodeInst pinN = ImmutableNodeInst.newInstance(pinId, pinNp.getId(), name, nameTd,
+                ImmutableNodeInst pinN = ImmutableNodeInst.newInst(pinId, pinNp.getId(), name, nameTd,
                     orient, anchor, size, flags, techBits, protoTd);
                 maxSuffix.add(pinN);
                 curNodesCount++;
 
                 // create two arcs
                 ImmutableArcInst newAi1 = a.withConnections(pinId, pinPpId, a.headNodeId, newHeadPortId).withLocations(c, newHeadPoint);
-//                val newAi = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), newPortInst[ArcInst.HEADEND], pinPi, newPoint[ArcInst.HEADEND],
-//                        new Point2D.Double(cX, cY), null, ArcInst.DEFAULTANGLE);
                 ImmutableArcInst newAi2 = a.withConnections(pinId, pinPpId, a.tailNodeId, newTailPortId).withLocations(c, newTailPoint);
-//                ArcInst newAi2 = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), pinPi, newPortInst[ArcInst.TAILEND], new Point2D.Double(cX, cY),
-//                        newPoint[ArcInst.TAILEND], null, ArcInst.DEFAULTANGLE);
 
                 // the arc connected to node will save its name, the other arc will obtain temporary name
                 int arcId = ++lastArcId;
@@ -551,15 +547,11 @@ public class ReplaceBuilder
                 if (newTailPortId == a.tailPortId)
                 {
                     addedArcs.add(newAi1.withArcId(arcId).withName(arcName));
-//                  assert !curArcs.get(arcId);
-//                  curArcs.set(arcId);
                     curArcsCount++;
                     return newAi2;
                 } else
                 {
                     addedArcs.add(newAi2.withArcId(arcId).withName(arcName));
-//                  assert !curArcs.get(arcId);
-//                  curArcs.set(arcId);
                     curArcsCount++;
                     return newAi1;
                 }
@@ -591,7 +583,6 @@ public class ReplaceBuilder
                 }
                 for (ImmutableNodeInst n : maxSuffix.addedNodes)
                 {
-//          assert(curNodes.get(n.nodeId))
                     newNodes[newNodeIndex++] = n;
                 }
             }
@@ -625,7 +616,6 @@ public class ReplaceBuilder
             }
             for (ImmutableArcInst a : addedArcs)
             {
-//        assert(curArcs(a.arcId))
                 newArcs[newArcIndex++] = a;
             }
             assert oldArcIndex == arcInsertionPoint;

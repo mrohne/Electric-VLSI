@@ -63,7 +63,7 @@ public class BBMetric extends AbstractMetric {
 			sum = sum + this.compute(net);
 		}
 
-		return new Double(sum);
+		return Double.valueOf(sum);
 	}
 
 	private double compute(PlacementNetwork net) {

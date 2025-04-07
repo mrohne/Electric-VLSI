@@ -79,7 +79,7 @@ public class Port extends NetObject implements PortReportable {
 		for (PortCharacteristic t : types) {
 			Integer count = typeToCount.get(t);
 			int c = count!=null ? count.intValue() : 0;
-			typeToCount.put(t, new Integer(c+1));
+			typeToCount.put(t, Integer.valueOf(c+1));
 		}
 		int popularCount = 0;
 		PortCharacteristic popularType = null;

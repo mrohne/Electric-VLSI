@@ -72,7 +72,7 @@ public class ThreeDTab extends PreferencePanel
             try
             {
                 Constructor instance = plugin.getDeclaredConstructor(new Class[]{PreferencesFrame.class, Boolean.TYPE});
-                Object panel = instance.newInstance(new Object[] {parent, new Boolean(modal)});
+                Object panel = instance.newInstance(new Object[] {parent, Boolean.valueOf(modal)});
                 tab = (ThreeDTab)panel;
             }
             catch (Exception e)

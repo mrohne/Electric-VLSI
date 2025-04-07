@@ -63,7 +63,7 @@ import java.util.TreeMap;
  */
 public class DEF extends Output
 {
-	private DEFPreferences localPrefs;
+//	private DEFPreferences localPrefs;
 
 	public static class DEFPreferences extends OutputPreferences
 	{
@@ -497,5 +497,5 @@ public class DEF extends Output
 	}
 
 	/** Creates a new instance of DEF */
-	private DEF(DEFPreferences hp) { localPrefs = hp; }
+	private DEF(DEFPreferences hp) { /* localPrefs = hp; */ }
 }

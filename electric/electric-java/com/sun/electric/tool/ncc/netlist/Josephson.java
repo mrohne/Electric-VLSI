@@ -72,7 +72,7 @@ public class Josephson extends Part {
 	public Integer hashCodeForParallelMerge() {
 		int hc = pins[0].hashCode() + pins[1].hashCode() +
 				 getClass().hashCode();
-		return new Integer(hc);
+		return Integer.valueOf(hc);
 	}
 
     // ---------- public methods ----------

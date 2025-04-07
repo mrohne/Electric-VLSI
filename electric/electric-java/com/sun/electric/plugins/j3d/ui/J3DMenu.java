@@ -42,9 +42,9 @@ import java.awt.GraphicsEnvironment;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.media.j3d.Canvas3D;
-import javax.media.j3d.GraphicsConfigTemplate3D;
-import javax.media.j3d.VirtualUniverse;
+import org.jogamp.java3d.Canvas3D;
+import org.jogamp.java3d.GraphicsConfigTemplate3D;
+import org.jogamp.java3d.VirtualUniverse;
 
 
 /**
@@ -72,17 +72,6 @@ public class J3DMenu {
                 if (isJava3DAvailable())
                     J3DDemoDialog.create3DDemoDialog(TopLevel.getCurrentJFrame(), null);
             }} : null,
-//		j3DMenu.addMenuItem("Open 3D Capacitance Window", null,
-//			new ActionListener() { public void actionPerformed(ActionEvent e) { WindowMenu.create3DViewCommand(true); } });
-
-//        MenuBar.Menu demoSubMenu = MenuBar.makeMenu("Capacitance _Demo");
-//		j3DMenu.add(demoSubMenu);
-//        demoSubMenu.addMenuItem("3D _View for Demo", null,
-//            new ActionListener() { public void actionPerformed(ActionEvent e) { create3DViewCommand(true); } });
-//        demoSubMenu.addMenuItem("Read Data From File", null,
-//			new ActionListener() { public void actionPerformed(ActionEvent e) { readDemoDataFromFile(); } });
-//        demoSubMenu.addMenuItem("_Read Data", null,
-//			new ActionListener() { public void actionPerformed(ActionEvent e) { J3DViewDialog.create3DViewDialog(TopLevel.getCurrentJFrame()); } });
 
             SEPARATOR,
             new EMenuItem("_Test Hardware") { public void run() {
@@ -90,19 +79,6 @@ public class J3DMenu {
     }
 
     // ---------------------- THE 3D MENU FUNCTIONS -----------------
-
-//    private static void readDemoDataFromFile()
-//    {
-//        WindowContent content = WindowFrame.getCurrentWindowFrame().getContent();
-//        if (!(content instanceof View3DWindow))
-//        {
-//            System.out.println("Current Window Frame is not a 3D View for Read Demo Data");
-//            return;
-//        }
-//        View3DWindow view3D = (View3DWindow)content;
-//        view3D.addInterpolator(null); //J3DUtils.readDemoDataFromFile(view3D));
-//        J3DDemoDialog.create3DDemoDialog(TopLevel.getCurrentJFrame());
-//    }
 
     private static boolean isJava3DAvailable()
     {
@@ -131,7 +107,7 @@ public class J3DMenu {
     		movieCreatorChecked = true;
     		try {
     			Class<?> clz = Class.forName("com.sun.electric.plugins.JMF.MovieCreatorJMF");
-    			if (clz != null) movieCreatorInstance = (MovieCreator)clz.newInstance();
+    			if (clz != null) movieCreatorInstance = (MovieCreator)clz.getDeclaredConstructor().newInstance();
     		} catch (Exception e) {}
     		catch (Error e) {}
     		if (movieCreatorInstance == null) TextUtils.recordMissingComponent("MovieCreator");

@@ -270,7 +270,7 @@ public class ERCAntenna
 
 		// initialize error logging
 		ElapseTimer timer = ElapseTimer.createInstance().start();
-		errorLogger = ErrorLogger.newInstance("ERC Antenna Rules Check");
+		errorLogger = ErrorLogger.newInst("ERC Antenna Rules Check");
 
 		// now check each layer of the cell
 		int lasterrorcount = 0;

@@ -60,6 +60,7 @@ import com.sun.electric.util.math.Orientation;
  * Thus, it transforms from coordinates on the contact node to the coordinate space of cell TOP.</LI>
  * <LI>The apparent angle of the lowest node when viewed from the top.
  * In this case, it is a combination of the contact, BOT cell instance, and MID cell instance rotations.</LI>
+ * </UL>
  */
 public class PortOriginal {
 

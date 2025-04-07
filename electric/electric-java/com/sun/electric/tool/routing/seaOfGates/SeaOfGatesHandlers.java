@@ -884,7 +884,7 @@ public class SeaOfGatesHandlers {
 					pNp = Generic.tech().universalPinNode;
 					NodeInst ni = NodeInst.makeInstance(pNp, ep, EPoint.ORIGIN, pNp.getDefaultLambdaBaseWidth(ep),
 						pNp.getDefaultLambdaBaseHeight(ep), contactCell);
-					Export.newInstance(contactCell, ni.getOnlyPortInst(), "port", ep);
+					Export.newInst(contactCell, ni.getOnlyPortInst(), "port", ep);
 				}
 
 				// remember this contact cell
@@ -917,7 +917,7 @@ public class SeaOfGatesHandlers {
 			// Create export
 			pNp = Generic.tech().universalPinNode;
 			ni = NodeInst.makeInstance(pNp, ep, EPoint.ORIGIN, pNp.getDefaultLambdaBaseWidth(ep), pNp.getDefaultLambdaBaseHeight(ep), contactCell);
-			Export e = Export.newInstance(contactCell, ni.getOnlyPortInst(), "port", ep);
+			Export e = Export.newInst(contactCell, ni.getOnlyPortInst(), "port", ep);
 
 			// save ContactTemplate
 			ContactTemplate contactTemplate = new ContactTemplate(contactCell.getId(), contactTemplateOrientation, e.getId());

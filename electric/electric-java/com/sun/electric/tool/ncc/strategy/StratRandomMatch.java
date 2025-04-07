@@ -32,8 +32,8 @@ import com.sun.electric.tool.ncc.trees.EquivRecord;
 /** StratRandomMatch finds balanced EquivRecords and arbitrarily matches the 
  * NetObjects that are first in each Circuit. */
 public class StratRandomMatch extends Strategy {
-	private static final Integer CODE_FIRST = new Integer(1);
-	private static final Integer CODE_REST = new Integer(2);
+	private static final Integer CODE_FIRST = Integer.valueOf(1);
+	private static final Integer CODE_REST = Integer.valueOf(2);
     private StratRandomMatch(NccGlobals globals){super(globals);}
 
 	private EquivRecord findSmallestBalanced(Iterator<EquivRecord> frontier) {

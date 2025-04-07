@@ -121,7 +121,7 @@ public abstract class ESandBox extends EClassLoader {
         command = "redirectStdOut";
         (new ServerManagerThread()).start();
         BufferedReader commandReader = new BufferedReader(new InputStreamReader(commandStream));
-        for (int i = 0;;) {
+        for (;;) {
             synchronized (lock) {
                 try {
                     while (serializedResultOrException == null)
@@ -129,14 +129,14 @@ public abstract class ESandBox extends EClassLoader {
                 } catch (InterruptedException e) {
                 }
             }
-            Object result = null;
+//            Object result = null;
             if (serializedResultOrException.length != 0) {
                 try {
                     ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(serializedResultOrException));
-                    result = in.readObject();
+                    /* result = */ in.readObject();
                     in.close();
                 } catch (Throwable e) {
-                    result = new Exception(e);
+                    /* result = */ new Exception(e);
                 }
             }
             writeStdOut(serializedResultOrException, isException);
@@ -252,8 +252,8 @@ public abstract class ESandBox extends EClassLoader {
     private static final char MIN_LENGTH_CHAR = ' ';
     private static final char HEADER_CHAR = 0x7F;
     private static final int STRLEN_WIDTH = Integer.toString(Integer.MAX_VALUE).length();
-    private static final int HEADER_LEN = 3 + STRLEN_WIDTH + 1;
-    private static final int TRAILER_LEN = 3;
+//    private static final int HEADER_LEN = 3 + STRLEN_WIDTH + 1;
+//    private static final int TRAILER_LEN = 3;
 
     private static synchronized void writeStdOut(byte b[], int off, int len) {
         while (len > 0 && (b[off] == '\n' || b[off] == '\r')) {

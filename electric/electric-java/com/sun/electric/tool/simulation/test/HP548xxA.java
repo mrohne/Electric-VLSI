@@ -90,7 +90,7 @@ public class HP548xxA extends Equipment {
 	public float getFrequency(int channel) {
 		write("MEAS:FREQ? CHAN" + channel);
 		String s = read(20).trim();
-		return new Float(s.split("\\s")[0]).floatValue();
+		return Float.valueOf(s.split("\\s")[0]).floatValue();
 	}
 
 	/**

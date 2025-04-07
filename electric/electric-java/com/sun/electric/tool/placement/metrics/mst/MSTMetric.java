@@ -156,7 +156,7 @@ public class MSTMetric extends AbstractMetric {
 			total += this.compute(net);
 		}
 
-		return new Double(total);
+		return Double.valueOf(total);
 	}
 
 	/**

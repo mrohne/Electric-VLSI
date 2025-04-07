@@ -91,7 +91,7 @@ public class FinalizeWorker extends StageWorker {
 						if (i == 0) {
 							for (int j = 0; (j < fields.length) && (x == null); j++) {
 								if (fields[j][i].getNode() != null) {
-									x = new Double(fields[j][i].getNode().getPlacementX());
+									x = Double.valueOf(fields[j][i].getNode().getPlacementX());
 								}
 							}
 						} else {
@@ -118,7 +118,7 @@ public class FinalizeWorker extends StageWorker {
 
 							for (int j = 0; j < fields.length; j++) {
 								if (fields[j][i].getNode() != null) {
-									x = new Double(x.doubleValue() + maxWidth / 2 + maxWidthNew / 2);
+									x = Double.valueOf(x.doubleValue() + maxWidth / 2 + maxWidthNew / 2);
 									break;
 								}
 							}

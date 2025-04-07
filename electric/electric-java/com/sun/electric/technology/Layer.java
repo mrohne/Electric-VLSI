@@ -1273,7 +1273,7 @@ public class Layer implements Serializable, Comparable {
      * @param graphics the appearance of the layer.
      * @return the Layer object.
      */
-    public static Layer newInstance(Technology tech, String name, EGraphics graphics) {
+    public static Layer newInst(Technology tech, String name, EGraphics graphics) {
         if (tech == null) {
             throw new NullPointerException();
         }

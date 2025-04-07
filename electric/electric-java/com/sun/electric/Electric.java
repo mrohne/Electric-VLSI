@@ -2,7 +2,7 @@
  *
  * Electric(tm) VLSI Design System
  *
- * File: Launcher.java
+ * File: Electric.java
  *
  * Copyright (c) 2003, Static Free Software. All rights reserved.
  *
@@ -53,12 +53,10 @@ import org.slf4j.LoggerFactory;
 public final class Electric {
     private static final boolean enableAssertions = true;
     private static final Logger logger = LoggerFactory.getLogger(Electric.class);
-//    private static LocalLogger logger = new LocalLogger(Launcher.class);
 
     private static final String[] propertiesToCopy = { "user.home" };
 
-    private Electric() {
-    }
+    private Electric() {}
 
     /**
      * The main entry point of Electric. The "main" method in this class checks
@@ -134,7 +132,7 @@ public final class Electric {
                 procArgs.add("-D" + propertiesToCopy[i] + "=" + propValue);
             }
         }
-        procArgs.add("com.sun.electric.Launcher");
+        procArgs.add("com.sun.electric.Electric");
         procArgs.add("-NOMINMEM");
         for (int i = 0; i < args.length; i++)
             procArgs.add(args[i]);
@@ -252,7 +250,7 @@ public final class Electric {
         procArgs.addAll(javaOptions);
         procArgs.add("-cp");
         procArgs.add(Electric.getJarLocation());
-        procArgs.add("com.sun.electric.Launcher");
+        procArgs.add("com.sun.electric.Electric");
         procArgs.addAll(electricOptions);
         procArgs.add("-pipeserver");
         String command = "";
@@ -293,7 +291,7 @@ public final class Electric {
     
     private static void initClasspath(URL[] urls, ClassLoader launcherLoader) {
         for (URL url : urls) {
-            Object result = callByReflection(launcherLoader, "java.net.URLClassLoader", "addURL",
+            /* Object result = */ callByReflection(launcherLoader, "java.net.URLClassLoader", "addURL",
                     new Class[]{URL.class}, launcherLoader, new Object[]{url});
         }
     }
@@ -412,39 +410,39 @@ public final class Electric {
         return null;
     }
 
-    private static class EClassLoader extends URLClassLoader {
-        private EClassLoader(URL[] urls, ClassLoader parent) {
-            super(urls, parent);
-        }
-
-        @Override
-        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-            if (name.startsWith("com.sun.electric.plugins.") || name.startsWith("com.sun.electric.scala.")) {
-                Class c = findLoadedClass(name);
-                if (c == null) {
-                    String path = name.replace('.', '/').concat(".class");
-                    URL url = getResource(path);
-                    if (url != null) {
-                        try {
-                            DataInputStream in = new DataInputStream(url.openStream());
-                            int len = in.available();
-                            byte[] ba = new byte[len];
-                            in.readFully(ba);
-                            in.close();
-                            c = defineClass(name, ba, 0, len);
-                        } catch (IOException e) {
-                            throw new ClassNotFoundException(name);
-                        }
-                    } else {
-                        throw new ClassNotFoundException(name);
-                    }
-                }
-                if (resolve) {
-                    resolveClass(c);
-                }
-                return c;
-            }
-            return super.loadClass(name, resolve);
-        }
-    }
+//    private static class EClassLoader extends URLClassLoader {
+//        private EClassLoader(URL[] urls, ClassLoader parent) {
+//            super(urls, parent);
+//        }
+//
+//        @Override
+//        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+//            if (name.startsWith("com.sun.electric.plugins.") || name.startsWith("com.sun.electric.scala.")) {
+//                Class c = findLoadedClass(name);
+//                if (c == null) {
+//                    String path = name.replace('.', '/').concat(".class");
+//                    URL url = getResource(path);
+//                    if (url != null) {
+//                        try {
+//                            DataInputStream in = new DataInputStream(url.openStream());
+//                            int len = in.available();
+//                            byte[] ba = new byte[len];
+//                            in.readFully(ba);
+//                            in.close();
+//                            c = defineClass(name, ba, 0, len);
+//                        } catch (IOException e) {
+//                            throw new ClassNotFoundException(name);
+//                        }
+//                    } else {
+//                        throw new ClassNotFoundException(name);
+//                    }
+//                }
+//                if (resolve) {
+//                    resolveClass(c);
+//                }
+//                return c;
+//            }
+//            return super.loadClass(name, resolve);
+//        }
+//    }
 }

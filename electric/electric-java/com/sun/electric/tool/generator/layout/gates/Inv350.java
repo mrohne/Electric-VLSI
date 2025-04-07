@@ -41,15 +41,15 @@ public class Inv350 {
     private static final double p1m1_met_wid = 0.8;
     private static final double m1m2_m1_wid = 0.9;
 
-    private static final double totWidN = 1.1;
-    private static final double totWidP = 1.7;
-    private static final String nm = "inv{lay}";
+//    private static final double totWidN = 1.1;
+//    private static final double totWidP = 1.7;
+//    private static final String nm = "inv{lay}";
 
     private static final double wellOverhangDiff = 1.2;
     private static final double m1_m1_sp = 0.45;
     private static final double m1_wid = 0.5;
-    private static final double pd_p1_sp = 0.4;
-    private static final double nd_p1_sp = 0.4;
+//    private static final double pd_p1_sp = 0.4;
+//    private static final double nd_p1_sp = 0.4;
 
 	private static void error(boolean pred, String msg) {
 		Job.error(pred, msg);
@@ -71,9 +71,9 @@ public class Inv350 {
         double p1_p1_sp = tech.getP1ToP1Space();
 
         double exp_wid = 0.9;//4
-        double in_wid = 0.8;//3
-        double outHiY = inY + (in_wid/2 + m1_m1_sp + exp_wid/2);
-        double outLoY = inY - (in_wid/2 + m1_m1_sp + exp_wid/2);
+//        double in_wid = 0.8;//3
+//        double outHiY = inY + (in_wid/2 + m1_m1_sp + exp_wid/2);
+//        double outLoY = inY - (in_wid/2 + m1_m1_sp + exp_wid/2);
 
         // Space needed at the top of the PMOS well and bottom of MOS well.
         // We need more space if we're double strapping poly.
@@ -199,10 +199,10 @@ public class Inv350 {
         EPoint gndRight = EPoint.fromLambda(boundsRightX, stdCell.getGndY());
         EPoint vddLeft = EPoint.fromLambda(boundsLeftX, stdCell.getVddY());
         EPoint vddRight = EPoint.fromLambda(boundsRightX, stdCell.getVddY());
-        NodeInst gndPinLeft = NodeInst.newInstance(tech.m1pin(), ep, gndLeft, 0, 0, inv);
-        NodeInst gndPinRight = NodeInst.newInstance(tech.m1pin(), ep, gndRight, 0, 0, inv);
-        NodeInst vddPinLeft = NodeInst.newInstance(tech.m1pin(), ep, vddLeft, 0, 0, inv);
-        NodeInst vddPinRight = NodeInst.newInstance(tech.m1pin(), ep, vddRight, 0, 0, inv);
+        NodeInst gndPinLeft = NodeInst.newInst(tech.m1pin(), ep, gndLeft, 0, 0, inv);
+        NodeInst gndPinRight = NodeInst.newInst(tech.m1pin(), ep, gndRight, 0, 0, inv);
+        NodeInst vddPinLeft = NodeInst.newInst(tech.m1pin(), ep, vddLeft, 0, 0, inv);
+        NodeInst vddPinRight = NodeInst.newInst(tech.m1pin(), ep, vddRight, 0, 0, inv);
         ArcInst gndArcLeft = ArcInst.makeInstance(tech.m1(), ep, gndPinLeft.getOnlyPortInst(), inv.findExport("gnd").getOriginalPort());
         gndArcLeft.setLambdaBaseWidth(stdCell.getGndWidth());
         gndArcLeft.setTailExtended(false);
@@ -220,7 +220,7 @@ public class Inv350 {
         vddArcRight.setTailExtended(false);
         vddArcRight.setHeadExtended(false);
 
-        NodeInst deviceMark = NodeInst.newInstance(tech.getTechnology().findNodeProto("DeviceMark-Node"), ep,
+        /* NodeInst deviceMark = */ NodeInst.newInst(tech.getTechnology().findNodeProto("DeviceMark-Node"), ep,
                 EPoint.fromLambda((boundsRightX + boundsLeftX)/2, (stdCell.getVddY() + stdCell.getGndY())/2),
                 (boundsRightX - boundsLeftX), (stdCell.getVddY() - stdCell.getGndY()), inv);
 

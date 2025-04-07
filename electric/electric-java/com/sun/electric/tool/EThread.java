@@ -40,7 +40,7 @@ import java.util.ArrayList;
  */
 class EThread extends Thread {
 
-    private static final String CLASS_NAME = EThread.class.getName();
+//    private static final String CLASS_NAME = EThread.class.getName();
     private static final ArrayList<Snapshot> snapshotCache = new ArrayList<Snapshot>();
     private static int maximumSnapshots = StartupPrefs.getMaxUndoHistory();
     /** EJob which Thread is executing now. */

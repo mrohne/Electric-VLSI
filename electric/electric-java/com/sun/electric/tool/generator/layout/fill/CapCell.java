@@ -143,7 +143,7 @@ class CapCellMosis extends CapCell{
 		PortInst wellCont = LayoutLib.newNodeInst(tech.pwm1(), ep, x, y, G.DEF_SIZE,
 										 		  G.DEF_SIZE, 0, cell
 										 		  ).getOnlyPortInst();
-		Export e = Export.newInstance(cell, wellCont,
+		Export e = Export.newInst(cell, wellCont,
 		                              FillCell.GND_NAME+"_"+gndNum++, ep);
 		e.setCharacteristic(FillCell.GND_CHARACTERISTIC);
 
@@ -204,7 +204,7 @@ class CapCellMosis extends CapCell{
 											  POLY_CONT_HEIGHT, 0, cell
 											  ).getOnlyPortInst();
 		PortInst leftCont = poly;
-		Export e = Export.newInstance(cell, poly,
+		Export e = Export.newInst(cell, poly,
 		                              FillCell.VDD_NAME+"_"+vddNum++, ep);
 		e.setCharacteristic(FillCell.VDD_CHARACTERISTIC);
 
@@ -275,7 +275,7 @@ class CapCellMosis extends CapCell{
 		PortInst[] botDiffs = new PortInst[plan.numMosX];
 		PortInst[] topDiffs = new PortInst[plan.numMosX];
 
-		cell = Cell.newInstance(lib, "fillCap{lay}");
+		cell = Cell.newInst(lib, "fillCap{lay}");
 		double y = plan.botWellContY;
 
 		PortInst[] lastCont = diffCont(y, plan, cell);

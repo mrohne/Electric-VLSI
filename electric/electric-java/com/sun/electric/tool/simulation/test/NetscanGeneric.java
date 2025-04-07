@@ -452,13 +452,13 @@ public abstract class NetscanGeneric extends JtagTester {
      * Set or clear bit at index index in short array according to value. Short
      * array assumed little endian
      */
-    private static void setShortsBit(short[] shorts, int index, boolean value) {
-        if (value) {
-            shorts[index / 16] |= (1 << (index % 16));
-        } else {
-            shorts[index / 16] &= ~(1 << (index % 16));
-        }
-    }
+//    private static void setShortsBit(short[] shorts, int index, boolean value) {
+//        if (value) {
+//            shorts[index / 16] |= (1 << (index % 16));
+//        } else {
+//            shorts[index / 16] &= ~(1 << (index % 16));
+//        }
+//    }
 
     /**
      * Pad a bit vector with a number of 0 bits at the beginning and end

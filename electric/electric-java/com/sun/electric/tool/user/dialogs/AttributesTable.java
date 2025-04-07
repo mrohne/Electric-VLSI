@@ -470,8 +470,8 @@ public class AttributesTable extends JTable implements DatabaseChangeListener
 				createNew.add(Boolean.valueOf(newCreate));
 				createDisplay.add(Boolean.valueOf(newDisplay));
 				createCode.add(newCode);
-				createDispPos.add(new Integer(newDispPos));
-				createUnits.add(new Integer(newUnits));
+				createDispPos.add(Integer.valueOf(newDispPos));
+				createUnits.add(Integer.valueOf(newUnits));
 			}
 			new ApplyChanges(owner, createKey, createValue, createNew, createDisplay, createCode, createDispPos, createUnits, deleteTheseVars);
 		}
@@ -479,7 +479,7 @@ public class AttributesTable extends JTable implements DatabaseChangeListener
 		/**
 		 * Cancel all changes
 		 */
-		public void cancelChanges() {}
+//		public void cancelChanges() {}
 
 		private String getUniqueName(String name) {
 			boolean nameConflict = true;

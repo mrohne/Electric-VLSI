@@ -95,7 +95,7 @@ public class MimicStitch
 		if (situations != null) return;
 		int numSituations = 1 << NUMSITUATIONS;
 		List<Integer> allSituations = new ArrayList<Integer>();
-		for(int i=0; i<numSituations; i++) allSituations.add(new Integer(i));
+		for(int i=0; i<numSituations; i++) allSituations.add(Integer.valueOf(i));
 		Collections.sort(allSituations, new SituationSorter());
 
 		situations = new int[numSituations];

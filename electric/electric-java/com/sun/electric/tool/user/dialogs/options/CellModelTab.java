@@ -65,11 +65,11 @@ public class CellModelTab extends PreferencePanel
             fileName = "";
             choice = Choice.NONE;
         }
-        public boolean equals(ModelPref other) {
-            if (other.fileName.equals(fileName) && other.choice == choice)
-                return true;
-            return false;
-        }
+//        public boolean equals(ModelPref other) {
+//            if (other.fileName.equals(fileName) && other.choice == choice)
+//                return true;
+//            return false;
+//        }
     }
 
 	/** Creates new form CellModelFile panel */

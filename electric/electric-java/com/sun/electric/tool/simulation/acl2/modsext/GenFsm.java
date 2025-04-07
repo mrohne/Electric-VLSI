@@ -520,11 +520,11 @@ public abstract class GenFsm extends GenBase
                 {
                     System.out.println("Twice " + lw);
                 }
-                List<Svar<PathExt>> deps = d.getOrigVars();
-                for (Svar<PathExt> sv : deps)
-                {
-                    dep.add(lw);
-                }
+//                List<Svar<PathExt>> deps = d.getOrigVars();
+//                for (Svar<PathExt> sv : deps)
+//                {
+//                    dep.add(lw);
+//                }
             }
         }
 

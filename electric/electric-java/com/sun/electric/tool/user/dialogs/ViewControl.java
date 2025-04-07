@@ -157,7 +157,7 @@ public class ViewControl extends EDialog
 				View.newTextInstance(viewName, viewAbbr);
 			} else
 			{
-				View.newInstance(viewName, viewAbbr);
+				View.newInst(viewName, viewAbbr);
 			}
 			return true;
 		}

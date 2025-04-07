@@ -125,7 +125,7 @@ public class HighlightConnectivity
 				if (sBound.getNetID() != null && sBound.getNetID().intValue() != 0) thisNet = sBound.getNetID().intValue();
 				if (thisNet != 0)
 				{
-					Integer thisNetInt = new Integer(thisNet);
+					Integer thisNetInt = Integer.valueOf(thisNet);
 					StringBuffer sb = geomsOnNet.get(thisNetInt);
 					if (sb == null) geomsOnNet.put(thisNetInt, sb = new StringBuffer());
 					if (sb.length() != 0) sb.append("/");
@@ -188,7 +188,7 @@ public class HighlightConnectivity
 
 			// store the data
 			Date nowDate = new Date();
-			cell.newVar(TOPOLOGY_QUICK_DATE, new Long(nowDate.getTime()), getEditingPreferences());
+			cell.newVar(TOPOLOGY_QUICK_DATE, Long.valueOf(nowDate.getTime()), getEditingPreferences());
 			cell.newVar(TOPOLOGY_QUICK_DATA, topology, getEditingPreferences());
 
 			// reset revision date to ignore this change
@@ -701,127 +701,127 @@ public class HighlightConnectivity
 	 * Method to show blockages in a routing area.
 	 * @param nr the NeededRoute to view.
 	 */
-	private void showGeometryInArea()
-	{
-		EditWindow wnd = EditWindow.getCurrent();
-		Cell cell = wnd.getCell();
-		Highlighter h = wnd.getRulerHighlighter();
-		h.clear();
-		Map<Integer,Color> netColors = new HashMap<Integer,Color>();
-		MutableInteger colorAssigned = new MutableInteger(0);
-		double highestX = Double.MIN_VALUE, highestY = Double.MIN_VALUE;
+//	private void showGeometryInArea()
+//	{
+//		EditWindow wnd = EditWindow.getCurrent();
+//		Cell cell = wnd.getCell();
+//		Highlighter h = wnd.getRulerHighlighter();
+//		h.clear();
+//		Map<Integer,Color> netColors = new HashMap<Integer,Color>();
+//		MutableInteger colorAssigned = new MutableInteger(0);
+//		double highestX = Double.MIN_VALUE, highestY = Double.MIN_VALUE;
+//
+//		// show geometry in area
+//		Rectangle2D limit = cell.getBounds();
+//		Map<Layer,List<QCBound>> allAssigned = new HashMap<Layer,List<QCBound>>();
+//		for(ConnectingLayer cl : allConnectingLayers)
+//		{
+//			Layer layer = cl.primaryLayer;
+//			List<QCBound> assigned = new ArrayList<QCBound>();
+//			allAssigned.put(layer, assigned);
+//			for (Iterator<QCBound> sea = cl.tree.search(limit); sea.hasNext();)
+//			{
+//				QCBound sBound = sea.next();
+//				if (sBound.getNetID() != null && sBound.getNetID().intValue() != 0) assigned.add(sBound); else
+//				{
+//					ERectangle drawn = showGeometryPiece(sBound, limit, layer, netColors, colorAssigned);
+//					if (drawn != null)
+//					{
+//						if (drawn.getMaxX() > highestX) highestX = drawn.getMaxX();
+//						if (drawn.getMaxY() > highestY) highestY = drawn.getMaxY();
+//					}
+//				}
+//			}
+//		}
+//		for(ConnectingLayer cl : allConnectingLayers)
+//		{
+//			Layer layer = cl.primaryLayer;
+//			List<QCBound> assigned = allAssigned.get(layer);
+//			for(QCBound sBound : assigned)
+//			{
+//				ERectangle drawn = showGeometryPiece(sBound, limit, layer, netColors, colorAssigned);
+//				if (drawn != null)
+//				{
+//					if (drawn.getMaxX() > highestX) highestX = drawn.getMaxX();
+//					if (drawn.getMaxY() > highestY) highestY = drawn.getMaxY();
+//				}
+//			}
+//		}
+//
+//		// show key
+//		double pos = highestY - 2;
+//		for(Integer netIDI : netColors.keySet())
+//		{
+//			showBlockageRect(cell, new Rectangle2D.Double(highestX+1, pos, 4, 2), h, netColors.get(netIDI));
+//			String netName = "Net " + netIDI.intValue();
+//			h.addMessage(cell, netName, EPoint.fromLambda(highestX+6, pos+1));
+//			pos -= 3;
+//		}
+//		h.finished();
+//		EditWindow.repaintAllContents();
+//	}
 
-		// show geometry in area
-		Rectangle2D limit = cell.getBounds();
-		Map<Layer,List<QCBound>> allAssigned = new HashMap<Layer,List<QCBound>>();
-		for(ConnectingLayer cl : allConnectingLayers)
-		{
-			Layer layer = cl.primaryLayer;
-			List<QCBound> assigned = new ArrayList<QCBound>();
-			allAssigned.put(layer, assigned);
-			for (Iterator<QCBound> sea = cl.tree.search(limit); sea.hasNext();)
-			{
-				QCBound sBound = sea.next();
-				if (sBound.getNetID() != null && sBound.getNetID().intValue() != 0) assigned.add(sBound); else
-				{
-					ERectangle drawn = showGeometryPiece(sBound, limit, layer, netColors, colorAssigned);
-					if (drawn != null)
-					{
-						if (drawn.getMaxX() > highestX) highestX = drawn.getMaxX();
-						if (drawn.getMaxY() > highestY) highestY = drawn.getMaxY();
-					}
-				}
-			}
-		}
-		for(ConnectingLayer cl : allConnectingLayers)
-		{
-			Layer layer = cl.primaryLayer;
-			List<QCBound> assigned = allAssigned.get(layer);
-			for(QCBound sBound : assigned)
-			{
-				ERectangle drawn = showGeometryPiece(sBound, limit, layer, netColors, colorAssigned);
-				if (drawn != null)
-				{
-					if (drawn.getMaxX() > highestX) highestX = drawn.getMaxX();
-					if (drawn.getMaxY() > highestY) highestY = drawn.getMaxY();
-				}
-			}
-		}
+//	private static Color[] allColors = new Color[] {
+//		new Color(65535>>8, 16385>>8, 16385>>8),	// Red
+//		new Color(0>>8, 39321>>8, 0>>8),			// Green
+//		new Color(0>>8, 0>>8, 65535>>8),			// Blue
+//		new Color(39321>>8, 0>>8, 31457>>8),		// Purple
+//		new Color(65535>>8, 32768>>8, 32768>>8),	// Salmon
+//		new Color(0>>8, 65535>>8, 0>>8),			// Lime
+//		new Color(16385>>8, 65535>>8, 65535>>8),	// Turquoise
+//		new Color(65535>>8, 32768>>8, 58981>>8),	// Light purple
+//		new Color(39321>>8, 26208>>8, 0>>8),		// Brown
+//		new Color(52428>>8, 34958>>8, 0>>8),		// Light brown
+//		new Color(65535>>8, 32764>>8, 16385>>8),	// Orange
+//		new Color(0>>8, 52428>>8, 26586>>8),		// Teal
+//		new Color(0>>8, 0>>8, 39321>>8),			// Dark blue
+//		new Color(65535>>8, 49151>>8, 55704>>8)};	// Pink
 
-		// show key
-		double pos = highestY - 2;
-		for(Integer netIDI : netColors.keySet())
-		{
-			showBlockageRect(cell, new Rectangle2D.Double(highestX+1, pos, 4, 2), h, netColors.get(netIDI));
-			String netName = "Net " + netIDI.intValue();
-			h.addMessage(cell, netName, EPoint.fromLambda(highestX+6, pos+1));
-			pos -= 3;
-		}
-		h.finished();
-		EditWindow.repaintAllContents();
-	}
-
-	private static Color[] allColors = new Color[] {
-		new Color(65535>>8, 16385>>8, 16385>>8),	// Red
-		new Color(0>>8, 39321>>8, 0>>8),			// Green
-		new Color(0>>8, 0>>8, 65535>>8),			// Blue
-		new Color(39321>>8, 0>>8, 31457>>8),		// Purple
-		new Color(65535>>8, 32768>>8, 32768>>8),	// Salmon
-		new Color(0>>8, 65535>>8, 0>>8),			// Lime
-		new Color(16385>>8, 65535>>8, 65535>>8),	// Turquoise
-		new Color(65535>>8, 32768>>8, 58981>>8),	// Light purple
-		new Color(39321>>8, 26208>>8, 0>>8),		// Brown
-		new Color(52428>>8, 34958>>8, 0>>8),		// Light brown
-		new Color(65535>>8, 32764>>8, 16385>>8),	// Orange
-		new Color(0>>8, 52428>>8, 26586>>8),		// Teal
-		new Color(0>>8, 0>>8, 39321>>8),			// Dark blue
-		new Color(65535>>8, 49151>>8, 55704>>8)};	// Pink
-
-	private ERectangle showGeometryPiece(QCBound sBound, Rectangle2D limit, Layer lay, Map<Integer,Color> netColors, MutableInteger colorAssigned)
-	{
-		Integer netIDI;
-		MutableInteger mi = sBound.getNetID();
-		if (mi == null) netIDI = Integer.valueOf(0); else
-			netIDI = Integer.valueOf(mi.intValue());
-		Color color = Color.BLACK;
-		if (netIDI.intValue() != 0)
-		{
-			color = netColors.get(netIDI);
-			if (color == null)
-			{
-				netColors.put(netIDI, color = allColors[colorAssigned.intValue() % allColors.length]);
-				colorAssigned.increment();
-			}
-		}
-		ERectangle draw = sBound.getBounds();
-		EditWindow wnd = EditWindow.getCurrent();
-		Cell cell = wnd.getCell();
-		Highlighter h = wnd.getRulerHighlighter();
-		if (sBound instanceof QCPoly)
-		{
-			QCPoly pol = (QCPoly)sBound;
-			PolyBase pb = pol.getPoly();
-			Point[] points = pb.getPoints();
-			for(int i=0; i<points.length; i++)
-			{
-				int lastI = (i == 0 ? points.length-1 : i-1);
-				h.addLine(points[lastI], points[i], cell, true, color, false);
-			}
-		} else
-		{
-			double lX = draw.getMinX();
-			double hX = draw.getMaxX();
-			double lY = draw.getMinY();
-			double hY = draw.getMaxY();
-			if (lX < limit.getMinX()) { lX = limit.getMinX();   draw = null; }
-			if (hX > limit.getMaxX()) { hX = limit.getMaxX();   draw = null; }
-			if (lY < limit.getMinY()) { lY = limit.getMinY();   draw = null; }
-			if (hY > limit.getMaxY()) { hY = limit.getMaxY();   draw = null; }
-			if (draw == null) draw = ERectangle.fromLambda(lX, lY, hX-lX, hY-lY);
-			showBlockageRect(cell, draw, h, color);
-		}
-		return draw;
-	}
+//	private ERectangle showGeometryPiece(QCBound sBound, Rectangle2D limit, Layer lay, Map<Integer,Color> netColors, MutableInteger colorAssigned)
+//	{
+//		Integer netIDI;
+//		MutableInteger mi = sBound.getNetID();
+//		if (mi == null) netIDI = Integer.valueOf(0); else
+//			netIDI = Integer.valueOf(mi.intValue());
+//		Color color = Color.BLACK;
+//		if (netIDI.intValue() != 0)
+//		{
+//			color = netColors.get(netIDI);
+//			if (color == null)
+//			{
+//				netColors.put(netIDI, color = allColors[colorAssigned.intValue() % allColors.length]);
+//				colorAssigned.increment();
+//			}
+//		}
+//		ERectangle draw = sBound.getBounds();
+//		EditWindow wnd = EditWindow.getCurrent();
+//		Cell cell = wnd.getCell();
+//		Highlighter h = wnd.getRulerHighlighter();
+//		if (sBound instanceof QCPoly)
+//		{
+//			QCPoly pol = (QCPoly)sBound;
+//			PolyBase pb = pol.getPoly();
+//			Point[] points = pb.getPoints();
+//			for(int i=0; i<points.length; i++)
+//			{
+//				int lastI = (i == 0 ? points.length-1 : i-1);
+//				h.addLine(points[lastI], points[i], cell, true, color, false);
+//			}
+//		} else
+//		{
+//			double lX = draw.getMinX();
+//			double hX = draw.getMaxX();
+//			double lY = draw.getMinY();
+//			double hY = draw.getMaxY();
+//			if (lX < limit.getMinX()) { lX = limit.getMinX();   draw = null; }
+//			if (hX > limit.getMaxX()) { hX = limit.getMaxX();   draw = null; }
+//			if (lY < limit.getMinY()) { lY = limit.getMinY();   draw = null; }
+//			if (hY > limit.getMaxY()) { hY = limit.getMaxY();   draw = null; }
+//			if (draw == null) draw = ERectangle.fromLambda(lX, lY, hX-lX, hY-lY);
+//			showBlockageRect(cell, draw, h, color);
+//		}
+//		return draw;
+//	}
 
 	/**
 	 * Method to draw a thick rectangular outline.
@@ -830,24 +830,24 @@ public class HighlightConnectivity
 	 * @param h the Highlighter to use.
 	 * @param col the Color to draw it.
 	 */
-	private void showBlockageRect(Cell cell, Rectangle2D bounds, Highlighter h, Color col)
-	{
-//		Poly poly = new Poly(bounds);
-//		poly.setStyle(Poly.Type.FILLED);
-//		h.addPoly(poly, cell, col);
-
-		Point2D p1 = new Point2D.Double(bounds.getMinX(), bounds.getMinY());
-		Point2D p2 = new Point2D.Double(bounds.getMinX(), bounds.getMaxY());
-		Point2D p3 = new Point2D.Double(bounds.getMaxX(), bounds.getMaxY());
-		Point2D p4 = new Point2D.Double(bounds.getMaxX(), bounds.getMinY());
-		h.addLine(p1, p2, cell, true, col, false);
-		h.addLine(p2, p3, cell, true, col, false);
-		h.addLine(p3, p4, cell, true, col, false);
-		h.addLine(p4, p1, cell, true, col, false);
-
-		h.addLine(p1, p3, cell, true, col, false);
-		h.addLine(p2, p4, cell, true, col, false);
-	}
+//	private void showBlockageRect(Cell cell, Rectangle2D bounds, Highlighter h, Color col)
+//	{
+////		Poly poly = new Poly(bounds);
+////		poly.setStyle(Poly.Type.FILLED);
+////		h.addPoly(poly, cell, col);
+//
+//		Point2D p1 = new Point2D.Double(bounds.getMinX(), bounds.getMinY());
+//		Point2D p2 = new Point2D.Double(bounds.getMinX(), bounds.getMaxY());
+//		Point2D p3 = new Point2D.Double(bounds.getMaxX(), bounds.getMaxY());
+//		Point2D p4 = new Point2D.Double(bounds.getMaxX(), bounds.getMinY());
+//		h.addLine(p1, p2, cell, true, col, false);
+//		h.addLine(p2, p3, cell, true, col, false);
+//		h.addLine(p3, p4, cell, true, col, false);
+//		h.addLine(p4, p1, cell, true, col, false);
+//
+//		h.addLine(p1, p3, cell, true, col, false);
+//		h.addLine(p2, p4, cell, true, col, false);
+//	}
 
 	/***************************** INITIALIZATION *****************************/
 

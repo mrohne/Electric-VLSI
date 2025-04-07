@@ -738,31 +738,31 @@ public class SeaOfGatesCell extends EDialog
 		// set new default width
 		String val = sogDefWidth.getText().trim();
 		Double w = null;
-		if (val.length() > 0) w = new Double(TextUtils.atofDistance(val));
+		if (val.length() > 0) w = Double.valueOf(TextUtils.atofDistance(val));
 		sogp.setDefaultWidthOverride(ap, w);
 
 		// set new default spacing
 		// X axis
 		val = sogDefXSpacing.getText().trim();
 		Double s = null;
-		if (val.length() > 0) s = new Double(TextUtils.atofDistance(val));
+		if (val.length() > 0) s = Double.valueOf(TextUtils.atofDistance(val));
 		sogp.setDefaultSpacingOverride(ap, s, 0);
 		
 		// Y axis
 		val = sogDefYSpacing.getText().trim();
-		if (val.length() > 0) s = new Double(TextUtils.atofDistance(val));
+		if (val.length() > 0) s = Double.valueOf(TextUtils.atofDistance(val));
 		sogp.setDefaultSpacingOverride(ap, s, 1);
 
 		// set new 2X width threshold
 		val = sog2XWidth.getText().trim();
 		w = null;
-		if (val.length() > 0) w = new Double(TextUtils.atofDistance(val));
+		if (val.length() > 0) w = Double.valueOf(TextUtils.atofDistance(val));
 		sogp.set2XWidth(ap, w);
 
 		// set new taper length
 		val = sogTaperLength.getText().trim();
 		Double t = null;
-		if (val.length() > 0) t = new Double(TextUtils.atofDistance(val));
+		if (val.length() > 0) t = Double.valueOf(TextUtils.atofDistance(val));
 		sogp.setTaperLength(ap, t);
 
 		setArcLine(ap, makeArcLine(ap));
@@ -792,13 +792,13 @@ public class SeaOfGatesCell extends EDialog
 		String val = sogLayerWidthOverride.getText().trim();
 		Double w = null;
 		if (val.length() > 0)
-			w = new Double(TextUtils.atofDistance(val));
+			w = Double.valueOf(TextUtils.atofDistance(val));
 		sogp.setWidthOverrideForArcOnNet(netName, ap, w);
 
 		// set new default spacing
 		val = sogLayerSpacingOverride.getText().trim();
 		Double s = null;
-		if (val.length() > 0) s = new Double(TextUtils.atofDistance(val));
+		if (val.length() > 0) s = Double.valueOf(TextUtils.atofDistance(val));
 		sogp.setSpacingOverrideForArcOnNet(netName, ap, s);
 
 		setArcOverrideLine(ap, makeArcOnNetworkLine(netName, ap));
@@ -1468,7 +1468,7 @@ public class SeaOfGatesCell extends EDialog
 			int spacePos = part.indexOf(' ');
 			if (spacePos > 0) part = part.substring(0, spacePos);
 			double v = TextUtils.atofDistance(part);
-			vals.add(new Double(v));
+			vals.add(Double.valueOf(v));
 		}
 		Collections.sort(vals);
 		double lastVal = 0;
@@ -1791,7 +1791,7 @@ public class SeaOfGatesCell extends EDialog
 				String part = (String)gridPointsModel.get(i);
 				int spacePos = part.indexOf(' ');
 				if (spacePos > 0) part = part.substring(0, spacePos);
-				coords.add(new Double(TextUtils.atofDistance(part)));
+				coords.add(Double.valueOf(TextUtils.atofDistance(part)));
 			}
 			showGrid(wnd, h, coords, hor, wnd.getScale(), gridPointsList.getSelectedIndex());
 		}

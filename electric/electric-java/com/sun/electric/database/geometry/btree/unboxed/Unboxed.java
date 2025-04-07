@@ -29,7 +29,7 @@ import java.io.*;
  *
  *  We use this singleton class which performs operations (such as
  *  comparisons) directly on the byte[]'s rather than using some
- *  instance of Serializable&Comparable because the latter approach
+ *  instance of Serializable-and-Comparable because the latter approach
  *  puts heavy stress on the garbage collector and -- much more
  *  importantly -- the memory subsystem.  By not instantiating
  *  heavyweight objects for the keys we let the whole program live

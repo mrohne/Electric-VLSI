@@ -145,12 +145,18 @@ public class CVS extends Listener {
      * @return the exit value
      */
     public static int runCVSCommand(String cvsProgram, String repository, String cmd, String comment, String workingDir, OutputStream out) {
-        String specifyRepository = "";
-        if (!repository.equals("")) specifyRepository = " -d"+repository;
-        String run = cvsProgram + specifyRepository +" "+cmd;
+    	List<String> command = new ArrayList<String>();
+    	command.add(cvsProgram);
+        if (!repository.equals("")) command.add("-d"+repository);
+    	command.add(cmd);
 
-        System.out.println(comment+": "+run);
-        Exec e = new Exec(run, null, new File(workingDir), out, out);
+    	String run = "";
+    	for(String s : command) run += " " + s;
+        System.out.println(comment+":"+run);
+
+        String [] exec = new String[command.size()];
+        for(int i=0; i<command.size(); i++) exec[i] = command.get(i);
+        Exec e = new Exec(exec, null, new File(workingDir), out, out);
         e.run();
         return e.getExitVal();
     }
@@ -221,10 +227,19 @@ public class CVS extends Listener {
      * printing it.
      */
     public static void runModalCVSCommand(String cmd, String comment, String workingDir, OutputStream out) {
-        String run = getCVSProgram() + " -d"+getRepository()+" "+cmd;
+    	List<String> command = new ArrayList<String>();
+    	command.add(getCVSProgram());
+        command.add("-d"+getRepository());
+    	command.add(cmd);
 
-        Exec e = new Exec(run, null, new File(workingDir), out, out);
+        String [] exec = new String[command.size()];
+        for(int i=0; i<command.size(); i++) exec[i] = command.get(i);
+
+        Exec e = new Exec(exec, null, new File(workingDir), out, out);
+
         // add a listener to get rid of the modal dialog when the command finishes
+    	String run = "";
+    	for(String s : command) run += " " + s;
         String message = "Running: "+run;
         JFrame frame = TopLevel.getCurrentJFrame();
         ModalCommandDialog dialog = new ModalCommandDialog(frame, true, e, message, comment);
@@ -288,9 +303,10 @@ public class CVS extends Listener {
         String filename = fd.getName();
         boolean found = false;
         FileReader fr = null;
+        LineNumberReader reader;
         try {
             fr = new FileReader(entries);
-            LineNumberReader reader = new LineNumberReader(fr);
+            reader = new LineNumberReader(fr);
             for (;;) {
                 String line = reader.readLine();
                 if (line == null) break;

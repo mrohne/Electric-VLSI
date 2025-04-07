@@ -270,21 +270,21 @@ public class ClassicIndividual extends Individual<ClassicIndividual>
 		{
 			int pos = rand.nextInt(blocks.length);
 			blocks[rand.nextInt(blocks.length)].disturb(ref.avgW, rand); // move cell to a random position
-			changedBlocks.add(new Integer(pos));
+			changedBlocks.add(Integer.valueOf(pos));
 		}
 		for(int i = 0; i < disturbedOrientations; i++)
 		{
 			int pos = rand.nextInt(blocks.length);
 			blocks[rand.nextInt(blocks.length)].disturbOrientation(rand); // change Orientation randomly
-			changedBlocks.add(new Integer(pos));
+			changedBlocks.add(Integer.valueOf(pos));
 		}
 		for(int i = 0; i < swaps; i++)
 		{
 			int pos1 = rand.nextInt(blocks.length);
 			int pos2 = rand.nextInt(blocks.length);
 			swapBlocks(pos1, pos2); // swap random blocks
-			changedBlocks.add(new Integer(pos1));
-			changedBlocks.add(new Integer(pos2));
+			changedBlocks.add(Integer.valueOf(pos1));
+			changedBlocks.add(Integer.valueOf(pos2));
 		}
 		
 		if(changedBlocks.size()==0) return; // TODO

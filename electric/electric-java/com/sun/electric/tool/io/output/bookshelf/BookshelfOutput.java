@@ -38,7 +38,6 @@ import com.sun.electric.tool.io.output.Output;
  */
 public class BookshelfOutput extends Output {
 
-	@SuppressWarnings("serial")
 	public static class BookshelfOutputPreferences extends OutputPreferences {
 
 		/**

@@ -308,15 +308,17 @@ public class EDIFEquiv {
             return;
         }
         System.out.println("Using EDIF configuration file: "+fd.getAbsolutePath());
+        BufferedReader bufReader;
         try {
             FileReader reader = new FileReader(fd);
-            BufferedReader bufReader = new BufferedReader(reader);
+            bufReader = new BufferedReader(reader);
             String line = "";
             int lineno = 1;
             while ((line = bufReader.readLine()) != null) {
                 readLine(line, lineno);
                 lineno++;
             }
+            bufReader.close();
         } catch (IOException e) {
             System.out.println("Error reading EDIF config file ("+fd.getAbsolutePath()+"): "+e.getMessage());
             return;
@@ -613,12 +615,12 @@ public class EDIFEquiv {
 				Map<Double,MutableInteger> yMap = new HashMap<Double,MutableInteger>();
 				for(EDIFEquiv.PortEquivalence pe : portEquivs)
 				{
-					Double diffX = new Double(pe.getElecPort().loc.getX() - pe.getExtPort().loc.getX());
+					Double diffX = Double.valueOf(pe.getElecPort().loc.getX() - pe.getExtPort().loc.getX());
 					MutableInteger xCount = xMap.get(diffX);
 					if (xCount == null) xMap.put(diffX, xCount = new MutableInteger(0));
 					xCount.increment();
 
-					Double diffY = new Double(pe.getElecPort().loc.getY() - pe.getExtPort().loc.getY());
+					Double diffY = Double.valueOf(pe.getElecPort().loc.getY() - pe.getExtPort().loc.getY());
 					MutableInteger yCount = yMap.get(diffY);
 					if (yCount == null) yMap.put(diffY, yCount = new MutableInteger(0));
 					yCount.increment();

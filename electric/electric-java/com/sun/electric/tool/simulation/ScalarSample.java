@@ -102,7 +102,7 @@ public class ScalarSample implements Sample, Comparable<Object>
         }
         public void serialize(ScalarSample v, byte[] buf, int ofs)
         {
-            UnboxedHalfDouble.instance.serialize(new Double(v.value), buf, ofs);
+            UnboxedHalfDouble.instance.serialize(Double.valueOf(v.value), buf, ofs);
         }
         public int compare(byte[] buf1, int ofs1, byte[] buf2, int ofs2)
         {

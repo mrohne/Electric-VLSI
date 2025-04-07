@@ -333,7 +333,7 @@ public class ERCWellCheck {
     private int runNow() {
         System.out.println("Checking Wells and Substrates in '" + cell.libDescribe() + "' ...");
         ElapseTimer timer = ElapseTimer.createInstance().start();
-        errorLogger = ErrorLogger.newInstance("ERC Well Check ");
+        errorLogger = ErrorLogger.newInst("ERC Well Check ");
         initStatistics();
 
         // make a list of primitives that need to be examined
@@ -873,11 +873,11 @@ public class ERCWellCheck {
 
         // Apply translation to place the bounding box of the well contact
         // in the correct location on the top cell.
-        private Rectangle2D placedWellCon(WellCon wc) {
-            Rectangle2D orig = wc.getNi().getBounds();
-            return new Rectangle2D.Double(wc.getBound().getCenterX() - orig.getWidth() / 2, wc.getBound().getCenterY()
-                    - orig.getHeight() / 2, orig.getWidth(), orig.getHeight());
-        }
+//        private Rectangle2D placedWellCon(WellCon wc) {
+//            Rectangle2D orig = wc.getNi().getBounds();
+//            return new Rectangle2D.Double(wc.getBound().getCenterX() - orig.getWidth() / 2, wc.getBound().getCenterY()
+//                    - orig.getHeight() / 2, orig.getWidth(), orig.getHeight());
+//        }
 
         public void logError(String message) {
             errorLogger.logError(message, cell, 0);
@@ -898,7 +898,6 @@ public class ERCWellCheck {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void assignWellContacts(int numberOfThreads) {
         wellConIterator = new Iterator[numberOfThreads];
         wellConLists = new List[numberOfThreads];
@@ -1269,7 +1268,7 @@ public class ERCWellCheck {
                                 while (it.hasNext()) {
                                     Export exp = it.next();
 
-                                    networkExportAvailable.add(new Integer(parentNet.getNetIndex()));
+                                    networkExportAvailable.add(Integer.valueOf(parentNet.getNetIndex()));
 
                                     if (exp.isGround())
                                         nr.onGround = true;

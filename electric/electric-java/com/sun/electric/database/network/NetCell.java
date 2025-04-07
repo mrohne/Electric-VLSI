@@ -143,7 +143,7 @@ public class NetCell {
         this.cell = cell;
     }
 
-    public static NetCell newInstance(Cell cell) {
+    public static NetCell newInst(Cell cell) {
         return cell.isIcon() || cell.isSchematic() ? new NetSchem(cell) : new NetCell(cell);
     }
 

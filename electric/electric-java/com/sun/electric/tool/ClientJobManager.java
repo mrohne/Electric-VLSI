@@ -46,15 +46,16 @@ import javax.swing.SwingUtilities;
  *
  */
 class ClientJobManager {
-    /** stream for cleint read Snapshots. */    private final IdReader reader;
-    /** stream for cleint to send Jobs. */      private final DataOutputStream clientOutputStream;
+    /** stream for client read Snapshots. */    private final IdReader reader;
+    /** stream for client to send Jobs. */      private final DataOutputStream clientOutputStream;
     /** Process that launched this. */          private final Process process;
 
     private EditingPreferences currentEp = new EditingPreferences(true, IdManager.stdIdManager.getInitialTechPool());
     private boolean skipOneLine;
 
     /** Creates a new instance of ClientJobManager */
-    public ClientJobManager(String serverMachineName, int serverPort) throws IOException {
+    @SuppressWarnings("resource")
+	public ClientJobManager(String serverMachineName, int serverPort) throws IOException {
         process = null;
         System.out.println("Attempting to connect to port " + serverPort + " ...");
         Socket socket = new Socket(serverMachineName, serverPort);

@@ -48,8 +48,8 @@ public class BTreeTest {
         Random rand = new Random(Integer.parseInt(s[3], 16));
         int cachesize = Integer.parseInt(s[2]);
         int numops = Integer.parseInt(s[1]);
-        int maxsize = Integer.parseInt(s[0]);
-        int size = 0;
+//        int maxsize = Integer.parseInt(s[0]);
+//        int size = 0;
         CachingPageStorage ps = new CachingPageStorageWrapper(FilePageStorage.create(), cachesize, false);
         BTree<Integer,Integer,Pair<Integer,Integer>> btree =
             new BTree<Integer,Integer,Pair<Integer,Integer>>(ps, UnboxedInt.instance,
@@ -58,7 +58,7 @@ public class BTreeTest {
         TreeMap<Integer,Integer> tm = 
             new TreeMap<Integer,Integer>();
 
-        int puts=0, gets=0, deletes=0, misses=0, inserts=0;
+        int puts=0, gets=0, deletes=0, misses=0;
         long lastprint=0;
 
         // you can switch one of these off to gather crude performance measurements and compare them to TreeMap

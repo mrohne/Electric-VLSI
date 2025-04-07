@@ -45,36 +45,29 @@ public class AssuraDrcErrors {
     private static class DrcRuleViolation {
         private final int number;
         private final String desc;
-        private final List<DrcError> errors;         // list of DrcErrors
-//        private int realErrorCount;
-//        private int flatErrorCount;
+//        private final List<DrcError> errors;         // list of DrcErrors
         private DrcRuleViolation(int number, String desc) {
             this.number = number;
             this.desc = desc;
-            errors = new ArrayList<DrcError>();
+//            errors = new ArrayList<DrcError>();
         }
-//        private void addError(DrcError error) {
-//            errors.add(error);
+//        public Iterator<DrcError> getErrors() {
+//            ArrayList<DrcError> copy = new ArrayList<DrcError>(errors);
+//            return copy.iterator();
 //        }
-        public Iterator<DrcError> getErrors() {
-            ArrayList<DrcError> copy = new ArrayList<DrcError>(errors);
-            return copy.iterator();
-        }
         private void setErrorCounts(int real, int flat) {
-//            realErrorCount = real;
-//            flatErrorCount = flat;
         }
     }
 
     private static class DrcError {
-        private final Cell cell;
-        private final Shape marker;
+//        private final Cell cell;
+//        private final Shape marker;
         private DrcError(Cell cell, Shape marker) {
-            this.cell = cell;
-            this.marker = marker;
+//            this.cell = cell;
+//            this.marker = marker;
         }
-        public Cell getCell() { return cell; }
-        public Shape getMarker() { return marker; }
+//        public Cell getCell() { return cell; }
+//        public Shape getMarker() { return marker; }
     }
 
 	/**
@@ -94,7 +87,7 @@ public class AssuraDrcErrors {
         String line;
         DrcRuleViolation rule = null;
         Cell cell = null;
-        ErrorLogger logger = ErrorLogger.newInstance("Assura "+type+" Errors");
+        ErrorLogger logger = ErrorLogger.newInst("Assura "+type+" Errors");
         int count = 0;
         int num = 1;
         try {
@@ -159,6 +152,7 @@ public class AssuraDrcErrors {
                     }
                 }
             }
+            in.close();
         } catch (IOException e) {
             System.out.println("Error importing "+type+" Errors: "+e.getMessage());
             return;

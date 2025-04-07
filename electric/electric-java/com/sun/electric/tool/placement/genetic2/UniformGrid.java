@@ -104,7 +104,7 @@ public class UniformGrid
 			grid[x][y] = new LinkedList<Integer>();
 		}
 		
-		grid[x][y].add(new Integer(i));
+		grid[x][y].add(Integer.valueOf(i));
 		cellOfNode[i] = grid[x][y];
 		
 		LinkedList<Integer> cellList = cellOfNode[i];

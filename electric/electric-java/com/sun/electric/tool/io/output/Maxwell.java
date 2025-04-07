@@ -151,7 +151,7 @@ public class Maxwell extends Output
 		printWriter.print("NewObjColor " + red + " " + green + " " + blue + "\n");
 
 		// find this network object
-		Integer index = new Integer(globalNetNum);
+		Integer index = Integer.valueOf(globalNetNum);
 		List<Integer> boxList = maxNetMap.get(index);
 		if (boxList == null)
 		{
@@ -168,7 +168,7 @@ public class Maxwell extends Output
 		String netName = net.describe(false) + "-" + boxNumber;
 		printWriter.print("Box pos3 " + lX + " " + lY + " " + layer.getName() + "-Bot   " +
 			wid + " " + hei + " " + layer.getName() + "-Hei \"" + netName + "\"\n");
-		Integer boxNum = new Integer(boxNumber);
+		Integer boxNum = Integer.valueOf(boxNumber);
 		boxList.add(boxNum);
 		boxNames.put(boxNum, netName);
 		boxNumber++;

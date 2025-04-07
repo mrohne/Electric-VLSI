@@ -573,7 +573,7 @@ public class AutoStitch
         }
 		if (widestArc > bottomNi.getXSize() && widestArc > bottomNi.getYSize())
 			widestArc = Math.max(bottomNi.getXSize(), bottomNi.getYSize());
-		truePinSize.put(pi, new Double(widestArc));
+		truePinSize.put(pi, Double.valueOf(widestArc));
 		return widestArc;
 	}
 
@@ -2280,7 +2280,7 @@ name=null;
                             {
                                 // make export on pin and wire to pi, rather than exporting pi
                                 PrimitiveNode pin = ap.findPinProto();
-                                NodeInst pinNi = NodeInst.newInstance(pin, ep, center, pin.getDefWidth(ep), pin.getDefHeight(ep), cell);
+                                NodeInst pinNi = NodeInst.newInst(pin, ep, center, pin.getDefWidth(ep), pin.getDefHeight(ep), cell);
                                 Route route = router.planRoute(cell, pinNi.getOnlyPortInst(), pi, center, null, ep, false, false, null, null);
                                 if (Router.createRouteNoJob(route, cell, new HashMap<ArcProto,Integer>(), new HashMap<NodeProto,Integer>(), ep) != null) {
                                     pi = pinNi.getOnlyPortInst();
@@ -2292,7 +2292,7 @@ name=null;
                     }
                 }
                 if (!existingExportFound)
-                    exportThis = Export.newInstance(cell, pi, exportName, ep);
+                    exportThis = Export.newInst(cell, pi, exportName, ep);
             }
 			ni = where.getNodable().getNodeInst();
 			where = where.pop();
@@ -2741,7 +2741,7 @@ name=null;
         }
 
         // get unique key
-        Long key = new Long((netID1 << Integer.SIZE) | (netID2));
+        Long key = Long.valueOf((netID1 << Integer.SIZE) | (netID2));
         List<PolyConnection> polys = overlapMap.get(key);
         if (polys == null) {
             polys = new ArrayList<PolyConnection>();
@@ -2782,7 +2782,7 @@ name=null;
                     Network net = netlist.getNetwork(pi);
                     if (net == null) continue;
                     int netID = info.getNetID(net);
-                    netIdMap.put(pi, new Integer(netID));
+                    netIdMap.put(pi, Integer.valueOf(netID));
                 }
             }
         }

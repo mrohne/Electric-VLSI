@@ -59,7 +59,7 @@ public abstract class MTDRCTool extends MultiTaskJob<Layer, MTDRCTool.MTDRCResul
     @Override
     public void prepareTasks()
     {
-        Technology tech = topCell.getTechnology();
+//        Technology tech = topCell.getTechnology();
         cellLayersCon = new CellLayersContainer();
         CheckCellLayerEnumerator layerCellCheck = new CheckCellLayerEnumerator(cellLayersCon);
         HierarchyEnumerator.enumerateCell(topCell, VarContext.globalContext, layerCellCheck);
@@ -70,9 +70,6 @@ public abstract class MTDRCTool extends MultiTaskJob<Layer, MTDRCTool.MTDRCResul
             assert (layer != null); // it should always be a valid layer
             if (rules.hasLayerRules(layer))
                 startTask(layer.getName(), layer);
-            // might not be very efficient if print is done here.
-//            else
-//                System.out.println("Skping Layer '" + layer.getName() + "' since it has no rules");
         }
         if (!checkArea())
             startTask("Node Min Size.", null);

@@ -312,30 +312,30 @@ public class IconParameters implements Serializable
             for(int i=0; i<leftSide; i++)
             {
             	ShadowExport se = shadowExportList.get((i+bestIndex)%numExports);
-                portSide.put(se, new Integer(0));
-                portIndex.put(se, new Integer(leftSide-i-1));
-                portRotation.put(se, new Integer(leftRot));
+                portSide.put(se, Integer.valueOf(0));
+                portIndex.put(se, Integer.valueOf(leftSide-i-1));
+                portRotation.put(se, Integer.valueOf(leftRot));
             }
             for(int i=0; i<topSide; i++)
             {
             	ShadowExport se = shadowExportList.get((i+leftSide+bestIndex)%numExports);
-                portSide.put(se, new Integer(2));
-                portIndex.put(se, new Integer(topSide-i-1));
-                portRotation.put(se, new Integer(topRot));
+                portSide.put(se, Integer.valueOf(2));
+                portIndex.put(se, Integer.valueOf(topSide-i-1));
+                portRotation.put(se, Integer.valueOf(topRot));
             }
             for(int i=0; i<rightSide; i++)
             {
             	ShadowExport se = shadowExportList.get((i+leftSide+topSide+bestIndex)%numExports);
-                portSide.put(se, new Integer(1));
-                portIndex.put(se, new Integer(i));
-                portRotation.put(se, new Integer(rightRot));
+                portSide.put(se, Integer.valueOf(1));
+                portIndex.put(se, Integer.valueOf(i));
+                portRotation.put(se, Integer.valueOf(rightRot));
             }
             for(int i=0; i<bottomSide; i++)
             {
             	ShadowExport se = shadowExportList.get((i+leftSide+topSide+rightSide+bestIndex)%numExports);
-                portSide.put(se, new Integer(3));
-                portIndex.put(se, new Integer(i));
-                portRotation.put(se, new Integer(bottomRot));
+                portSide.put(se, Integer.valueOf(3));
+                portIndex.put(se, Integer.valueOf(i));
+                portRotation.put(se, Integer.valueOf(bottomRot));
             }
         } else
         {
@@ -347,16 +347,16 @@ public class IconParameters implements Serializable
             {
             	Export e = se.originals.get(0);
                 int index = iconPosition(e);
-                portSide.put(se, new Integer(index));
+                portSide.put(se, Integer.valueOf(index));
                 switch (index)
                 {
-                    case 0: portIndex.put(se, new Integer(leftSide++));    break;
-                    case 1: portIndex.put(se, new Integer(rightSide++));   break;
-                    case 2: portIndex.put(se, new Integer(topSide++));     break;
-                    case 3: portIndex.put(se, new Integer(bottomSide++));  break;
+                    case 0: portIndex.put(se, Integer.valueOf(leftSide++));    break;
+                    case 1: portIndex.put(se, Integer.valueOf(rightSide++));   break;
+                    case 2: portIndex.put(se, Integer.valueOf(topSide++));     break;
+                    case 3: portIndex.put(se, Integer.valueOf(bottomSide++));  break;
                 }
                 int rotation = ViewChanges.iconTextRotation(e, ep);
-                portRotation.put(se, new Integer(rotation));
+                portRotation.put(se, Integer.valueOf(rotation));
             }
         }
 
@@ -376,7 +376,7 @@ public class IconParameters implements Serializable
         NodeInst bbNi = null;
         if (ep.isIconGenDrawBody())
         {
-            bbNi = NodeInst.newInstance(Artwork.tech().openedThickerPolygonNode, ep, new Point2D.Double(0,0), xSize, ySize, iconCell);
+            bbNi = NodeInst.newInst(Artwork.tech().openedThickerPolygonNode, ep, new Point2D.Double(0,0), xSize, ySize, iconCell);
             if (bbNi == null) return null;
             EPoint[] boxOutline = new EPoint[5];
             if (ep.getIconGenExportPlacement() == 1 && ep.isIconGenExportPlacementExact())
@@ -454,7 +454,7 @@ public class IconParameters implements Serializable
         // if no body, leads, or cell center is drawn, and there is only 1 export, add more
         if (!ep.isIconGenDrawBody() && !ep.isIconGenDrawLeads() && ep.isPlaceCellCenter() && total <= 1)
         {
-            NodeInst.newInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(0,0), xSize, ySize, iconCell);
+            NodeInst.newInst(Generic.tech().invisiblePinNode, ep, new Point2D.Double(0,0), xSize, ySize, iconCell);
         }
 
         return iconCell;
@@ -546,12 +546,12 @@ public class IconParameters implements Serializable
         }
 
         // make the pin with the port
-        NodeInst pinNi = NodeInst.newInstance(pinType, ep, new Point2D.Double(xPos, yPos), pinSizeX, pinSizeY, np);
+        NodeInst pinNi = NodeInst.newInst(pinType, ep, new Point2D.Double(xPos, yPos), pinSizeX, pinSizeY, np);
         if (pinNi == null) return false;
 
         // export the port that should be on this pin
         PortInst pi = pinNi.getOnlyPortInst();
-        Export port = Export.newInstance(np, pi, name, ep, sample.getCharacteristic());
+        Export port = Export.newInst(np, pi, name, ep, sample.getCharacteristic());
         if (port != null)
         {
             TextDescriptor td = port.getTextDescriptor(Export.EXPORT_NAME);
@@ -673,7 +673,7 @@ public class IconParameters implements Serializable
                 pinType = Generic.tech().invisiblePinNode;
             double wid = pinType.getDefWidth(ep);
             double hei = pinType.getDefHeight(ep);
-            NodeInst ni = NodeInst.newInstance(pinType, ep, new Point2D.Double(xBBPos, yBBPos), wid, hei, np);
+            NodeInst ni = NodeInst.newInst(pinType, ep, new Point2D.Double(xBBPos, yBBPos), wid, hei, np);
             if (ni != null)
             {
                 PortInst head = ni.getOnlyPortInst();

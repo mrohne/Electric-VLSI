@@ -63,7 +63,7 @@ public class DeltaBBMetric
 		Iterator<PlacementNode> it = nodesToPlace.iterator();
 		for(int i = 0; i < nodesToPlace.size(); i++)
 		{
-			nodeBlocks.put(it.next(), new Integer(i));
+			nodeBlocks.put(it.next(), Integer.valueOf(i));
 		}
 
 		networksOfNode = new LinkedList[nodesToPlace.size()];
@@ -81,7 +81,7 @@ public class DeltaBBMetric
 			for(PlacementPort p : pp)
 			{
 				n = p.getPlacementNode();
-				Integer ii = new Integer(i);
+				Integer ii = Integer.valueOf(i);
 				if(!networksOfNode[nodeBlocks.get(n).intValue()].contains(ii))
 					networksOfNode[nodeBlocks.get(n).intValue()].add(ii);
 			}

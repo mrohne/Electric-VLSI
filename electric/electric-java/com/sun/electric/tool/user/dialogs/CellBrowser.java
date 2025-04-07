@@ -107,7 +107,7 @@ public class CellBrowser extends EDialog implements DatabaseChangeListener {
 
         public String toString() { return name; }
 
-        public static final DoAction newInstance = new DoAction("New Cell Instance", "Create a Cell Instance");
+        public static final DoAction newInst = new DoAction("New Cell Instance", "Create a Cell Instance");
         public static final DoAction editCell = new DoAction("Edit Cell", "Edit a Cell");
         public static final DoAction renameCell = new DoAction("Rename Cell", "Rename Cells");
         public static final DoAction duplicateCell = new DoAction("Duplicate Cell", "Duplicate a Cell");
@@ -426,7 +426,7 @@ public class CellBrowser extends EDialog implements DatabaseChangeListener {
             public void itemStateChanged(ItemEvent evt) { updateCellList(); }
         });
 
-        if (action == DoAction.newInstance) {
+        if (action == DoAction.newInst) {
             doAction.setText("New Instance");
             done.setText("New Instance & Close");
         }
@@ -549,7 +549,7 @@ public class CellBrowser extends EDialog implements DatabaseChangeListener {
     }//GEN-LAST:event_cancelActionPerformed
 
     private void doneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doneActionPerformed
-        if (action == DoAction.newInstance)
+        if (action == DoAction.newInst)
             performAction();
         closeDialog(null);
     }//GEN-LAST:event_doneActionPerformed
@@ -579,7 +579,7 @@ public class CellBrowser extends EDialog implements DatabaseChangeListener {
 
     private void performAction() {
 
-        if (action == DoAction.newInstance)
+        if (action == DoAction.newInst)
         {
             Cell cell = getSelectedCell();
             if (cell == null) return;

@@ -131,12 +131,12 @@ public class Input<ResultType>
 		if (lib == null && type != FileType.EDIF)
 		{
 			String libName = TextUtils.getFileNameWithoutExtension(fileURL);
-			lib = Library.newInstance(libName, fileURL);
+			lib = Library.newInst(libName, fileURL);
 		}
 
 		// initialize timer and error logger
 		long startTime = System.currentTimeMillis();
-		errorLogger = ErrorLogger.newInstance(type.getName() + " Import");
+		errorLogger = ErrorLogger.newInst(type.getName() + " Import");
 
 		File f = new File(fileURL.getPath());
 		if (f != null && f.exists()) {

@@ -171,14 +171,14 @@ class UsageCollector {
 
     private static class CellUsageInfoBuilder {
 
-        private final CellUsage cellUsage;
+//        private final CellUsage cellUsage;
         private final boolean isIcon;
         private int instCount;
         private final BitSet usedExports = new BitSet();
         private final TreeMap<Variable.AttrKey, TextDescriptor.Unit> usedAttributes;
 
         private CellUsageInfoBuilder(CellUsage cellUsage) {
-            this.cellUsage = cellUsage;
+//            this.cellUsage = cellUsage;
             isIcon = cellUsage.protoId.isIcon();
             usedAttributes = isIcon ? new TreeMap<Variable.AttrKey, TextDescriptor.Unit>() : null;
         }

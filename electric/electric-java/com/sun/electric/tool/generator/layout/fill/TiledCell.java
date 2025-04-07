@@ -89,7 +89,7 @@ public class TiledCell {
     {
         this.ep = ep;
         String tiledName = "t"+cell.getName()+"_"+numX+"x"+numY+"{lay}";
-        tileCell = Cell.newInstance(lib, tiledName);
+        tileCell = Cell.newInst(lib, tiledName);
         config = new FillGenConfig(cell.getTechnology());
 
         Rectangle2D bounds = cell.findEssentialBounds();
@@ -196,11 +196,11 @@ public class TiledCell {
             PortCharacteristic role = pp.getCharacteristic();
             if (role==FillCell.VDD_CHARACTERISTIC) {
                 //System.out.println(pp.getName());
-                Export e = Export.newInstance(tiled, pi, vddName(), ep);
+                Export e = Export.newInst(tiled, pi, vddName(), ep);
                 e.setCharacteristic(role);
             } else if (role==FillCell.GND_CHARACTERISTIC) {
                 //System.out.println(pp.getName());
-                Export e = Export.newInstance(tiled, pi, gndName(), ep);
+                Export e = Export.newInst(tiled, pi, gndName(), ep);
                 e.setCharacteristic(role);
             } else {
                 Job.error(true, "unrecognized Characteristic");

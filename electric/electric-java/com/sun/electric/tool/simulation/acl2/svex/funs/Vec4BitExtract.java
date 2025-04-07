@@ -33,7 +33,7 @@ import java.math.BigInteger;
 import java.util.Map;
 
 /**
- * Coerces an arbitrary 4vec to a 3vec by “unfloating” it, i.e., by turning any Zs into Xes.
+ * Coerces an arbitrary 4vec to a 3vec by "unfloating" it, i.e., by turning any Zs into Xes.
  * See<http://www.cs.utexas.edu/users/moore/acl2/manuals/current/manual/?topic=SV____3VEC-FIX>.
  *
  * @param <N> Type of name of Svex variables

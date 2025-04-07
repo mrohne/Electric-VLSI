@@ -23,10 +23,10 @@ package com.sun.electric.database.geometry.btree.unboxed;
 
 import java.io.*;
 
-/** A 32-bit <tt>float</tt> in unboxed form */
+/** A 32-bit <b>float</b> in unboxed form */
 public class UnboxedFloat implements UnboxedComparable<Float> {
     public int getSize() { return 4; }
-    public Float deserialize(byte[] buf, int ofs) { return new Float(deserializeFloat(buf, ofs)); }
+    public Float deserialize(byte[] buf, int ofs) { return Float.valueOf(deserializeFloat(buf, ofs)); }
     public void serialize(Float k, byte[] buf, int ofs) { serialize(k.floatValue(), buf, ofs); }
     public float deserializeFloat(byte[] buf, int ofs) {
         return

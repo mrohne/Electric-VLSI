@@ -61,7 +61,7 @@ public class Route
 		/** number, 0 = bottom */			int				number;
 		/** list of extracted nodes */		RouteNode		nodes;
 		/** reference actual row */			Place.RowList	row;
-		/** last in row list */				RouteRow		last;
+//		/** last in row list */				RouteRow		last;
 		/** next in row list */				RouteRow		next;
 	};
 
@@ -147,7 +147,7 @@ public class Route
 	{
 		/** number of zone */				int				number;
 		/** list of channel nodes */		RouteZRGMem		chNodes;
-		/** last zone */					RouteZRG		last;
+//		/** last zone */					RouteZRG		last;
 		/** next zone */					RouteZRG		next;
 	};
 
@@ -308,7 +308,7 @@ public class Route
 			newRRow.number = row.rowNum;
 			newRRow.nodes = null;
 			newRRow.row = row;
-			newRRow.last = lastRRow;
+//			newRRow.last = lastRRow;
 			newRRow.next = null;
 			if (lastRRow != null)
 			{
@@ -1221,7 +1221,7 @@ public class Route
 
 		// create instance port
 		GetNetlist.SCNiPort port = new GetNetlist.SCNiPort();
-		port.port = new Integer(feedNumber++);
+		port.port = Integer.valueOf(feedNumber++);
 		port.extNode = node.extNode;
 		port.bits = 0;
 		port.xPos = localPrefs.feedThruSize / 2;
@@ -1909,7 +1909,7 @@ public class Route
 		zone.number = zNumber++;
 		zone.chNodes = null;
 		zone.next = null;
-		zone.last = null;
+//		zone.last = null;
 		firstZone = lastZone = zone;
 
 		// clear flag on all channel nodes
@@ -1937,7 +1937,7 @@ public class Route
 				zone.number = zNumber++;
 				zone.chNodes = null;
 				zone.next = null;
-				zone.last = lastZone;
+//				zone.last = lastZone;
 				lastZone.next = zone;
 				lastZone = zone;
 				zrgAddChNodes(chNodeList, zone);

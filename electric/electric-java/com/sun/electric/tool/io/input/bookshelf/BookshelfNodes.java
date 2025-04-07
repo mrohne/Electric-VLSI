@@ -95,6 +95,7 @@ public class BookshelfNodes implements BookshelfInputParser<Void> {
 				new BookshelfNode(name, width, height, isTerminal);
 			}
 		}
+		rin.close();
 		return null;
 	}
 

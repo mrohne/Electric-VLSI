@@ -89,14 +89,14 @@ public abstract class DialogJob extends Job {
         */
     }
 
-    private class DialogJobDialog extends EDialog {
-        public DialogJobDialog() {
-            super(/*parentFrame*/null, false);
-        }
-        public void submit() {
-            DialogJob.this.startJob();
-        }
-    }
+//    private class DialogJobDialog extends EDialog {
+//        public DialogJobDialog() {
+//            super(/*parentFrame*/null, false);
+//        }
+//        public void submit() {
+//            DialogJob.this.startJob();
+//        }
+//    }
 
 
     /** subclasses should override this */

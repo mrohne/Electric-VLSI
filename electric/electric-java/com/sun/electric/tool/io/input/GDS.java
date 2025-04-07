@@ -1515,7 +1515,7 @@ public class GDS extends Input<Object>
             int flags = 0;
             int techBits = 0;
             TextDescriptor protoDescriptor = ep.getInstanceTextDescriptor();
-            n = ImmutableNodeInst.newInstance(nodeId, proto.getId(), nodeName, nameDescriptor,
+            n = ImmutableNodeInst.newInst(nodeId, proto.getId(), nodeName, nameDescriptor,
                 orient, anchor, size, flags, techBits, protoDescriptor);
             if (points != null && GenMath.getAreaOfPoints(points) != wid*hei) {
                 n = n.withTrace(points, null);
@@ -1525,7 +1525,7 @@ public class GDS extends Input<Object>
             if (isVariableText)
             {
             	TextDescriptor td = ep.getExportTextDescriptor().withDisplay(true);
-            	Variable var = Variable.newInstance(Artwork.ART_MESSAGE, exportOrTextName, td);
+            	Variable var = Variable.newInst(Artwork.ART_MESSAGE, exportOrTextName, td);
             	n = n.withVariable(var); 
             }
             
@@ -1585,13 +1585,13 @@ public class GDS extends Input<Object>
                 boolean alwaysDrawn = false;
                 boolean bodyOnly = false;
                 assert parent.findExport(exportOrTextName) == null;
-                ImmutableExport d = ImmutableExport.newInstance(exportId, exportNameKey, nameTextDescriptor,
+                ImmutableExport d = ImmutableExport.newInst(exportId, exportNameKey, nameTextDescriptor,
                     nodeId, portProtoId, alwaysDrawn, bodyOnly, pc);
 
                 if (trueName != null)
                 {
 	            	TextDescriptor td = ep.getExportTextDescriptor();
-	            	Variable var = Variable.newInstance(ORIGINAL_EXPORT_NAME, trueName, td);
+	            	Variable var = Variable.newInst(ORIGINAL_EXPORT_NAME, trueName, td);
 	            	d = d.withVariable(var);
                 }
             	
@@ -1845,7 +1845,7 @@ public class GDS extends Input<Object>
 		if (cell == null)
 		{
 			// create the prototype
-			cell = Cell.newInstance(theLibrary, name);
+			cell = Cell.newInst(theLibrary, name);
 			if (curTech != null)
 				cell.setTechnology(curTech);
 			if (cell == null) gdsRead.handleError("Failed to create structure");
@@ -2617,7 +2617,7 @@ public class GDS extends Input<Object>
 		curLayerType = layerType;
 		layerIsPin = false;
 		currentUnknownLayerMessage = null;
-		Integer layerInt = new Integer(layerNum + (layerType<<16));
+		Integer layerInt = Integer.valueOf(layerNum + (layerType<<16));
 		List<Layer> list = layerNames.get(layerInt);
 		Layer layer = null;
 		
@@ -2824,7 +2824,7 @@ public class GDS extends Input<Object>
 		if (np == null)
 		{
 			// FILO order, create this nodeproto
-			np = Cell.newInstance(theLibrary, name);
+			np = Cell.newInst(theLibrary, name);
 			if (np == null) gdsRead.handleError("Failed to create SREF proto");
 			setProgressValue(0);
 			setProgressNote("Reading " + name);

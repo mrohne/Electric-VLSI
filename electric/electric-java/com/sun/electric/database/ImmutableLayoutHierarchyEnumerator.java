@@ -161,8 +161,8 @@ public final class ImmutableLayoutHierarchyEnumerator {
     private Visitor visitor;
     private boolean caching;
     private int curNetId = 0;
-    private int cellCnt = 0; // For statistics
-    private int instCnt = 0; // For statistics
+//    private int cellCnt = 0; // For statistics
+//    private int instCnt = 0; // For statistics
     private Map<Integer, NetDescription> netIdToNetDesc =
             new HashMap<Integer, NetDescription>();
     private HashMap<Cell, int[]> cellExternalIds = new HashMap<Cell, int[]>();
@@ -296,7 +296,7 @@ public final class ImmutableLayoutHierarchyEnumerator {
         int firstNetID = curNetId;
         int[] netNdxToNetID = numberNets(cell, netlist, portNdxToNetIDs, info);
         int lastNetIDPlusOne = curNetId;
-        cellCnt++;
+//        cellCnt++;
         info.init(parentInst, cell, context, netlist, netNdxToNetID,
                 portNdxToNetIDs, xformToRoot, netIdToNetDesc, parent);
 
@@ -334,7 +334,7 @@ public final class ImmutableLayoutHierarchyEnumerator {
 
     private void visitThisNode(Nodable ni, VarContext context, Netlist netlist, CellInfo info,
             int[] netNdxToNetID, FixpTransform xformToRoot) {
-        instCnt++;
+//        instCnt++;
         boolean descend = visitor.visitNodeInst(ni, info);
         NodeProto np = ni.getProto();
         if (descend && ni.isCellInstance() && !((Cell) np).isIcon()) {
@@ -489,13 +489,13 @@ public final class ImmutableLayoutHierarchyEnumerator {
 
         private Nodable parentInst;
         private Cell cell;
-        private CellTree cellTree;
+//        private CellTree cellTree;
         private VarContext context;
         private Netlist netlist;
         private int[] netNdxToNetID;
         private int[][] exportNdxToNetIDs;
         private FixpTransform xformToRoot;
-        private Map<Integer, NetDescription> netIdToNetDesc;
+//        private Map<Integer, NetDescription> netIdToNetDesc;
         private CellInfo parentInfo;
 
         // package private
@@ -505,13 +505,13 @@ public final class ImmutableLayoutHierarchyEnumerator {
                 CellInfo parentInfo) {
             this.parentInst = parentInst;
             this.cell = cell;
-            this.cellTree = cell.tree();
+            /* this.cellTree = */ cell.tree();
             this.context = context;
             this.netlist = netlist;
             this.netNdxToNetID = netToNetID;
             this.exportNdxToNetIDs = exportNdxToNetIDs;
             this.xformToRoot = xformToRoot;
-            this.netIdToNetDesc = netIdToNetDesc;
+//            this.netIdToNetDesc = netIdToNetDesc;
             this.parentInfo = parentInfo;
         }
 
@@ -749,204 +749,26 @@ public final class ImmutableLayoutHierarchyEnumerator {
 
     /** Experimental. Optionally caches results of variable evaluation. */
     public static void enumerateCell(Netlist rootNetlist, VarContext context, Visitor visitor, boolean caching) {
-        Netlist.ShortResistors shortResistors = rootNetlist.getShortResistors();
+        /* Netlist.ShortResistors shortResistors = */ rootNetlist.getShortResistors();
         (new ImmutableLayoutHierarchyEnumerator()).doIt(rootNetlist.getCell(), context, rootNetlist, visitor, caching, null);
     }
 
-    private static class ImmutableNetlist {
-
-        private final ImmutableNetLayout impl;
-        private final int[] nm_net;
-
-        private ImmutableNetlist(ImmutableNetLayout impl, Netlist.ShortResistors shortResisors) {
-            this.impl = impl;
-            nm_net = new int[impl.netMap.length];
-        }
-
-        private int getNetIndex(ImmutableArcInst a) {
-            return -1;
-        }
-
-        private int getNetIndex(ImmutableNodeInst n, PortProtoId pp) {
-            return -1;
-        }
-    }
-//    /**
-//     * Method to count number of unique cells in hierarchy.  Useful
-//     * for progress tracking of hierarchical netlisters and writers.
-//     */
-//    public static int getNumUniqueChildCells(Cell cell) {
-//        HashMap<Cell, Cell> uniqueChildCells = new HashMap<Cell, Cell>();
-//        hierCellsRecurse(cell, uniqueChildCells);
-//        return uniqueChildCells.size();
-//    }
+//    private static class ImmutableNetlist {
 //
-//    /** Recursive method used to traverse down hierarchy */
-//    private static void hierCellsRecurse(Cell cell, HashMap<Cell, Cell> uniqueCells) {
-//        EDatabase database = cell.getDatabase();
-//        for (Iterator<CellUsage> uit = cell.getUsagesIn(); uit.hasNext();) {
-//            CellUsage u = uit.next();
-//            Cell subCell = u.getProto(database);
-//            if (subCell.isIcon()) {
-//                continue;
-//            }
-//            uniqueCells.put(subCell, subCell);
-//            hierCellsRecurse(subCell, uniqueCells);
-//        }
-//    }
+//        private final ImmutableNetLayout impl;
+//        private final int[] nm_net;
 //
-//    /**
-//     * Get the Network in the childNodable that corresponds to the Network in the childNodable's
-//     * parent cell.
-//     * @param parentNet the network in the parent
-//     * @param childNodable the child nodable.
-//     * @return the network in the child that connects to the network in the parent, or
-//     * null if no such network.
-//     */
-//    public static Network getNetworkInChild(Network parentNet, Nodable childNodable) {
-//        if (childNodable == null || parentNet == null) {
-//            return null;
-//        }
-//        if (!childNodable.isCellInstance()) {
-//            return null;
-//        }
-//        Cell childCell = (Cell) childNodable.getProto();
-//        Netlist parentNetlist = parentNet.getNetlist();
-//        Netlist childNetlist = parentNetlist.getNetlist(childNodable);
-//        PortProto pp = null;
-//        int i = 0;
-//        boolean found = false;
-//        NodeInst ni = childNodable.getNodeInst();
-//        // find port and index on nodable that is connected to parentNet
-//        for (Iterator<PortInst> it = ni.getPortInsts(); it.hasNext();) {
-//            PortInst pi = it.next();
-//            pp = pi.getPortProto();
-//            for (i = 0; i < pp.getNameKey().busWidth(); i++) {
-//                Network net = parentNetlist.getNetwork(childNodable, pp, i);
-//                if (net == parentNet) {
-//                    found = true;
-//                    break;
-//                }
-//            }
-//            if (found) {
-//                break;
-//            }
-//        }
-//        if (!found) {
-//            return null;
-//        }
-//        // find corresponding export in child
-//        if (childCell.contentsView() != null) {
-//            childCell = childCell.contentsView();
-//        }
-//        Export export = childCell.findExport(pp.getNameKey());
-//        Network childNet = childNetlist.getNetwork(export, i);
-//        return childNet;
-//    }
-//
-//    /**
-//     * Method to search if child network is connected to visitor network (visitorNet).
-//     * Used in Quick.java and Connection.java.
-//     */
-//    public static boolean searchNetworkInParent(Network net, CellInfo info,
-//            Network visitorNet) {
-//        if (visitorNet == net) {
-//            return true;
-//        }
-//        CellInfo cinfo = info;
-//        while (net != null && cinfo.getParentInst() != null) {
-//            net = cinfo.getNetworkInParent(net);
-//            if (visitorNet == net) {
-//                return true;
-//            }
-//            cinfo = cinfo.getParentInfo();
-//        }
-//        return false;
-//    }
-//
-//    public static boolean searchInExportNetwork(Network net, CellInfo info,
-//            Network visitorNet) {
-//        boolean found = false;
-//        for (Iterator<Export> it = net.getExports(); !found && it.hasNext();) {
-//            Export exp = it.next();
-//            Network tmpNet = info.getNetlist().getNetwork(exp, 0);
-//            found = searchNetworkInParent(tmpNet, info, visitorNet);
-//        }
-//        return found;
-//    }
-//
-//    private static Network getRootNetwork(Network net, CellInfo info) {
-//        CellInfo cinfo = info;
-//        Network result = net;
-//        while (net != null && cinfo.getParentInst() != null) {
-//            net = cinfo.getNetworkInParent(net);
-//            if (net != null) {
-//                result = net;
-//            }
-//            cinfo = cinfo.getParentInfo();
-//        }
-//        return result;
-//    }
-//
-//    // Looking for a method to determine if two Geometrics belong to the same network
-//    public static boolean areGeometricsInSameNetwork(Geometric geo1, Network n1, Geometric geo2, Network n2,
-//            Cell top) {
-//        if (n1 == n2) {
-//            return true; // easy
-//        }
-//        // Parent networks at Cell top
-//        NetworkHierarchy search1 = new NetworkHierarchy(geo1, n1);
-//        enumerateCell(top, VarContext.globalContext, search1);
-//        NetworkHierarchy search2 = new NetworkHierarchy(geo2, n2);
-//        enumerateCell(top, VarContext.globalContext, search2);
-//        return search1.topNetwork != null && search2.topNetwork != null && search1.topNetwork == search2.topNetwork;
-//    }
-//
-//    private static class NetworkHierarchy extends ImmutableLayoutHierarchyEnumerator.Visitor {
-//
-//        Geometric theGeo;
-//        Network childNet;
-//        Network topNetwork;
-//
-//        NetworkHierarchy(Geometric geo, Network childN) {
-//            theGeo = geo;
-//            childNet = childN;
-//            topNetwork = null;
+//        private ImmutableNetlist(ImmutableNetLayout impl, Netlist.ShortResistors shortResisors) {
+//            this.impl = impl;
+//            nm_net = new int[impl.netMap.length];
 //        }
 //
-//        public boolean enterCell(ImmutableLayoutHierarchyEnumerator.CellInfo info) {
-//            Cell cell = info.getCell();
-//
-//            // Shall I look for name first? faster?
-//            // Checking only arcs
-//            for (Iterator<ArcInst> it = cell.getArcs(); it.hasNext();) {
-//                ArcInst ai = it.next();
-//                if (ai == theGeo) {
-//                    topNetwork = getRootNetwork(childNet, info);
-//                    return false; // stop looking
-//                }
-//            }
-//            return true; // keep looking?
+//        private int getNetIndex(ImmutableArcInst a) {
+//            return -1;
 //        }
 //
-//        public void exitCell(ImmutableLayoutHierarchyEnumerator.CellInfo info) {
-//        }
-//
-//        public boolean visitNodeInst(Nodable no, ImmutableLayoutHierarchyEnumerator.CellInfo info) {
-//            NodeInst ni = no.getNodeInst();
-//
-//            if (ni.isCellInstance()) {
-//                return true; // not interested in cells. Keep looking
-//            }
-//            if (Generic.isSpecialGenericNode(ni)) {
-//                return false; // like center or pin. Stop looking
-//            }
-//            if (ni == theGeo) // found
-//            {
-//                topNetwork = getRootNetwork(childNet, info);
-//            }
-//
-//            return false; // no need of going down since only PrimitiveNodes reach this point.
+//        private int getNetIndex(ImmutableNodeInst n, PortProtoId pp) {
+//            return -1;
 //        }
 //    }
 }

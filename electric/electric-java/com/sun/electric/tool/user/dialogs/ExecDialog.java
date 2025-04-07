@@ -112,30 +112,30 @@ public class ExecDialog extends EDialog implements Exec.FinishedListener {
         finishedListenersToAdd.remove(l);
     }
 
-    /**
-     * Start a process within an interactive dialog.
-     * @param command the command to run (NOT a shell command!!)
-     * @param envVars environment variables to use in the form name=value. If null, parent process vars are inherited
-     * @param dir the working dir. If null, the parent process' working dir is used
-     */
-    public synchronized void startProcess(String command, String [] envVars, File dir) {
-        if (exec != null) {
-            System.out.println("ERROR: ExecDialog can only execute one process at a time.");
-            return;
-        }
-        outStream = new ProcessOutput(outputTextArea);
-        errStream = new ProcessOutput(outputTextArea);
-        exec = new Exec(command, envVars, dir, outStream, errStream);
-        exec.addFinishedListener(this);
-        for (Exec.FinishedListener fl : finishedListenersToAdd) {
-            exec.addFinishedListener(fl);
-        }
-        finishedListenersToAdd.clear();
-        setTitle("External Process");
-        statusLabel.setText("Running '"+command+"'...");
-        setVisible(true);
-        exec.start();
-    }
+//    /**
+//     * Start a process within an interactive dialog.
+//     * @param command the command to run (NOT a shell command!!)
+//     * @param envVars environment variables to use in the form name=value. If null, parent process vars are inherited
+//     * @param dir the working dir. If null, the parent process' working dir is used
+//     */
+//    public synchronized void startProcess(String command, String [] envVars, File dir) {
+//        if (exec != null) {
+//            System.out.println("ERROR: ExecDialog can only execute one process at a time.");
+//            return;
+//        }
+//        outStream = new ProcessOutput(outputTextArea);
+//        errStream = new ProcessOutput(outputTextArea);
+//        exec = new Exec(command, envVars, dir, outStream, errStream);
+//        exec.addFinishedListener(this);
+//        for (Exec.FinishedListener fl : finishedListenersToAdd) {
+//            exec.addFinishedListener(fl);
+//        }
+//        finishedListenersToAdd.clear();
+//        setTitle("External Process");
+//        statusLabel.setText("Running '"+command+"'...");
+//        setVisible(true);
+//        exec.start();
+//    }
 
     /**
      * Start a process within an interactive dialog.

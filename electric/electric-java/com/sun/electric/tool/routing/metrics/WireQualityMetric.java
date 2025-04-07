@@ -23,6 +23,7 @@ package com.sun.electric.tool.routing.metrics;
 
 import java.io.PrintStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -250,7 +251,7 @@ public class WireQualityMetric extends RoutingMetric<QualityResults> {
 		buff.append("Routing Statistics for '" + name + "':\n");
 		
 		info("XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-		BigDecimal reg = new BigDecimal(GenMath.toNearest(totalWL, 0.1)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+		BigDecimal reg = new BigDecimal(GenMath.toNearest(totalWL, 0.1)).setScale(2, RoundingMode.HALF_EVEN);
 		
 		String temp = "\tTotal wire length " + TextUtils.formatDistance(reg.doubleValue()) + "\n";
 		buff.append(temp); info(temp);
@@ -270,10 +271,10 @@ public class WireQualityMetric extends RoutingMetric<QualityResults> {
 			buff.append(val); info(val);
 		}
 		
-		reg = new BigDecimal(GenMath.toNearest(avgVias/numberOfRoutedNets, 0.1)).setScale(1, BigDecimal.ROUND_HALF_EVEN);
+		reg = new BigDecimal(GenMath.toNearest(avgVias/numberOfRoutedNets, 0.1)).setScale(1, RoundingMode.HALF_EVEN);
 		temp = "\tAverage number of vias " + reg.doubleValue() + "\t";
 		buff.append(temp); info(temp);
-		reg = new BigDecimal(GenMath.toNearest(avgVias/numRoutedSegments, 0.1)).setScale(1, BigDecimal.ROUND_HALF_EVEN);
+		reg = new BigDecimal(GenMath.toNearest(avgVias/numRoutedSegments, 0.1)).setScale(1, RoundingMode.HALF_EVEN);
 		temp = "\tAverage number of vias based on routed segments " + reg.doubleValue() + "\n";
 		buff.append(temp); info(temp);
 		// Different Ideal WL buckets
@@ -284,17 +285,17 @@ public class WireQualityMetric extends RoutingMetric<QualityResults> {
 			buff.append(val); info(val);
 		}
 
-		reg = new BigDecimal(GenMath.toNearest(avgHpwlReal/numberOfRoutedNets, 0.01)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+		reg = new BigDecimal(GenMath.toNearest(avgHpwlReal/numberOfRoutedNets, 0.01)).setScale(2, RoundingMode.HALF_EVEN);
 		temp = "\tAverage Real HPWL " + TextUtils.formatDistance(reg.doubleValue()) + "\t";
 		buff.append(temp); info(temp);
-		reg = new BigDecimal(GenMath.toNearest(avgHpwlIdeal/numberOfRoutedNets, 0.01)).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+		reg = new BigDecimal(GenMath.toNearest(avgHpwlIdeal/numberOfRoutedNets, 0.01)).setScale(2, RoundingMode.HALF_EVEN);
 		temp = "\tAverage Ideal HPWL " + TextUtils.formatDistance(reg.doubleValue()) + "\n";
 		buff.append(temp); info(temp);
 
-		reg = new BigDecimal(GenMath.toNearest(avgWlDivHpwlReal/numberOfRoutedNets, 0.001)).setScale(3, BigDecimal.ROUND_HALF_EVEN);
+		reg = new BigDecimal(GenMath.toNearest(avgWlDivHpwlReal/numberOfRoutedNets, 0.001)).setScale(3, RoundingMode.HALF_EVEN);
 		temp = "\tAverage Real WL v/s HPWL " + reg.doubleValue() + "\t";
 		buff.append(temp); info(temp);
-		reg = new BigDecimal(GenMath.toNearest(avgWlDivHpwlIdeal/numberOfRoutedNets, 0.001)).setScale(3, BigDecimal.ROUND_HALF_EVEN);
+		reg = new BigDecimal(GenMath.toNearest(avgWlDivHpwlIdeal/numberOfRoutedNets, 0.001)).setScale(3, RoundingMode.HALF_EVEN);
 		temp = "\tAverage Ideal WL v/s HPWL " + reg.doubleValue();
 		buff.append(temp); info(temp);
 		info("\nXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -347,7 +348,7 @@ public class WireQualityMetric extends RoutingMetric<QualityResults> {
 			
 	        //logger.trace("calculate wire length");
 	        // assumption is that all wires are routing wires
-//	        result.wireLength = new Double(0);
+//	        result.wireLength = Double.valueOf(0);
 	        totalWL += result.wireLength = new WireLengthMetric().reduce(result.wireLength, net);
 	        info("wire length metric for net '" + net.getName() + "': " + result.wireLength);
 	

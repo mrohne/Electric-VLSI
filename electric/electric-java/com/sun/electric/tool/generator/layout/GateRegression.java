@@ -68,7 +68,7 @@ public class GateRegression extends Job {
 				Class<?> cmos90GeneratorClass = Class.forName("com.sun.electric.plugins.tsmc.gates90nm.CMOS90Generator");
 				Class [] parameterTypes = new Class[] {Double.class, StdCellParams.class};
 				Method generateMethod = cmos90GeneratorClass.getDeclaredMethod("generateAllGates", parameterTypes);
-				generateMethod.invoke(null, new Object[] {new Double(x), stdCell});
+				generateMethod.invoke(null, new Object[] {Double.valueOf(x), stdCell});
 	 		} catch (Exception e)
 	        {
 	 			System.out.println("ERROR invoking the CMOS90 gate generator");

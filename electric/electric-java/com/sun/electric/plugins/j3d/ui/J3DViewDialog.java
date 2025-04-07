@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.TransformGroup;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.TransformGroup;
 
 /**
  * Class to handle the "3D View Demo Dialog" dialog.

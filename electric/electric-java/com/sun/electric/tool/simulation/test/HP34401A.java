@@ -72,7 +72,7 @@ public class HP34401A extends Equipment implements CurrentReadable,
      * Minimum number of letters required for an {@link ALLOWED_WORDS}
      * &nbsp;member
      */
-    private static final int MIN_WORD_LENGTH = 3;
+//    private static final int MIN_WORD_LENGTH = 3;
 
     /** Identifier for measurement function during previous read */
     private int lastFunction = FUNCTION_UNDEFINED;

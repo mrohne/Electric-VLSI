@@ -268,7 +268,7 @@ public class NanosimBERT implements BERT {
 
         private Event(double eventTimeNS, int type, String node, int state, double voltage,
                       NanosimDataAnalyzer capturer) {
-            this.eventTimeNS = new Double(eventTimeNS);
+            this.eventTimeNS = Double.valueOf(eventTimeNS);
             this.type = type;
             this.node = node;
             this.state = state;
@@ -318,8 +318,8 @@ public class NanosimBERT implements BERT {
             int compare = eventTimeNS.compareTo(otherEvent.eventTimeNS);
             if (compare == 0) {
                 // if times are equal, check event type
-                Integer me = new Integer(type);
-                Integer other = new Integer(otherEvent.type);
+                Integer me = Integer.valueOf(type);
+                Integer other = Integer.valueOf(otherEvent.type);
                 compare = me.compareTo(other);
                 if (compare == 0) {
                     // if time and event type are equal, check pin name

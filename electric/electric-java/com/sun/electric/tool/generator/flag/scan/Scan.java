@@ -41,7 +41,7 @@ public class Scan {
 	private final FlagConfig config;
 	
 	private static void prln(String s) {Utils.prln(s);}
-	private static void error(boolean cond, String msg) {Utils.error(cond, msg);}
+//	private static void error(boolean cond, String msg) {Utils.error(cond, msg);}
 	
 	private TechType tech() {return config.tech();}
 

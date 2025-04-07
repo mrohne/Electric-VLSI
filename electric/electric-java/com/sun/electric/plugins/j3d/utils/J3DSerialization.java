@@ -23,10 +23,11 @@
 
 package com.sun.electric.plugins.j3d.utils;
 
-import javax.vecmath.Matrix4d;
-import javax.media.j3d.Transform3D;
 import java.io.Serializable;
 import java.util.List;
+
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.vecmath.Matrix4d;
 
 /**
  * This class is @serial

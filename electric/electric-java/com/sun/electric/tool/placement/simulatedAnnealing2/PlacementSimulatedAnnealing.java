@@ -213,7 +213,7 @@ public class PlacementSimulatedAnnealing extends PlacementFrame {
 
 		// precalculate an hash net lengths
 		for (PlacementNetwork net : allNetworks)
-			netLengths.put(net, new Double(metric.netLength(net, proxyMap)));
+			netLengths.put(net, Double.valueOf(metric.netLength(net, proxyMap)));
 
 		stepStartTime = System.nanoTime();
 
@@ -646,7 +646,7 @@ public class PlacementSimulatedAnnealing extends PlacementFrame {
 			for (PlacementNetwork net : dummy.getNets()) {
 				double length = metric
 						.netLength(net, proxyMap, new ProxyNode[] { original }, new ProxyNode[] { dummy });
-				lengths.put(dummy.getOriginalNet(net), new Double(length));
+				lengths.put(dummy.getOriginalNet(net), Double.valueOf(length));
 				sum += length;
 			}
 
@@ -684,7 +684,7 @@ public class PlacementSimulatedAnnealing extends PlacementFrame {
 			// sum up the net lengths
 			for (PlacementNetwork net : nets) {
 				double length = metric.netLength(net, proxyMap, originals, dummies);
-				lengths.put(net, new Double(length));
+				lengths.put(net, Double.valueOf(length));
 				sum += length;
 			}
 

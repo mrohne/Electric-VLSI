@@ -56,7 +56,7 @@ import java.util.Set;
 public class LESizer {
 
 	/** which algorithm to use */
-	private Alg optimizationAlg;
+//	private Alg optimizationAlg;
 	/** Where to direct output */
 	private PrintStream out;
 	/** What job we are part of */
@@ -87,7 +87,7 @@ public class LESizer {
 
 	/** Creates a new instance of LESizer */
 	protected LESizer(Alg alg, LENetlister1 netlist, Job job, ErrorLogger errorLogger) {
-		optimizationAlg = alg;
+//		optimizationAlg = alg;
 		this.netlist = netlist;
 		this.job = job;
 		this.errorLogger = errorLogger;
@@ -216,7 +216,7 @@ public class LESizer {
 							if ((inst.getType() == Instance.Type.LEGATE)) {
 								// organize by groups
 								int i = inst.getParallelGroup();
-								Integer integer = new Integer(i);
+								Integer integer = Integer.valueOf(i);
 								if (i <= 0) {
 									// this gate drives independently, check
 									// size
@@ -368,11 +368,11 @@ public class LESizer {
 
 	protected List getEndNets() {
 
-		List endNets = new ArrayList();
+//		List endNets = new ArrayList();
 
 		Iterator<Net> netIter = netlist.getAllNets().values().iterator();
 		while (netIter.hasNext()) {
-			Net net = netIter.next();
+			/* Net net = */ netIter.next();
 
 		}
 		return null;
@@ -394,7 +394,7 @@ public class LESizer {
 		while (instancesIter.hasNext()) {
 			Instance instance = instancesIter.next();
 			String instanceName = instance.getName();
-			StringBuffer buf = new StringBuffer();
+//			StringBuffer buf = new StringBuffer();
 			out.println("\t" + instanceName + " ==> " + TextUtils.formatDouble(instance.getLeX(), 3) + "x");
 			ArrayList<Pin> pins = instance.getAllPins();
 

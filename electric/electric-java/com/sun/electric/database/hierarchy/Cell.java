@@ -45,6 +45,7 @@ import com.sun.electric.database.id.TechId;
 import com.sun.electric.database.network.NetCell;
 import com.sun.electric.database.network.Netlist;
 import com.sun.electric.database.prototype.NodeProto;
+import com.sun.electric.database.prototype.PortCharacteristic;
 import com.sun.electric.database.prototype.PortProto;
 import com.sun.electric.database.text.CellName;
 import com.sun.electric.database.text.Name;
@@ -114,14 +115,12 @@ import java.util.prefs.Preferences;
  * A Cell knows about the most recent version of itself, which may be itself.
  * <P>
  * Cells also belong to CellGroup objects, which gather related cells together.
- * <P>
- * <CENTER><IMG SRC="doc-files/Cell-2.gif"></CENTER>
+ * <P style="text-align:center"><IMG SRC="doc-files/Cell-2.gif">
  * <P>
  * A Cell can have different views and versions, each of which is a cell.
  * The library shown here has two cells ("gate" and "twogate"), each of which has many
  * views (layout, schematics, icon, vhdl) and versions:
- * <P>
- * <CENTER><IMG SRC="doc-files/Cell-1.gif"></CENTER>
+ * <P style="text-align:center"><IMG SRC="doc-files/Cell-1.gif">
  */
 public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
 {
@@ -541,7 +540,6 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
      * set if instances should be expanded
      */
     public static final int WANTNEXPAND = 02;
-//  /** set if cell is modified */                                  private static final int MODIFIED      =     01000000;
     /**
      * set if everything in cell is locked
      */
@@ -654,7 +652,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
     // ------------------ protected and private methods -----------------------
     /**
      * This constructor should not be called.
-     * Use the factory "newInstance" to create a Cell.
+     * Use the factory "newInst" to create a Cell.
      */
     Cell(EDatabase database, ImmutableCell d)
     {
@@ -723,24 +721,24 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
     /**
      * Factory method to create a new Cell.
      * Also does auxiliary things to create the Cell, such as placing a cell-center if requested.
-     *
+     * @param ep EditingPreferences with default sizes and text descriptors.
      * @param lib the Library in which to place this cell.
      * @param name the name of this cell.
      * Cell names may not contain unprintable characters, spaces, tabs, a colon (:), semicolon (;) or curly braces ({}).
      * However, the name can be fully qualified with version and view information.
      * For example, "foo;2{sch}".
      * @return the newly created cell (null on error).
-     * @deprecated Use method with explicit EditingPreferences parameter.
+     * @deprecated but kept around for Python and BSH access
      */
+    @Deprecated
     public static Cell makeInstance(Library lib, String name)
     {
-        return makeInstance(EditingPreferences.getInstance(), lib, name);
-    }
+	    return makeInstance(EditingPreferences.getInstance(), lib, name);
+	}
 
     /**
      * Factory method to create a new Cell.
      * Also does auxiliary things to create the Cell, such as placing a cell-center if requested.
-     *
      * @param ep EditingPreferences with default sizes and text descriptors.
      * @param lib the Library in which to place this cell.
      * @param name the name of this cell.
@@ -751,13 +749,13 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
      */
     public static Cell makeInstance(EditingPreferences ep, Library lib, String name)
     {
-        Cell cell = newInstance(lib, name);
+        Cell cell = newInst(lib, name);
 
         // add cell-center if requested
         if (ep.isPlaceCellCenter())
         {
             NodeProto cellCenterProto = Generic.tech().cellCenterNode;
-            NodeInst cellCenter = NodeInst.newInstance(cellCenterProto, ep, new Point2D.Double(0, 0),
+            NodeInst cellCenter = NodeInst.newInst(cellCenterProto, ep, new Point2D.Double(0, 0),
                 cellCenterProto.getDefWidth(ep), cellCenterProto.getDefHeight(ep), cell);
             if (cellCenter != null)
             {
@@ -778,7 +776,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
      * For example, "foo;2{sch}".
      * @return the newly created cell (null on error).
      */
-    public static Cell newInstance(Library lib, String name)
+    public static Cell newInst(Library lib, String name)
     {
         lib.checkChanging();
         EDatabase database = lib.getDatabase();
@@ -813,7 +811,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
 
         Date creationDate = new Date();
         CellId cellId = lib.getId().newCellId(cellName);
-        Cell cell = new Cell(lib.getDatabase(), ImmutableCell.newInstance(cellId, creationDate.getTime()));
+        Cell cell = new Cell(lib.getDatabase(), ImmutableCell.newInst(cellId, creationDate.getTime()));
 
         // success
         database.addCell(cell);
@@ -1057,7 +1055,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
         {
             cellName = toName + fromCell.getView().getAbbreviationExtension();
         }
-        Cell newCell = Cell.newInstance(toLib, cellName);
+        Cell newCell = Cell.newInst(toLib, cellName);
         if (newCell == null)
         {
             return (null);
@@ -1078,10 +1076,10 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
 //            double scaleX = ni.getXSize();
 //            double scaleY = ni.getYSize();
             ImmutableNodeInst n = ni.getD();
-            NodeInst toNi = NodeInst.newInstance(newCell, lnt, n.name.toString(), n.nameDescriptor,
+            NodeInst toNi = NodeInst.newInst(newCell, lnt, n.name.toString(), n.nameDescriptor,
                 n.anchor, n.size, n.orient,
                 n.flags, n.techBits, n.protoDescriptor, null);
-//            NodeInst toNi = NodeInst.newInstance(lnt, new Point2D.Double(ni.getAnchorCenterX(), ni.getAnchorCenterY()),
+//            NodeInst toNi = NodeInst.newInst(lnt, new Point2D.Double(ni.getAnchorCenterX(), ni.getAnchorCenterY()),
 //                    scaleX, scaleY, newCell, ni.getOrient(), ni.getName());
             if (toNi == null)
             {
@@ -1198,7 +1196,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
             ImmutableExport e = pp.getD();
             ExportId exportId = newCell.getId().newPortId(e.exportId.getExternalId());
             Export ppt = Export.newInstanceNoIcon(newCell, exportId, e.name.toString(), e.nameDescriptor, pi, e.alwaysDrawn, e.bodyOnly, e.characteristic, null);
-//            Export ppt = Export.newInstance(newCell, pi, pp.getName());
+//            Export ppt = Export.newInst(newCell, pi, pp.getName());
             if (ppt == null)
             {
                 return null;
@@ -1352,7 +1350,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
 //              cellExpansionRemap = new HashMap<Name, Boolean>();
 //              expansionRemap.put(cell.getId(), cellExpansionRemap);
 //          }
-//          Boolean isExpanded = new Boolean(ni.isExpanded());
+//          Boolean isExpanded = Boolean.valueOf(ni.isExpanded());
 //          cellExpansionRemap.put(ni.getNameKey(), isExpanded);
 //      }
         // do the rename
@@ -1555,8 +1553,8 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
         if (backup == null)
         {
             getTechnology();
-            backup = CellBackup.newInstance(getD().withoutVariables(), techPool);
-            tree = CellTree.newInstance(backup.cellRevision.d, techPool).with(backup, CellTree.NULL_ARRAY, techPool);
+            backup = CellBackup.newInst(getD().withoutVariables(), techPool);
+            tree = CellTree.newInst(backup.cellRevision.d, techPool).with(backup, CellTree.NULL_ARRAY, techPool);
             assert !cellTreeFresh && !cellBackupFresh && !cellContentsFresh && !revisionDateFresh;
         }
         ImmutableNodeInst[] nodes = null;
@@ -2282,7 +2280,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
         private void addText(Point2D at, double size, double width, double height, String msg)
         {
             textPoint.add(at);
-            textSize.add(new Double(size));
+            textSize.add(size);
             textBox.add(new Point2D.Double(width, height));
             textMessage.add(msg);
         }
@@ -3761,7 +3759,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
         assert isParam(key);
         Variable oldParam = getParameter(key);
         // create new var
-        addParam(Variable.newInstance(newName, oldParam.getObject(), oldParam.getTextDescriptor()));
+        addParam(Variable.newInst(newName, oldParam.getObject(), oldParam.getTextDescriptor()));
         if (isIcon())
         {
             // Rename instance parameters
@@ -3773,7 +3771,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
                     continue;
                 }
                 Variable param = ni.getParameter(key);
-                ni.addParameter(Variable.newInstance(newName, param.getObject(), param.getTextDescriptor()));
+                ni.addParameter(Variable.newInst(newName, param.getObject(), param.getTextDescriptor()));
                 ni.delParameter(key);
             }
         }
@@ -5051,7 +5049,7 @@ public class Cell extends ElectricObject implements NodeProto, Comparable<Cell>
         NetCell netCell = netCellRef.get();
         if (netCell == null)
         {
-            netCell = NetCell.newInstance(this);
+            netCell = NetCell.newInst(this);
             setNetCellRef(netCell);
         }
         return netCell.getNetlist(shortResistors);

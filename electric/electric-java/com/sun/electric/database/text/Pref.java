@@ -99,7 +99,7 @@ public class Pref {
     public static class Group {
 
         private final String relativePath;
-        private boolean lockCreation;
+//        private boolean lockCreation;
         Preferences preferences;
         private final TreeMap<String, Pref> prefs = new TreeMap<String, Pref>();
 
@@ -120,7 +120,7 @@ public class Pref {
          * This method forbids further cration of Prefs.
          */
         public void lockCreation() {
-            lockCreation = true;
+//            lockCreation = true;
         }
 
         public void setCachedObjsFromPreferences() {
@@ -368,7 +368,7 @@ public class Pref {
             // reformat the XML
             StreamSource source = new StreamSource(new StringReader(xmlDump));
             TransformerFactory factory = TransformerFactory.newInstance();
-            factory.setAttribute("indent-number", new Integer(2));
+            factory.setAttribute("indent-number", 2);
             Transformer transformer = factory.newTransformer();
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");

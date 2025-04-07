@@ -538,12 +538,12 @@ public class PolySweepMerge extends GeometryHandler
 
         private static class CutBucket
         {
-            int fullyContainedEdges;
+//            int fullyContainedEdges;
             int totalCuts;
             double best, min, max;
             int dir;
             boolean found;
-            List<PolyEdge> edgesList;
+//            List<PolyEdge> edgesList;
 
             CutBucket(int d, double m, double n, List<PolyEdge> list)
             {
@@ -551,7 +551,7 @@ public class PolySweepMerge extends GeometryHandler
                 found = false;
                 min = m;
                 max = n;
-                edgesList = list;
+//                edgesList = list;
             }
 
             void analyzePoint(double p)

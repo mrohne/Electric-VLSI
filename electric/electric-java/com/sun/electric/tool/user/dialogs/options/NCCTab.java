@@ -104,11 +104,11 @@ public class NCCTab extends PreferencePanel
 		if (currBoolean!=NccPreferences.getCheckResistors()) {
 			NccPreferences.setCheckResistors(currBoolean);
 		}
-		double currDouble = TextUtils.atof(relativeSizeTolerance.getText(), new Double(NccPreferences.getRelativeSizeTolerance()));
+		double currDouble = TextUtils.atof(relativeSizeTolerance.getText(), Double.valueOf(NccPreferences.getRelativeSizeTolerance()));
 		if (currDouble!=NccPreferences.getRelativeSizeTolerance()) {
 			NccPreferences.setRelativeSizeTolerance(currDouble);
 		}
-		currDouble = TextUtils.atof(absoluteSizeTolerance.getText(), new Double(NccPreferences.getAbsoluteSizeTolerance()));
+		currDouble = TextUtils.atof(absoluteSizeTolerance.getText(), Double.valueOf(NccPreferences.getAbsoluteSizeTolerance()));
 		if (currDouble!=NccPreferences.getAbsoluteSizeTolerance()) {
 			NccPreferences.setAbsoluteSizeTolerance(currDouble);
 		}

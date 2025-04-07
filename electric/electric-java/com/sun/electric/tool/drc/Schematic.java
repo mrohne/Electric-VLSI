@@ -53,6 +53,7 @@ public class Schematic {
     // Cells, nodes and arcs
 
     private Set<ElectricObject> nodesChecked = new HashSet<ElectricObject>();
+    private Set<Cell> iconsToCheck;
     private ErrorLogger errorLogger;
     private Map<Geometric, List<Variable>> newVariables = new HashMap<Geometric, List<Variable>>();
 
@@ -60,6 +61,7 @@ public class Schematic {
         Schematic s = new Schematic();
         s.errorLogger = errorLog;
         s.checkSchematicCellRecursively(cell, geomsToCheck);
+        s.checkIconCells(cell);
         DRC.addDRCUpdate(0, null, null, null, null, s.newVariables, dp);
     }
 
@@ -89,30 +91,31 @@ public class Schematic {
         return null;
     }
 
-    private void checkSchematicCellRecursively(Cell cell, Geometric[] geomsToCheck) {
+    private void checkSchematicCellRecursively(Cell cell, Geometric[] geomsToCheck)
+    {
         nodesChecked.add(cell);
 
         // ignore if not a schematic
-        if (!cell.isSchematic() && cell.getTechnology() != Schematics.tech()) {
+        if (!cell.isSchematic() && cell.getTechnology() != Schematics.tech())
             return;
-        }
 
-        // recursively check contents in case of hierchically checking
-        if (geomsToCheck == null) {
-            for (Iterator<NodeInst> it = cell.getNodes(); it.hasNext();) {
+        // recursively check contents in case of hierarchically checking
+        if (geomsToCheck == null)
+        {
+            for (Iterator<NodeInst> it = cell.getNodes(); it.hasNext();)
+            {
                 NodeInst ni = it.next();
                 Cell contentsCell = isACellToCheck(ni);
-                if (contentsCell != null) {
+                if (contentsCell != null)
                     checkSchematicCellRecursively(contentsCell, geomsToCheck);
-                }
             }
-        } else {
-            for (Geometric geo : geomsToCheck) {
+        } else
+        {
+            for (Geometric geo : geomsToCheck)
+            {
                 Cell contentsCell = isACellToCheck(geo);
-
-                if (contentsCell != null) {
+                if (contentsCell != null)
                     checkSchematicCellRecursively(contentsCell, geomsToCheck);
-                }
             }
         }
 
@@ -121,6 +124,101 @@ public class Schematic {
         ErrorGrouper eg = new ErrorGrouper(cell);
         checkSchematicCell(cell, false, geomsToCheck, eg);
     }
+
+    /**
+     * Method to check all icon cells below a given point.
+     * @param topCell the top point to check.
+     */
+    private void checkIconCells(Cell topCell)
+    {
+    	// collect all icons below here
+    	iconsToCheck = new HashSet<Cell>();
+    	gatherIconCellsRecursively(topCell);
+
+    	// check the icons
+        for(Cell cell : iconsToCheck)
+        {
+        	// make sure all exports exist on the schematic
+            System.out.println("Checking icon " + cell);
+            ErrorGrouper eg = new ErrorGrouper(cell);
+            int errorsFound = 0;
+
+            // find the schematics cell
+    		List<Cell> schematicsChecked = new ArrayList<Cell>();
+    		for(Iterator<Cell> gIt = cell.getCellGroup().getCells(); gIt.hasNext(); )
+    		{
+    			Cell sCell = gIt.next();
+    			if (!sCell.isSchematic()) continue;
+    			schematicsChecked.add(sCell);
+    		}
+    		if (schematicsChecked.size() == 0)
+    		{
+				String msg = "Icon cell " + cell.describe(false) +" has no schematic cell";
+                errorLogger.logError(msg, cell, eg.getSortKey());
+                errorsFound++;
+    		} else
+    		{
+    			// check all exports on the icon
+	        	for(Iterator<Export> it = cell.getExports(); it.hasNext(); )
+	        	{
+	        		Export e = it.next();
+	        		boolean found = false;
+	        		for(Cell sCell : schematicsChecked)
+	        		{
+	        			for(Iterator<Export> sIt = sCell.getExports(); sIt.hasNext(); )
+	        			{
+	        				Export sE = sIt.next();
+	        				if (sE.getName().equals(e.getName())) { found = true;  break; }
+	        			}
+	        			if (found) break;
+	        		}
+	        		if (!found)
+	        		{
+	        			String msg;
+	        			if (schematicsChecked.size() == 1)
+	        			{
+	        				msg = "Export " + e.getName() + " of Icon cell " + cell.describe(false) +" does not exist in schematic cell: " +
+	        					schematicsChecked.get(0).describe(false);
+	        			} else
+	        			{
+	        				msg = "Export " + e.getName() + " of Icon cell " + cell.describe(false) +" does not exist in schematic cells: ";
+	        				for(int i=0; i<schematicsChecked.size(); i++)
+	        				{
+	        					if (i > 0) msg += " or ";
+	        					msg += schematicsChecked.get(i).describe(false);
+	        				}
+	        			}
+	        			errorLogger.logError(msg, e, eg.getSortKey());
+	                    errorsFound++;
+	        		}
+        		}
+            }
+            System.out.println("   " + (errorsFound==0 ? "No" : errorsFound) + " error" + (errorsFound == 1 ? "" : "s") + " found");
+        }
+    }
+
+    /**
+     * Method to scan the hierarchy for all icon cells and store them in "iconsToCheck".
+     * @param cell the current point in the hierarchy to check.
+     */
+    private void gatherIconCellsRecursively(Cell cell)
+    {
+        // recursively check contents to find more icons
+        for (Iterator<NodeInst> it = cell.getNodes(); it.hasNext();)
+        {
+            NodeInst ni = it.next();
+            if (ni.isCellInstance()) 
+            {
+                Cell subCell = (Cell)ni.getProto();
+                if (subCell.isIcon()) iconsToCheck.add(subCell);
+                gatherIconCellsRecursively(subCell);
+                Cell contentsCell = subCell.contentsView();
+                if (contentsCell != null && !ni.isIconOfParent())
+                	gatherIconCellsRecursively(contentsCell);
+            }
+        }
+    }
+
     private int cellIndexCounter;
 
     private class ErrorGrouper {
@@ -180,7 +278,7 @@ public class Schematic {
         if (thisErrors == 0) {
             System.out.println(indent + "No errors found");
         } else {
-            System.out.println(indent + thisErrors + " errors found");
+            System.out.println(indent + thisErrors + " error" + (thisErrors == 1 ? "" : "s") + " found");
         }
         if (justThis) {
             errorLogger.termLogging(true);

@@ -104,13 +104,13 @@ public class KeeperLow {
 									  invI.findPortInst("out")});
 
 		// exports
-		Export.newInstance(keep, nmos.findPortInst("g"), "mc", ep)
+		Export.newInst(keep, nmos.findPortInst("g"), "mc", ep)
 			.setCharacteristic(PortCharacteristic.IN);
-		Export.newInstance(keep, nmos.findPortInst("d"), "d", ep)
+		Export.newInst(keep, nmos.findPortInst("d"), "d", ep)
 			.setCharacteristic(PortCharacteristic.BIDIR);
-		Export.newInstance(keep, invK.findPortInst("vdd"), "vdd", ep)
+		Export.newInst(keep, invK.findPortInst("vdd"), "vdd", ep)
 			.setCharacteristic(PortCharacteristic.PWR);
-		Export.newInstance(keep, invK.findPortInst("gnd"), "gnd", ep)
+		Export.newInst(keep, invK.findPortInst("gnd"), "gnd", ep)
 			.setCharacteristic(PortCharacteristic.GND);
 
 		// patch well over pulldown

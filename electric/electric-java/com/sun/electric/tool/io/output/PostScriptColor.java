@@ -156,10 +156,10 @@ public class PostScriptColor
 	private PxBoxQuadTree []     quadTrees = new PxBoxQuadTree[MAXLAYERS];
 	private List<ArrayList<PsPoly>>flattenedPolys = new ArrayList<ArrayList<PsPoly>>();
 	private int                  numLayers;
-	private int                  totalBoxes = 0;
+//	private int                  totalBoxes = 0;
 	private int                  totalCells = 0;
-	private int                  totalPolys = 0;
-	private int                  totalInstances = 0;
+//	private int                  totalPolys = 0;
+//	private int                  totalInstances = 0;
 	private boolean              curveWarning;
 	private Set<Technology>      techsSetup;
 	private Map<Cell,PsCell>     cellStructs;
@@ -188,7 +188,7 @@ public class PostScriptColor
 
 	private void doPrinting(Cell cell, PostScriptPreferences prefs, double pageWid, double pageHei, double pageMargin)
 	{
-		totalBoxes = totalCells = totalPolys = totalInstances = 0;
+		totalCells = /* totalPolys = totalBoxes = totalInstances = */ 0;
 		psBoundaries[0] = 1<<30;
 		psBoundaries[1] = 1<<30;
 		psBoundaries[2] = -1<<30;
@@ -737,7 +737,7 @@ public class PostScriptColor
 
 	private void mergeBoxes()
 	{
-		int numMerged = 0;
+//		int numMerged = 0;
 
 		System.out.println("Merging boxes for " + totalCells + " cells...");
 		for(PsCell c : allCells)
@@ -756,7 +756,7 @@ public class PostScriptColor
 					}
 				}
 			} while (changed);
-			numMerged++;
+//			numMerged++;
 		}
 	}
 
@@ -952,7 +952,7 @@ public class PostScriptColor
 		double [] tm = new double[9];
 		for(PsCellInst inst : topCell.inst)
 		{
-			totalInstances++;
+//			totalInstances++;
 			matrixMul(tm, inst.transform, m);
 			recursiveFlatten(inst.inst, tm);
 		}
@@ -1045,7 +1045,7 @@ public class PostScriptColor
 						double w = gB.pos[0];
 						double h = gB.pos[1];
 						printWriter.println(gB.pos[3] + " " + gB.pos[2] + " " + w + " " + h + " bx");
-						totalBoxes++;
+//						totalBoxes++;
 					}
 				}
 				for(PsPoly pB : p)
@@ -1060,7 +1060,7 @@ public class PostScriptColor
 									TextUtils.formatDouble(pB.coords[j+1]) + " lineto");
 						}
 						printWriter.println("closepath " + (i==0 ? "stroke" : "fill"));
-						totalPolys++;
+//						totalPolys++;
 					}
 				}
 			}

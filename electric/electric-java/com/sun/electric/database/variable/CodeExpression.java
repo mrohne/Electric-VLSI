@@ -989,7 +989,7 @@ public class CodeExpression implements Serializable {
             tokenizer.wordChars('e', 'e');
             tokenizer.wordChars('E', 'E');
             nextToken();
-            return new ConstExpr(new Double(val));
+            return new ConstExpr(val);
         }
 
         private Expr parseWord() throws IOException, EvalSpice.ParseException {

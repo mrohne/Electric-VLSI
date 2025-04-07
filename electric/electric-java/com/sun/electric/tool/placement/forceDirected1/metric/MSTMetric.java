@@ -201,11 +201,11 @@ public class MSTMetric extends AbstractMetric
 		}
 		
 		//makes a new set with node1 and node2
-		int makeSet(int node1, int node2) {
-			nodes[node1] = -2;
-			nodes[node2] = node1;
-			return node1;
-		}
+//		int makeSet(int node1, int node2) {
+//			nodes[node1] = -2;
+//			nodes[node2] = node1;
+//			return node1;
+//		}
 		
 	}
 	

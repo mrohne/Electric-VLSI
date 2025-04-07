@@ -23,10 +23,14 @@
 
 package com.sun.electric.plugins.j3d.utils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.DatagramPacket;
 
 /**
  * Support class for 3D viewing.
@@ -70,9 +74,10 @@ public class J3DServerApp
             }
         }
 
+        DatagramSocket socket;
         try
         {
-            DatagramSocket socket = new DatagramSocket(2345);
+            socket = new DatagramSocket(2345);
             String localAddress = InetAddress.getLocalHost().getHostName().trim();
             int localPort = socket.getLocalPort();
             System.out.println(localAddress + ":");

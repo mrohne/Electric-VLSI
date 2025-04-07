@@ -66,7 +66,7 @@ public class AreaOverlapMetric {
 	public double init(List<PlacementNode> allNodes) {
 		currentScore = 0;		
 		for (PlacementNode node: allNodes) {
-			oevrlapScores.put(node, new Double(0));
+			oevrlapScores.put(node, Double.valueOf(0));
 			computeOverlapForNode(node);
 		}		
 		return currentScore;		
@@ -121,7 +121,7 @@ public class AreaOverlapMetric {
 		if (oldScore > 0 && Math.abs(oldScore - areaOverlap) > 0.001) {
 //			System.out.println("Score changed from " + oldScore + " to " + areaOverlap);
 		}
-		oevrlapScores.put(theOne, new Double(areaOverlap));
+		oevrlapScores.put(theOne, Double.valueOf(areaOverlap));
 		currentScore = currentScore - oldScore + areaOverlap;
 		return areaOverlap;
 	}

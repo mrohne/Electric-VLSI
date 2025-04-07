@@ -91,7 +91,7 @@ public class GlobalRouterV3 {
 		rts.id = seg_id;
 		rts.region_positions = passed_regions;
 		
-		output_coarse_routes.put(new Integer(rts.id), rts);
+		output_coarse_routes.put(Integer.valueOf(rts.id), rts);
 	}
 	
 	/** Output data for further processing in a detailed router. */
@@ -392,7 +392,7 @@ public class GlobalRouterV3 {
 		}
 		
 		public int GetHardPos(int seg_id){
-			return hard_passes.indexOf(new Integer(seg_id));
+			return hard_passes.indexOf(Integer.valueOf(seg_id));
 		}
 		
 		/** see: "Global Wiring on a Wire Routing Machine" Ravi Nair et al. */
@@ -618,7 +618,7 @@ public class GlobalRouterV3 {
 		 */
 		public boolean RevertHardPass(int seg_id){
 			synchronized(this){
-				int index = hard_passes.indexOf(new Integer(seg_id));
+				int index = hard_passes.indexOf(Integer.valueOf(seg_id));
 				if(index >= 0){
 					++supply;
 					hard_passes.set(index, null);
@@ -687,6 +687,8 @@ public class GlobalRouterV3 {
 		case rd_right:
 			++x;
 			break;
+		default:
+			break;
 		}
 		
 		return x;
@@ -699,6 +701,8 @@ public class GlobalRouterV3 {
 			break;
 		case rd_up:
 			++y;
+			break;
+		default:
 			break;
 		}
 		

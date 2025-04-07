@@ -346,7 +346,7 @@ public class CalibreDrcErrors {
         } catch (IOException e) {}
 
         // populate error logger
-        logger = ErrorLogger.newInstance("Calibre "+type+" Errors");
+        logger = ErrorLogger.newInst("Calibre "+type+" Errors");
         int sortKey = 0;
         int count = 0;
         for (Iterator<DrcRuleViolation> it = ruleViolations.iterator(); it.hasNext(); ) {
@@ -539,7 +539,7 @@ public class CalibreDrcErrors {
             System.out.println("DRC density errors: no such directory: "+drcDirectory.getAbsolutePath());
             return;
         }
-        ErrorLogger logger = ErrorLogger.newInstance("Calibre DRC Density Values");
+        ErrorLogger logger = ErrorLogger.newInst("Calibre DRC Density Values");
         int sortKey = 0;
         double scale = cell.getTechnology().getScale();
         for (File file : drcDirectory.listFiles()) {

@@ -61,14 +61,14 @@ public class Version implements Comparable<Version>, Serializable
      * THE TEXT ON THAT LINE IS PARSED BY the Ant file (packaging/build.xml)
      * AND THE PARSING MAY FAIL IF THE LINE IS ALTERED.
      */
-	public static final String ELECTRIC_VERSION = "9.08f";
+	public static final String ELECTRIC_VERSION = "9.08";
 
     private final String version;
     private final String oldStyle;
     private final int major;
     private final int minor;
     private final int details;
-    private static String buildDate;
+    private static String buildDate = null;
     private static final Version current = loadVersionProperties();
 
     /**
@@ -161,7 +161,7 @@ public class Version implements Comparable<Version>, Serializable
      */
     public static String getCopyrightInformation()
     {
-        return "Copyright (c) 2019, Static Free Software. All rights reserved.";
+        return "Copyright (c) 2025, Static Free Software. All rights reserved.";
     }
 
     /**
@@ -313,23 +313,6 @@ public class Version implements Comparable<Version>, Serializable
     
     private static Version loadVersionProperties()
     {
-//   Old Maven code for getting the version from the POM files
-//
-//        Properties props = new Properties();
-//        InputStream in = Version.class.getResourceAsStream(VERSION_PROPERTIES);
-//        try {
-//            props.load(in);
-//            in.close();
-//        } catch (IOException e) {
-//            LoggerFactory.getLogger(Version.class).error(VERSION_PROPERTIES + " not found");
-//        }
-//        buildDate = props.getProperty("buildDate");
-//        String currentVersion = props.getProperty("version");
-//        if (currentVersion.endsWith("-SNAPSHOT")) {
-//            currentVersion = currentVersion.substring(0, currentVersion.length() - "-SNAPSHOT".length());
-//        }
-
-    	// the original method: use the static String
         String currentVersion = ELECTRIC_VERSION;
         return Version.parseVersion(currentVersion);
     }

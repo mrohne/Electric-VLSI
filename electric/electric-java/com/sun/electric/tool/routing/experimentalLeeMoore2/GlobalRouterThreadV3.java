@@ -420,7 +420,7 @@ public class GlobalRouterThreadV3 implements Runnable {
 		int seg_id = sbtp.seg_id;
 		
 		while(bt != null){
-			if(!rm.not_routed.contains(new Integer(sbtp.seg_id))){
+			if(!rm.not_routed.contains(Integer.valueOf(sbtp.seg_id))){
 
 				Vector2i current_region_pos = new Vector2i(rm.segments[seg_id].start);
 				Vector2i next_region_pos;
@@ -477,6 +477,8 @@ public class GlobalRouterThreadV3 implements Runnable {
 						cur_seg_pos_x += offset_hor;
 						cur_seg_pos_y += 0.0d;
 						cur_seg_pos_align = ManhattenAlignment.ma_vertical;
+						break;
+					default:
 						break;
 					}
 					

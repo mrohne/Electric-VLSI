@@ -36,7 +36,7 @@ import java.util.Iterator;
  */
 public class DFTM extends Geometry
 {
-	private DFTMPreferences localPrefs;
+//	private DFTMPreferences localPrefs;
 
 	public static class DFTMPreferences extends OutputPreferences
 	{
@@ -76,7 +76,7 @@ public class DFTM extends Geometry
 	 */
 	DFTM(DFTMPreferences cp, double techScale)
 	{
-		localPrefs = cp;
+//		localPrefs = cp;
 	}
 
 	protected void start()

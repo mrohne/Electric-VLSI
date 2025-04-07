@@ -348,7 +348,7 @@ public class SimulatedAnnealing extends PlacementFrame {
 				}
 			}
 
-			return new Double(incState.getScore());
+			return Double.valueOf(incState.getScore());
 		}
 
 		/**
@@ -587,14 +587,14 @@ public class SimulatedAnnealing extends PlacementFrame {
 		 * @return metric score for the current change.
 		 */
 		public double addNode(int index, PlacementNodePosition newNode) {
-			changedNodes.put(new Integer(index), newNode);
+			changedNodes.put(Integer.valueOf(index), newNode);
 			currentC1 = C1Metric.update(index);
 			currentC2 = C2Metric.update(index);
 			return currentC1 + currentC2;
 		}
 
 		public double removeNode(int index) {
-			changedNodes.remove(new Integer(index));
+			changedNodes.remove(Integer.valueOf(index));
 			currentC1 = C1Metric.update(index);
 			currentC2 = C2Metric.update(index);
 			return currentC1 + currentC2;
@@ -740,7 +740,7 @@ public class SimulatedAnnealing extends PlacementFrame {
 		 * @return the <code>PlacementNodePosition</code> for this node.
 		 */
 		public PlacementNodePosition getNodeFromState(int index) {
-			Integer ii = new Integer(index);
+			Integer ii = Integer.valueOf(index);
 			if (changedNodes.containsKey(ii)) {
 				return changedNodes.get(ii);
 			} else {
@@ -749,7 +749,7 @@ public class SimulatedAnnealing extends PlacementFrame {
 		}
 
 		public boolean isNodeChanged(int index) {
-			return changedNodes.containsKey(new Integer(index));
+			return changedNodes.containsKey(Integer.valueOf(index));
 		}
 
 		public List<PlacementNode> getOriginalNodes() {

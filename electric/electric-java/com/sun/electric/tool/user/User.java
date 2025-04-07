@@ -77,6 +77,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.SwingUtilities;
 
 /**
@@ -532,45 +535,35 @@ public class User extends Listener
 		if (wf != null) wf.getPaletteTab().arcProtoChanged();
 	}
 
-	private static AudioClip clickSound = null;
+	private static Clip audioClickSound = null;
 	private static boolean hasSound = true;
 
 	public static void playSound()
 	{
 		if (!hasSound) return;
-
-		if (clickSound == null)
+		if (audioClickSound == null)
 		{
-			// first time: see if there is a sound card
-			try
-			{
-				hasSound = javax.sound.sampled.AudioSystem.getMixerInfo().length > 0;
-				if (!hasSound) return;
-			}
-			catch (Throwable t)
-			{
-				hasSound = false;
-				return;
-			}
-
 			// initialize the click sound
 			URL url = Resources.getURLResource(TopLevel.class, "Click.wav");
 			if (url == null) { hasSound = false;   return; }
-			clickSound = Applet.newAudioClip(url);
+			try
+			{
+				audioClickSound = AudioSystem.getClip();
+				AudioInputStream ais = AudioSystem.getAudioInputStream(url);
+				audioClickSound.open(ais);
+			} catch (Exception e)
+			{
+				System.out.println("Error loading sound: " + e.getLocalizedMessage());
+			}
 		}
 
 		// play the sound
 		try
 		{
-			clickSound.play();
-		}
-		catch (Exception e)
+			audioClickSound.loop(1);
+		} catch (Exception e)
 		{
-			System.out.println("Exception in playsound");
-		}
-		catch (AssertionError a)
-		{
-			System.out.println("Assertion in playsound");
+			System.out.println("Error playing sound: " + e.getLocalizedMessage());
 		}
 	}
 

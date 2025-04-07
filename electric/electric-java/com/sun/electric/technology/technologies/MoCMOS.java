@@ -703,7 +703,7 @@ public class MoCMOS extends Technology {
         HashMap<Setting, Object> settings = new HashMap<Setting, Object>();
 
         boolean oldNoStackedVias = (oldBits & MOCMOSNOSTACKEDVIAS) != 0;
-        settings.put(getDisallowStackedViasSetting(), new Integer(oldNoStackedVias ? 1 : 0));
+        settings.put(getDisallowStackedViasSetting(), Integer.valueOf(oldNoStackedVias ? 1 : 0));
 
         int numMetals = 0;
         switch (oldBits & MOCMOSMETALS) {
@@ -723,7 +723,7 @@ public class MoCMOS extends Technology {
                 numMetals = 6;
                 break;
         }
-        settings.put(getNumMetalsSetting(), new Integer(numMetals));
+        settings.put(getNumMetalsSetting(), Integer.valueOf(numMetals));
 
         int ruleSet = 0;
         switch (oldBits & MOCMOSRULESET) {
@@ -737,13 +737,13 @@ public class MoCMOS extends Technology {
                 ruleSet = SCMOSRULES;
                 break;
         }
-        settings.put(getRuleSetSetting(), new Integer(ruleSet));
+        settings.put(getRuleSetSetting(), Integer.valueOf(ruleSet));
 
         boolean alternateContactRules = (oldBits & MOCMOSALTAPRULES) != 0;
-        settings.put(getAlternateActivePolyRulesSetting(), new Integer(alternateContactRules ? 1 : 0));
+        settings.put(getAlternateActivePolyRulesSetting(), Integer.valueOf(alternateContactRules ? 1 : 0));
 
         boolean secondPoly = (oldBits & MOCMOSTWOPOLY) != 0;
-        settings.put(getSecondPolysiliconSetting(), new Integer(secondPoly ? 1 : 0));
+        settings.put(getSecondPolysiliconSetting(), Integer.valueOf(secondPoly ? 1 : 0));
 
         return settings;
     }
@@ -1169,7 +1169,7 @@ public class MoCMOS extends Technology {
         private final double poly_diff_spacing = 1; // 3.5
         private final double gate_length = poly_width; // 3.1
         private final double gate_width = diff_width; // 2.1
-        private final double gate_contact_spacing = 2; // 5.4
+//        private final double gate_contact_spacing = 2; // 5.4
         private final double poly2_width; // 11.1
         private final double contact_size = 2; // 5.1
         private final double contact_spacing; // 5.3
@@ -1178,7 +1178,7 @@ public class MoCMOS extends Technology {
         private final double contact_poly_overhang; // 5.2 5.2b
         private final double nplus_overhang_diff = 2; // 4.2
         private final double pplus_overhang_diff = 2; // 4.2
-        private final double well_width;
+//        private final double well_width;
         private final double nwell_overhang_diff_p; // 2.3
         private final double nwell_overhang_diff_n = 3; // 2.4
         private final double[] metal_width; // 7.1 9.1 15.1 22.1 26.1 30.1
@@ -1194,7 +1194,7 @@ public class MoCMOS extends Technology {
                     poly_endcap = 2;
                     poly2_width = 7;
                     contact_spacing = 3;
-                    well_width = 12;
+//                    well_width = 12;
                     nwell_overhang_diff_p = 6;
                     switch (numMetals) {
                         case 2:
@@ -1236,7 +1236,7 @@ public class MoCMOS extends Technology {
                     poly_endcap = 2.5;
                     poly2_width = 0;
                     contact_spacing = 4;
-                    well_width = 12;
+//                    well_width = 12;
                     nwell_overhang_diff_p = 6;
                     switch (numMetals) {
                         case 5:
@@ -1260,7 +1260,7 @@ public class MoCMOS extends Technology {
                     poly_endcap = 2;
                     poly2_width = 3;
                     contact_spacing = 2;
-                    well_width = 10;
+//                    well_width = 10;
                     nwell_overhang_diff_p = 5;
                     switch (numMetals) {
                         case 2:

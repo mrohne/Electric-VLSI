@@ -114,124 +114,124 @@ public class Schematics extends Technology {
     }
 //	/** Defines the Flip-flop type. */						private static final int FFTYPE =    07;
     /** Defines an RS Flip-flop. */
-    private static final int FFTYPERS = 0;
+//    private static final int FFTYPERS = 0;
     /** Defines a JK Flip-flop. */
-    private static final int FFTYPEJK = 1;
+//    private static final int FFTYPEJK = 1;
     /** Defines a D Flip-flop. */
-    private static final int FFTYPED = 2;
+//    private static final int FFTYPED = 2;
     /** Defines a T Flip-flop. */
-    private static final int FFTYPET = 3;
+//    private static final int FFTYPET = 3;
 //	/** Defines the Flip-flop clocking bits. */				private static final int FFCLOCK =  014;
     /** Defines a Master/Slave Flip-flop. */
-    private static final int FFCLOCKMS = 0;
+//    private static final int FFCLOCKMS = 0;
     /** Defines a Positive clock Flip-flop. */
-    private static final int FFCLOCKP = 04;
+//    private static final int FFCLOCKP = 04;
     /** Defines a Negative clock Flip-flop. */
-    private static final int FFCLOCKN = 010;
+//    private static final int FFCLOCKN = 010;
     /** Defines an nMOS transistor. */
-    private static final int TRANNMOS = 0;
+//    private static final int TRANNMOS = 0;
     /** Defines a nMOS depletion transistor. */
-    private static final int TRANNMOSD = 1;
+//    private static final int TRANNMOSD = 1;
     /** Defines a pMOS transistor. */
-    private static final int TRANPMOS = 2;
+//    private static final int TRANPMOS = 2;
     /** Defines an NPN Junction transistor. */
-    private static final int TRANNPN = 3;
+//    private static final int TRANNPN = 3;
     /** Defines a PNP Junction transistor. */
-    private static final int TRANPNP = 4;
+//    private static final int TRANPNP = 4;
     /** Defines an N Junction FET transistor. */
-    private static final int TRANNJFET = 5;
+//    private static final int TRANNJFET = 5;
     /** Defines a P Junction FET transistor. */
-    private static final int TRANPJFET = 6;
+//    private static final int TRANPJFET = 6;
     /** Defines a Depletion MESFET transistor. */
-    private static final int TRANDMES = 7;
+//    private static final int TRANDMES = 7;
     /** Defines an Enhancement MESFET transistor. */
-    private static final int TRANEMES = 8;
+//    private static final int TRANEMES = 8;
     /** Defines a pMOS depletion transistor. */
-    private static final int TRANPMOSD = 9;
+//    private static final int TRANPMOSD = 9;
     /** Defines a nMOS native transistor. */
-    private static final int TRANNMOSNT = 10;
+//    private static final int TRANNMOSNT = 10;
     /** Defines a pMOS native transistor. */
-    private static final int TRANPMOSNT = 11;
+//    private static final int TRANPMOSNT = 11;
     /** Defines a nMOS floating gate transistor. */
-    private static final int TRANNMOSFG = 12;
+//    private static final int TRANNMOSFG = 12;
     /** Defines a pMOS floating gate transistor. */
-    private static final int TRANPMOSFG = 13;
+//    private static final int TRANPMOSFG = 13;
     /** Defines a nMOS low threshold transistor. */
-    private static final int TRANNMOSVTL = 14;
+//    private static final int TRANNMOSVTL = 14;
     /** Defines a pMOS low threshold transistor. */
-    private static final int TRANPMOSVTL = 15;
+//    private static final int TRANPMOSVTL = 15;
     /** Defines a nMOS high threshold transistor. */
-    private static final int TRANNMOSVTH = 16;
+//    private static final int TRANNMOSVTH = 16;
     /** Defines a pMOS high threshold transistor. */
-    private static final int TRANPMOSVTH = 17;
+//    private static final int TRANPMOSVTH = 17;
     /** Defines a nMOS high voltage-1 transistor. */
-    private static final int TRANNMOSHV1 = 18;
+//    private static final int TRANNMOSHV1 = 18;
     /** Defines a pMOS high voltage-1 transistor. */
-    private static final int TRANPMOSHV1 = 19;
+//    private static final int TRANPMOSHV1 = 19;
     /** Defines a nMOS high voltage-2 transistor. */
-    private static final int TRANNMOSHV2 = 20;
+//    private static final int TRANNMOSHV2 = 20;
     /** Defines a pMOS high voltage-2 transistor. */
-    private static final int TRANPMOSHV2 = 21;
+//    private static final int TRANPMOSHV2 = 21;
     /** Defines a nMOS high voltage-3 transistor. */
-    private static final int TRANNMOSHV3 = 22;
+//    private static final int TRANNMOSHV3 = 22;
     /** Defines a pMOS high voltage-3 transistor. */
-    private static final int TRANPMOSHV3 = 23;
+//    private static final int TRANPMOSHV3 = 23;
     /** Defines a nMOS native high voltage-1 transistor. */
-    private static final int TRANNMOSNTHV1 = 24;
+//    private static final int TRANNMOSNTHV1 = 24;
     /** Defines a pMOS native high voltage-1 transistor. */
-    private static final int TRANPMOSNTHV1 = 25;
+//    private static final int TRANPMOSNTHV1 = 25;
     /** Defines a nMOS native high voltage-2 transistor. */
-    private static final int TRANNMOSNTHV2 = 26;
+//    private static final int TRANNMOSNTHV2 = 26;
     /** Defines a pMOS native high voltage-2 transistor. */
-    private static final int TRANPMOSNTHV2 = 27;
+//    private static final int TRANPMOSNTHV2 = 27;
     /** Defines a nMOS native high voltage-3 transistor. */
-    private static final int TRANNMOSNTHV3 = 28;
+//    private static final int TRANNMOSNTHV3 = 28;
     /** Defines a pMOS native high voltage-3 transistor. */
-    private static final int TRANPMOSNTHV3 = 29;
+//    private static final int TRANPMOSNTHV3 = 29;
     /** Defines a NMOS Carbon Nanotube transistor. */
-    private static final int TRANNMOSCN = 30;
+//    private static final int TRANNMOSCN = 30;
     /** Defines a PMOS Carbon Nanotube transistor. */
-    private static final int TRANPMOSCN = 31;
+//    private static final int TRANPMOSCN = 31;
     /** Defines a normal Diode. */
-    private static final int DIODENORM = 0;
+//    private static final int DIODENORM = 0;
     /** Defines a Zener Diode. */
-    private static final int DIODEZENER = 1;
+//    private static final int DIODEZENER = 1;
     /** Defines a normal Capacitor. */
-    private static final int CAPACNORM = 0;
+//    private static final int CAPACNORM = 0;
     /** Defines an Electrolytic Capacitor. */
-    private static final int CAPACELEC = 1;
+//    private static final int CAPACELEC = 1;
     /** Defines a Poly2 Capacitor. */
-    private static final int CAPACPOLY2 = 2;
+//    private static final int CAPACPOLY2 = 2;
     /** Defines a normal Resistor. */
-    private static final int RESISTNORM = 0;
+//    private static final int RESISTNORM = 0;
     /** Defines an n-poly Resistor. */
-    private static final int RESISTNPOLY = 1;
+//    private static final int RESISTNPOLY = 1;
     /** Defines a p-poly Resistor. */
-    private static final int RESISTPPOLY = 2;
+//    private static final int RESISTPPOLY = 2;
     /** Defines an n-well Resistor. */
-    private static final int RESISTNWELL = 3;
+//    private static final int RESISTNWELL = 3;
     /** Defines a p-well Resistor. */
-    private static final int RESISTPWELL = 4;
+//    private static final int RESISTPWELL = 4;
     /** Defines a n-active Resistor. */
-    private static final int RESISTNACTIVE = 5;
+//    private static final int RESISTNACTIVE = 5;
     /** Defines a p-active Resistor. */
-    private static final int RESISTPACTIVE = 6;
+//    private static final int RESISTPACTIVE = 6;
     /** Defines an n-poly non silicide Resistor. */
-    private static final int RESISTNNSPOLY = 7;
+//    private static final int RESISTNNSPOLY = 7;
     /** Defines a p-poly non silicide Resistor. */
-    private static final int RESISTPNSPOLY = 8;
+//    private static final int RESISTPNSPOLY = 8;
     /** Defines a hi resisistant poly2 Resistor. */
-    private static final int RESISTHIRESPOLY2 = 9;
+//    private static final int RESISTHIRESPOLY2 = 9;
     /** Defines a Transconductance two-port (VCCS). */
-    private static final int TWOPVCCS = 0;
+//    private static final int TWOPVCCS = 0;
     /** Defines a Transresistance two-port (CCVS). */
-    private static final int TWOPCCVS = 1;
+//    private static final int TWOPCCVS = 1;
     /** Defines a Voltage gain two-port (VCVS). */
-    private static final int TWOPVCVS = 2;
+//    private static final int TWOPVCVS = 2;
     /** Defines a Current gain two-port (CCCS). */
-    private static final int TWOPCCCS = 3;
+//    private static final int TWOPCCCS = 3;
     /** Defines a Transmission Line two-port. */
-    private static final int TWOPTLINE = 4;
+//    private static final int TWOPTLINE = 4;
     /** the node layer */
     public final Layer node_lay;
     /** wire arc */
@@ -295,378 +295,378 @@ public class Schematics extends Technology {
     /** global partition */
     public final PrimitiveNode globalPartitionNode;
     // Tech params
-    private Double paramNegatingBubbleSize;
+//    private Double paramNegatingBubbleSize;
     private final Layer arc_lay, bus_lay, text_lay;
     private final Xml.Technology xmlSch;
     // this much from the center to the left edge
-	/* 0.1 */ private final EdgeH LEFTBYP1 = EdgeH.by0(-0.1);
-    /* 0.1333... */ private final EdgeH LEFTBYP125 = EdgeH.by0(-0.125);
-    /* 0.2 */ private final EdgeH LEFTBYP2 = EdgeH.by0(-0.2);
-    /* 0.25 */ private final EdgeH LEFTBYP25 = EdgeH.by0(-0.25);
-    /* 0.3 */ private final EdgeH LEFTBYP3 = EdgeH.by0(-0.3);
-    /* 0.35 */ private final EdgeH LEFTBYP35 = EdgeH.by0(-0.35);
-    /* 0.6166... */ private final EdgeH LEFTBYP375 = EdgeH.by0(-0.375);
-    /* 0.4 */ private final EdgeH LEFTBYP4 = EdgeH.by0(-0.4);
-    /* 0.45 */ private final EdgeH LEFTBYP45 = EdgeH.by0(-0.45);
-    /* 0.5 */ private final EdgeH LEFTBYP5 = EdgeH.by0(-0.5);
-    /* 0.6 */ private final EdgeH LEFTBYP6 = EdgeH.by0(-0.6);
-    /* 0.6166... */ private final EdgeH LEFTBYP625 = EdgeH.by0(-0.625);
-    /* 0.6666... */ private final EdgeH LEFTBYP66 = EdgeH.by0(-0.6666666666);
-    /* 0.7 */ private final EdgeH LEFTBYP7 = EdgeH.by0(-0.7);
-    /* 0.75 */ private final EdgeH LEFTBYP75 = EdgeH.by0(-0.75);
-    /* 0.8 */ private final EdgeH LEFTBYP8 = EdgeH.by0(-0.8);
-    /* 0.875 */ private final EdgeH LEFTBYP875 = EdgeH.by0(-0.875);
-    /* 0.9 */ private final EdgeH LEFTBYP9 = EdgeH.by0(-0.9);
-//	/* 1.2 */			private final EdgeH LEFTBYP12 = EdgeH.by0(-1.2);
-//	/* 1.4 */			private final EdgeH LEFTBYP14 = EdgeH.by0(-1.4);
-	/* 1.6 */ private final EdgeH LEFTBY1P6 = EdgeH.by0(-1.6);
+//	/* 0.1 */ private final EdgeH LEFTBYP1 = EdgeH.by0(-0.1);
+//    /* 0.1333... */ private final EdgeH LEFTBYP125 = EdgeH.by0(-0.125);
+//    /* 0.2 */ private final EdgeH LEFTBYP2 = EdgeH.by0(-0.2);
+//    /* 0.25 */ private final EdgeH LEFTBYP25 = EdgeH.by0(-0.25);
+//    /* 0.3 */ private final EdgeH LEFTBYP3 = EdgeH.by0(-0.3);
+//    /* 0.35 */ private final EdgeH LEFTBYP35 = EdgeH.by0(-0.35);
+//    /* 0.6166... */ private final EdgeH LEFTBYP375 = EdgeH.by0(-0.375);
+//    /* 0.4 */ private final EdgeH LEFTBYP4 = EdgeH.by0(-0.4);
+//    /* 0.45 */ private final EdgeH LEFTBYP45 = EdgeH.by0(-0.45);
+//    /* 0.5 */ private final EdgeH LEFTBYP5 = EdgeH.by0(-0.5);
+//    /* 0.6 */ private final EdgeH LEFTBYP6 = EdgeH.by0(-0.6);
+//    /* 0.6166... */ private final EdgeH LEFTBYP625 = EdgeH.by0(-0.625);
+//    /* 0.6666... */ private final EdgeH LEFTBYP66 = EdgeH.by0(-0.6666666666);
+//    /* 0.7 */ private final EdgeH LEFTBYP7 = EdgeH.by0(-0.7);
+//    /* 0.75 */ private final EdgeH LEFTBYP75 = EdgeH.by0(-0.75);
+//    /* 0.8 */ private final EdgeH LEFTBYP8 = EdgeH.by0(-0.8);
+//    /* 0.875 */ private final EdgeH LEFTBYP875 = EdgeH.by0(-0.875);
+//    /* 0.9 */ private final EdgeH LEFTBYP9 = EdgeH.by0(-0.9);
+//	/* 1.2 */ private final EdgeH LEFTBYP12 = EdgeH.by0(-1.2);
+//	/* 1.4 */ private final EdgeH LEFTBYP14 = EdgeH.by0(-1.4);
+//	/* 1.6 */ private final EdgeH LEFTBY1P6 = EdgeH.by0(-1.6);
 
     /* 0.5 */ private final EdgeH LEFT2BYP5 = EdgeH.by2(-0.5);
-    /* 0.1 */ private final EdgeH LEFT3BYP1 = EdgeH.by3(-0.1);
-    /* 0.1333... */ private final EdgeH LEFT3BYP125 = EdgeH.by3(-0.125);
-    /* 0.2 */ private final EdgeH LEFT3BYP2 = EdgeH.by3(-0.2);
+//    /* 0.1 */ private final EdgeH LEFT3BYP1 = EdgeH.by3(-0.1);
+//    /* 0.1333... */ private final EdgeH LEFT3BYP125 = EdgeH.by3(-0.125);
+//    /* 0.2 */ private final EdgeH LEFT3BYP2 = EdgeH.by3(-0.2);
     /* 0.25 */ private final EdgeH LEFT3BYP25 = EdgeH.by3(-0.25);
-    /* 0.3 */ private final EdgeH LEFT3BYP3 = EdgeH.by3(-0.3);
-    /* 0.35 */ private final EdgeH LEFT3BYP35 = EdgeH.by3(-0.35);
-    /* 0.6166... */ private final EdgeH LEFT3BYP375 = EdgeH.by3(-0.375);
-    /* 0.4 */ private final EdgeH LEFT3BYP4 = EdgeH.by3(-0.4);
-    /* 0.45 */ private final EdgeH LEFT3BYP45 = EdgeH.by3(-0.45);
+//    /* 0.3 */ private final EdgeH LEFT3BYP3 = EdgeH.by3(-0.3);
+//    /* 0.35 */ private final EdgeH LEFT3BYP35 = EdgeH.by3(-0.35);
+//    /* 0.6166... */ private final EdgeH LEFT3BYP375 = EdgeH.by3(-0.375);
+//    /* 0.4 */ private final EdgeH LEFT3BYP4 = EdgeH.by3(-0.4);
+//    /* 0.45 */ private final EdgeH LEFT3BYP45 = EdgeH.by3(-0.45);
     /* 0.5 */ private final EdgeH LEFT3BYP5 = EdgeH.by3(-0.5);
-    /* 0.6 */ private final EdgeH LEFT3BYP6 = EdgeH.by3(-0.6);
-    /* 0.6166... */ private final EdgeH LEFT3BYP625 = EdgeH.by3(-0.625);
-    /* 0.6666... */ private final EdgeH LEFT3BYP66 = EdgeH.by3(-0.6666666666);
-    /* 0.7 */ private final EdgeH LEFT3BYP7 = EdgeH.by3(-0.7);
+//    /* 0.6 */ private final EdgeH LEFT3BYP6 = EdgeH.by3(-0.6);
+//    /* 0.6166... */ private final EdgeH LEFT3BYP625 = EdgeH.by3(-0.625);
+//    /* 0.6666... */ private final EdgeH LEFT3BYP66 = EdgeH.by3(-0.6666666666);
+//    /* 0.7 */ private final EdgeH LEFT3BYP7 = EdgeH.by3(-0.7);
     /* 0.75 */ private final EdgeH LEFT3BYP75 = EdgeH.by3(-0.75);
-    /* 0.8 */ private final EdgeH LEFT3BYP8 = EdgeH.by3(-0.8);
-    /* 0.875 */ private final EdgeH LEFT3BYP875 = EdgeH.by3(-0.875);
+//    /* 0.8 */ private final EdgeH LEFT3BYP8 = EdgeH.by3(-0.8);
+//    /* 0.875 */ private final EdgeH LEFT3BYP875 = EdgeH.by3(-0.875);
     /* 0.9 */ private final EdgeH LEFT3BYP9 = EdgeH.by3(-0.9);
 //	/* 1.2 */			private final EdgeH LEFT3BYP12 = EdgeH.by3(-1.2);
 //	/* 1.4 */			private final EdgeH LEFT3BYP14 = EdgeH.by3(-1.4);
-	/* 1.6 */ private final EdgeH LEFT3BY1P6 = EdgeH.by3(-1.6);
+//	/* 1.6 */ private final EdgeH LEFT3BY1P6 = EdgeH.by3(-1.6);
 
-    /* 0.1 */ private final EdgeH LEFT4BYP1 = EdgeH.by4(-0.1);
+//    /* 0.1 */ private final EdgeH LEFT4BYP1 = EdgeH.by4(-0.1);
     /* 0.1333... */ private final EdgeH LEFT4BYP125 = EdgeH.by4(-0.125);
-    /* 0.2 */ private final EdgeH LEFT4BYP2 = EdgeH.by4(-0.2);
+//    /* 0.2 */ private final EdgeH LEFT4BYP2 = EdgeH.by4(-0.2);
     /* 0.25 */ private final EdgeH LEFT4BYP25 = EdgeH.by4(-0.25);
-    /* 0.3 */ private final EdgeH LEFT4BYP3 = EdgeH.by4(-0.3);
+//    /* 0.3 */ private final EdgeH LEFT4BYP3 = EdgeH.by4(-0.3);
     /* 0.35 */ private final EdgeH LEFT4BYP35 = EdgeH.by4(-0.35);
     /* 0.6166... */ private final EdgeH LEFT4BYP375 = EdgeH.by4(-0.375);
     /* 0.4 */ private final EdgeH LEFT4BYP4 = EdgeH.by4(-0.4);
-    /* 0.45 */ private final EdgeH LEFT4BYP45 = EdgeH.by4(-0.45);
+//    /* 0.45 */ private final EdgeH LEFT4BYP45 = EdgeH.by4(-0.45);
     /* 0.5 */ private final EdgeH LEFT4BYP5 = EdgeH.by4(-0.5);
     /* 0.6 */ private final EdgeH LEFT4BYP6 = EdgeH.by4(-0.6);
     /* 0.6166... */ private final EdgeH LEFT4BYP625 = EdgeH.by4(-0.625);
     /* 0.6666... */ private final EdgeH LEFT4BYP66 = EdgeH.by4(-0.6666666666);
-    /* 0.7 */ private final EdgeH LEFT4BYP7 = EdgeH.by4(-0.7);
+//    /* 0.7 */ private final EdgeH LEFT4BYP7 = EdgeH.by4(-0.7);
     /* 0.75 */ private final EdgeH LEFT4BYP75 = EdgeH.by4(-0.75);
-    /* 0.8 */ private final EdgeH LEFT4BYP8 = EdgeH.by4(-0.8);
+//    /* 0.8 */ private final EdgeH LEFT4BYP8 = EdgeH.by4(-0.8);
     /* 0.875 */ private final EdgeH LEFT4BYP875 = EdgeH.by4(-0.875);
-    /* 0.9 */ private final EdgeH LEFT4BYP9 = EdgeH.by4(-0.9);
+//    /* 0.9 */ private final EdgeH LEFT4BYP9 = EdgeH.by4(-0.9);
 //	/* 1.2 */			private final EdgeH LEFT4BYP12 = EdgeH.by4(-1.2);
 //	/* 1.4 */			private final EdgeH LEFT4BYP14 = EdgeH.by4(-1.4);
-	/* 1.6 */ private final EdgeH LEFT4BY1P6 = EdgeH.by4(-1.6);
+//	/* 1.6 */ private final EdgeH LEFT4BY1P6 = EdgeH.by4(-1.6);
 
     /* 0.1 */ private final EdgeH LEFT6BYP1 = EdgeH.by6(-0.1);
-    /* 0.1333... */ private final EdgeH LEFT6BYP125 = EdgeH.by6(-0.125);
+//    /* 0.1333... */ private final EdgeH LEFT6BYP125 = EdgeH.by6(-0.125);
     /* 0.2 */ private final EdgeH LEFT6BYP2 = EdgeH.by6(-0.2);
-    /* 0.25 */ private final EdgeH LEFT6BYP25 = EdgeH.by6(-0.25);
+//    /* 0.25 */ private final EdgeH LEFT6BYP25 = EdgeH.by6(-0.25);
     /* 0.3 */ private final EdgeH LEFT6BYP3 = EdgeH.by6(-0.3);
-    /* 0.35 */ private final EdgeH LEFT6BYP35 = EdgeH.by6(-0.35);
-    /* 0.6166... */ private final EdgeH LEFT6BYP375 = EdgeH.by6(-0.375);
+//    /* 0.35 */ private final EdgeH LEFT6BYP35 = EdgeH.by6(-0.35);
+//    /* 0.6166... */ private final EdgeH LEFT6BYP375 = EdgeH.by6(-0.375);
     /* 0.4 */ private final EdgeH LEFT6BYP4 = EdgeH.by6(-0.4);
-    /* 0.45 */ private final EdgeH LEFT6BYP45 = EdgeH.by6(-0.45);
+//    /* 0.45 */ private final EdgeH LEFT6BYP45 = EdgeH.by6(-0.45);
     /* 0.5 */ private final EdgeH LEFT6BYP5 = EdgeH.by6(-0.5);
     /* 0.6 */ private final EdgeH LEFT6BYP6 = EdgeH.by6(-0.6);
-    /* 0.6166... */ private final EdgeH LEFT6BYP625 = EdgeH.by6(-0.625);
+//    /* 0.6166... */ private final EdgeH LEFT6BYP625 = EdgeH.by6(-0.625);
     /* 0.6666... */ private final EdgeH LEFT6BYP66 = EdgeH.by6(-0.6666666666);
     /* 0.7 */ private final EdgeH LEFT6BYP7 = EdgeH.by6(-0.7);
-    /* 0.75 */ private final EdgeH LEFT6BYP75 = EdgeH.by6(-0.75);
-    /* 0.8 */ private final EdgeH LEFT6BYP8 = EdgeH.by6(-0.8);
-    /* 0.875 */ private final EdgeH LEFT6BYP875 = EdgeH.by6(-0.875);
-    /* 0.9 */ private final EdgeH LEFT6BYP9 = EdgeH.by6(-0.9);
+//    /* 0.75 */ private final EdgeH LEFT6BYP75 = EdgeH.by6(-0.75);
+//    /* 0.8 */ private final EdgeH LEFT6BYP8 = EdgeH.by6(-0.8);
+//    /* 0.875 */ private final EdgeH LEFT6BYP875 = EdgeH.by6(-0.875);
+//    /* 0.9 */ private final EdgeH LEFT6BYP9 = EdgeH.by6(-0.9);
 //	/* 1.2 */			private final EdgeH LEFT6BYP12 = EdgeH.by6(-1.2);
 //	/* 1.4 */			private final EdgeH LEFT6BYP14 = EdgeH.by6(-1.4);
-	/* 1.6 */ private final EdgeH LEFT6BY1P6 = EdgeH.by6(-1.6);
+//	/* 1.6 */ private final EdgeH LEFT6BY1P6 = EdgeH.by6(-1.6);
 
     /* 0.8 */ private final EdgeH LEFT8BYP8 = EdgeH.by8(-0.8);
-    /* 0.1 */ private final EdgeH LEFT10BYP1 = EdgeH.by10(-0.1);
-    /* 0.1333... */ private final EdgeH LEFT10BYP125 = EdgeH.by10(-0.125);
-    /* 0.2 */ private final EdgeH LEFT10BYP2 = EdgeH.by10(-0.2);
-    /* 0.25 */ private final EdgeH LEFT10BYP25 = EdgeH.by10(-0.25);
-    /* 0.3 */ private final EdgeH LEFT10BYP3 = EdgeH.by10(-0.3);
+//    /* 0.1 */ private final EdgeH LEFT10BYP1 = EdgeH.by10(-0.1);
+//    /* 0.1333... */ private final EdgeH LEFT10BYP125 = EdgeH.by10(-0.125);
+//    /* 0.2 */ private final EdgeH LEFT10BYP2 = EdgeH.by10(-0.2);
+//    /* 0.25 */ private final EdgeH LEFT10BYP25 = EdgeH.by10(-0.25);
+//    /* 0.3 */ private final EdgeH LEFT10BYP3 = EdgeH.by10(-0.3);
     /* 0.35 */ private final EdgeH LEFT10BYP35 = EdgeH.by10(-0.35);
-    /* 0.6166... */ private final EdgeH LEFT10BYP375 = EdgeH.by10(-0.375);
+//    /* 0.6166... */ private final EdgeH LEFT10BYP375 = EdgeH.by10(-0.375);
     /* 0.4 */ private final EdgeH LEFT10BYP4 = EdgeH.by10(-0.4);
     /* 0.45 */ private final EdgeH LEFT10BYP45 = EdgeH.by10(-0.45);
-    /* 0.5 */ private final EdgeH LEFT10BYP5 = EdgeH.by10(-0.5);
+//    /* 0.5 */ private final EdgeH LEFT10BYP5 = EdgeH.by10(-0.5);
     /* 0.6 */ private final EdgeH LEFT10BYP6 = EdgeH.by10(-0.6);
-    /* 0.6166... */ private final EdgeH LEFT10BYP625 = EdgeH.by10(-0.625);
-    /* 0.6666... */ private final EdgeH LEFT10BYP66 = EdgeH.by10(-0.6666666666);
-    /* 0.7 */ private final EdgeH LEFT10BYP7 = EdgeH.by10(-0.7);
-    /* 0.75 */ private final EdgeH LEFT10BYP75 = EdgeH.by10(-0.75);
+//    /* 0.6166... */ private final EdgeH LEFT10BYP625 = EdgeH.by10(-0.625);
+//    /* 0.6666... */ private final EdgeH LEFT10BYP66 = EdgeH.by10(-0.6666666666);
+//    /* 0.7 */ private final EdgeH LEFT10BYP7 = EdgeH.by10(-0.7);
+//    /* 0.75 */ private final EdgeH LEFT10BYP75 = EdgeH.by10(-0.75);
     /* 0.8 */ private final EdgeH LEFT10BYP8 = EdgeH.by10(-0.8);
-    /* 0.875 */ private final EdgeH LEFT10BYP875 = EdgeH.by10(-0.875);
-    /* 0.9 */ private final EdgeH LEFT10BYP9 = EdgeH.by10(-0.9);
+//    /* 0.875 */ private final EdgeH LEFT10BYP875 = EdgeH.by10(-0.875);
+//    /* 0.9 */ private final EdgeH LEFT10BYP9 = EdgeH.by10(-0.9);
 //	/* 1.2 */			private final EdgeH LEFT10BYP12 = EdgeH.by10(-1.2);
 //	/* 1.4 */			private final EdgeH LEFT10BYP14 = EdgeH.by10(-1.4);
 	/* 1.6 */ private final EdgeH LEFT10BY1P6 = EdgeH.by10(-1.6);
     // this much from the center to the right edge
-	/* 0.1 */ private final EdgeH RIGHTBYP1 = EdgeH.by0(0.1);
-    /* 0.1333... */ private final EdgeH RIGHTBYP125 = EdgeH.by0(0.125);
-    /* 0.2 */ private final EdgeH RIGHTBYP2 = EdgeH.by0(0.2);
-    /* 0.25 */ private final EdgeH RIGHTBYP25 = EdgeH.by0(0.25);
-    /* 0.3 */ private final EdgeH RIGHTBYP3 = EdgeH.by0(0.3);
-    /* 0.3333... */ private final EdgeH RIGHTBYP33 = EdgeH.by0(0.3333333333);
-    /* 0.35 */ private final EdgeH RIGHTBYP35 = EdgeH.by0(0.35);
-    /* 0.6166... */ private final EdgeH RIGHTBYP375 = EdgeH.by0(0.375);
-    /* 0.3833... */ private final EdgeH RIGHTBYP3833 = EdgeH.by0(0.3833333333);
-    /* 0.4 */ private final EdgeH RIGHTBYP4 = EdgeH.by0(0.4);
-    /* 0.4333... */ private final EdgeH RIGHTBYP433 = EdgeH.by0(0.4333333333);
-    /* 0.45 */ private final EdgeH RIGHTBYP45 = EdgeH.by0(0.45);
-    /* 0.5 */ private final EdgeH RIGHTBYP5 = EdgeH.by0(0.5);
-    /* 0.5166... */ private final EdgeH RIGHTBYP5166 = EdgeH.by0(0.5166666666);
+//	/* 0.1 */ private final EdgeH RIGHTBYP1 = EdgeH.by0(0.1);
+//    /* 0.1333... */ private final EdgeH RIGHTBYP125 = EdgeH.by0(0.125);
+//    /* 0.2 */ private final EdgeH RIGHTBYP2 = EdgeH.by0(0.2);
+//    /* 0.25 */ private final EdgeH RIGHTBYP25 = EdgeH.by0(0.25);
+//    /* 0.3 */ private final EdgeH RIGHTBYP3 = EdgeH.by0(0.3);
+//    /* 0.3333... */ private final EdgeH RIGHTBYP33 = EdgeH.by0(0.3333333333);
+//    /* 0.35 */ private final EdgeH RIGHTBYP35 = EdgeH.by0(0.35);
+//    /* 0.6166... */ private final EdgeH RIGHTBYP375 = EdgeH.by0(0.375);
+//    /* 0.3833... */ private final EdgeH RIGHTBYP3833 = EdgeH.by0(0.3833333333);
+//    /* 0.4 */ private final EdgeH RIGHTBYP4 = EdgeH.by0(0.4);
+//    /* 0.4333... */ private final EdgeH RIGHTBYP433 = EdgeH.by0(0.4333333333);
+//    /* 0.45 */ private final EdgeH RIGHTBYP45 = EdgeH.by0(0.45);
+//    /* 0.5 */ private final EdgeH RIGHTBYP5 = EdgeH.by0(0.5);
+//    /* 0.5166... */ private final EdgeH RIGHTBYP5166 = EdgeH.by0(0.5166666666);
 //	/* 0.55 */			private final EdgeH RIGHTBYP55 = EdgeH.by0(0.55);
-	/* 0.5666... */ private final EdgeH RIGHTBYP566 = EdgeH.by0(0.5666666666);
-    /* 0.6 */ private final EdgeH RIGHTBYP6 = EdgeH.by0(0.6);
-    /* 0.6166... */ private final EdgeH RIGHTBYP6166 = EdgeH.by0(0.6166666666);
-    /* 0.6166... */ private final EdgeH RIGHTBYP625 = EdgeH.by0(0.625);
-    /* 0.6666... */ private final EdgeH RIGHTBYP66 = EdgeH.by0(0.6666666666);
+//	/* 0.5666... */ private final EdgeH RIGHTBYP566 = EdgeH.by0(0.5666666666);
+//    /* 0.6 */ private final EdgeH RIGHTBYP6 = EdgeH.by0(0.6);
+//    /* 0.6166... */ private final EdgeH RIGHTBYP6166 = EdgeH.by0(0.6166666666);
+//    /* 0.6166... */ private final EdgeH RIGHTBYP625 = EdgeH.by0(0.625);
+//    /* 0.6666... */ private final EdgeH RIGHTBYP66 = EdgeH.by0(0.6666666666);
 //	/* 0.7 */			private final EdgeH RIGHTBYP7 = EdgeH.by0(0.7);
-	/* 0.75 */ private final EdgeH RIGHTBYP75 = EdgeH.by0(0.75);
-    /* 0.8 */ private final EdgeH RIGHTBYP8 = EdgeH.by0(0.8);
-    /* 0.875 */ private final EdgeH RIGHTBYP875 = EdgeH.by0(0.875);
-    /* 0.9 */ private final EdgeH RIGHTBYP9 = EdgeH.by0(0.9);
+//	/* 0.75 */ private final EdgeH RIGHTBYP75 = EdgeH.by0(0.75);
+//    /* 0.8 */ private final EdgeH RIGHTBYP8 = EdgeH.by0(0.8);
+//    /* 0.875 */ private final EdgeH RIGHTBYP875 = EdgeH.by0(0.875);
+//    /* 0.9 */ private final EdgeH RIGHTBYP9 = EdgeH.by0(0.9);
 
-    /* 0.1 */ private final EdgeH RIGHT3BYP1 = EdgeH.by3(0.1);
-    /* 0.1333... */ private final EdgeH RIGHT3BYP125 = EdgeH.by3(0.125);
+//    /* 0.1 */ private final EdgeH RIGHT3BYP1 = EdgeH.by3(0.1);
+//    /* 0.1333... */ private final EdgeH RIGHT3BYP125 = EdgeH.by3(0.125);
     /* 0.2 */ private final EdgeH RIGHT3BYP2 = EdgeH.by3(0.2);
     /* 0.25 */ private final EdgeH RIGHT3BYP25 = EdgeH.by3(0.25);
-    /* 0.3 */ private final EdgeH RIGHT3BYP3 = EdgeH.by3(0.3);
-    /* 0.3333... */ private final EdgeH RIGHT3BYP33 = EdgeH.by3(0.3333333333);
-    /* 0.35 */ private final EdgeH RIGHT3BYP35 = EdgeH.by3(0.35);
-    /* 0.6166... */ private final EdgeH RIGHT3BYP375 = EdgeH.by3(0.375);
-    /* 0.3833... */ private final EdgeH RIGHT3BYP3833 = EdgeH.by3(0.3833333333);
+//    /* 0.3 */ private final EdgeH RIGHT3BYP3 = EdgeH.by3(0.3);
+//    /* 0.3333... */ private final EdgeH RIGHT3BYP33 = EdgeH.by3(0.3333333333);
+//    /* 0.35 */ private final EdgeH RIGHT3BYP35 = EdgeH.by3(0.35);
+//    /* 0.6166... */ private final EdgeH RIGHT3BYP375 = EdgeH.by3(0.375);
+//    /* 0.3833... */ private final EdgeH RIGHT3BYP3833 = EdgeH.by3(0.3833333333);
     /* 0.4 */ private final EdgeH RIGHT3BYP4 = EdgeH.by3(0.4);
-    /* 0.4333... */ private final EdgeH RIGHT3BYP433 = EdgeH.by3(0.4333333333);
-    /* 0.45 */ private final EdgeH RIGHT3BYP45 = EdgeH.by3(0.45);
+//    /* 0.4333... */ private final EdgeH RIGHT3BYP433 = EdgeH.by3(0.4333333333);
+//    /* 0.45 */ private final EdgeH RIGHT3BYP45 = EdgeH.by3(0.45);
     /* 0.5 */ private final EdgeH RIGHT3BYP5 = EdgeH.by3(0.5);
-    /* 0.5166... */ private final EdgeH RIGHT3BYP5166 = EdgeH.by3(0.5166666666);
+//    /* 0.5166... */ private final EdgeH RIGHT3BYP5166 = EdgeH.by3(0.5166666666);
 //	/* 0.55 */			private final EdgeH RIGHT3BYP55 = EdgeH.by3(0.55);
-	/* 0.5666... */ private final EdgeH RIGHT3BYP566 = EdgeH.by3(0.5666666666);
+//	/* 0.5666... */ private final EdgeH RIGHT3BYP566 = EdgeH.by3(0.5666666666);
     /* 0.6 */ private final EdgeH RIGHT3BYP6 = EdgeH.by3(0.6);
-    /* 0.6166... */ private final EdgeH RIGHT3BYP6166 = EdgeH.by3(0.6166666666);
-    /* 0.6166... */ private final EdgeH RIGHT3BYP625 = EdgeH.by3(0.625);
-    /* 0.6666... */ private final EdgeH RIGHT3BYP66 = EdgeH.by3(0.6666666666);
+//    /* 0.6166... */ private final EdgeH RIGHT3BYP6166 = EdgeH.by3(0.6166666666);
+//    /* 0.6166... */ private final EdgeH RIGHT3BYP625 = EdgeH.by3(0.625);
+//    /* 0.6666... */ private final EdgeH RIGHT3BYP66 = EdgeH.by3(0.6666666666);
 //	/* 0.7 */			private final EdgeH RIGHT3BYP7 = EdgeH.by3(0.7);
 	/* 0.75 */ private final EdgeH RIGHT3BYP75 = EdgeH.by3(0.75);
-    /* 0.8 */ private final EdgeH RIGHT3BYP8 = EdgeH.by3(0.8);
-    /* 0.875 */ private final EdgeH RIGHT3BYP875 = EdgeH.by3(0.875);
+//    /* 0.8 */ private final EdgeH RIGHT3BYP8 = EdgeH.by3(0.8);
+//    /* 0.875 */ private final EdgeH RIGHT3BYP875 = EdgeH.by3(0.875);
     /* 0.9 */ private final EdgeH RIGHT3BYP9 = EdgeH.by3(0.9);
 
-    /* 0.1 */ private final EdgeH RIGHT4BYP1 = EdgeH.by4(0.1);
+//    /* 0.1 */ private final EdgeH RIGHT4BYP1 = EdgeH.by4(0.1);
     /* 0.1333... */ private final EdgeH RIGHT4BYP125 = EdgeH.by4(0.125);
-    /* 0.2 */ private final EdgeH RIGHT4BYP2 = EdgeH.by4(0.2);
+//    /* 0.2 */ private final EdgeH RIGHT4BYP2 = EdgeH.by4(0.2);
     /* 0.25 */ private final EdgeH RIGHT4BYP25 = EdgeH.by4(0.25);
-    /* 0.3 */ private final EdgeH RIGHT4BYP3 = EdgeH.by4(0.3);
-    /* 0.3333... */ private final EdgeH RIGHT4BYP33 = EdgeH.by4(0.3333333333);
-    /* 0.35 */ private final EdgeH RIGHT4BYP35 = EdgeH.by4(0.35);
+//    /* 0.3 */ private final EdgeH RIGHT4BYP3 = EdgeH.by4(0.3);
+//    /* 0.3333... */ private final EdgeH RIGHT4BYP33 = EdgeH.by4(0.3333333333);
+//    /* 0.35 */ private final EdgeH RIGHT4BYP35 = EdgeH.by4(0.35);
     /* 0.6166... */ private final EdgeH RIGHT4BYP375 = EdgeH.by4(0.375);
-    /* 0.3833... */ private final EdgeH RIGHT4BYP3833 = EdgeH.by4(0.3833333333);
-    /* 0.4 */ private final EdgeH RIGHT4BYP4 = EdgeH.by4(0.4);
-    /* 0.4333... */ private final EdgeH RIGHT4BYP433 = EdgeH.by4(0.4333333333);
-    /* 0.45 */ private final EdgeH RIGHT4BYP45 = EdgeH.by4(0.45);
+//    /* 0.3833... */ private final EdgeH RIGHT4BYP3833 = EdgeH.by4(0.3833333333);
+//    /* 0.4 */ private final EdgeH RIGHT4BYP4 = EdgeH.by4(0.4);
+//    /* 0.4333... */ private final EdgeH RIGHT4BYP433 = EdgeH.by4(0.4333333333);
+//    /* 0.45 */ private final EdgeH RIGHT4BYP45 = EdgeH.by4(0.45);
     /* 0.5 */ private final EdgeH RIGHT4BYP5 = EdgeH.by4(0.5);
-    /* 0.5166... */ private final EdgeH RIGHT4BYP5166 = EdgeH.by4(0.5166666666);
+//    /* 0.5166... */ private final EdgeH RIGHT4BYP5166 = EdgeH.by4(0.5166666666);
 //	/* 0.55 */			private final EdgeH RIGHT4BYP55 = EdgeH.by4(0.55);
-	/* 0.5666... */ private final EdgeH RIGHT4BYP566 = EdgeH.by4(0.5666666666);
-    /* 0.6 */ private final EdgeH RIGHT4BYP6 = EdgeH.by4(0.6);
-    /* 0.6166... */ private final EdgeH RIGHT4BYP6166 = EdgeH.by4(0.6166666666);
+//	/* 0.5666... */ private final EdgeH RIGHT4BYP566 = EdgeH.by4(0.5666666666);
+//    /* 0.6 */ private final EdgeH RIGHT4BYP6 = EdgeH.by4(0.6);
+//    /* 0.6166... */ private final EdgeH RIGHT4BYP6166 = EdgeH.by4(0.6166666666);
     /* 0.6166... */ private final EdgeH RIGHT4BYP625 = EdgeH.by4(0.625);
-    /* 0.6666... */ private final EdgeH RIGHT4BYP66 = EdgeH.by4(0.6666666666);
+//    /* 0.6666... */ private final EdgeH RIGHT4BYP66 = EdgeH.by4(0.6666666666);
 //	/* 0.7 */			private final EdgeH RIGHT4BYP7 = EdgeH.by4(0.7);
 	/* 0.75 */ private final EdgeH RIGHT4BYP75 = EdgeH.by4(0.75);
-    /* 0.8 */ private final EdgeH RIGHT4BYP8 = EdgeH.by4(0.8);
+//    /* 0.8 */ private final EdgeH RIGHT4BYP8 = EdgeH.by4(0.8);
     /* 0.875 */ private final EdgeH RIGHT4BYP875 = EdgeH.by4(0.875);
-    /* 0.9 */ private final EdgeH RIGHT4BYP9 = EdgeH.by4(0.9);
+//    /* 0.9 */ private final EdgeH RIGHT4BYP9 = EdgeH.by4(0.9);
 
     /* 0.1 */ private final EdgeH RIGHT6BYP1 = EdgeH.by6(0.1);
-    /* 0.1333... */ private final EdgeH RIGHT6BYP125 = EdgeH.by6(0.125);
-    /* 0.2 */ private final EdgeH RIGHT6BYP2 = EdgeH.by6(0.2);
-    /* 0.25 */ private final EdgeH RIGHT6BYP25 = EdgeH.by6(0.25);
+//    /* 0.1333... */ private final EdgeH RIGHT6BYP125 = EdgeH.by6(0.125);
+//    /* 0.2 */ private final EdgeH RIGHT6BYP2 = EdgeH.by6(0.2);
+//    /* 0.25 */ private final EdgeH RIGHT6BYP25 = EdgeH.by6(0.25);
     /* 0.3 */ private final EdgeH RIGHT6BYP3 = EdgeH.by6(0.3);
-    /* 0.3333... */ private final EdgeH RIGHT6BYP33 = EdgeH.by6(0.3333333333);
-    /* 0.35 */ private final EdgeH RIGHT6BYP35 = EdgeH.by6(0.35);
-    /* 0.6166... */ private final EdgeH RIGHT6BYP375 = EdgeH.by6(0.375);
-    /* 0.3833... */ private final EdgeH RIGHT6BYP3833 = EdgeH.by6(0.3833333333);
+//    /* 0.3333... */ private final EdgeH RIGHT6BYP33 = EdgeH.by6(0.3333333333);
+//    /* 0.35 */ private final EdgeH RIGHT6BYP35 = EdgeH.by6(0.35);
+//    /* 0.6166... */ private final EdgeH RIGHT6BYP375 = EdgeH.by6(0.375);
+//    /* 0.3833... */ private final EdgeH RIGHT6BYP3833 = EdgeH.by6(0.3833333333);
     /* 0.4 */ private final EdgeH RIGHT6BYP4 = EdgeH.by6(0.4);
-    /* 0.4333... */ private final EdgeH RIGHT6BYP433 = EdgeH.by6(0.4333333333);
-    /* 0.45 */ private final EdgeH RIGHT6BYP45 = EdgeH.by6(0.45);
+//    /* 0.4333... */ private final EdgeH RIGHT6BYP433 = EdgeH.by6(0.4333333333);
+//    /* 0.45 */ private final EdgeH RIGHT6BYP45 = EdgeH.by6(0.45);
     /* 0.5 */ private final EdgeH RIGHT6BYP5 = EdgeH.by6(0.5);
-    /* 0.5166... */ private final EdgeH RIGHT6BYP5166 = EdgeH.by6(0.5166666666);
+//    /* 0.5166... */ private final EdgeH RIGHT6BYP5166 = EdgeH.by6(0.5166666666);
 //	/* 0.55 */			private final EdgeH RIGHT6BYP55 = EdgeH.by6(0.55);
-	/* 0.5666... */ private final EdgeH RIGHT6BYP566 = EdgeH.by6(0.5666666666);
+//	/* 0.5666... */ private final EdgeH RIGHT6BYP566 = EdgeH.by6(0.5666666666);
     /* 0.6 */ private final EdgeH RIGHT6BYP6 = EdgeH.by6(0.6);
-    /* 0.6166... */ private final EdgeH RIGHT6BYP6166 = EdgeH.by6(0.6166666666);
-    /* 0.6166... */ private final EdgeH RIGHT6BYP625 = EdgeH.by6(0.625);
+//    /* 0.6166... */ private final EdgeH RIGHT6BYP6166 = EdgeH.by6(0.6166666666);
+//    /* 0.6166... */ private final EdgeH RIGHT6BYP625 = EdgeH.by6(0.625);
     /* 0.6666... */ private final EdgeH RIGHT6BYP66 = EdgeH.by6(0.6666666666);
 //	/* 0.7 */			private final EdgeH RIGHT6BYP7 = EdgeH.by6(0.7);
-	/* 0.75 */ private final EdgeH RIGHT6BYP75 = EdgeH.by6(0.75);
-    /* 0.8 */ private final EdgeH RIGHT6BYP8 = EdgeH.by6(0.8);
-    /* 0.875 */ private final EdgeH RIGHT6BYP875 = EdgeH.by6(0.875);
-    /* 0.9 */ private final EdgeH RIGHT6BYP9 = EdgeH.by6(0.9);
+//	/* 0.75 */ private final EdgeH RIGHT6BYP75 = EdgeH.by6(0.75);
+//    /* 0.8 */ private final EdgeH RIGHT6BYP8 = EdgeH.by6(0.8);
+//    /* 0.875 */ private final EdgeH RIGHT6BYP875 = EdgeH.by6(0.875);
+//    /* 0.9 */ private final EdgeH RIGHT6BYP9 = EdgeH.by6(0.9);
 
     /* 0.8 */ private final EdgeH RIGHT8BYP8 = EdgeH.by8(0.8);
-    /* 0.1 */ private final EdgeH RIGHT10BYP1 = EdgeH.by10(0.1);
-    /* 0.1333... */ private final EdgeH RIGHT10BYP125 = EdgeH.by10(0.125);
-    /* 0.2 */ private final EdgeH RIGHT10BYP2 = EdgeH.by10(0.2);
-    /* 0.25 */ private final EdgeH RIGHT10BYP25 = EdgeH.by10(0.25);
-    /* 0.3 */ private final EdgeH RIGHT10BYP3 = EdgeH.by10(0.3);
+//    /* 0.1 */ private final EdgeH RIGHT10BYP1 = EdgeH.by10(0.1);
+//    /* 0.1333... */ private final EdgeH RIGHT10BYP125 = EdgeH.by10(0.125);
+//    /* 0.2 */ private final EdgeH RIGHT10BYP2 = EdgeH.by10(0.2);
+//    /* 0.25 */ private final EdgeH RIGHT10BYP25 = EdgeH.by10(0.25);
+//    /* 0.3 */ private final EdgeH RIGHT10BYP3 = EdgeH.by10(0.3);
     /* 0.3333... */ private final EdgeH RIGHT10BYP33 = EdgeH.by10(0.3333333333);
     /* 0.35 */ private final EdgeH RIGHT10BYP35 = EdgeH.by10(0.35);
-    /* 0.6166... */ private final EdgeH RIGHT10BYP375 = EdgeH.by10(0.375);
+//    /* 0.6166... */ private final EdgeH RIGHT10BYP375 = EdgeH.by10(0.375);
     /* 0.3833... */ private final EdgeH RIGHT10BYP3833 = EdgeH.by10(0.3833333333);
     /* 0.4 */ private final EdgeH RIGHT10BYP4 = EdgeH.by10(0.4);
     /* 0.4333... */ private final EdgeH RIGHT10BYP433 = EdgeH.by10(0.4333333333);
     /* 0.45 */ private final EdgeH RIGHT10BYP45 = EdgeH.by10(0.45);
-    /* 0.5 */ private final EdgeH RIGHT10BYP5 = EdgeH.by10(0.5);
+//    /* 0.5 */ private final EdgeH RIGHT10BYP5 = EdgeH.by10(0.5);
     /* 0.5166... */ private final EdgeH RIGHT10BYP5166 = EdgeH.by10(0.5166666666);
 //	/* 0.55 */			private final EdgeH RIGHT10BYP55 = EdgeH.by10(0.55);
 	/* 0.5666... */ private final EdgeH RIGHT10BYP566 = EdgeH.by10(0.5666666666);
     /* 0.6 */ private final EdgeH RIGHT10BYP6 = EdgeH.by10(0.6);
     /* 0.6166... */ private final EdgeH RIGHT10BYP6166 = EdgeH.by10(0.6166666666);
-    /* 0.6166... */ private final EdgeH RIGHT10BYP625 = EdgeH.by10(0.625);
-    /* 0.6666... */ private final EdgeH RIGHT10BYP66 = EdgeH.by10(0.6666666666);
+//    /* 0.6166... */ private final EdgeH RIGHT10BYP625 = EdgeH.by10(0.625);
+//    /* 0.6666... */ private final EdgeH RIGHT10BYP66 = EdgeH.by10(0.6666666666);
 //	/* 0.7 */			private final EdgeH RIGHT10BYP7 = EdgeH.by10(0.7);
 	/* 0.75 */ private final EdgeH RIGHT10BYP75 = EdgeH.by10(0.75);
     /* 0.8 */ private final EdgeH RIGHT10BYP8 = EdgeH.by10(0.8);
-    /* 0.875 */ private final EdgeH RIGHT10BYP875 = EdgeH.by10(0.875);
+//    /* 0.875 */ private final EdgeH RIGHT10BYP875 = EdgeH.by10(0.875);
     /* 0.9 */ private final EdgeH RIGHT10BYP9 = EdgeH.by10(0.9);
     // this much from the center to the bottom edge
 //	/* 0.1 */			private final EdgeV BOTBYP1 = EdgeV.by0(-0.1);
 //	/* 0.125 */			private final EdgeV BOTBYP125 = EdgeV.by0(-0.125);
-	/* 0.166...  */ private final EdgeV BOTBYP166 = EdgeV.by0(-0.166666666);
-    /* 0.2 */ private final EdgeV BOTBYP2 = EdgeV.by0(-0.2);
-    /* 0.25 */ private final EdgeV BOTBYP25 = EdgeV.by0(-0.25);
-    /* 0.3 */ private final EdgeV BOTBYP3 = EdgeV.by0(-0.3);
-    /* 0.3333... */ private final EdgeV BOTBYP33 = EdgeV.by0(-0.3333333333);
-    /* 0.375 */ private final EdgeV BOTBYP375 = EdgeV.by0(-0.375);
-    /* 0.4 */ private final EdgeV BOTBYP4 = EdgeV.by0(-0.4);
-    /* 0.5 */ private final EdgeV BOTBYP5 = EdgeV.by0(-0.5);
-    /* 0.6 */ private final EdgeV BOTBYP6 = EdgeV.by0(-0.6);
-    /* 0.6666... */ private final EdgeV BOTBYP66 = EdgeV.by0(-0.6666666666);
+//	/* 0.166...  */ private final EdgeV BOTBYP166 = EdgeV.by0(-0.166666666);
+//    /* 0.2 */ private final EdgeV BOTBYP2 = EdgeV.by0(-0.2);
+//    /* 0.25 */ private final EdgeV BOTBYP25 = EdgeV.by0(-0.25);
+//    /* 0.3 */ private final EdgeV BOTBYP3 = EdgeV.by0(-0.3);
+//    /* 0.3333... */ private final EdgeV BOTBYP33 = EdgeV.by0(-0.3333333333);
+//    /* 0.375 */ private final EdgeV BOTBYP375 = EdgeV.by0(-0.375);
+//    /* 0.4 */ private final EdgeV BOTBYP4 = EdgeV.by0(-0.4);
+//    /* 0.5 */ private final EdgeV BOTBYP5 = EdgeV.by0(-0.5);
+//    /* 0.6 */ private final EdgeV BOTBYP6 = EdgeV.by0(-0.6);
+//    /* 0.6666... */ private final EdgeV BOTBYP66 = EdgeV.by0(-0.6666666666);
 //	/* 0.7 */			private final EdgeV BOTBYP7 = EdgeV.by0(-0.7);
-	/* 0.75 */ private final EdgeV BOTBYP75 = EdgeV.by0(-0.75);
-    /* 0.8 */ private final EdgeV BOTBYP8 = EdgeV.by0(-0.8);
-    /* 0.875 */ private final EdgeV BOTBYP875 = EdgeV.by0(-0.875);
-    /* 0.9 */ private final EdgeV BOTBYP9 = EdgeV.by0(-0.9);
+//	/* 0.75 */ private final EdgeV BOTBYP75 = EdgeV.by0(-0.75);
+//    /* 0.8 */ private final EdgeV BOTBYP8 = EdgeV.by0(-0.8);
+//    /* 0.875 */ private final EdgeV BOTBYP875 = EdgeV.by0(-0.875);
+//    /* 0.9 */ private final EdgeV BOTBYP9 = EdgeV.by0(-0.9);
 
     /* 0.9 */ private final EdgeV BOT3BYP9 = EdgeV.by3(-0.9);
 //	/* 0.1 */			private final EdgeV BOT4BYP1 = EdgeV.by4(-0.1);
 //	/* 0.125 */			private final EdgeV BOT4BYP125 = EdgeV.by4(-0.125);
-	/* 0.166...  */ private final EdgeV BOT4BYP166 = EdgeV.by4(-0.166666666);
+//	/* 0.166...  */ private final EdgeV BOT4BYP166 = EdgeV.by4(-0.166666666);
     /* 0.2 */ private final EdgeV BOT4BYP2 = EdgeV.by4(-0.2);
     /* 0.25 */ private final EdgeV BOT4BYP25 = EdgeV.by4(-0.25);
-    /* 0.3 */ private final EdgeV BOT4BYP3 = EdgeV.by4(-0.3);
+//    /* 0.3 */ private final EdgeV BOT4BYP3 = EdgeV.by4(-0.3);
     /* 0.3333... */ private final EdgeV BOT4BYP33 = EdgeV.by4(-0.3333333333);
     /* 0.375 */ private final EdgeV BOT4BYP375 = EdgeV.by4(-0.375);
     /* 0.4 */ private final EdgeV BOT4BYP4 = EdgeV.by4(-0.4);
     /* 0.5 */ private final EdgeV BOT4BYP5 = EdgeV.by4(-0.5);
     /* 0.6 */ private final EdgeV BOT4BYP6 = EdgeV.by4(-0.6);
-    /* 0.6666... */ private final EdgeV BOT4BYP66 = EdgeV.by4(-0.6666666666);
+//    /* 0.6666... */ private final EdgeV BOT4BYP66 = EdgeV.by4(-0.6666666666);
 //	/* 0.7 */			private final EdgeV BOT4BYP7 = EdgeV.by4(-0.7);
 	/* 0.75 */ private final EdgeV BOT4BYP75 = EdgeV.by4(-0.75);
     /* 0.8 */ private final EdgeV BOT4BYP8 = EdgeV.by4(-0.8);
     /* 0.875 */ private final EdgeV BOT4BYP875 = EdgeV.by4(-0.875);
-    /* 0.9 */ private final EdgeV BOT4BYP9 = EdgeV.by4(-0.9);
+//    /* 0.9 */ private final EdgeV BOT4BYP9 = EdgeV.by4(-0.9);
 //	/* 0.1 */			private final EdgeV BOT6BYP1 = EdgeV.by6(-0.1);
 //	/* 0.125 */			private final EdgeV BOT6BYP125 = EdgeV.by6(-0.125);
 	/* 0.166...  */ private final EdgeV BOT6BYP166 = EdgeV.by6(-0.166666666);
-    /* 0.2 */ private final EdgeV BOT6BYP2 = EdgeV.by6(-0.2);
-    /* 0.25 */ private final EdgeV BOT6BYP25 = EdgeV.by6(-0.25);
+//    /* 0.2 */ private final EdgeV BOT6BYP2 = EdgeV.by6(-0.2);
+//    /* 0.25 */ private final EdgeV BOT6BYP25 = EdgeV.by6(-0.25);
     /* 0.3 */ private final EdgeV BOT6BYP3 = EdgeV.by6(-0.3);
     /* 0.3333... */ private final EdgeV BOT6BYP33 = EdgeV.by6(-0.3333333333);
-    /* 0.375 */ private final EdgeV BOT6BYP375 = EdgeV.by6(-0.375);
-    /* 0.4 */ private final EdgeV BOT6BYP4 = EdgeV.by6(-0.4);
-    /* 0.5 */ private final EdgeV BOT6BYP5 = EdgeV.by6(-0.5);
-    /* 0.6 */ private final EdgeV BOT6BYP6 = EdgeV.by6(-0.6);
+//    /* 0.375 */ private final EdgeV BOT6BYP375 = EdgeV.by6(-0.375);
+//    /* 0.4 */ private final EdgeV BOT6BYP4 = EdgeV.by6(-0.4);
+//    /* 0.5 */ private final EdgeV BOT6BYP5 = EdgeV.by6(-0.5);
+//    /* 0.6 */ private final EdgeV BOT6BYP6 = EdgeV.by6(-0.6);
     /* 0.6666... */ private final EdgeV BOT6BYP66 = EdgeV.by6(-0.6666666666);
 //	/* 0.7 */			private final EdgeV BOT6BYP7 = EdgeV.by6(-0.7);
-	/* 0.75 */ private final EdgeV BOT6BYP75 = EdgeV.by6(-0.75);
-    /* 0.8 */ private final EdgeV BOT6BYP8 = EdgeV.by6(-0.8);
-    /* 0.875 */ private final EdgeV BOT6BYP875 = EdgeV.by6(-0.875);
-    /* 0.9 */ private final EdgeV BOT6BYP9 = EdgeV.by6(-0.9);
+//	/* 0.75 */ private final EdgeV BOT6BYP75 = EdgeV.by6(-0.75);
+//    /* 0.8 */ private final EdgeV BOT6BYP8 = EdgeV.by6(-0.8);
+//    /* 0.875 */ private final EdgeV BOT6BYP875 = EdgeV.by6(-0.875);
+//    /* 0.9 */ private final EdgeV BOT6BYP9 = EdgeV.by6(-0.9);
 //	/* 0.1 */			private final EdgeV BOT10BYP1 = EdgeV.by10(-0.1);
 //	/* 0.125 */			private final EdgeV BOT10BYP125 = EdgeV.by10(-0.125);
-	/* 0.166...  */ private final EdgeV BOT10BYP166 = EdgeV.by10(-0.166666666);
+//	/* 0.166...  */ private final EdgeV BOT10BYP166 = EdgeV.by10(-0.166666666);
     /* 0.2 */ private final EdgeV BOT10BYP2 = EdgeV.by10(-0.2);
-    /* 0.25 */ private final EdgeV BOT10BYP25 = EdgeV.by10(-0.25);
-    /* 0.3 */ private final EdgeV BOT10BYP3 = EdgeV.by10(-0.3);
-    /* 0.3333... */ private final EdgeV BOT10BYP33 = EdgeV.by10(-0.3333333333);
-    /* 0.375 */ private final EdgeV BOT10BYP375 = EdgeV.by10(-0.375);
+//    /* 0.25 */ private final EdgeV BOT10BYP25 = EdgeV.by10(-0.25);
+//    /* 0.3 */ private final EdgeV BOT10BYP3 = EdgeV.by10(-0.3);
+//    /* 0.3333... */ private final EdgeV BOT10BYP33 = EdgeV.by10(-0.3333333333);
+//    /* 0.375 */ private final EdgeV BOT10BYP375 = EdgeV.by10(-0.375);
     /* 0.4 */ private final EdgeV BOT10BYP4 = EdgeV.by10(-0.4);
-    /* 0.5 */ private final EdgeV BOT10BYP5 = EdgeV.by10(-0.5);
+//    /* 0.5 */ private final EdgeV BOT10BYP5 = EdgeV.by10(-0.5);
     /* 0.6 */ private final EdgeV BOT10BYP6 = EdgeV.by10(-0.6);
-    /* 0.6666... */ private final EdgeV BOT10BYP66 = EdgeV.by10(-0.6666666666);
+//    /* 0.6666... */ private final EdgeV BOT10BYP66 = EdgeV.by10(-0.6666666666);
 //	/* 0.7 */			private final EdgeV BOT10BYP7 = EdgeV.by10(-0.7);
 	/* 0.75 */ private final EdgeV BOT10BYP75 = EdgeV.by10(-0.75);
     /* 0.8 */ private final EdgeV BOT10BYP8 = EdgeV.by10(-0.8);
     /* 0.875 */ private final EdgeV BOT10BYP875 = EdgeV.by10(-0.875);
-    /* 0.9 */ private final EdgeV BOT10BYP9 = EdgeV.by10(-0.9);
+//    /* 0.9 */ private final EdgeV BOT10BYP9 = EdgeV.by10(-0.9);
     // this much from the center to the top edge
 //	/* 0.1 */			private final EdgeV TOPBYP1 = EdgeV.by0(0.1);
-	/* 0.2 */ private final EdgeV TOPBYP2 = EdgeV.by0(0.2);
-    /* 0.25 */ private final EdgeV TOPBYP25 = EdgeV.by0(0.25);
-    /* 0.3 */ private final EdgeV TOPBYP3 = EdgeV.by0(0.3);
-    /* 0.3333... */ private final EdgeV TOPBYP33 = EdgeV.by0(0.3333333333);
-    /* 0.4 */ private final EdgeV TOPBYP4 = EdgeV.by0(0.4);
-    /* 0.5 */ private final EdgeV TOPBYP5 = EdgeV.by0(0.5);
-    /* 0.5833... */ private final EdgeV TOPBYP5833 = EdgeV.by0(0.5833333333);
-    /* 0.6 */ private final EdgeV TOPBYP6 = EdgeV.by0(0.6);
-    /* 0.6666... */ private final EdgeV TOPBYP66 = EdgeV.by0(0.6666666666);
-    /* 0.75 */ private final EdgeV TOPBYP75 = EdgeV.by0(0.75);
-    /* 0.8 */ private final EdgeV TOPBYP8 = EdgeV.by0(0.8);
-    /* 0.9 */ private final EdgeV TOPBYP9 = EdgeV.by0(0.9);
+//	/* 0.2 */ private final EdgeV TOPBYP2 = EdgeV.by0(0.2);
+//    /* 0.25 */ private final EdgeV TOPBYP25 = EdgeV.by0(0.25);
+//    /* 0.3 */ private final EdgeV TOPBYP3 = EdgeV.by0(0.3);
+//    /* 0.3333... */ private final EdgeV TOPBYP33 = EdgeV.by0(0.3333333333);
+//    /* 0.4 */ private final EdgeV TOPBYP4 = EdgeV.by0(0.4);
+//    /* 0.5 */ private final EdgeV TOPBYP5 = EdgeV.by0(0.5);
+//    /* 0.5833... */ private final EdgeV TOPBYP5833 = EdgeV.by0(0.5833333333);
+//    /* 0.6 */ private final EdgeV TOPBYP6 = EdgeV.by0(0.6);
+//    /* 0.6666... */ private final EdgeV TOPBYP66 = EdgeV.by0(0.6666666666);
+//    /* 0.75 */ private final EdgeV TOPBYP75 = EdgeV.by0(0.75);
+//    /* 0.8 */ private final EdgeV TOPBYP8 = EdgeV.by0(0.8);
+//    /* 0.9 */ private final EdgeV TOPBYP9 = EdgeV.by0(0.9);
     /* 0.75 */ private final EdgeV TOP3BYP75 = EdgeV.by3(0.75);
     /* 0.9 */ private final EdgeV TOP3BYP9 = EdgeV.by3(0.9);
 //	/* 0.1 */			private final EdgeV TOP4BYP1 = EdgeV.by4(0.1);
 	/* 0.2 */ private final EdgeV TOP4BYP2 = EdgeV.by4(0.2);
     /* 0.25 */ private final EdgeV TOP4BYP25 = EdgeV.by4(0.25);
-    /* 0.3 */ private final EdgeV TOP4BYP3 = EdgeV.by4(0.3);
+//    /* 0.3 */ private final EdgeV TOP4BYP3 = EdgeV.by4(0.3);
     /* 0.3333... */ private final EdgeV TOP4BYP33 = EdgeV.by4(0.3333333333);
-    /* 0.4 */ private final EdgeV TOP4BYP4 = EdgeV.by4(0.4);
+//    /* 0.4 */ private final EdgeV TOP4BYP4 = EdgeV.by4(0.4);
     /* 0.5 */ private final EdgeV TOP4BYP5 = EdgeV.by4(0.5);
-    /* 0.5833... */ private final EdgeV TOP4BYP5833 = EdgeV.by4(0.5833333333);
-    /* 0.6 */ private final EdgeV TOP4BYP6 = EdgeV.by4(0.6);
-    /* 0.6666... */ private final EdgeV TOP4BYP66 = EdgeV.by4(0.6666666666);
+//    /* 0.5833... */ private final EdgeV TOP4BYP5833 = EdgeV.by4(0.5833333333);
+//    /* 0.6 */ private final EdgeV TOP4BYP6 = EdgeV.by4(0.6);
+//    /* 0.6666... */ private final EdgeV TOP4BYP66 = EdgeV.by4(0.6666666666);
     /* 0.75 */ private final EdgeV TOP4BYP75 = EdgeV.by4(0.75);
-    /* 0.8 */ private final EdgeV TOP4BYP8 = EdgeV.by4(0.8);
-    /* 0.9 */ private final EdgeV TOP4BYP9 = EdgeV.by4(0.9);
+//    /* 0.8 */ private final EdgeV TOP4BYP8 = EdgeV.by4(0.8);
+//    /* 0.9 */ private final EdgeV TOP4BYP9 = EdgeV.by4(0.9);
 //	/* 0.1 */			private final EdgeV TOP6BYP1 = EdgeV.by6(0.1);
-	/* 0.2 */ private final EdgeV TOP6BYP2 = EdgeV.by6(0.2);
-    /* 0.25 */ private final EdgeV TOP6BYP25 = EdgeV.by6(0.25);
+//	/* 0.2 */ private final EdgeV TOP6BYP2 = EdgeV.by6(0.2);
+//    /* 0.25 */ private final EdgeV TOP6BYP25 = EdgeV.by6(0.25);
     /* 0.3 */ private final EdgeV TOP6BYP3 = EdgeV.by6(0.3);
     /* 0.3333... */ private final EdgeV TOP6BYP33 = EdgeV.by6(0.3333333333);
-    /* 0.4 */ private final EdgeV TOP6BYP4 = EdgeV.by6(0.4);
-    /* 0.5 */ private final EdgeV TOP6BYP5 = EdgeV.by6(0.5);
+//    /* 0.4 */ private final EdgeV TOP6BYP4 = EdgeV.by6(0.4);
+//    /* 0.5 */ private final EdgeV TOP6BYP5 = EdgeV.by6(0.5);
     /* 0.5833... */ private final EdgeV TOP6BYP5833 = EdgeV.by6(0.5833333333);
     /* 0.6 */ private final EdgeV TOP6BYP6 = EdgeV.by6(0.6);
     /* 0.6666... */ private final EdgeV TOP6BYP66 = EdgeV.by6(0.6666666666);
     /* 0.75 */ private final EdgeV TOP6BYP75 = EdgeV.by6(0.75);
-    /* 0.8 */ private final EdgeV TOP6BYP8 = EdgeV.by6(0.8);
+//    /* 0.8 */ private final EdgeV TOP6BYP8 = EdgeV.by6(0.8);
     /* 0.9 */ private final EdgeV TOP6BYP9 = EdgeV.by6(0.9);
 //	/* 0.1 */			private final EdgeV TOP10BYP1 = EdgeV.by10(0.1);
 	/* 0.2 */ private final EdgeV TOP10BYP2 = EdgeV.by10(0.2);
-    /* 0.25 */ private final EdgeV TOP10BYP25 = EdgeV.by10(0.25);
-    /* 0.3 */ private final EdgeV TOP10BYP3 = EdgeV.by10(0.3);
-    /* 0.3333... */ private final EdgeV TOP10BYP33 = EdgeV.by10(0.3333333333);
+//    /* 0.25 */ private final EdgeV TOP10BYP25 = EdgeV.by10(0.25);
+//    /* 0.3 */ private final EdgeV TOP10BYP3 = EdgeV.by10(0.3);
+//    /* 0.3333... */ private final EdgeV TOP10BYP33 = EdgeV.by10(0.3333333333);
     /* 0.4 */ private final EdgeV TOP10BYP4 = EdgeV.by10(0.4);
-    /* 0.5 */ private final EdgeV TOP10BYP5 = EdgeV.by10(0.5);
-    /* 0.5833... */ private final EdgeV TOP10BYP5833 = EdgeV.by10(0.5833333333);
+//    /* 0.5 */ private final EdgeV TOP10BYP5 = EdgeV.by10(0.5);
+//    /* 0.5833... */ private final EdgeV TOP10BYP5833 = EdgeV.by10(0.5833333333);
     /* 0.6 */ private final EdgeV TOP10BYP6 = EdgeV.by10(0.6);
-    /* 0.6666... */ private final EdgeV TOP10BYP66 = EdgeV.by10(0.6666666666);
+//    /* 0.6666... */ private final EdgeV TOP10BYP66 = EdgeV.by10(0.6666666666);
     /* 0.75 */ private final EdgeV TOP10BYP75 = EdgeV.by10(0.75);
     /* 0.8 */ private final EdgeV TOP10BYP8 = EdgeV.by10(0.8);
-    /* 0.9 */ private final EdgeV TOP10BYP9 = EdgeV.by10(0.9);
+//    /* 0.9 */ private final EdgeV TOP10BYP9 = EdgeV.by10(0.9);
 
     // -------------------- private and protected methods ------------------------
 //	public Schematics(Generic generic, TechFactory techFactory) {
@@ -747,13 +747,13 @@ public class Schematics extends Technology {
         //**************************************** LAYERS ****************************************
 
         /** arc layer */
-        arc_lay = Layer.newInstance(this, "Arc",
+        arc_lay = Layer.newInst(this, "Arc",
                 new EGraphics(false, false, null, 0, 0, 0, 255, 0.8, true,
                 new int[]{0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
                     0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF}));
 
         /** bus layer */
-//		bus_lay = Layer.newInstance(this, "Bus",
+//		bus_lay = Layer.newInst(this, "Bus",
 //			new EGraphics(false, true, null, EGraphics.TRANSPARENT_1, 107,226,96, 0.8,true,
 //			new int[] { 0x2222,   //   X   X   X   X
 //				0x0000,   //
@@ -771,7 +771,7 @@ public class Schematics extends Technology {
 //				0x0000,   //
 //				0x8888,   // X   X   X   X
 //				0x0000}));//
-        bus_lay = Layer.newInstance(this, "Bus",
+        bus_lay = Layer.newInst(this, "Bus",
                 new EGraphics(true, true, null, 0, 0, 255, 0, 0.8, true,
                 new int[]{0xAAAA, // X X X X X X X X
                     0x5555, //  X X X X X X X X
@@ -791,13 +791,13 @@ public class Schematics extends Technology {
                     0x5555}));//  X X X X X X X X
 
         /** node layer */
-        node_lay = Layer.newInstance(this, "Node",
+        node_lay = Layer.newInst(this, "Node",
                 new EGraphics(false, false, null, 0, 255, 0, 0, 0.8, true,
                 new int[]{0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
                     0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF}));
 
         /** text layer */
-        text_lay = Layer.newInstance(this, "Text",
+        text_lay = Layer.newInst(this, "Text",
                 new EGraphics(false, false, null, 0, 0, 0, 0, 0.8, true,
                 new int[]{0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF,
                     0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF}));
@@ -841,7 +841,7 @@ public class Schematics extends Technology {
 
         /** wire con */
         Technology.NodeLayer letterJ;
-        wireConNode = PrimitiveNode.newInstance("Wire_Con", this, 2.0, 2.0,
+        wireConNode = PrimitiveNode.newInst("Wire_Con", this, 2.0, 2.0,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(node_lay, 0, Poly.Type.CLOSED, Technology.NodeLayer.BOX, new Technology.TechPoint[]{
                         new Technology.TechPoint(EdgeH.l(-1), EdgeV.b(-1)),
@@ -849,7 +849,7 @@ public class Schematics extends Technology {
                     }),
                     letterJ = new Technology.NodeLayer(text_lay, 0, Poly.Type.TEXTCENT, Technology.NodeLayer.POINTS, Technology.TechPoint.makeCenterBox())
                 });
-        PrimitivePort wireCon_port = PrimitivePort.newInstance(wireConNode, new ArcProto[]{wire_arc, bus_arc}, "wire", true,
+        PrimitivePort wireCon_port = PrimitivePort.newInst(wireConNode, new ArcProto[]{wire_arc, bus_arc}, "wire", true,
                 0, 180, 0, PortCharacteristic.UNKNOWN, true, false,
                 EdgeH.l(-0.5), EdgeV.b(-0.5), EdgeH.r(0.5), EdgeV.t(0.5));
         wireConNode.addPrimitivePorts(wireCon_port);
@@ -858,7 +858,7 @@ public class Schematics extends Technology {
         letterJ.setDescriptor(tdBig);
 
         /** general buffer */
-        bufferNode = PrimitiveNode.newInstance("Buffer", this, 6.0, 6.0, ERectangle.fromLambda(-3, -2.75, 5, 5.5),
+        bufferNode = PrimitiveNode.newInst("Buffer", this, 6.0, 6.0, ERectangle.fromLambda(-3, -2.75, 5, 5.5),
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(node_lay, 0, Poly.Type.CLOSED, Technology.NodeLayer.POINTS,
                     new Technology.TechPoint[]{
@@ -867,13 +867,13 @@ public class Schematics extends Technology {
                         new Technology.TechPoint(EdgeH.l(-3), EdgeV.b(-2.75))
                     })
                 });
-        PrimitivePort bufferInPort = PrimitivePort.newInstance(bufferNode, new ArcProto[]{wire_arc, bus_arc}, "a", false,
+        PrimitivePort bufferInPort = PrimitivePort.newInst(bufferNode, new ArcProto[]{wire_arc, bus_arc}, "a", false,
                 180, 45, 0, PortCharacteristic.IN, false, true,
                 EdgeH.l(-3), EdgeV.c(0), EdgeH.l(-3), EdgeV.c(0));
-        PrimitivePort bufferSidePort = PrimitivePort.newInstance(bufferNode, new ArcProto[]{wire_arc}, "c", false,
+        PrimitivePort bufferSidePort = PrimitivePort.newInst(bufferNode, new ArcProto[]{wire_arc}, "c", false,
                 270, 45, 1, PortCharacteristic.IN, false, true,
                 EdgeH.c(0), EdgeV.b(-1), EdgeH.c(0), EdgeV.b(-1));
-        PrimitivePort bufferOutPort = PrimitivePort.newInstance(bufferNode, new ArcProto[]{wire_arc, bus_arc}, "y", false,
+        PrimitivePort bufferOutPort = PrimitivePort.newInst(bufferNode, new ArcProto[]{wire_arc, bus_arc}, "y", false,
                 0, 45, 2, PortCharacteristic.OUT, false, true,
                 EdgeH.r(2), EdgeV.c(0), EdgeH.r(2), EdgeV.c(0));
         bufferNode.addPrimitivePorts(bufferInPort, bufferSidePort, bufferOutPort);
@@ -1162,31 +1162,31 @@ public class Schematics extends Technology {
             PrimitiveNode.Function.FLIPFLOPRSN, PrimitiveNode.Function.FLIPFLOPJKN, PrimitiveNode.Function.FLIPFLOPDN, PrimitiveNode.Function.FLIPFLOPTN
         };
         flipflopNode = new MultiFunctionNode("Flip-Flop", 6.0, 10.0, ERectangle.fromLambda(-3, -5, 6, 10), ffLayersRSMS, ffLayers, PrimitiveNode.Function.FLIPFLOPRSMS, ffFunctions);
-        PrimitivePort flipflopI1 = PrimitivePort.newInstance(flipflopNode, new ArcProto[]{wire_arc}, "i1", false,
+        PrimitivePort flipflopI1 = PrimitivePort.newInst(flipflopNode, new ArcProto[]{wire_arc}, "i1", false,
                 180, 45, 0, PortCharacteristic.IN, false, true,
                 EdgeH.l(-3), TOP10BYP6, EdgeH.l(-3), TOP10BYP6);
-        PrimitivePort flipflopI2 = PrimitivePort.newInstance(flipflopNode, new ArcProto[]{wire_arc}, "i2", false,
+        PrimitivePort flipflopI2 = PrimitivePort.newInst(flipflopNode, new ArcProto[]{wire_arc}, "i2", false,
                 180, 45, 1, PortCharacteristic.IN, false, true,
                 EdgeH.l(-3), BOT10BYP6, EdgeH.l(-3), BOT10BYP6);
-        PrimitivePort flipflopQ = PrimitivePort.newInstance(flipflopNode, new ArcProto[]{wire_arc}, "q", false,
+        PrimitivePort flipflopQ = PrimitivePort.newInst(flipflopNode, new ArcProto[]{wire_arc}, "q", false,
                 0, 45, 2, PortCharacteristic.OUT, false, true,
                 EdgeH.r(3), TOP10BYP6, EdgeH.r(3), TOP10BYP6);
-        PrimitivePort flipflopQB = PrimitivePort.newInstance(flipflopNode, new ArcProto[]{wire_arc}, "qb", false,
+        PrimitivePort flipflopQB = PrimitivePort.newInst(flipflopNode, new ArcProto[]{wire_arc}, "qb", false,
                 0, 45, 3, PortCharacteristic.OUT, false, true,
                 EdgeH.r(3), BOT10BYP6, EdgeH.r(3), BOT10BYP6);
-        PrimitivePort flipflopCK = PrimitivePort.newInstance(flipflopNode, new ArcProto[]{wire_arc}, "ck", false,
+        PrimitivePort flipflopCK = PrimitivePort.newInst(flipflopNode, new ArcProto[]{wire_arc}, "ck", false,
                 180, 45, 4, PortCharacteristic.IN, false, true,
                 EdgeH.l(-3), EdgeV.c(0), EdgeH.l(-3), EdgeV.c(0));
-        PrimitivePort flipflopPRE = PrimitivePort.newInstance(flipflopNode, new ArcProto[]{wire_arc}, "preset", false,
+        PrimitivePort flipflopPRE = PrimitivePort.newInst(flipflopNode, new ArcProto[]{wire_arc}, "preset", false,
                 90, 45, 5, PortCharacteristic.IN, false, true,
                 EdgeH.c(0), EdgeV.t(5), EdgeH.c(0), EdgeV.t(5));
-        PrimitivePort flipflopCLR = PrimitivePort.newInstance(flipflopNode, new ArcProto[]{wire_arc}, "clear", false,
+        PrimitivePort flipflopCLR = PrimitivePort.newInst(flipflopNode, new ArcProto[]{wire_arc}, "clear", false,
                 270, 45, 6, PortCharacteristic.IN, false, true,
                 EdgeH.c(0), EdgeV.b(-5), EdgeH.c(0), EdgeV.b(-5));
         flipflopNode.addPrimitivePorts(flipflopI1, flipflopI2, flipflopQ, flipflopQB, flipflopCK, flipflopPRE, flipflopCLR);
 
         /** mux */
-        muxNode = PrimitiveNode.newInstance("Mux", this, 8.0, 10.0, ERectangle.fromLambda(-3.5, -5, 7, 10),
+        muxNode = PrimitiveNode.newInst("Mux", this, 8.0, 10.0, ERectangle.fromLambda(-3.5, -5, 7, 10),
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(node_lay, 0, Poly.Type.CLOSED, Technology.NodeLayer.POINTS,
                     new Technology.TechPoint[]{
@@ -1198,10 +1198,10 @@ public class Schematics extends Technology {
                 });
         PrimitivePort muxInPort = new SpecialSelectionPort(muxNode, "a",
                 LEFT8BYP8, EdgeV.b(-5), LEFT8BYP8, EdgeV.t(5));
-        PrimitivePort muxSidePort = PrimitivePort.newInstance(muxNode, new ArcProto[]{wire_arc}, "s", false,
+        PrimitivePort muxSidePort = PrimitivePort.newInst(muxNode, new ArcProto[]{wire_arc}, "s", false,
                 270, 45, 2, PortCharacteristic.IN, false, true,
                 EdgeH.c(0), BOT10BYP875, EdgeH.c(0), BOT10BYP875);
-        PrimitivePort muxOutPort = PrimitivePort.newInstance(muxNode, new ArcProto[]{wire_arc, bus_arc}, "y", false,
+        PrimitivePort muxOutPort = PrimitivePort.newInst(muxNode, new ArcProto[]{wire_arc, bus_arc}, "y", false,
                 0, 45, 1, PortCharacteristic.OUT, false, true,
                 RIGHT8BYP8, EdgeV.c(0), RIGHT8BYP8, EdgeV.c(0));
         muxNode.addPrimitivePorts(muxInPort, muxSidePort, muxOutPort);
@@ -1209,7 +1209,7 @@ public class Schematics extends Technology {
         muxNode.setAutoGrowth(0, 4);
 
         /** black box */
-        bboxNode = PrimitiveNode.newInstance("Bbox", this, 10.0, 10.0,
+        bboxNode = PrimitiveNode.newInst("Bbox", this, 10.0, 10.0,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(node_lay, 0, Poly.Type.CLOSED, Technology.NodeLayer.BOX,
                     new Technology.TechPoint[]{
@@ -1217,16 +1217,16 @@ public class Schematics extends Technology {
                         new Technology.TechPoint(EdgeH.r(5), EdgeV.t(5))
                     })
                 });
-        PrimitivePort bbox_port1 = PrimitivePort.newInstance(bboxNode, new ArcProto[]{wire_arc, bus_arc}, "a", false,
+        PrimitivePort bbox_port1 = PrimitivePort.newInst(bboxNode, new ArcProto[]{wire_arc, bus_arc}, "a", false,
                 0, 45, 0, PortCharacteristic.UNKNOWN, true, true,
                 EdgeH.r(5), EdgeV.b(-5), EdgeH.r(5), EdgeV.t(5));
-        PrimitivePort bbox_port2 = PrimitivePort.newInstance(bboxNode, new ArcProto[]{wire_arc, bus_arc}, "b", false,
+        PrimitivePort bbox_port2 = PrimitivePort.newInst(bboxNode, new ArcProto[]{wire_arc, bus_arc}, "b", false,
                 90, 45, 1, PortCharacteristic.UNKNOWN, true, true,
                 EdgeH.l(-5), EdgeV.t(5), EdgeH.r(5), EdgeV.t(5));
-        PrimitivePort bbox_port3 = PrimitivePort.newInstance(bboxNode, new ArcProto[]{wire_arc, bus_arc}, "c", false,
+        PrimitivePort bbox_port3 = PrimitivePort.newInst(bboxNode, new ArcProto[]{wire_arc, bus_arc}, "c", false,
                 180, 45, 2, PortCharacteristic.UNKNOWN, true, true,
                 EdgeH.l(-5), EdgeV.b(-5), EdgeH.l(-5), EdgeV.t(5));
-        PrimitivePort bbox_port4 = PrimitivePort.newInstance(bboxNode, new ArcProto[]{wire_arc, bus_arc}, "d", false,
+        PrimitivePort bbox_port4 = PrimitivePort.newInst(bboxNode, new ArcProto[]{wire_arc, bus_arc}, "d", false,
                 270, 45, 3, PortCharacteristic.UNKNOWN, true, true,
                 EdgeH.l(-5), EdgeV.b(-5), EdgeH.r(5), EdgeV.b(-5));
         bboxNode.addPrimitivePorts(bbox_port1, bbox_port2, bbox_port3, bbox_port4);
@@ -1275,9 +1275,9 @@ public class Schematics extends Technology {
                     new Technology.TechPoint(LEFT6BYP3, TOP6BYP6), new Technology.TechPoint(RIGHT6BYP3, TOP6BYP6),
                     new Technology.TechPoint(EdgeH.c(0), TOP6BYP3), new Technology.TechPoint(EdgeH.c(0), TOP6BYP9)}));
         sourceNode.addPrimitivePorts(
-                PrimitivePort.newInstance(sourceNode, new ArcProto[]{wire_arc}, "plus", 90, 45, 0, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(sourceNode, new ArcProto[]{wire_arc}, "plus", 90, 45, 0, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.t(3), EdgeH.c(0), EdgeV.t(3)),
-                PrimitivePort.newInstance(sourceNode, new ArcProto[]{wire_arc}, "minus", 270, 45, 1, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(sourceNode, new ArcProto[]{wire_arc}, "minus", 270, 45, 1, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.b(-3), EdgeH.c(0), EdgeV.b(-3)));
         sourceNode.setFunction(PrimitiveNode.Function.SOURCE);
         sourceNode.setSquare();
@@ -1441,11 +1441,11 @@ public class Schematics extends Technology {
         transistorNode = new MultiFunctionNode("Transistor", 4.0, 4.0, ERectangle.fromLambda(-2, -2, 4, 3), tranLayersN, tranLayers,
                 PrimitiveNode.Function.TRANS, tranFunctions);
         transistorNode.addPrimitivePorts(
-                PrimitivePort.newInstance(transistorNode, new ArcProto[]{wire_arc}, "g", 0, 180, 0, PortCharacteristic.IN,
+                PrimitivePort.newInst(transistorNode, new ArcProto[]{wire_arc}, "g", 0, 180, 0, PortCharacteristic.IN,
                 EdgeH.c(0), EdgeV.t(1), EdgeH.c(0), EdgeV.t(1)),
-                PrimitivePort.newInstance(transistorNode, new ArcProto[]{wire_arc}, "s", 180, 90, 1, PortCharacteristic.BIDIR,
+                PrimitivePort.newInst(transistorNode, new ArcProto[]{wire_arc}, "s", 180, 90, 1, PortCharacteristic.BIDIR,
                 EdgeH.l(-2), EdgeV.b(-2), EdgeH.l(-2), EdgeV.b(-2)),
-                PrimitivePort.newInstance(transistorNode, new ArcProto[]{wire_arc}, "d", 0, 90, 2, PortCharacteristic.BIDIR,
+                PrimitivePort.newInst(transistorNode, new ArcProto[]{wire_arc}, "d", 0, 90, 2, PortCharacteristic.BIDIR,
                 EdgeH.r(2), EdgeV.b(-2), EdgeH.r(2), EdgeV.b(-2)));
 
         /** resistor */
@@ -1560,9 +1560,9 @@ public class Schematics extends Technology {
         resistorNode = new MultiFunctionNode("Resistor", 6.0, 1.0, ERectangle.fromLambda(-2, -0.5, 4, 1),
                 resistorLayersNorm, resistorLayers, PrimitiveNode.Function.RESIST, resistorFunctions);
         resistorNode.addPrimitivePorts(
-                PrimitivePort.newInstance(resistorNode, new ArcProto[]{wire_arc}, "a", 180, 90, 0, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(resistorNode, new ArcProto[]{wire_arc}, "a", 180, 90, 0, PortCharacteristic.UNKNOWN,
                 LEFT6BYP66, EdgeV.c(0), LEFT6BYP66, EdgeV.c(0)),
-                PrimitivePort.newInstance(resistorNode, new ArcProto[]{wire_arc}, "b", 0, 90, 1, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(resistorNode, new ArcProto[]{wire_arc}, "b", 0, 90, 1, PortCharacteristic.UNKNOWN,
                 RIGHT6BYP66, EdgeV.c(0), RIGHT6BYP66, EdgeV.c(0)));
 
         /** capacitor */
@@ -1595,9 +1595,9 @@ public class Schematics extends Technology {
         capacitorNode = new MultiFunctionNode("Capacitor", 3.0, 4.0, ERectangle.fromLambda(-1.5, -2, 3, 4),
                 capacitorLayersNorm, capacitorLayers, PrimitiveNode.Function.CAPAC, capacitorFunctions);
         capacitorNode.addPrimitivePorts(
-                PrimitivePort.newInstance(capacitorNode, new ArcProto[]{wire_arc, bus_arc}, "a", 90, 90, 0, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(capacitorNode, new ArcProto[]{wire_arc, bus_arc}, "a", 90, 90, 0, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.t(2), EdgeH.c(0), EdgeV.t(2)),
-                PrimitivePort.newInstance(capacitorNode, new ArcProto[]{wire_arc, bus_arc}, "b", 270, 90, 1, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(capacitorNode, new ArcProto[]{wire_arc, bus_arc}, "b", 270, 90, 1, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.b(-2), EdgeH.c(0), EdgeV.b(-2)));
 
         /** diode */
@@ -1630,9 +1630,9 @@ public class Schematics extends Technology {
         diodeNode = new MultiFunctionNode("Diode", 2.0, 4.0, ERectangle.fromLambda(-1, -2, 2, 4),
                 diodeLayersNorm, diodeLayers, PrimitiveNode.Function.DIODE, diodeFunctions);
         diodeNode.addPrimitivePorts(
-                PrimitivePort.newInstance(diodeNode, new ArcProto[]{wire_arc}, "a", 90, 90, 0, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(diodeNode, new ArcProto[]{wire_arc}, "a", 90, 90, 0, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.t(2), EdgeH.c(0), EdgeV.t(2)),
-                PrimitivePort.newInstance(diodeNode, new ArcProto[]{wire_arc}, "b", 270, 90, 1, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(diodeNode, new ArcProto[]{wire_arc}, "b", 270, 90, 1, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.b(-2), EdgeH.c(0), EdgeV.b(-2)));
 
         /** inductor */
@@ -1650,14 +1650,14 @@ public class Schematics extends Technology {
                     new Technology.TechPoint(LEFT2BYP5, BOT4BYP33),
                     new Technology.TechPoint(EdgeH.c(0), BOT4BYP33)}));
         inductorNode.addPrimitivePorts(
-                PrimitivePort.newInstance(inductorNode, new ArcProto[]{wire_arc}, "a", 90, 90, 0, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(inductorNode, new ArcProto[]{wire_arc}, "a", 90, 90, 0, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.t(2), EdgeH.c(0), EdgeV.t(2)),
-                PrimitivePort.newInstance(inductorNode, new ArcProto[]{wire_arc}, "b", 270, 90, 1, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(inductorNode, new ArcProto[]{wire_arc}, "b", 270, 90, 1, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.b(-2), EdgeH.c(0), EdgeV.b(-2)));
         inductorNode.setFunction(PrimitiveNode.Function.INDUCT);
 
         /** Josephson Junction */
-        josephsonNode = PrimitiveNode.newInstance("Josephson-Junction", this, 6.0, 6.0,
+        josephsonNode = PrimitiveNode.newInst("Josephson-Junction", this, 6.0, 6.0,
             new Technology.NodeLayer[]{
                 new Technology.NodeLayer(node_lay, 0, Poly.Type.OPENED, Technology.NodeLayer.POINTS,
                     new Technology.TechPoint[]{
@@ -1685,11 +1685,11 @@ public class Schematics extends Technology {
                 )
             });
         josephsonNode.addPrimitivePorts(
-//            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "g", 45, 90, 2, PortCharacteristic.UNKNOWN,
+//            PrimitivePort.newInst(josephsonNode, new ArcProto[]{wire_arc}, "g", 45, 90, 2, PortCharacteristic.UNKNOWN,
 //            	EdgeH.c(1), EdgeV.c(2.25), EdgeH.c(1), EdgeV.c(2.25)),
-            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "s", 90, 180, 0, PortCharacteristic.UNKNOWN,
+            PrimitivePort.newInst(josephsonNode, new ArcProto[]{wire_arc}, "s", 90, 180, 0, PortCharacteristic.UNKNOWN,
             	EdgeH.c(0), EdgeV.b(3), EdgeH.c(0), EdgeV.b(3)),
-            PrimitivePort.newInstance(josephsonNode, new ArcProto[]{wire_arc}, "d", 270, 180, 1, PortCharacteristic.UNKNOWN,
+            PrimitivePort.newInst(josephsonNode, new ArcProto[]{wire_arc}, "d", 270, 180, 1, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.t(-3), EdgeH.c(0), EdgeV.t(-3)));
         josephsonNode.setFunction(PrimitiveNode.Function.JOSEPHSON);
 
@@ -1706,9 +1706,9 @@ public class Schematics extends Technology {
                     new Technology.TechPoint(EdgeH.r(3), EdgeV.c(0))}),
                 meterLetterV);
         meterNode.addPrimitivePorts(
-                PrimitivePort.newInstance(meterNode, new ArcProto[]{wire_arc}, "a", 90, 45, 0, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(meterNode, new ArcProto[]{wire_arc}, "a", 90, 45, 0, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.t(3), EdgeH.c(0), EdgeV.t(3)),
-                PrimitivePort.newInstance(meterNode, new ArcProto[]{wire_arc}, "b", 270, 45, 1, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(meterNode, new ArcProto[]{wire_arc}, "b", 270, 45, 1, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.b(-3), EdgeH.c(0), EdgeV.b(-3)));
         meterNode.setFunction(PrimitiveNode.Function.METER);
         meterNode.setSquare();
@@ -1851,13 +1851,13 @@ public class Schematics extends Technology {
         twoportNode = new MultiFunctionNode("Two-Port", 10.0, 6.0, ERectangle.fromLambda(-5, -3, 10, 6),
                 twoLayersDefault, twoportLayers, PrimitiveNode.Function.TLINE, twoportFunctions);
         twoportNode.addPrimitivePorts(
-                PrimitivePort.newInstance(twoportNode, new ArcProto[]{wire_arc}, "a", 180, 90, 0, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(twoportNode, new ArcProto[]{wire_arc}, "a", 180, 90, 0, PortCharacteristic.UNKNOWN,
                 EdgeH.l(-5), TOP6BYP66, EdgeH.l(-5), TOP6BYP66),
-                PrimitivePort.newInstance(twoportNode, new ArcProto[]{wire_arc}, "b", 180, 90, 1, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(twoportNode, new ArcProto[]{wire_arc}, "b", 180, 90, 1, PortCharacteristic.UNKNOWN,
                 EdgeH.l(-5), BOT6BYP66, EdgeH.l(-5), BOT6BYP66),
-                PrimitivePort.newInstance(twoportNode, new ArcProto[]{wire_arc}, "x", 0, 90, 2, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(twoportNode, new ArcProto[]{wire_arc}, "x", 0, 90, 2, PortCharacteristic.UNKNOWN,
                 EdgeH.r(5), TOP6BYP66, EdgeH.r(5), TOP6BYP66),
-                PrimitivePort.newInstance(twoportNode, new ArcProto[]{wire_arc}, "y", 0, 90, 3, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(twoportNode, new ArcProto[]{wire_arc}, "y", 0, 90, 3, PortCharacteristic.UNKNOWN,
                 EdgeH.r(5), BOT6BYP66, EdgeH.r(5), BOT6BYP66));
 
         /** 4-port transistor */
@@ -1992,17 +1992,17 @@ public class Schematics extends Technology {
                 }, tran4Layers,
                 PrimitiveNode.Function.TRANS4, tran4Functions);
         transistor4Node.addPrimitivePorts(
-                PrimitivePort.newInstance(transistor4Node, new ArcProto[]{wire_arc}, "g", 0, 180, 0, PortCharacteristic.IN,
+                PrimitivePort.newInst(transistor4Node, new ArcProto[]{wire_arc}, "g", 0, 180, 0, PortCharacteristic.IN,
                 EdgeH.c(0), EdgeV.t(1), EdgeH.c(0), EdgeV.t(1)),
-                PrimitivePort.newInstance(transistor4Node, new ArcProto[]{wire_arc}, "s", 180, 90, 1, PortCharacteristic.BIDIR,
+                PrimitivePort.newInst(transistor4Node, new ArcProto[]{wire_arc}, "s", 180, 90, 1, PortCharacteristic.BIDIR,
                 EdgeH.l(-2), EdgeV.b(-2), EdgeH.l(-2), EdgeV.b(-2)),
-                PrimitivePort.newInstance(transistor4Node, new ArcProto[]{wire_arc}, "d", 0, 90, 2, PortCharacteristic.BIDIR,
+                PrimitivePort.newInst(transistor4Node, new ArcProto[]{wire_arc}, "d", 0, 90, 2, PortCharacteristic.BIDIR,
                 EdgeH.r(2), EdgeV.b(-2), EdgeH.r(2), EdgeV.b(-2)),
-                PrimitivePort.newInstance(transistor4Node, new ArcProto[]{wire_arc}, "b", 270, 90, 3, PortCharacteristic.IN,
+                PrimitivePort.newInst(transistor4Node, new ArcProto[]{wire_arc}, "b", 270, 90, 3, PortCharacteristic.IN,
                 LEFT4BYP5, EdgeV.b(-2), LEFT4BYP5, EdgeV.b(-2)));
 
         /** global signal */
-        globalNode = PrimitiveNode.newInstance("Global-Signal", this, 3.0, 3.0,
+        globalNode = PrimitiveNode.newInst("Global-Signal", this, 3.0, 3.0,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(node_lay, 0, Poly.Type.CLOSED, Technology.NodeLayer.POINTS, new Technology.TechPoint[]{
                         new Technology.TechPoint(EdgeH.l(-1.5), EdgeV.c(0)),
@@ -2025,7 +2025,7 @@ public class Schematics extends Technology {
                 Technology.TechPoint.makeCenterBox());
         letterGP.setMessage("GP");
         letterGP.setDescriptor(tdBig);
-        globalPartitionNode = PrimitiveNode.newInstance("Global-Partition", this, 4.0, 2.0,
+        globalPartitionNode = PrimitiveNode.newInst("Global-Partition", this, 4.0, 2.0,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(node_lay, 0, Poly.Type.CLOSED, Technology.NodeLayer.POINTS, new Technology.TechPoint[]{
                         new Technology.TechPoint(EdgeH.l(-2), EdgeV.c(0)),
@@ -2037,9 +2037,9 @@ public class Schematics extends Technology {
                     letterGP
                 });
         globalPartitionNode.addPrimitivePorts(
-                PrimitivePort.newInstance(globalPartitionNode, new ArcProto[]{wire_arc, bus_arc}, "top", 90, 90, 0, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(globalPartitionNode, new ArcProto[]{wire_arc, bus_arc}, "top", 90, 90, 0, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.t(1), EdgeH.c(0), EdgeV.t(1)),
-                PrimitivePort.newInstance(globalPartitionNode, new ArcProto[]{wire_arc, bus_arc}, "bottom", 270, 90, 0, PortCharacteristic.UNKNOWN,
+                PrimitivePort.newInst(globalPartitionNode, new ArcProto[]{wire_arc, bus_arc}, "bottom", 270, 90, 0, PortCharacteristic.UNKNOWN,
                 EdgeH.c(0), EdgeV.b(-1), EdgeH.c(0), EdgeV.b(-1)));
         globalPartitionNode.setFunction(PrimitiveNode.Function.CONNECT);
 
@@ -2383,7 +2383,7 @@ public class Schematics extends Technology {
             }
             double length = VarContext.objectToDouble(lengthObj, -1);
             if (length != -1) {
-                lengthObj = new Double(length);
+                lengthObj = length;
             }
         }
 
@@ -2397,7 +2397,7 @@ public class Schematics extends Technology {
             }
             double width = VarContext.objectToDouble(widthObj, -1);
             if (width != -1) {
-                widthObj = new Double(width);
+                widthObj = width;
             }
         }
         PrimitiveNodeSize size = new PrimitiveNodeSize(widthObj, lengthObj, true);
@@ -2428,7 +2428,7 @@ public class Schematics extends Technology {
                 }
                 double length = VarContext.objectToDouble(lengthObj, -1);
                 if (length != -1) {
-                    lengthObj = new Double(length);
+                    lengthObj = length;
                 }
             }
 
@@ -2442,7 +2442,7 @@ public class Schematics extends Technology {
                 }
                 double width = VarContext.objectToDouble(widthObj, -1);
                 if (width != -1) {
-                    widthObj = new Double(width);
+                    widthObj = width;
                 }
             }
 
@@ -2457,22 +2457,22 @@ public class Schematics extends Technology {
                 }
                 double mFactor = VarContext.objectToDouble(mFactorObj, -1);
                 if (mFactor != -1) {
-                    mFactorObj = new Double(mFactor);
+                    mFactorObj = mFactor;
                 }
             }
 
-            TransistorSize size = new TransistorSize(widthObj, lengthObj, new Double(1.0), mFactorObj, true);
+            TransistorSize size = new TransistorSize(widthObj, lengthObj, 1.0, mFactorObj, true);
             return size;
         }
-        Object areaObj = new Double(0);
+        Object areaObj = 0;
         if (context != null) {
             areaObj = context.evalVar(ni.getVar(ATTR_AREA));
             double area = VarContext.objectToDouble(areaObj, -1);
             if (area != -1) {
-                areaObj = new Double(area);
+                areaObj = area;
             }
         }
-        TransistorSize size = new TransistorSize(areaObj, new Double(1.0), new Double(1.0), null, true);
+        TransistorSize size = new TransistorSize(areaObj, 1.0, 1.0, null, true);
         return size;
     }
 
@@ -2489,28 +2489,28 @@ public class Schematics extends Technology {
      */
     @Override
     public void setPrimitiveNodeSize(NodeInst ni, double width, double length, EditingPreferences ep) {
-        setPrimitiveNodeSize(ni, new Double(width), new Double(length), ep);
+        setPrimitiveNodeSize(ni, width, length, ep);
 //        if (ni.isFET())
 //        {
 //            Variable var = ni.getVar(ATTR_LENGTH);
 //            if (var == null) {
-//                var = ni.newVar(ATTR_LENGTH, new Double(length));
+//                var = ni.newVar(ATTR_LENGTH, length);
 //            } else {
-//                var = ni.updateVar(var.getKey(), new Double(length));
+//                var = ni.updateVar(var.getKey(), length);
 //            }
 //            if (var != null) var.setDisplay(true);
 //
 //            var = ni.getVar(ATTR_WIDTH);
 //            if (var == null) {
-//                var = ni.newVar(ATTR_WIDTH, new Double(width));
+//                var = ni.newVar(ATTR_WIDTH, width);
 //            } else {
-//                var = ni.updateVar(var.getKey(), new Double(width));
+//                var = ni.updateVar(var.getKey(), width);
 //            }
 //            if (var != null) var.setDisplay(true);
 //        } else {
 //            Variable var = ni.getVar(ATTR_AREA);
 //            if (var != null) {
-//                var = ni.updateVar(var.getKey(), new Double(width));
+//                var = ni.updateVar(var.getKey(), width);
 //            }
 //            if (var != null) var.setDisplay(true);
 //        }
@@ -2832,7 +2832,8 @@ public class Schematics extends Technology {
                     ImmutableArcInst a = connArcs.get(j);
                     boolean isHead = headEnds.get(j);
                     EPoint connLocation = isHead ? a.headLocation : a.tailLocation;
-                    if (connLocation.equals(pt1)) {
+                    if (connLocation.getX() == pt1.x && connLocation.getY() == pt1.y)
+                    {
                         found = true;
                         break;
                     }
@@ -3105,7 +3106,7 @@ public class Schematics extends Technology {
                     EdgeH.l(-2), EdgeV.b(0), EdgeH.l(-2), EdgeV.t(0));
             addPrimitivePorts(
                     switch_port,
-                    PrimitivePort.newInstance(this, new ArcProto[]{wire_arc, bus_arc}, "y", 0, 90, 1, PortCharacteristic.UNKNOWN,
+                    PrimitivePort.newInst(this, new ArcProto[]{wire_arc, bus_arc}, "y", 0, 90, 1, PortCharacteristic.UNKNOWN,
                     EdgeH.r(2), EdgeV.c(0), EdgeH.r(2), EdgeV.c(0)));
             setFunction(PrimitiveNode.Function.UNKNOWN);
             setAutoGrowth(0, 4);
@@ -3497,9 +3498,9 @@ public class Schematics extends Technology {
                             new Technology.TechPoint(EdgeH.r(2), EdgeV.c(0)),
                             new Technology.TechPoint(RIGHT4BYP5, EdgeV.b(-1)),}),});
             addPrimitivePorts(
-                    PrimitivePort.newInstance(this, new ArcProto[]{wire_arc, bus_arc}, "a", 180, 45, 0, PortCharacteristic.UNKNOWN,
+                    PrimitivePort.newInst(this, new ArcProto[]{wire_arc, bus_arc}, "a", 180, 45, 0, PortCharacteristic.UNKNOWN,
                     EdgeH.l(-2), EdgeV.c(0), EdgeH.l(-2), EdgeV.c(0)),
-                    PrimitivePort.newInstance(this, new ArcProto[]{wire_arc, bus_arc}, "y", 0, 45, 0, PortCharacteristic.UNKNOWN,
+                    PrimitivePort.newInst(this, new ArcProto[]{wire_arc, bus_arc}, "y", 0, 45, 0, PortCharacteristic.UNKNOWN,
                     EdgeH.r(2), EdgeV.c(0), EdgeH.r(2), EdgeV.c(0)));
             setFunction(PrimitiveNode.Function.CONNECT);
         }

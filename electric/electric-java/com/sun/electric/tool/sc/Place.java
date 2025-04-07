@@ -62,7 +62,7 @@ public class Place
 	private static class Cluster
 	{
 		/** instance of cluster */					GetNetlist.SCNiTree node;
-		/** number of cluster */					int				number;
+//		/** number of cluster */					int				number;
 		/** total size of members */				double			size;
 	};
 
@@ -70,7 +70,7 @@ public class Place
 	{
 		/** cluster, null if intermediate node*/	Cluster			cluster;
 		/** working bits */							int				bits;
-		/** parent node */							ClusterTree		parent;
+//		/** parent node */							ClusterTree		parent;
 		/** pointer to nodes on same level */		ClusterTree		next;
 		/** pointer to one group */					ClusterTree		lPtr;
 		/** pointer to second group */				ClusterTree		rPtr;
@@ -114,7 +114,7 @@ public class Place
 
 	private static class NBTrunk
 	{
-		/** pointer to extracted node */			GetNetlist.ExtNode ext_node;
+//		/** pointer to extracted node */			GetNetlist.ExtNode ext_node;
 		/** minimum trunk going left */				double		minX;
 		/** maximum trunk going right */			double		maxX;
 		/** same in next channel */					NBTrunk		same;
@@ -180,7 +180,7 @@ public class Place
 		{
 			ClusterTree node = new ClusterTree();
 			node.cluster = clus;
-			node.parent = null;
+//			node.parent = null;
 			node.next = nStart;
 			nStart = node;
 			node.lPtr = null;
@@ -253,7 +253,7 @@ public class Place
 	private void cTreeAddParents(ClusterTree node, ClusterTree parent)
 	{
 		if (node == null) return;
-		node.parent = parent;
+//		node.parent = parent;
 		cTreeAddParents(node.lPtr, node);
 		cTreeAddParents(node.rPtr, node);
 	}
@@ -301,7 +301,7 @@ public class Place
 		cell.placement.avgHeight = avgHeight;
 
 		// create cluster list
-		int i = 0;
+//		int i = 0;
 		boolean warn = false;
 		for (GetNetlist.SCNiTree node : cell.niList)
 		{
@@ -313,7 +313,7 @@ public class Place
 			Cluster cluster = new Cluster();
 			cluster.node = node;
 			cluster.size = node.size;
-			cluster.number = i++;
+//			cluster.number = i++;
 			clusters.add(cluster);
 		}
 		if (warn)
@@ -485,12 +485,12 @@ public class Place
 				ClusterTree newNode = new ClusterTree();
 				newNode.cluster = null;
 				newNode.bits = 0;
-				newNode.parent = null;
+//				newNode.parent = null;
 				newNode.lPtr = bConnect.node[0];
-				newNode.lPtr.parent = newNode;
+//				newNode.lPtr.parent = newNode;
 				bConnect.node[0].bits |= BITS_PLACED;
 				newNode.rPtr = bConnect.node[1];
-				newNode.rPtr.parent = newNode;
+//				newNode.rPtr.parent = newNode;
 				bConnect.node[1].bits |= BITS_PLACED;
 				newNode.next = newStart;
 				newStart = newNode;
@@ -504,12 +504,12 @@ public class Place
 			ClusterTree newNode = new ClusterTree();
 			newNode.cluster = null;
 			newNode.bits = 0;
-			newNode.parent = null;
+//			newNode.parent = null;
 			newNode.lPtr = nodes;
-			newNode.lPtr.parent = newNode;
+//			newNode.lPtr.parent = newNode;
 			nodes.bits |= BITS_PLACED;
 			newNode.rPtr = nodes.next;
-			newNode.rPtr.parent = newNode;
+//			newNode.rPtr.parent = newNode;
 			nodes.next.bits |= BITS_PLACED;
 			newNode.next = newStart;
 			newStart = newNode;
@@ -524,9 +524,9 @@ public class Place
 				ClusterTree newNode = new ClusterTree();
 				newNode.cluster = null;
 				newNode.bits = 0;
-				newNode.parent = null;
+//				newNode.parent = null;
 				newNode.lPtr = tPtr;
-				newNode.lPtr.parent = newNode;
+//				newNode.lPtr.parent = newNode;
 				tPtr.bits |= BITS_PLACED;
 				newNode.rPtr = null;
 				newNode.next = newStart;
@@ -612,7 +612,7 @@ public class Place
 		for (GetNetlist.ExtNode enode = cell.exNodes; enode != null; enode = enode.next)
 		{
 			NBTrunk newTrunk = new NBTrunk();
-			newTrunk.ext_node = enode;
+//			newTrunk.ext_node = enode;
 			newTrunk.minX = 0;
 			newTrunk.maxX = 0;
 			newTrunk.next = trunks;
@@ -909,7 +909,7 @@ public class Place
 			for (GetNetlist.ExtNode nList = cell.exNodes; nList != null; nList = nList.next)
 			{
 				NBTrunk nTrunk = new NBTrunk();
-				nTrunk.ext_node = nList;
+//				nTrunk.ext_node = nList;
 				nTrunk.minX = 0;
 				nTrunk.maxX = 0;
 				nTrunk.same = null;

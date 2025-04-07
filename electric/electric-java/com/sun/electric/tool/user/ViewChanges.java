@@ -415,7 +415,7 @@ public class ViewChanges
 
 			// export the port from the node
 			PortInst newPi = newNi.findPortInstFromEquivalentProto(bottomPp);
-			Export npp = Export.newInstance(skeletonCell, newPi, pp.getName(), ep, pp.getCharacteristic());
+			Export npp = Export.newInst(skeletonCell, newPi, pp.getName(), ep, pp.getCharacteristic());
 			if (npp == null)
 			{
 				System.out.println("Could not create port " + pp.getName());
@@ -780,13 +780,13 @@ public class ViewChanges
 					{
 						// set length/width
 						TextDescriptor td = ep.getNodeTextDescriptor().withRelSize(0.5).withOff(-0.5, -1);
-						schemNI.newVar(Schematics.ATTR_LENGTH, new Double(ts.getDoubleLength()), td);
+						schemNI.newVar(Schematics.ATTR_LENGTH, Double.valueOf(ts.getDoubleLength()), td);
 						td = ep.getNodeTextDescriptor().withRelSize(1).withOff(0.5, -1);
-						schemNI.newVar(Schematics.ATTR_WIDTH, new Double(ts.getDoubleWidth()), td);
+						schemNI.newVar(Schematics.ATTR_WIDTH, Double.valueOf(ts.getDoubleWidth()), td);
 					} else
 					{
 						// set area
-						schemNI.newVar(Schematics.ATTR_AREA, new Double(ts.getDoubleLength()), ep);
+						schemNI.newVar(Schematics.ATTR_AREA, Double.valueOf(ts.getDoubleLength()), ep);
 					}
 				}
 			}
@@ -803,7 +803,7 @@ public class ViewChanges
 					PortInst schemPI = convertPort(mosNI, mosPP.getOriginalPort().getPortProto(), schemNI);
 					if (schemPI == null) continue;
 
-					Export schemPP = Export.newInstance(newCell, schemPI, mosPP.getName(), ep, mosPP.getCharacteristic());
+					Export schemPP = Export.newInst(newCell, schemPI, mosPP.getName(), ep, mosPP.getCharacteristic());
 					if (schemPP != null)
 					{
 						schemPP.copyTextDescriptorFrom(mosPP, Export.EXPORT_NAME);
@@ -1163,7 +1163,7 @@ public class ViewChanges
 			if (newLibName.length() > 0)
 			{
 				newLib = Library.findLibrary(newLibName);
-				if (newLib == null) newLib = Library.newInstance(newLibName, null);
+				if (newLib == null) newLib = Library.newInst(newLibName, null);
 			}
 			createdCells = new ArrayList<Cell>();
 			MakeLayoutVisitor visitor = new MakeLayoutVisitor(oldTech, newTech, oldCell.getLibrary(), stdCellLib, createdCells, newLib, ep);
@@ -1444,7 +1444,7 @@ public class ViewChanges
 							// create export if name matches
 							if (exportName != null && nextPi.getPortProto().getName().equals(exportName))
 							{
-								Export pp2 = Export.newInstance(newCell, nextPi, exportName, ep, e.getCharacteristic());
+								Export pp2 = Export.newInst(newCell, nextPi, exportName, ep, e.getCharacteristic());
 								pp2.copyTextDescriptorFrom(e, Export.EXPORT_NAME);
 								pp2.copyVarsFrom(e);
 								exportName = null;
@@ -1452,7 +1452,7 @@ public class ViewChanges
 						}
 						if (exportName != null)
 						{
-							Export pp2 = Export.newInstance(newCell, pi, exportName, ep, e.getCharacteristic());
+							Export pp2 = Export.newInst(newCell, pi, exportName, ep, e.getCharacteristic());
 							pp2.copyTextDescriptorFrom(e, Export.EXPORT_NAME);
 							pp2.copyVarsFrom(e);
 							exportName = null;
@@ -1818,7 +1818,7 @@ public class ViewChanges
 						PortProto pp = convertPortName(ni, newNi, portName);
 						if (pp == null) continue;
 						PortInst pi = newNi.findPortInstFromEquivalentProto(pp);
-						Export pp2 = Export.newInstance(newCell, pi, exportName.toString(), ep, e.getCharacteristic());
+						Export pp2 = Export.newInst(newCell, pi, exportName.toString(), ep, e.getCharacteristic());
 						if (pp2 == null) continue;
 						pp2.copyTextDescriptorFrom(e, Export.EXPORT_NAME);
 						pp2.copyVarsFrom(e);
@@ -1955,11 +1955,11 @@ public class ViewChanges
 					if (leftNode != null) leftNode.move(dx, dy);
 					if (rightNode != null) rightNode.move(dx, dy);
 				}
-				protected void print(int indent) {
-				}
-				public void prindent(int ident) {
-					for (int i=0; i<ident; i++) System.out.print(" ");
-				}
+//				protected void print(int indent) {
+//				}
+//				public void prindent(int ident) {
+//					for (int i=0; i<ident; i++) System.out.print(" ");
+//				}
 			}
 
 			private static class Leaf extends PlacerGrid {
@@ -1998,10 +1998,10 @@ public class ViewChanges
 				protected void move(double dx, double dy) {
 					layNi.modifyInstance(dx, dy, 0, 0, Orientation.IDENT);
 				}
-				protected void print(int indent) {
-					prindent(indent);
-					System.out.println("node "+schNo.getName()+" at "+getCenter(false));
-				}
+//				protected void print(int indent) {
+//					prindent(indent);
+//					System.out.println("node "+schNo.getName()+" at "+getCenter(false));
+//				}
 			}
 
 			/**
@@ -2238,7 +2238,7 @@ public class ViewChanges
 					}
 					if (TextUtils.isANumber(value))
 					{
-						Double v = new Double(TextUtils.atof(value));
+						Double v = Double.valueOf(TextUtils.atof(value));
 						vars.put(var.getKey().getName(), v);
 					}
 				}

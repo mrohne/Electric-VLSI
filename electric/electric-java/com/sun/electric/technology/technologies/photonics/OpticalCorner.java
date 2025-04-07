@@ -51,16 +51,16 @@ public class OpticalCorner extends PrimitiveNode
 		if (angle == 90)
 		{
 			// 90-degree bend
-			pp1 = PrimitivePort.newInstance(this, new ArcProto[] {Photonics.opticalArc}, "c1", 270, 0, 0, PortCharacteristic.UNKNOWN,
+			pp1 = PrimitivePort.newInst(this, new ArcProto[] {Photonics.opticalArc}, "c1", 270, 0, 0, PortCharacteristic.UNKNOWN,
 				EdgeH.r(BASESIZE/2), EdgeV.b(-BASESIZE/2), EdgeH.r(BASESIZE/2), EdgeV.b(-BASESIZE/2));
-			pp2 = PrimitivePort.newInstance(this, new ArcProto[] {Photonics.opticalArc}, "c2", 180, 0, 0, PortCharacteristic.UNKNOWN,
+			pp2 = PrimitivePort.newInst(this, new ArcProto[] {Photonics.opticalArc}, "c2", 180, 0, 0, PortCharacteristic.UNKNOWN,
 				EdgeH.l(-BASESIZE/2), EdgeV.t(BASESIZE/2), EdgeH.l(-BASESIZE/2), EdgeV.t(BASESIZE/2));
 		} else
 		{
 			// 45-degree bend
-			pp1 = PrimitivePort.newInstance(this, new ArcProto[] {Photonics.opticalArc}, "c1", 270, 0, 0, PortCharacteristic.UNKNOWN,
+			pp1 = PrimitivePort.newInst(this, new ArcProto[] {Photonics.opticalArc}, "c1", 270, 0, 0, PortCharacteristic.UNKNOWN,
 				EdgeH.r(BASESIZE/2), EdgeV.b(-BASESIZE/2), EdgeH.r(BASESIZE/2), EdgeV.b(-BASESIZE/2));
-			pp2 = PrimitivePort.newInstance(this, new ArcProto[] {Photonics.opticalArc}, "c2", 135, 0, 0, PortCharacteristic.UNKNOWN,
+			pp2 = PrimitivePort.newInst(this, new ArcProto[] {Photonics.opticalArc}, "c2", 135, 0, 0, PortCharacteristic.UNKNOWN,
 				EdgeH.r(2.07), EdgeV.t(2.07), EdgeH.r(2.07), EdgeV.t(2.07));
 		}
 		addPrimitivePorts(pp1, pp2);

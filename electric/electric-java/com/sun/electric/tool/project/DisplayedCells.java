@@ -62,7 +62,7 @@ public class DisplayedCells implements Serializable
 		for(Iterator<WindowFrame> it = WindowFrame.getWindows(); it.hasNext(); )
 		{
 			WindowFrame wf = it.next();
-			formerWindows.add(new Integer(wf.getIndex()));
+			formerWindows.add(Integer.valueOf(wf.getIndex()));
 			Cell displayedCell = wf.getContent().getCell();
 			formerCellsInWindows.add(displayedCell);
 		}

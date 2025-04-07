@@ -127,6 +127,7 @@ public class BookshelfNets implements BookshelfInputParser<Void> {
 				}
 			}
 		}
+		rin.close();
 
 		Job.getUserInterface().setProgressNote("Parse Net List File: Step 2/4");
 
@@ -182,7 +183,7 @@ public class BookshelfNets implements BookshelfInputParser<Void> {
 				NodeProto pin = mocmos.findNodeProto("Metal-1-Pin"); //Artwork.tech().pinNode;
 				NodeInst ni = NodeInst.makeInstance(pin, ep, EPoint.fromLambda(x, y), 0, 0, cell);
 				PortInst pi = ni.getOnlyPortInst();
-				Export.newInstance(cell, pi, "P" + portNum, ep);
+				Export.newInst(cell, pi, "P" + portNum, ep);
 				portNum++;
 			}
 			counter++;
@@ -194,10 +195,10 @@ public class BookshelfNets implements BookshelfInputParser<Void> {
 		Collection<BookshelfNode> allNodes = BookshelfNode.getAllNodes();
 		for (BookshelfNode bn : allNodes) {
 			Cell np = bn.getPrototype();
-			NodeInst ni = NodeInst.newInstance(np, ep, new Point2D.Double(bn.getX(), bn.getY()), bn.getWidth(), bn
+			NodeInst ni = NodeInst.newInst(np, ep, new Point2D.Double(bn.getX(), bn.getY()), bn.getWidth(), bn
 					.getHeight(), mainCell, Orientation.IDENT, bn.getName());
 			Key key = Variable.newKey("weight");
-			Variable var = Variable.newInstance(key, new Integer(bn.getWeight()), ep.getNodeTextDescriptor());
+			Variable var = Variable.newInst(key, Integer.valueOf(bn.getWeight()), ep.getNodeTextDescriptor());
 			ni.addVar(var);
 			
 			bn.setInstance(ni);
@@ -265,7 +266,7 @@ public class BookshelfNets implements BookshelfInputParser<Void> {
 					// p2);
 					// }
 					ArcProto ap = Generic.tech().unrouted_arc;
-					newInstance(mainCell, ap, bn.name, pi1, pi2, p1, p2, 0, 0, 0);
+					newInst(mainCell, ap, bn.name, pi1, pi2, p1, p2, 0, 0, 0);
 				}
 				lastPin = bp;
 				counter++;
@@ -275,7 +276,7 @@ public class BookshelfNets implements BookshelfInputParser<Void> {
 		return null;
 	}
 
-	public void newInstance(Cell parent, ArcProto protoType, String name, PortInst headPort, PortInst tailPort,
+	public void newInst(Cell parent, ArcProto protoType, String name, PortInst headPort, PortInst tailPort,
 			EPoint headPt, EPoint tailPt, long gridExtendOverMin, int angle, int flags) {
 		if (true) {
             TextDescriptor td = ep.getArcTextDescriptor();
@@ -296,7 +297,7 @@ public class BookshelfNets implements BookshelfInputParser<Void> {
 			// do {
 			// arcId = parentId.newArcId();
 			// } while (parent.getArcById(arcId) != null);
-			// ImmutableArcInst d = ImmutableArcInst.newInstance(arcId,
+			// ImmutableArcInst d = ImmutableArcInst.newInst(arcId,
 			// protoType.getId(), nameKey, nameDescriptor,
 			// tailPort.getNodeInst().getD().nodeId, tailProto.getId(), tailPt,
 			// headPort.getNodeInst().getD().nodeId, headProto.getId(), headPt,

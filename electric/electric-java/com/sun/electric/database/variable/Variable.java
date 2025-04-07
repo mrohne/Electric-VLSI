@@ -325,7 +325,7 @@ public class Variable implements Serializable
      * @throws NullPointerException if key, descriptor or value is null.
      * @throws IllegalArgumentException if value has invalid type
      */
-    public static Variable newInstance(Variable.Key key, Object value, TextDescriptor descriptor)
+    public static Variable newInst(Variable.Key key, Object value, TextDescriptor descriptor)
     {
         if (key == null) throw new NullPointerException("key");
         if (descriptor == null) throw new NullPointerException("descriptor");
@@ -549,7 +549,7 @@ public class Variable implements Serializable
         Variable.Key varKey = reader.readVariableKey();
         TextDescriptor td = reader.readTextDescriptor();
         Object value = readObject(reader);
-        return Variable.newInstance(varKey, value, td);
+        return Variable.newInst(varKey, value, td);
     }
 
     /**
@@ -635,7 +635,7 @@ public class Variable implements Serializable
     public Variable withVarKey(Variable.Key key)
     {
         if (this.key == key) return this;
-        return newInstance(key, this.value, this.descriptor);
+        return newInst(key, this.value, this.descriptor);
     }
 
     /**
@@ -654,7 +654,7 @@ public class Variable implements Serializable
         {
             return this;
         }
-        return newInstance(this.key, value, this.descriptor);
+        return newInst(this.key, value, this.descriptor);
     }
 
     /**

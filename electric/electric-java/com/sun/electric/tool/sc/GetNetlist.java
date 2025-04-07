@@ -175,7 +175,7 @@ public class GetNetlist
 		/** pointer to port on node A */		SCNiPort	portA;
 		/** pointer to node B */				SCNiTree	nodeB;
 		/** pointer to port on node B */		SCNiPort	portB;
-		/** pointer to extracted node */		ExtNode		extNode;
+//		/** pointer to extracted node */		ExtNode		extNode;
 		/** pointer to next list element */		ConList   	next;
 	};
 
@@ -562,7 +562,7 @@ public class GetNetlist
 		cl.portA = portA;
 		cl.nodeB = ntpB;
 		cl.portB = portB;
-		cl.extNode = null;
+//		cl.extNode = null;
 
 		// add to head of the list
 		cl.next = ntpA.connect;
@@ -573,7 +573,7 @@ public class GetNetlist
 		cl.portA = portB;
 		cl.nodeB = ntpA;
 		cl.portB = portA;
-		cl.extNode = null;
+//		cl.extNode = null;
 
 		// add to head of the list
 		cl.next = ntpB.connect;
@@ -761,7 +761,7 @@ public class GetNetlist
 			{
 				if (cell.name.equalsIgnoreCase(cellName)) break;
 			}
-			int bits = 0;
+//			int bits = 0;
 			if (cell == null)
 			{
 				Cell leafCell = findLeafCell(cellName);
@@ -778,23 +778,23 @@ public class GetNetlist
 				}
 				if (port == null)
 					return "Cannot find port '" + portName + "' on cell '" + cellName + "'";
-				bits = port.bits;
+//				bits = port.bits;
 			}
-			bits &= ~PORTDIRMASK;
-			String dir = keywords.get(4);
-			for(int i=0; i<dir.length(); i++)
-			{
-				char dirCh = dir.charAt(i);
-				switch (dirCh)
-				{
-					case 'u': bits |= PORTDIRUP;   break;
-					case 'd': bits |= PORTDIRDOWN;   break;
-					case 'r': bits |= PORTDIRRIGHT;   break;
-					case 'l': bits |= PORTDIRLEFT;   break;
-					default:
-						return "Unknown port direction specifier '" + dir + "'";
-				}
-			}
+//			bits &= ~PORTDIRMASK;
+//			String dir = keywords.get(4);
+//			for(int i=0; i<dir.length(); i++)
+//			{
+//				char dirCh = dir.charAt(i);
+//				switch (dirCh)
+//				{
+//					case 'u': bits |= PORTDIRUP;   break;
+//					case 'd': bits |= PORTDIRDOWN;   break;
+//					case 'r': bits |= PORTDIRRIGHT;   break;
+//					case 'l': bits |= PORTDIRLEFT;   break;
+//					default:
+//						return "Unknown port direction specifier '" + dir + "'";
+//				}
+//			}
 			return null;
 		}
 		return "Unknown option '" + whatToSet+ "' for SET command";

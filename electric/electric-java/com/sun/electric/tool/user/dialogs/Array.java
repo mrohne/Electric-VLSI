@@ -463,12 +463,12 @@ public class Array extends EModelessDialog implements HighlightListener, Databas
 
 		if (prefSpacingType.getInt() == SPACING_EDGE)
 		{
-			lastEdgeOverlapX = new Double(TextUtils.atofDistance(xSpacing.getText()));
-			lastEdgeOverlapY = new Double(TextUtils.atofDistance(ySpacing.getText()));
+			lastEdgeOverlapX = Double.valueOf(TextUtils.atofDistance(xSpacing.getText()));
+			lastEdgeOverlapY = Double.valueOf(TextUtils.atofDistance(ySpacing.getText()));
 		} else
 		{
-			lastCenterlineX = new Double(TextUtils.atofDistance(xSpacing.getText()));
-			lastCenterlineY = new Double(TextUtils.atofDistance(ySpacing.getText()));
+			lastCenterlineX = Double.valueOf(TextUtils.atofDistance(xSpacing.getText()));
+			lastCenterlineY = Double.valueOf(TextUtils.atofDistance(ySpacing.getText()));
 		}
 	}
 

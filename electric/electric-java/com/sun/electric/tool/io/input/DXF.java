@@ -81,7 +81,7 @@ public class DXF extends Input<Object>
 
 	private static class PolyPoint
 	{
-		double x, y, z;
+		double x, y /* , z */ ;
 		double bulge;
 	}
 
@@ -510,13 +510,13 @@ public class DXF extends Input<Object>
 		throws IOException
 	{
 		// just save everything until the end-of-section
-		for(int line=0; ; line++)
+		for(;;)
 		{
 			if (getNextPair()) return true;
 			if (groupID == 0 && text.equals("ENDSEC")) break;
 
 			// save it
-			headerID.add(new Integer(groupID));
+			headerID.add(Integer.valueOf(groupID));
 			headerText.add(text);
 		}
 		return false;
@@ -991,7 +991,7 @@ public class DXF extends Input<Object>
 			}
 			if (groupID == 30)
 			{
-				if (curPP != null) curPP.z = scaleString(text);
+//				if (curPP != null) curPP.z = scaleString(text);
 				continue;
 			}
 			if (groupID == 42)
@@ -1478,7 +1478,7 @@ public class DXF extends Input<Object>
 		View view = View.findView(fViewName);
 		if (view == null)
 		{
-			view = View.newInstance(fViewName, sViewName);
+			view = View.newInst(fViewName, sViewName);
 			if (view == null) return null;
 		}
 

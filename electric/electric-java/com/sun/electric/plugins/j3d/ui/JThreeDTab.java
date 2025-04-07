@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.media.j3d.TransparencyAttributes;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -52,7 +51,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.vecmath.Vector3f;
+
+import org.jogamp.java3d.TransparencyAttributes;
+import org.jogamp.vecmath.Vector3f;
 
 /**
  * Class to handle the "3D" tab of the Preferences dialog.
@@ -343,7 +344,7 @@ public class JThreeDTab extends ThreeDTab
         } else
             dir.append(GenMath.transformArrayIntoString(new double[] {0,0,0}));
 
-        if (!dir.equals(J3DUtils.get3DLightDirs()))
+        if (!dir.toString().equals(J3DUtils.get3DLightDirs()))
             J3DUtils.set3DLightDirs(dir.toString());
         int currentInt = TextUtils.atoi(maxNodeField.getText());
         if (currentInt != J3DUtils.get3DMaxNumNodes())

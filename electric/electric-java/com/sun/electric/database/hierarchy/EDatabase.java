@@ -174,7 +174,8 @@ public class EDatabase {
     }
 
     public void implementSettingChanges(Setting.SettingChangeBatch changeBatch) {
-        Environment oldEnvironment = backup().environment;
+//        Environment oldEnvironment = backup().environment;
+        backup();
         Environment newEnvironment = environment.withSettingChanges(changeBatch);
         setEnvironment(newEnvironment);
     }

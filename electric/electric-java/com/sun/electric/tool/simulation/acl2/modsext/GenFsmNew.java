@@ -53,6 +53,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,10 +78,10 @@ public class GenFsmNew extends GenBase
         new GenFsmJob(cls, saoFile, designName).startJob();
     }
 
-    private final String[] clockNames =
-    {
-        "l2clk"
-    };
+//    private final String[] clockNames =
+//    {
+//        "l2clk"
+//    };
     final Map<ModName, ParameterizedModule> modToParMod = new HashMap<>();
     final Map<ParameterizedModule, Map<String, ModName>> parModuleInstances = new LinkedHashMap<>();
     private final Set<Integer> vec4sizes = new TreeSet<>();
@@ -344,7 +345,7 @@ public class GenFsmNew extends GenBase
         for (Map.Entry<ModName, ModuleExt> e : design.downTop.entrySet())
         {
             ModName modName = e.getKey();
-            ModuleExt m = e.getValue();
+            /* ModuleExt m = */ e.getValue();
             if (modToParMod.containsKey(modName))
             {
                 continue;
@@ -652,7 +653,7 @@ public class GenFsmNew extends GenBase
 
     private void printSvtv(DesignExt design, ModName modName, ModuleExt m)
     {
-        ElabMod modIdx = design.moddb.modnameGetIndex(modName);
+        /* ElabMod modIdx = */ design.moddb.modnameGetIndex(modName);
         s();
         s("(defconst |*" + modName + "-design*|");
         sb("(change-design *" + designName + "-sao* :top " + modName.toLispString() + "))");
@@ -910,14 +911,14 @@ public class GenFsmNew extends GenBase
          */
     }
 
-    private void printSvex(Svex<PathExt> top, int width)
-    {
-        top = SvexCall.newCall(Vec4Concat.FUNCTION,
-            SvexQuote.valueOf(width),
-            top,
-            SvexQuote.valueOf(0));
-        printSvex(out, 2, top);
-    }
+//    private void printSvex(Svex<PathExt> top, int width)
+//    {
+//        top = SvexCall.newCall(Vec4Concat.FUNCTION,
+//            SvexQuote.valueOf(width),
+//            top,
+//            SvexQuote.valueOf(0));
+//        printSvex(out, 2, top);
+//    }
 
     public static <N extends SvarName> void printSvex(PrintStream out, int indent, Svex<N> top)
     {
@@ -1040,149 +1041,149 @@ public class GenFsmNew extends GenBase
         }
     }
 
-    private Path[] makeSvtvState(ModName modName, DesignExt design)
-    {
-        List<Name> scopes = new ArrayList<>();
-        Set<Path> statePaths = new LinkedHashSet<>();
-        makeSvtvState(scopes, modName, Collections.emptyMap(), design, statePaths);
-        Path[] result = new Path[statePaths.size()];
-        int i = result.length;
-        for (Iterator<Path> it = statePaths.iterator(); it.hasNext();)
-        {
-            result[--i] = it.next();
-        }
-        assert i == 0;
-        return result;
-    }
+//    private Path[] makeSvtvState(ModName modName, DesignExt design)
+//    {
+//        List<Name> scopes = new ArrayList<>();
+//        Set<Path> statePaths = new LinkedHashSet<>();
+//        makeSvtvState(scopes, modName, Collections.emptyMap(), design, statePaths);
+//        Path[] result = new Path[statePaths.size()];
+//        int i = result.length;
+//        for (Iterator<Path> it = statePaths.iterator(); it.hasNext();)
+//        {
+//            result[--i] = it.next();
+//        }
+//        assert i == 0;
+//        return result;
+//    }
 
-    private void makeSvtvStateBad(List<Name> scopes, ModName modName, Map<Name, Path[]> bind, DesignExt design, Set<Path> statePaths)
-    {
-        ModuleExt mod = design.downTop.get(modName);
+//    private void makeSvtvStateBad(List<Name> scopes, ModName modName, Map<Name, Path[]> bind, DesignExt design, Set<Path> statePaths)
+//    {
+//        ModuleExt mod = design.downTop.get(modName);
+//
+//        for (int i = mod.insts.size() - 1; i >= 0; i--)
+//        {
+//            ModInstExt inst = mod.insts.get(i);
+//            if (inst.proto.hasSvtvState)
+//            {
+//                Map<Name, Path[]> subBind = new HashMap<>();
+//                for (PathExt.PortInst pi : inst.portInsts)
+//                {
+//                    Path[] bits = new Path[pi.getWidth()];
+//                    for (int bit = 0; bit < bits.length; bit++)
+//                    {
+//                        Path path;
+//                        PathExt.Bit pb = pi.getParentBit(bit);
+//                        if (pb.getPath() instanceof PathExt.PortInst)
+//                        {
+//                            assert pb.getPath() == pi;
+//                            scopes.add(inst.getInstname());
+//                            path = Path.makePath(scopes, pi.getProtoName());
+//                            scopes.remove(scopes.size() - 1);
+//                        } else
+//                        {
+//                            WireExt lw = (WireExt)pb.getPath();
+//                            Path[] paths = bind.get(lw.getName());
+//                            if (paths != null)
+//                            {
+//                                path = paths[pb.bit];
+//                            } else
+//                            {
+//                                path = Path.makePath(scopes, lw.getName());
+//                            }
+//                        }
+//                        bits[bit] = path;
+//                    }
+//                    subBind.put(pi.getProtoName(), bits);
+//                }
+//                scopes.add(inst.getInstname());
+//                makeSvtvState(scopes, inst.getModname(), subBind, design, statePaths);
+//                scopes.remove(scopes.size() - 1);
+//            }
+//        }
+//        //
+//        WireExt[] wiresArr = mod.stateWires.toArray(new WireExt[mod.stateWires.size()]);
+//        for (int i = wiresArr.length - 1; i >= 0; i--)
+//        {
+//            WireExt wire = wiresArr[i];
+//            Name name = wire.getName();
+//            Path[] paths = bind.get(name);
+//            if (paths != null)
+//            {
+//                assert paths.length == wire.getWidth();
+//                for (Path path : paths)
+//                {
+//                    statePaths.add(path);
+//                }
+//            } else
+//            {
+//                Path path = Path.makePath(scopes, wire.getName());
+//                statePaths.add(path);
+//            }
+//        }
+//    }
 
-        for (int i = mod.insts.size() - 1; i >= 0; i--)
-        {
-            ModInstExt inst = mod.insts.get(i);
-            if (inst.proto.hasSvtvState)
-            {
-                Map<Name, Path[]> subBind = new HashMap<>();
-                for (PathExt.PortInst pi : inst.portInsts)
-                {
-                    Path[] bits = new Path[pi.getWidth()];
-                    for (int bit = 0; bit < bits.length; bit++)
-                    {
-                        Path path;
-                        PathExt.Bit pb = pi.getParentBit(bit);
-                        if (pb.getPath() instanceof PathExt.PortInst)
-                        {
-                            assert pb.getPath() == pi;
-                            scopes.add(inst.getInstname());
-                            path = Path.makePath(scopes, pi.getProtoName());
-                            scopes.remove(scopes.size() - 1);
-                        } else
-                        {
-                            WireExt lw = (WireExt)pb.getPath();
-                            Path[] paths = bind.get(lw.getName());
-                            if (paths != null)
-                            {
-                                path = paths[pb.bit];
-                            } else
-                            {
-                                path = Path.makePath(scopes, lw.getName());
-                            }
-                        }
-                        bits[bit] = path;
-                    }
-                    subBind.put(pi.getProtoName(), bits);
-                }
-                scopes.add(inst.getInstname());
-                makeSvtvState(scopes, inst.getModname(), subBind, design, statePaths);
-                scopes.remove(scopes.size() - 1);
-            }
-        }
-        //
-        WireExt[] wiresArr = mod.stateWires.toArray(new WireExt[mod.stateWires.size()]);
-        for (int i = wiresArr.length - 1; i >= 0; i--)
-        {
-            WireExt wire = wiresArr[i];
-            Name name = wire.getName();
-            Path[] paths = bind.get(name);
-            if (paths != null)
-            {
-                assert paths.length == wire.getWidth();
-                for (Path path : paths)
-                {
-                    statePaths.add(path);
-                }
-            } else
-            {
-                Path path = Path.makePath(scopes, wire.getName());
-                statePaths.add(path);
-            }
-        }
-    }
-
-    private void makeSvtvState(List<Name> scopes, ModName modName, Map<Name, Path[]> bind, DesignExt design, Set<Path> statePaths)
-    {
-        ModuleExt mod = design.downTop.get(modName);
-
-        //
-        for (WireExt wire : mod.stateWires)
-        {
-            Name name = wire.getName();
-            Path[] paths = bind.get(name);
-            if (paths != null)
-            {
-                assert paths.length == wire.getWidth();
-                for (Path path : paths)
-                {
-                    statePaths.add(path);
-                }
-            } else
-            {
-                Path path = Path.makePath(scopes, wire.getName());
-                statePaths.add(path);
-            }
-        }
-        for (ModInstExt inst : mod.insts)
-        {
-            if (inst.proto.hasSvtvState)
-            {
-                Map<Name, Path[]> subBind = new HashMap<>();
-                for (PathExt.PortInst pi : inst.portInsts)
-                {
-                    Path[] bits = new Path[pi.getWidth()];
-                    for (int bit = 0; bit < bits.length; bit++)
-                    {
-                        Path path;
-                        PathExt.Bit pb = pi.getParentBit(bit);
-                        if (pb.getPath() instanceof PathExt.PortInst)
-                        {
-                            assert pb.getPath() == pi;
-                            scopes.add(inst.getInstname());
-                            path = Path.makePath(scopes, pi.getProtoName());
-                            scopes.remove(scopes.size() - 1);
-                        } else
-                        {
-                            WireExt lw = (WireExt)pb.getPath();
-                            Path[] paths = bind.get(lw.getName());
-                            if (paths != null)
-                            {
-                                path = paths[pb.bit];
-                            } else
-                            {
-                                path = Path.makePath(scopes, lw.getName());
-                            }
-                        }
-                        bits[bit] = path;
-                    }
-                    subBind.put(pi.getProtoName(), bits);
-                }
-                scopes.add(inst.getInstname());
-                makeSvtvState(scopes, inst.getModname(), subBind, design, statePaths);
-                scopes.remove(scopes.size() - 1);
-            }
-        }
-    }
+//    private void makeSvtvState(List<Name> scopes, ModName modName, Map<Name, Path[]> bind, DesignExt design, Set<Path> statePaths)
+//    {
+//        ModuleExt mod = design.downTop.get(modName);
+//
+//        //
+//        for (WireExt wire : mod.stateWires)
+//        {
+//            Name name = wire.getName();
+//            Path[] paths = bind.get(name);
+//            if (paths != null)
+//            {
+//                assert paths.length == wire.getWidth();
+//                for (Path path : paths)
+//                {
+//                    statePaths.add(path);
+//                }
+//            } else
+//            {
+//                Path path = Path.makePath(scopes, wire.getName());
+//                statePaths.add(path);
+//            }
+//        }
+//        for (ModInstExt inst : mod.insts)
+//        {
+//            if (inst.proto.hasSvtvState)
+//            {
+//                Map<Name, Path[]> subBind = new HashMap<>();
+//                for (PathExt.PortInst pi : inst.portInsts)
+//                {
+//                    Path[] bits = new Path[pi.getWidth()];
+//                    for (int bit = 0; bit < bits.length; bit++)
+//                    {
+//                        Path path;
+//                        PathExt.Bit pb = pi.getParentBit(bit);
+//                        if (pb.getPath() instanceof PathExt.PortInst)
+//                        {
+//                            assert pb.getPath() == pi;
+//                            scopes.add(inst.getInstname());
+//                            path = Path.makePath(scopes, pi.getProtoName());
+//                            scopes.remove(scopes.size() - 1);
+//                        } else
+//                        {
+//                            WireExt lw = (WireExt)pb.getPath();
+//                            Path[] paths = bind.get(lw.getName());
+//                            if (paths != null)
+//                            {
+//                                path = paths[pb.bit];
+//                            } else
+//                            {
+//                                path = Path.makePath(scopes, lw.getName());
+//                            }
+//                        }
+//                        bits[bit] = path;
+//                    }
+//                    subBind.put(pi.getProtoName(), bits);
+//                }
+//                scopes.add(inst.getInstname());
+//                makeSvtvState(scopes, inst.getModname(), subBind, design, statePaths);
+//                scopes.remove(scopes.size() - 1);
+//            }
+//        }
+//    }
 
     static class GenFsmJob<H extends DesignHints> extends Job
     {
@@ -1204,13 +1205,13 @@ public class GenFsmNew extends GenBase
             try
             {
                 ACL2Object.initHonsMananger(designName);
-                DesignHints designHints = cls.newInstance();
+                DesignHints designHints = cls.getDeclaredConstructor().newInstance();
                 ACL2Reader sr = new ACL2Reader(saoFile);
                 DesignExt design = new DesignExt(sr.root, designHints);
                 GenFsmNew gen = new GenFsmNew(designHints);
                 File outDir = saoFile.getParentFile();
                 gen.gen(designName, design, outDir);
-            } catch (InstantiationException | IllegalAccessException | IOException e)
+            } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
             {
                 System.out.println(e.getMessage());
                 return false;

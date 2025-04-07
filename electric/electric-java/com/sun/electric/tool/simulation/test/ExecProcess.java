@@ -71,7 +71,7 @@ class ExecProcess extends Thread {
                 // read from stream
                 InputStreamReader input = new InputStreamReader(in);
                 BufferedReader reader = new BufferedReader(input);
-                String line = null;
+//                String line = null;
                 char [] cbuf = new char[256];
                 int read = 0;
                 while ((read = reader.read(cbuf, 0, 256)) > -1) {
@@ -90,7 +90,7 @@ class ExecProcess extends Thread {
         }
     }
 
-    private final String command;
+//    private final String command;
     private final String [] exec;
     private final String [] envVars;
     private final File dir;                       // working directory
@@ -101,29 +101,29 @@ class ExecProcess extends Thread {
     private ExecProcessReader errReader;
     private Process p = null;
 
-    /**
-     * Execute an external process.
-     * Note: command is not a shell command line command, it is a single program and arguments.
-     * Therefore, <code>/bin/sh -c /bin/ls > file.txt</code> will NOT work.
-     * <p>
-     * Instead, use String[] exec = {"/bin/sh", "-c", "/bin/ls > file.txt"};
-     * and use the other constructor.
-     * @param command the command to run.
-     * @param envVars environment variables of the form name=value. If null, inherits vars from current process.
-     * @param dir the working directory. If null, uses the working dir from the current process
-     * @param outStreamRedir stdout of the process will be redirected to this stream if not null
-     * @param errStreamRedir stderr of the process will be redirected to this stream if not null
-     */
-    public ExecProcess(String command, String [] envVars, File dir, OutputStream outStreamRedir, OutputStream errStreamRedir) {
-        this.command = command;
-        this.exec = null;
-        this.envVars = envVars;
-        this.dir = dir;
-        this.outStreamRedir = outStreamRedir;
-        this.errStreamRedir = errStreamRedir;
-        this.processWriter = null;
-        setName(command);
-    }
+//    /**
+//     * Execute an external process.
+//     * Note: command is not a shell command line command, it is a single program and arguments.
+//     * Therefore, <code>/bin/sh -c /bin/ls > file.txt</code> will NOT work.
+//     * <p>
+//     * Instead, use String[] exec = {"/bin/sh", "-c", "/bin/ls > file.txt"};
+//     * and use the other constructor.
+//     * @param command the command to run.
+//     * @param envVars environment variables of the form name=value. If null, inherits vars from current process.
+//     * @param dir the working directory. If null, uses the working dir from the current process
+//     * @param outStreamRedir stdout of the process will be redirected to this stream if not null
+//     * @param errStreamRedir stderr of the process will be redirected to this stream if not null
+//     */
+//    public ExecProcess(String command, String [] envVars, File dir, OutputStream outStreamRedir, OutputStream errStreamRedir) {
+//        this.command = command;
+//        this.exec = null;
+//        this.envVars = envVars;
+//        this.dir = dir;
+//        this.outStreamRedir = outStreamRedir;
+//        this.errStreamRedir = errStreamRedir;
+//        this.processWriter = null;
+//        setName(command);
+//    }
 
     /**
      * Execute an external process.
@@ -135,7 +135,7 @@ class ExecProcess extends Thread {
      * @param errStreamRedir stderr of the process will be redirected to this stream if not null
      */
     public ExecProcess(String [] exec, String [] envVars, File dir, OutputStream outStreamRedir, OutputStream errStreamRedir) {
-        this.command = null;
+//        this.command = null;
         this.exec = exec;
         this.envVars = envVars;
         this.dir = dir;
@@ -154,9 +154,9 @@ class ExecProcess extends Thread {
 
             // run program
             synchronized(this) {
-                if (command != null)
-                    p = rt.exec(command, envVars, dir);
-                else
+//                if (command != null)
+//                    p = rt.exec(command, envVars, dir);
+//                else
                     p = rt.exec(exec, envVars, dir);
 
                 // eat output (stdout) and stderr from program so it doesn't block
@@ -178,9 +178,10 @@ class ExecProcess extends Thread {
             if (errStreamRedir != null) errReader.join();
 
             StringBuffer com = new StringBuffer();
-            if (command != null)
-                com.append(command);
-            else {
+//            if (command != null)
+//                com.append(command);
+//            else
+            {
                 for (int i=0; i<exec.length; i++)
                     com.append(exec[i]+" ");
             }

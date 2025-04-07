@@ -42,7 +42,7 @@ public class GlobalVars {
 	public static Integer iterations = Integer.valueOf(10);
 	public static Integer notMovedMax = Integer.valueOf(2);
 	public static Integer numOfThreads = Integer.valueOf(4);
-	public static Double overlappingThreshold = new Double(0.1);
+	public static Double overlappingThreshold = Double.valueOf(0.1);
 	public static Integer padding = Integer.valueOf(0);
 	public static Integer timeout = Integer.valueOf(10);
 }

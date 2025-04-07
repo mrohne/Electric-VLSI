@@ -32,7 +32,7 @@ import java.math.BigInteger;
 import java.util.Map;
 
 /**
- * Left “arithmetic” shift of 4vecs.
+ * Left "arithmetic" shift of 4vecs.
  * See<http://www.cs.utexas.edu/users/moore/acl2/manuals/current/manual/?topic=SV____4VEC-LSH>.
  *
  * @param <N> Type of name of Svex variables

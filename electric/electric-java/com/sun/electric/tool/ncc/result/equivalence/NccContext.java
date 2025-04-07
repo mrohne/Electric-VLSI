@@ -54,7 +54,7 @@ class NccContext implements Serializable {
 		nodableNameToChild.put(name, child);
 	}
 	public void addNameProxyIndex(NameProxy np, int i) {
-		Integer bi = new Integer(i);
+		Integer bi = Integer.valueOf(i);
 		Job.error(objectIndices.contains(bi),
 				        "duplicate index?");
 		objectIndices.add(bi);

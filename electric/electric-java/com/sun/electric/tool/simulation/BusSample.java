@@ -168,10 +168,10 @@ public class BusSample<S extends Sample> implements Sample
                     Signal.View<RangeSample<SS>> view = subviews[i];
                     for(int j=0; j<view.getNumEvents(); j++)
                     {
-                        Double t = new Double(view.getTime(j));
+                        Double t = Double.valueOf(view.getTime(j));
                         HashSet<Integer> hs = tm.get(t);
                         if (hs == null) tm.put(t, hs = new HashSet<Integer>());
-                        hs.add(new Integer(i));
+                        hs.add(Integer.valueOf(i));
                     }
                 }
 
@@ -227,10 +227,10 @@ public class BusSample<S extends Sample> implements Sample
                     Signal.View<SS> view = subviews[i];
                     for(int j=0; j<view.getNumEvents(); j++)
                     {
-                        Double t = new Double(view.getTime(j));
+                        Double t = Double.valueOf(view.getTime(j));
                         HashSet<Integer> hs = tm.get(t);
                         if (hs == null) tm.put(t, hs = new HashSet<Integer>());
-                        hs.add(new Integer(i));
+                        hs.add(Integer.valueOf(i));
                     }
                 }
 

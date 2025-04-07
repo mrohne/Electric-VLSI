@@ -191,7 +191,7 @@ public class Compile<N extends SvarName>
 
     private Map<Svar<N>, Svex<N>> netassignsResolves(Map<Svar<N>, List<Driver<N>>> netassigns)
     {
-        Svex<N> Z = SvexQuote.Z();
+        /* Svex<N> Z = */ SvexQuote.Z();
         Map<Svar<N>, Svex<N>> resolves = new LinkedHashMap<>();
         for (Map.Entry<Svar<N>, List<Driver<N>>> e : netassigns.entrySet())
         {

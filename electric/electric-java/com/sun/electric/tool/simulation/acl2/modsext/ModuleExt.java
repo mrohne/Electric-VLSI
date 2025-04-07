@@ -476,26 +476,26 @@ public class ModuleExt /*extends SvarImpl.Builder<PathExt>*/ implements Comparat
         return result;
     }
 
-    private Lhs<IndexName> absindexed(Lhs<PathExt> x, SvexManager<IndexName> sm)
-    {
-        List<Lhrange<IndexName>> newRanges = new ArrayList<>();
-        for (Lhrange<PathExt> range : x.ranges)
-        {
-            Svar<PathExt> svar = range.getVar();
-            Lhatom<IndexName> newAtom;
-            if (svar != null)
-            {
-                Svar<IndexName> newSvar = absindexed(svar, sm);
-                newAtom = Lhatom.valueOf(newSvar, range.getRsh());
-            } else
-            {
-                newAtom = Lhatom.Z();
-            }
-            Lhrange<IndexName> newRange = new Lhrange<>(range.getWidth(), newAtom);
-            newRanges.add(newRange);
-        }
-        return new Lhs<>(newRanges);
-    }
+//    private Lhs<IndexName> absindexed(Lhs<PathExt> x, SvexManager<IndexName> sm)
+//    {
+//        List<Lhrange<IndexName>> newRanges = new ArrayList<>();
+//        for (Lhrange<PathExt> range : x.ranges)
+//        {
+//            Svar<PathExt> svar = range.getVar();
+//            Lhatom<IndexName> newAtom;
+//            if (svar != null)
+//            {
+//                Svar<IndexName> newSvar = absindexed(svar, sm);
+//                newAtom = Lhatom.valueOf(newSvar, range.getRsh());
+//            } else
+//            {
+//                newAtom = Lhatom.Z();
+//            }
+//            Lhrange<IndexName> newRange = new Lhrange<>(range.getWidth(), newAtom);
+//            newRanges.add(newRange);
+//        }
+//        return new Lhs<>(newRanges);
+//    }
 
     private PathExt findPathExtByIndex(int i)
     {
@@ -1275,7 +1275,7 @@ public class ModuleExt /*extends SvarImpl.Builder<PathExt>*/ implements Comparat
                     for (Map.Entry<Svar<PathExt>, BigInteger> e : crudePortDeps.entrySet())
                     {
                         Svar<PathExt> svar = e.getKey();
-                        BigInteger mask = e.getValue();
+                        /* BigInteger mask = */ e.getValue();
                         WireExt lw = (WireExt)svar.getName();
                         PathExt.PortInst piIn = inst.portInstsIndex.get(lw.getName());
                         for (int bit = 0; bit < piIn.getWidth(); bit++)

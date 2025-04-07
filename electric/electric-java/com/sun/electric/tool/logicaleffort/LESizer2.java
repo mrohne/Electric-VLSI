@@ -53,7 +53,7 @@ import java.util.Set;
 public class LESizer2 {
 
 	/** which algorithm to use */
-	private LESizer.Alg optimizationAlg;
+//	private LESizer.Alg optimizationAlg;
 	/** Where to direct output */
 	private PrintStream out;
 	/** What job we are part of */
@@ -65,7 +65,7 @@ public class LESizer2 {
 
 	/** Creates a new instance of LESizer */
 	protected LESizer2(LESizer.Alg alg, LENetlister2 netlist, Job job, ErrorLogger errorLogger) {
-		optimizationAlg = alg;
+//		optimizationAlg = alg;
 		this.netlist = netlist;
 		this.job = job;
 		this.errorLogger = errorLogger;
@@ -176,7 +176,7 @@ public class LESizer2 {
 								|| loopLeno.getType() == LENodable.Type.STATICGATE) {
 							// organize by groups
 							int i = loopLeno.parallelGroup;
-							Integer integer = new Integer(i);
+							Integer integer = Integer.valueOf(i);
 							if (i <= 0) {
 								// this gate drives independently, check size
 								if (smallestX == 0)

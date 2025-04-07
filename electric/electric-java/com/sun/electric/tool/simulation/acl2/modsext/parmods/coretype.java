@@ -49,16 +49,16 @@ public class coretype extends ParameterizedModule
 
     public static final coretype INSTANCE = new coretype();
 
-    private static ACL2Object mkRange(int val1, int val2)
-    {
-        return ACL2.hons(ACL2.hons(KEYWORD_VL_RANGE, ACL2.hons(mkLiteral(val1), mkLiteral(val2))), ACL2.NIL);
-    }
+//    private static ACL2Object mkRange(int val1, int val2)
+//    {
+//        return ACL2.hons(ACL2.hons(KEYWORD_VL_RANGE, ACL2.hons(mkLiteral(val1), mkLiteral(val2))), ACL2.NIL);
+//    }
 
-    private static ACL2Object mkLiteral(int val)
-    {
-        ACL2Object constint = ACL2.hons(KEYWORD_VL_CONSTINT, ACL2.hons(ACL2.hons(ACL2Object.valueOf(32), ACL2Object.valueOf(val)), ACL2.hons(KEYWORD_VL_SIGNED, ACL2.T)));
-        return ACL2.hons(KEYWORD_VL_LITERAL, ACL2.hons(constint, ACL2.hons(ACL2.hons(ACL2Object.valueOf("VL_ORIG_EXPR"), ACL2.hons(KEYWORD_VL_LITERAL, ACL2.hons(constint, ACL2.NIL))), ACL2.NIL)));
-    }
+//    private static ACL2Object mkLiteral(int val)
+//    {
+//        ACL2Object constint = ACL2.hons(KEYWORD_VL_CONSTINT, ACL2.hons(ACL2.hons(ACL2Object.valueOf(32), ACL2Object.valueOf(val)), ACL2.hons(KEYWORD_VL_SIGNED, ACL2.T)));
+//        return ACL2.hons(KEYWORD_VL_LITERAL, ACL2.hons(constint, ACL2.hons(ACL2.hons(ACL2Object.valueOf("VL_ORIG_EXPR"), ACL2.hons(KEYWORD_VL_LITERAL, ACL2.hons(constint, ACL2.NIL))), ACL2.NIL)));
+//    }
 
     private coretype()
     {

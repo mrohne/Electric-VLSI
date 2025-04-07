@@ -356,7 +356,7 @@ public class ArcProto implements Comparable<ArcProto>, Serializable {
         assert -Integer.MAX_VALUE / 8 < baseExtend.getGrid() && baseExtend.getGrid() < Integer.MAX_VALUE / 8;
         computeLayerGridExtendRange();
         PrimitivePortId ppId = protoId.techId.idManager.newTechId("generic").newPrimitiveNodeId("Universal-Pin").newPortId("");
-        factoryDefaultInst = ImmutableArcInst.newInstance(0, protoId, ImmutableArcInst.BASENAME, null,
+        factoryDefaultInst = ImmutableArcInst.newInst(0, protoId, ImmutableArcInst.BASENAME, null,
                 0, ppId, EPoint.ORIGIN, 0, ppId, EPoint.ORIGIN, 0, 0, ImmutableArcInst.FACTORY_DEFAULT_FLAGS);
     }
 
@@ -565,18 +565,6 @@ public class ArcProto implements Comparable<ArcProto>, Serializable {
      */
     public Technology getTechnology() {
         return tech;
-    }
-
-    /**
-     * Method to return the default base width of this ArcProto in lambda units.
-     * This is the reported/selected width, which means that it does not include the width offset.
-     * For example, diffusion arcs are always accompanied by a surrounding well and select.
-     * This call returns only the width of the diffusion.
-     * @return the default base width of this ArcProto in lambda units.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public double getDefaultLambdaBaseWidth() {
-        return getDefaultLambdaBaseWidth(EditingPreferences.getInstance());
     }
 
     /**
@@ -858,9 +846,9 @@ public class ArcProto implements Comparable<ArcProto>, Serializable {
      * must be marked this way.
      * A curved arc has the variable "arc_radius" on it with a curvature factor.
      */
-    private void clearCurvable() {
-        userBits &= ~CANCURVE;
-    }
+//    private void clearCurvable() {
+//        userBits &= ~CANCURVE;
+//    }
 
     /**
      * Method to tell if instances of this ArcProto can curve.
@@ -1417,17 +1405,6 @@ public class ArcProto implements Comparable<ArcProto>, Serializable {
     public void makeGridPoly(AbstractShapeBuilder b, ImmutableArcInst a, long gridWidth, Poly.Type style, Layer layer, EGraphics graphicsOverride) {
         b.makeGridPoly(a, gridWidth, style, layer, graphicsOverride);
     }
-    
-    /**
-     * Returns the polygons that describe dummy arc of this ArcProto
-     * with default width and specified length.
-     * @param lambdaLength length of dummy arc in lambda units.
-     * @return an array of Poly objects that describes dummy arc graphically.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public Poly[] getShapeOfDummyArc(double lambdaLength) {
-        return getShapeOfDummyArc(EditingPreferences.getInstance(), lambdaLength);
-    }
 
     /**
      * Returns the polygons that describe dummy arc of this ArcProto
@@ -1538,12 +1515,12 @@ public class ArcProto implements Comparable<ArcProto>, Serializable {
         out.println("\tisNotUsed=" + isNotUsed());
         out.println("\tisSkipSizeInPalette=" + isSkipSizeInPalette());
 
-        Technology.printlnPref(out, 1, "DefaultExtendFor" + getName() + "IN" + tech.getTechName(), new Double(factoryDefaultInst.getLambdaExtendOverMin()));
+        Technology.printlnPref(out, 1, "DefaultExtendFor" + getName() + "IN" + tech.getTechName(), factoryDefaultInst.getLambdaExtendOverMin());
         out.println("\tbaseExtend=" + getBaseExtend());
         out.println("\tdefaultLambdaBaseWidth=" + getFactoryDefaultLambdaBaseWidth());
         out.println("\tdiskOffset1=" + DBMath.round(getBaseExtend().getLambda() + 0.5 * getLambdaElibWidthOffset()));
         out.println("\tdiskOffset2=" + getBaseExtend());
-        Technology.printlnPref(out, 1, "DefaultAngleFor" + getName() + "IN" + tech.getTechName(), new Integer(factoryAngleIncrement));
+        Technology.printlnPref(out, 1, "DefaultAngleFor" + getName() + "IN" + tech.getTechName(), factoryAngleIncrement);
         Technology.printlnPref(out, 1, "DefaultRigidFor" + getName() + "IN" + tech.getTechName(), Boolean.valueOf(factoryDefaultInst.isRigid()));
         Technology.printlnPref(out, 1, "DefaultFixedAngleFor" + getName() + "IN" + tech.getTechName(), Boolean.valueOf(factoryDefaultInst.isFixedAngle()));
         Technology.printlnPref(out, 1, "DefaultExtendedFor" + getName() + "IN" + tech.getTechName(), Boolean.valueOf(factoryDefaultInst.isTailExtended()));
@@ -1574,10 +1551,10 @@ public class ArcProto implements Comparable<ArcProto>, Serializable {
         double correction2 = getBaseExtend().getLambda();
         double correction1 = DBMath.round(correction2 + 0.5 * getLambdaElibWidthOffset());
         if (correction1 != correction2) {
-            a.diskOffset.put(Integer.valueOf(1), new Double(correction1));
+            a.diskOffset.put(Integer.valueOf(1), correction1);
         }
         if (correction2 != 0) {
-            a.diskOffset.put(Integer.valueOf(2), new Double(correction2));
+            a.diskOffset.put(Integer.valueOf(2), correction2);
         }
         a.extended = factoryDefaultInst.isTailExtended();
         a.fixedAngle = factoryDefaultInst.isFixedAngle();

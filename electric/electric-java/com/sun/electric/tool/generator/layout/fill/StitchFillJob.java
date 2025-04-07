@@ -931,7 +931,7 @@ public class StitchFillJob extends Job
                 for (PinsArcPair pair : pairs)
                 {
                     SplitContainter split = splitArcAtPoint(pair.topArc, pair.insert, ep);
-                    Export.newInstance(theCell, split.splitPin.getPortInst(0), e.getKey(), ep, PortCharacteristic.UNKNOWN);
+                    Export.newInst(theCell, split.splitPin.getPortInst(0), e.getKey(), ep, PortCharacteristic.UNKNOWN);
                 }
             }
         }
@@ -1066,7 +1066,7 @@ public class StitchFillJob extends Job
      */
     private static ArcInst getArcInstOverlappingWithArea(Rectangle2D resultBnd, List<ArcInst> at)
     {
-        Area topArea = new Area(resultBnd);
+        /* Area topArea = */ new Area(resultBnd);
         for (ArcInst ai : at)
         {
             Rectangle2D r = ai.getBounds();
@@ -1304,16 +1304,16 @@ public class StitchFillJob extends Job
         newAi2.setTailArrowed(ai.isTailArrowed());
 
         // Determining which arc is left/top
-        if (isLeftTop(headPt, tailPt))
-        {
-            container.leftArc = newAi1;
-            container.rightArc = newAi2;
-        }
-        else
-        {
-            container.leftArc = newAi2;
-            container.rightArc = newAi1;
-        }
+//        if (isLeftTop(headPt, tailPt))
+//        {
+//            container.leftArc = newAi1;
+//            container.rightArc = newAi2;
+//        }
+//        else
+//        {
+//            container.leftArc = newAi2;
+//            container.rightArc = newAi1;
+//        }
         ai.kill();
 //        if (arcName != null)
 //        {
@@ -1374,7 +1374,7 @@ public class StitchFillJob extends Job
     private static class SplitContainter
     {
         NodeInst splitPin;
-        ArcInst leftArc, rightArc; // to keep track of new arcs after the original one was split
+//        ArcInst leftArc, rightArc; // to keep track of new arcs after the original one was split
     }
 
     /**

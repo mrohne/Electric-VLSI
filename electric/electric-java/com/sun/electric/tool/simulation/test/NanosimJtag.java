@@ -124,6 +124,7 @@ public abstract class NanosimJtag extends JtagTester {
      * along with the scan chain bits. I have since split the data nets out into a separate,
      * flat listing.
      */
+    @Deprecated
     protected static List getDataNetsOld(SubchainNode chain, int set) {
         // get names of data out bits
         if (chain.getChildCount() == 0) {

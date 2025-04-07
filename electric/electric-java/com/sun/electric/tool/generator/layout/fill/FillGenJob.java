@@ -90,7 +90,7 @@ public class FillGenJob extends Job
         fillGen.setConfig(fillGenConfig);
 
         // logger must be created in server otherwise it won't return the elements.
-        log = ErrorLogger.newInstance("Fill");
+        log = ErrorLogger.newInst("Fill");
         if (!doItNow)
             fieldVariableChanged("log");
 

@@ -83,7 +83,7 @@ public class ReadableDump extends ELIB {
         }
         int cellNumber = 0;
         for (Map.Entry<CellId, Integer> e : cellOrdering.entrySet()) {
-            e.setValue(new Integer(cellNumber++));
+            e.setValue(Integer.valueOf(cellNumber++));
             objInfo.put(e.getKey(), e.getValue());
         }
 
@@ -140,7 +140,7 @@ public class ReadableDump extends ELIB {
             int portCount = 0;
             for (int exportIndex = 0; exportIndex < cellRevision.exports.size(); exportIndex++) {
                 ImmutableExport e = cellRevision.exports.get(exportIndex);
-                portMap.put(e.exportId, new Integer(portCount++));
+                portMap.put(e.exportId, Integer.valueOf(portCount++));
             }
             printWriter.println("nodes: " + cellRevision.nodes.size() + " arcs: " + cellRevision.arcs.size()
                     + " porttypes: " + cellRevision.exports.size());
@@ -181,7 +181,7 @@ public class ReadableDump extends ELIB {
     void writeReExport(ImmutableExport e) throws IOException {
         Integer pIndex = portMap.get(e.exportId);
         if (pIndex == null) {
-            pIndex = new Integer(-1);
+            pIndex = Integer.valueOf(-1);
         }
         printWriter.println("*port: " + e.originalPortId.getName(snapshot) + " exported: " + pIndex.intValue());
     }

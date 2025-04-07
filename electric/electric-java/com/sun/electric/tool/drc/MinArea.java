@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -312,12 +313,11 @@ public class MinArea {
             for (String impl : knownImplementations) {
                 try {
                     Class cls = classLoader.loadClass(impl);
-                    engine = (MinAreaChecker) cls.newInstance();
+                    engine = (MinAreaChecker) cls.getDeclaredConstructor().newInstance();
+                    classLoader.close();
                     break;
-                } catch (ClassNotFoundException e) {
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
+                } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -409,7 +409,7 @@ public class MinArea {
         }
 
         private class MyErrorLogger implements com.sun.electric.api.minarea.ErrorLogger {
-            private ErrorLogger errorLogger = ErrorLogger.newInstance("minarea");
+            private ErrorLogger errorLogger = ErrorLogger.newInst("minarea");
             private String ruleName;
             private int sortKey = 1;
 
@@ -521,7 +521,7 @@ public class MinArea {
                 topElectricCell = allCells.get(topCell);
                 fieldVariableChanged("topElectricCell");
 //            Class algorithmClass = Class.forName(className);
-//            MinAreaChecker checker = (MinAreaChecker) algorithmClass.newInstance();
+//            MinAreaChecker checker = (MinAreaChecker) algorithmClass.newInst();
 //            System.out.println("topCell " + topCell.getName() + " [" + topCell.getBoundingMinX() + ".."
 //                    + topCell.getBoundingMaxX() + "]x[" + topCell.getBoundingMinY() + ".."
 //                    + topCell.getBoundingMaxY() + "] minarea=" + minarea);
@@ -577,9 +577,9 @@ public class MinArea {
             }
             Library lib = Library.findLibrary(libName);
             if (lib == null) {
-                lib = Library.newInstance(libName, null);
+                lib = Library.newInst(libName, null);
             }
-            final Cell eCell = Cell.newInstance(lib, cellName);
+            final Cell eCell = Cell.newInst(lib, cellName);
             assert eCell.getNumNodes() == 0;
             eCell.setTechnology(tech);
             converted.put(topCell, eCell);
@@ -598,7 +598,7 @@ public class MinArea {
                     EPoint size = EPoint.fromGrid(w, h);
                     int nodeId = eCell.getNumNodes();
                     Name name = Name.findName("r@" + nodeId);
-                    ImmutableNodeInst n = ImmutableNodeInst.newInstance(nodeId, protoId, name, nameDescriptor,
+                    ImmutableNodeInst n = ImmutableNodeInst.newInst(nodeId, protoId, name, nameDescriptor,
                             Orientation.IDENT, anchor, size, 0, 0, protoDescriptor);
                     eCell.addNode(n);
                 }
@@ -611,7 +611,7 @@ public class MinArea {
                     int nodeId = eCell.getNumNodes();
                     Name name = Name.findName("s@" + nodeId);
                     CellId subCellId = converted.get(cell).getId();
-                    ImmutableNodeInst n = ImmutableNodeInst.newInstance(nodeId, subCellId, name, nameDescriptor,
+                    ImmutableNodeInst n = ImmutableNodeInst.newInst(nodeId, subCellId, name, nameDescriptor,
                             ors.get(orient), anchor, EPoint.ORIGIN, 0, 0, protoDescriptor);
                     eCell.addNode(n);
                 }

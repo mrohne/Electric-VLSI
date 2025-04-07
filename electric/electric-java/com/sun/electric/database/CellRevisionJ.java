@@ -465,7 +465,6 @@ class CellRevisionJ extends CellRevision {
      * already known to be sorted (@code lo <= start <= hi}
      * @param c comparator to used for the sort
      */
-    @SuppressWarnings("fallthrough")
     private void binarySort(int[] connections, int lo, int hi) {
         assert lo <= hi;
         int start = lo + 1;

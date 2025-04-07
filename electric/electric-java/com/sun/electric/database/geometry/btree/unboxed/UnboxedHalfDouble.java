@@ -23,11 +23,11 @@ package com.sun.electric.database.geometry.btree.unboxed;
 
 import java.io.*;
 
-/** A 64-bit <tt>double</tt> which is stored internally as a 32-bit <tt>float</tt> in unboxed form */
+/** A 64-bit <b>double</b> which is stored internally as a 32-bit <b>float</b> in unboxed form */
 public class UnboxedHalfDouble implements UnboxedComparable<Double> {
     public static final UnboxedHalfDouble instance = new UnboxedHalfDouble();
     public int getSize() { return 4; }
-    public Double deserialize(byte[] buf, int ofs) { return new Double(deserializeFloat(buf, ofs)); }
+    public Double deserialize(byte[] buf, int ofs) { return Double.valueOf(deserializeFloat(buf, ofs)); }
     public void serialize(Double k, byte[] buf, int ofs) { serializeFloat(k.floatValue(), buf, ofs); }
     public float deserializeFloat(byte[] buf, int ofs) {
         return

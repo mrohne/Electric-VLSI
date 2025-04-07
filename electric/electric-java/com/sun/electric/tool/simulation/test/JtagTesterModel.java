@@ -35,7 +35,7 @@ public class JtagTesterModel extends BypassJtagTester {
     // IR instructions
     private static final String SHIFT_IR = "1100";
     private static final String SHIFT_DR = "100";
-    private static final String CAPTURE_DR = "10";
+//    private static final String CAPTURE_DR = "10";
     private static final String IDLE = "110";
 
     private static final boolean DEBUG = true;
@@ -177,12 +177,12 @@ public class JtagTesterModel extends BypassJtagTester {
     }
 
     // forces tap controller to idle state regardless of current state
-    private void task_go_idle() {
-        model.setNodeState(tms, 1);
-        cycle_tck(5);
-        model.setNodeState(tms, 0);
-        cycle_tck(1);
-    }
+//    private void task_go_idle() {
+//        model.setNodeState(tms, 1);
+//        cycle_tck(5);
+//        model.setNodeState(tms, 0);
+//        cycle_tck(1);
+//    }
 
     void task_load_instruction(String opcode) {
         // Note that we scan in from the end of the string to the front of the string

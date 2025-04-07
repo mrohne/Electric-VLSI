@@ -99,7 +99,7 @@ public class ELIB extends LibraryFiles {
         private final int magic;
         // characteristics of the file
         /** byte order on disk */
-        private transient ByteOrder byteOrder;
+//        private transient ByteOrder byteOrder;
         /** true if BIG_ENDIAN byte order on disk */
         private final boolean bytesSwapped;
         /** the size of a "big" integer on disk (4 or more bytes) */
@@ -113,7 +113,7 @@ public class ELIB extends LibraryFiles {
 
         Header(int magic, ByteOrder byteOrder, int sizeOfBig, int sizeOfSmall, int sizeOfChar) {
             this.magic = magic;
-            this.byteOrder = byteOrder;
+//            this.byteOrder = byteOrder;
             this.bytesSwapped = (byteOrder == ByteOrder.BIG_ENDIAN);
             this.sizeOfBig = sizeOfBig;
             this.sizeOfSmall = sizeOfSmall;
@@ -142,7 +142,7 @@ public class ELIB extends LibraryFiles {
         private void readObject(ObjectInputStream s)
                 throws IOException, ClassNotFoundException {
             s.defaultReadObject();
-            byteOrder = bytesSwapped ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+//            byteOrder = bytesSwapped ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
         }
 
         /**
@@ -197,7 +197,7 @@ public class ELIB extends LibraryFiles {
     private Header header;
     // statistics about the file
     /** the number of integers on disk that got clipped during input */
-    private int clippedIntegers;
+//    private int clippedIntegers;
     // the tool information
     /** the number of tools in the file */
     private int toolCount;
@@ -385,7 +385,7 @@ public class ELIB extends LibraryFiles {
     private static class FakeCell {
 
         String cellName;
-        NodeProto firstInCell;
+//        NodeProto firstInCell;
     }
 
     ELIB(EditingPreferences ep) {
@@ -460,7 +460,7 @@ public class ELIB extends LibraryFiles {
     boolean readTheLibrary(boolean onlyProjectSettings, LibraryStatistics.FileContents fc, EditingPreferences ep)
             throws IOException {
         // initialize
-        clippedIntegers = 0;
+//        clippedIntegers = 0;
         byteCount = 0;
 
         // read the magic number and determine whether bytes are swapped
@@ -521,22 +521,22 @@ public class ELIB extends LibraryFiles {
 
         // get the newly created views (version 9 and later)
         viewMapping = new HashMap<Integer, View>();
-        viewMapping.put(new Integer(-1), View.UNKNOWN);
-        viewMapping.put(new Integer(-2), View.LAYOUT);
-        viewMapping.put(new Integer(-3), View.SCHEMATIC);
-        viewMapping.put(new Integer(-4), View.ICON);
-        viewMapping.put(new Integer(-5), View.DOCWAVE);
-        viewMapping.put(new Integer(-6), View.LAYOUTSKEL);
-        viewMapping.put(new Integer(-7), View.VHDL);
-        viewMapping.put(new Integer(-8), View.NETLIST);
-        viewMapping.put(new Integer(-9), View.DOC);
-        viewMapping.put(new Integer(-10), View.NETLISTNETLISP);
-        viewMapping.put(new Integer(-11), View.NETLISTALS);
-        viewMapping.put(new Integer(-12), View.NETLISTQUISC);
-        viewMapping.put(new Integer(-13), View.NETLISTRSIM);
-        viewMapping.put(new Integer(-14), View.NETLISTSILOS);
-        viewMapping.put(new Integer(-15), View.VERILOG);
-        viewMapping.put(new Integer(-16), View.LAYOUTCOMP);
+        viewMapping.put(Integer.valueOf(-1), View.UNKNOWN);
+        viewMapping.put(Integer.valueOf(-2), View.LAYOUT);
+        viewMapping.put(Integer.valueOf(-3), View.SCHEMATIC);
+        viewMapping.put(Integer.valueOf(-4), View.ICON);
+        viewMapping.put(Integer.valueOf(-5), View.DOCWAVE);
+        viewMapping.put(Integer.valueOf(-6), View.LAYOUTSKEL);
+        viewMapping.put(Integer.valueOf(-7), View.VHDL);
+        viewMapping.put(Integer.valueOf(-8), View.NETLIST);
+        viewMapping.put(Integer.valueOf(-9), View.DOC);
+        viewMapping.put(Integer.valueOf(-10), View.NETLISTNETLISP);
+        viewMapping.put(Integer.valueOf(-11), View.NETLISTALS);
+        viewMapping.put(Integer.valueOf(-12), View.NETLISTQUISC);
+        viewMapping.put(Integer.valueOf(-13), View.NETLISTRSIM);
+        viewMapping.put(Integer.valueOf(-14), View.NETLISTSILOS);
+        viewMapping.put(Integer.valueOf(-15), View.VERILOG);
+        viewMapping.put(Integer.valueOf(-16), View.LAYOUTCOMP);
         if (header.magic <= ELIBConstants.MAGIC9) {
             int numExtraViews = readBigInteger();
             for (int i = 0; i < numExtraViews; i++) {
@@ -547,13 +547,13 @@ public class ELIB extends LibraryFiles {
                     // special conversion from old view names
                     view = findOldViewName(viewName);
                     if (view == null && !onlyProjectSettings) {
-                        view = View.newInstance(viewName, viewShortName);
+                        view = View.newInst(viewName, viewShortName);
                         if (view == null) {
                             return true;
                         }
                     }
                 }
-                viewMapping.put(new Integer(i + 1), view);
+                viewMapping.put(Integer.valueOf(i + 1), view);
             }
         }
 
@@ -1159,7 +1159,7 @@ public class ELIB extends LibraryFiles {
 
             techScale.put(tech, Double.valueOf(lambda));
             String varName = tech.getScaleVariableName();
-            Variable var = Variable.newInstance(Variable.newKey(varName), new Double(lambda / 2), TextDescriptor.EMPTY);
+            Variable var = Variable.newInst(Variable.newKey(varName), Double.valueOf(lambda / 2), TextDescriptor.EMPTY);
             realizeMeaningPrefs(tech, new Variable[]{var});
         }
 
@@ -1386,7 +1386,7 @@ public class ELIB extends LibraryFiles {
         // if scaling, actually construct the cell
         if (scaledCellName != null) {
             Cell oldCell = cell;
-            cell = Cell.newInstance(cell.getLibrary(), scaledCellName);
+            cell = Cell.newInst(cell.getLibrary(), scaledCellName);
             cell.setTempInt(cellIndex);
             recursiveSetupFlag.add(cell);
             cell.joinGroup(oldCell);
@@ -1899,7 +1899,7 @@ public class ELIB extends LibraryFiles {
                 expected = trans.transform(expected, expected);
                 Point2D center = new Point2D.Double(expected.getX() - anchorX, expected.getY() - anchorY);
                 PrimitiveNode pn = Generic.tech().universalPinNode;
-                NodeInst ni = NodeInst.newInstance(pn, ep, center, 0, 0, c, Orientation.IDENT, "");
+                NodeInst ni = NodeInst.newInst(pn, ep, center, 0, 0, c, Orientation.IDENT, "");
                 Export ex = Export.newInstanceNoIcon(c, ni.getOnlyPortInst(), portname, ep, null);
                 if (ex != null) {
                     return node.findPortInst(portname);
@@ -1913,7 +1913,7 @@ public class ELIB extends LibraryFiles {
         System.out.println("ERROR: " + msg);
 
         PrimitiveNode pn = ap.findOverridablePinProto(ep);
-        node = NodeInst.newInstance(pn, ep, new Point2D.Double(x, y), pn.getDefWidth(ep), pn.getDefHeight(ep), cell);
+        node = NodeInst.newInst(pn, ep, new Point2D.Double(x, y), pn.getDefWidth(ep), pn.getDefHeight(ep), cell);
         Input.errorLogger.logError(msg, node, cell, null, 0);
         return node.getOnlyPortInst();
     }
@@ -2048,7 +2048,7 @@ public class ELIB extends LibraryFiles {
 //				exportSubPortList[exportIndex] = convertPortProto(whichPort);
 //			if (exportSubPortList[exportIndex] == null)
 //			{
-//				exportSubPortList[exportIndex] = new Integer(whichPort);
+//				exportSubPortList[exportIndex] = Integer.valueOf(whichPort);
 //			}
 
             // read the Export name
@@ -2151,7 +2151,7 @@ public class ELIB extends LibraryFiles {
      */
     private void realizeNodeProto(int cellIndex, Map<Cell, Variable[]> originalVars) {
         String theProtoName = cellProtoName[cellIndex];
-        Cell cell = Cell.newInstance(lib, theProtoName);
+        Cell cell = Cell.newInst(lib, theProtoName);
         if (header.magic <= ELIBConstants.MAGIC9) {
             cell.lowLevelSetCreationDate(ELIBConstants.secondsToDate(cellCreationDate[cellIndex]));
             cell.lowLevelSetRevisionDate(ELIBConstants.secondsToDate(cellRevisionDate[cellIndex]));
@@ -2324,9 +2324,9 @@ public class ELIB extends LibraryFiles {
             dummyCellName += "{" + v.getAbbreviation() + "}";
             if (lib.findNodeProto(dummyCellName) == null) break;
             }
-            c = Cell.newInstance(lib, dummyCellName);
+            c = Cell.newInst(lib, dummyCellName);
              */
-            c = Cell.newInstance(elib, dummyName);
+            c = Cell.newInst(elib, dummyName);
             if (c == null) {
                 return true;
             }
@@ -2346,11 +2346,11 @@ public class ELIB extends LibraryFiles {
             double width = (highX - lowX) / lambda;
             double height = (highY - lowY) / lambda;
             Point2D center = new Point2D.Double(cX / lambda, cY / lambda);
-            NodeInst.newInstance(Generic.tech().drcNode, ep, center, width, height, c);
+            NodeInst.newInst(Generic.tech().drcNode, ep, center, width, height, c);
             //PrimitiveNode cellCenter = Generic.tech.cellCenterNode;
-            //NodeInst.newInstance(cellCenter, new Point2D.Double(0,0), cellCenter.getDefWidth(),
+            //NodeInst.newInst(cellCenter, new Point2D.Double(0,0), cellCenter.getDefWidth(),
             //        cellCenter.getDefHeight(), 0, c, null);
-            //fakeNodeInst = NodeInst.newInstance(Generic.tech.universalPinNode, center, width, height, 0, c, null);
+            //fakeNodeInst = NodeInst.newInst(Generic.tech.universalPinNode, center, width, height, 0, c, null);
 
             // note that exports get created in getArcEnd. If it tries to connect to a missing export
             // on a dummy cell, it creates the export site.
@@ -2796,7 +2796,7 @@ public class ELIB extends LibraryFiles {
                 continue;
             }
             newAddr = Variable.withCode(newAddr, code);
-            vars[i] = Variable.newInstance(varKeys[key], newAddr, td);
+            vars[i] = Variable.newInst(varKeys[key], newAddr, td);
         }
         return vars;
     }
@@ -3015,7 +3015,7 @@ public class ELIB extends LibraryFiles {
      * Method to return the View associated with index "i".
      */
     private View getView(int i) {
-        View v = viewMapping.get(new Integer(i));
+        View v = viewMapping.get(Integer.valueOf(i));
         return v;
     }
 
@@ -3180,11 +3180,11 @@ public class ELIB extends LibraryFiles {
                 for (int i = 0; i < memorySize; i++) {
                     data[i] = rawData[i];
                 }
-                for (int i = memorySize; i < diskSize; i++) {
-                    if (rawData[i] != 0 && rawData[i] != 0xFF) {
-                        clippedIntegers++;
-                    }
-                }
+//                for (int i = memorySize; i < diskSize; i++) {
+//                    if (rawData[i] != 0 && rawData[i] != 0xFF) {
+//                        clippedIntegers++;
+//                    }
+//                }
             } else {
                 // disk has smaller integer
                 if (!signExtend || (rawData[diskSize - 1] & 0x80) == 0) {

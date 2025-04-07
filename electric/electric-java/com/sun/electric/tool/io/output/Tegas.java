@@ -252,7 +252,7 @@ public class Tegas extends Topology
 					if (fun == PrimitiveNode.Function.GATEAND || fun == PrimitiveNode.Function.GATEOR ||
 						fun == PrimitiveNode.Function.GATEXOR || fun == PrimitiveNode.Function.BUFFER) continue;
 				}
-				implicitInverters.put(ai, new Integer(count));
+				implicitInverters.put(ai, Integer.valueOf(count));
 				count++;
 			}
 		}
@@ -267,7 +267,7 @@ public class Tegas extends Topology
 				fun == PrimitiveNode.Function.GATEAND || fun == PrimitiveNode.Function.GATEOR ||
 				fun == PrimitiveNode.Function.BUFFER || fun.isFlipFlop() || no.isCellInstance())
 			{
-				nodeNames.put(no, new Integer(count++));
+				nodeNames.put(no, Integer.valueOf(count++));
 				continue;
 			}
 		}
@@ -773,11 +773,12 @@ public class Tegas extends Topology
 		if (reservedWords == null)
 		{
 			reservedWords = new ArrayList<String>();
+			BufferedReader br;
 			try
 			{
 				File f = new File(localPrefs.workingDirectory + File.separator + "reservedwords.dat");
 				FileReader fr = new FileReader(f);
-				BufferedReader br = new BufferedReader(fr);
+				br = new BufferedReader(fr);
 				for(;;)
 				{
 					String line = br.readLine();

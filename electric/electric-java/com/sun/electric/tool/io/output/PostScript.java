@@ -1884,7 +1884,7 @@ public class PostScript extends Output
 		if (index != null) return (char)('A' + index.intValue());
 
 		// add to list
-		patternsEmitted.put(col, new Integer(psNumPatternsEmitted));
+		patternsEmitted.put(col, Integer.valueOf(psNumPatternsEmitted));
 		int [] raster = col.getPattern();
 		char indexChar = (char)(psNumPatternsEmitted+'A');
 		psNumPatternsEmitted++;

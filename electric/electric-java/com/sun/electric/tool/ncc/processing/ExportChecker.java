@@ -272,7 +272,7 @@ public class ExportChecker {
 			// if export names don't match then there may be no equivPort
 			if (equivPort==null) continue; 
 			for (Iterator<String> it=equivPort.getExportNames(); it.hasNext();) {
-				exportNameToPortIndex.put(it.next(), new Integer(portNdx));
+				exportNameToPortIndex.put(it.next(), Integer.valueOf(portNdx));
 			}
 		}
 		return exportNameToPortIndex;

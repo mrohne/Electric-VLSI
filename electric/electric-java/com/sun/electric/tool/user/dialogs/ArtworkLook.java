@@ -207,8 +207,8 @@ public class ArtworkLook extends EModelessDialog implements HighlightListener
 				int [] pattern = graphics.getPattern();
 				pat = new Integer[17];
 				for(int i=0; i<16; i++)
-					pat[i] = new Integer(pattern[i]);
-				pat[16] = new Integer(graphics.getOutlined().getIndex());
+					pat[i] = Integer.valueOf(pattern[i]);
+				pat[16] = Integer.valueOf(graphics.getOutlined().getIndex());
 			}
 
 			// change the objects
@@ -246,7 +246,7 @@ public class ArtworkLook extends EModelessDialog implements HighlightListener
 						eObj.delVar(Artwork.ART_COLOR);
 				} else
 				{
-					eObj.newVar(Artwork.ART_COLOR, new Integer(index), ep);
+					eObj.newVar(Artwork.ART_COLOR, Integer.valueOf(index), ep);
 				}
 				if (pat != null)
 				{

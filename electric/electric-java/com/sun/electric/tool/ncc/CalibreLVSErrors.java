@@ -215,7 +215,7 @@ public class CalibreLVSErrors {
             			String [] parts = nextLine.split(spaces);
             			assert(parts.length >= 4);
             			try {
-            				int number = Integer.parseInt(parts[0]);
+//            				int number = Integer.parseInt(parts[0]);
             				stage = 3; // looking for first "("
             				net = new LVSErrorNet(parts[1] + "-" + parts[2] + "-" + parts[3], this.lineno);
             				grp.nets.add(net);
@@ -231,7 +231,7 @@ public class CalibreLVSErrors {
             			String [] parts = nextLine.split(spaces);
         				assert(parts.length >= 2);
             			try {
-            				int number = Integer.parseInt(parts[0]);
+//            				int number = Integer.parseInt(parts[0]);
             				stage = 7; // looking for first "("
             				String tmp = "";
             				for (int i = 1; i < parts.length; i++)
@@ -269,7 +269,7 @@ public class CalibreLVSErrors {
         	return -1; // no errors found
         }
         // populate error logger
-        logger = ErrorLogger.newInstance("Calibre "+type+" Errors");
+        logger = ErrorLogger.newInst("Calibre "+type+" Errors");
         int sortKey = 0;
         int count = 0;
 
@@ -314,7 +314,7 @@ public class CalibreLVSErrors {
 	private int collectErrors(List<LVSNError> errors, String name, Cell cell, int sortKey, boolean reportAll)
 	{
 		int localCount = 0;
-		int localY = 1;
+//		int localY = 1;
 		
         for (Iterator<LVSNError> it3 = errors.iterator(); it3.hasNext();) 
         {
@@ -346,7 +346,7 @@ public class CalibreLVSErrors {
         	if (reportAll || (!reportAll && elist.size() > 0))
         	{
         		logger.logMessageWithLines(name+". Line=" + lvsError.errorLine + ": "+errorDesc, elist, null, cell, sortKey, true);
-        		localY++;
+//        		localY++;
         		localCount++;
         	}
         }

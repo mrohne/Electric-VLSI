@@ -271,7 +271,7 @@ public class Quick
 				{
 					Network net = nIt.next();
 					Integer [] netNumbers = new Integer[subCP.hierInstanceCount];
-					for(int i=0; i<subCP.hierInstanceCount; i++) netNumbers[i] = new Integer(0);
+					for(int i=0; i<subCP.hierInstanceCount; i++) netNumbers[i] = 0;
 					networkLists.put(net, netNumbers);
 					//totalNetworks += subCP.hierInstanceCount;
 				}
@@ -317,7 +317,7 @@ public class Quick
 		for(Iterator<Network> nIt = cp.netlist.getNetworks(); nIt.hasNext(); )
 		{
 			Network net = nIt.next();
-			enumeratedNets.put(net, new Integer(checkNetNumber));
+			enumeratedNets.put(net, Integer.valueOf(checkNetNumber));
 			checkNetNumber++;
 		}
 		checkEnumerateNetworks(cell, cp, 0, enumeratedNets);
@@ -330,7 +330,7 @@ public class Quick
 		getAllExclusionBounds(cell);
 
 		// now do the DRC
-        int logsFound = 0;
+//        int logsFound = 0;
 //        int totalErrors = 0;
 
 		if (count == 0)
@@ -345,7 +345,7 @@ public class Quick
 			if (validity == null)
 			{
 				// not a quiet DRC, so it must be incremental
-                logsFound = errorLogger.getNumLogs();
+//                logsFound = errorLogger.getNumLogs();
 			}
 
             // @TODO missing counting this number of errors.
@@ -2223,7 +2223,7 @@ public class Quick
 			CheckInst ci = new CheckInst();
 			checkInsts.put(ni, ci);
 
-			CheckProto subCP = checkEnumerateProtos(subCell, netlist.getNetlist(ni));
+			/* CheckProto subCP = */ checkEnumerateProtos(subCell, netlist.getNetlist(ni));
 		}
 		return cp;
 	}
@@ -2340,7 +2340,7 @@ public class Quick
 			{
 				Network net = nIt.next();
 				if (subEnumeratedNets.get(net) == null)
-					subEnumeratedNets.put(net, new Integer(reportInfo.checkNetNumber++));
+					subEnumeratedNets.put(net, Integer.valueOf(reportInfo.checkNetNumber++));
 			}
 			checkEnumerateNetworks(subCell, subCP, localIndex, subEnumeratedNets);
 		}
@@ -3990,7 +3990,11 @@ public class Quick
 
     /***************************START of Poly Cover By Any VT Layer Functions ************************************/
     // Special functions not available for all technologies.
-    private static final Layer.Function.Set vtLayers = new Layer.Function.Set(Layer.Function.IMPLANTP, Layer.Function.IMPLANTN);
+//    private static final Layer.Function.Set vtLayers = new Layer.Function.Set(Layer.Function.IMPLANTP, Layer.Function.IMPLANTN);
+	static
+	{
+		new Layer.Function.Set(Layer.Function.IMPLANTP, Layer.Function.IMPLANTN);
+	}
 
     /**
      * This method determines if one of the polysilicon polygons is covered by a VTH layer. If yes, VT{H/L}_{P/N}.S.2

@@ -27,10 +27,10 @@ import com.sun.electric.database.geometry.btree.unboxed.*;
 import com.sun.electric.database.geometry.btree.CachingPageStorage.CachedPage;
 
 /**
- *  A <a href=http://www.youtube.com/watch?v=coRJrcIYbF4>B+Tree</a>
+ *  A <a href="https://www.youtube.com/watch?v=coRJrcIYbF4">B+Tree</a>
  *  implemented using {@see PageStorage}.<p>
  *
- *  This is a B-Plus-Tree; values are stored only in leaf nodes.<p>
+ *  This is a B-Plus-Tree; values are stored only in leaf nodes.
  *
  *  <h3>Usage Notes</h3>
  *
@@ -42,9 +42,9 @@ import com.sun.electric.database.geometry.btree.CachingPageStorage.CachedPage;
  *  Note that the ordinal is not actually stored in the tree, and
  *  inserting a new value can potentially modify the ordinals of all
  *  preexisting elements!  Each of the getXXX() methods takes one of
- *  these three coordinates (<tt>Ord</tt>, <tt>Key</tt>, or
- *  <tt>Val</tt>) and returns one of the others, or else a count
- *  (<tt>Num</tt>).  Additionally, the getXXXFromKey() methods include
+ *  these three coordinates (<b>Ord</b>, <b>Key</b>, or
+ *  <b>Val</b>) and returns one of the others, or else a count
+ *  (<b>Num</b>).  Additionally, the getXXXFromKey() methods include
  *  floor/ceiling versions that take an upper/lower bound and search
  *  for the largest/smallest key which is less/greater than the one
  *  supplied.<p>
@@ -85,11 +85,11 @@ import com.sun.electric.database.geometry.btree.CachingPageStorage.CachedPage;
  *  The process of merging two summaries must be associative; if we want
  *  to merge three summaries (ABC) it must not matter if we merge them as
  *  ((AB)C) or (A(BC)).  Technically this makes the merge operation
- *  a <i><a href=http://en.wikipedia.org/wiki/Semigroup>semigroup</a></i>.
+ *  a <i><a href="https://en.wikipedia.org/wiki/Semigroup">semigroup</a></i>.
  *  In exchange for providing all of this information
  *  you can ask the BTree to calculate the summary of any contiguous
  *  region of the keyspace in log(n) time.  For example, this can be used
- *  to answer "min/max over this range" queries very efficiently.<p>
+ *  to answer "min/max over this range" queries very efficiently.
  *
  *  <h3>Implementation Notes</h3>
  *
@@ -126,7 +126,7 @@ import com.sun.electric.database.geometry.btree.CachingPageStorage.CachedPage;
  *  out in the previous paragraph.  See the package btree.unboxed for
  *  further details.
  *
- *  @author Adam Megacz <adam.megacz@sun.com>
+ *  @author Adam Megacz
  */
 public class BTree
     <K extends Serializable & Comparable,
@@ -357,37 +357,37 @@ public class BTree
                     return false;
             }
         }
-        public boolean isGetFromKey() {
-            switch(this) {
-                case GET_VAL_FROM_KEY:
-                case GET_VAL_FROM_KEY_FLOOR:
-                case GET_VAL_FROM_KEY_CEIL:
-                case GET_ORD_FROM_KEY:
-                case GET_ORD_FROM_KEY_FLOOR:
-                case GET_ORD_FROM_KEY_CEIL:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-        public boolean isGetFromKeyFloor() {
-            switch(this) {
-                case GET_VAL_FROM_KEY_FLOOR:
-                case GET_ORD_FROM_KEY_FLOOR:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-        public boolean isGetFromKeyCeil() {
-            switch(this) {
-                case GET_VAL_FROM_KEY_CEIL:
-                case GET_ORD_FROM_KEY_CEIL:
-                    return true;
-                default:
-                    return false;
-            }
-        }
+//        public boolean isGetFromKey() {
+//            switch(this) {
+//                case GET_VAL_FROM_KEY:
+//                case GET_VAL_FROM_KEY_FLOOR:
+//                case GET_VAL_FROM_KEY_CEIL:
+//                case GET_ORD_FROM_KEY:
+//                case GET_ORD_FROM_KEY_FLOOR:
+//                case GET_ORD_FROM_KEY_CEIL:
+//                    return true;
+//                default:
+//                    return false;
+//            }
+//        }
+//        public boolean isGetFromKeyFloor() {
+//            switch(this) {
+//                case GET_VAL_FROM_KEY_FLOOR:
+//                case GET_ORD_FROM_KEY_FLOOR:
+//                    return true;
+//                default:
+//                    return false;
+//            }
+//        }
+//        public boolean isGetFromKeyCeil() {
+//            switch(this) {
+//                case GET_VAL_FROM_KEY_CEIL:
+//                case GET_ORD_FROM_KEY_CEIL:
+//                    return true;
+//                default:
+//                    return false;
+//            }
+//        }
     }
     
 
@@ -567,10 +567,10 @@ public class BTree
                     case GET_VAL_FROM_KEY:       return comp==0 ? leafNodeCursor.getVal(idx) : null;
                     case GET_VAL_FROM_KEY_FLOOR: return leafNodeCursor.getVal(idx);
                     case GET_VAL_FROM_KEY_CEIL:  /*might need to backtrack one step*/ throw new RuntimeException("not implemented");
-                    case GET_ORD_FROM_KEY:       return comp==0 ? new Integer(idx+global_ord) : new Integer(-1);
-                    case GET_ORD_FROM_KEY_FLOOR: return new Integer(idx+global_ord /*FIXME: off the end?*/);
+                    case GET_ORD_FROM_KEY:       return comp==0 ? Integer.valueOf(idx+global_ord) : -1;
+                    case GET_ORD_FROM_KEY_FLOOR: return Integer.valueOf(idx+global_ord /*FIXME: off the end?*/);
                     case GET_ORD_FROM_KEY_CEIL:
-                        return comp==0 ? new Integer(idx+global_ord) : new Integer(idx+global_ord+1 /*FIXME: off the end?*/);
+                        return comp==0 ? Integer.valueOf(idx+global_ord) : Integer.valueOf(idx+global_ord+1 /*FIXME: off the end?*/);
                     case REMOVE:
                         if (comp!=0) throw new RuntimeException("attempt to remove key which did not exist");
                         return_val = leafNodeCursor.getVal(idx);
@@ -591,6 +591,8 @@ public class BTree
                         if (largestKeyPage==-1) largestKeyPage = pageid;
                         return_val = leafNodeCursor.setVal(idx, newval);
                         break OUT;
+                    default:
+                    	break;
                 }
             } else {
                 switch(op) {
@@ -608,6 +610,8 @@ public class BTree
                             interiorNodeCursor.writeBack();
                         }
                         break;
+                    default:
+                    	break;
                 }
                 if (op.isGetOrd())
                     for(int i = 0; i < idx; i++)
@@ -640,6 +644,8 @@ public class BTree
                         parentNodeCursor.mergeSummaryCommutative(slot, monbuf, 0);
                         parentNodeCursor.writeBack();
                         break;
+                    default:
+                    	break;
                 }
             }
             InteriorNodeCursor<K,V,S> ic = interiorNodeCursor; interiorNodeCursor = parentNodeCursor; parentNodeCursor = ic;

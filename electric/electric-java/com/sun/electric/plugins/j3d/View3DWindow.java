@@ -27,7 +27,6 @@ import com.sun.electric.database.Environment;
 import com.sun.electric.database.change.DatabaseChangeEvent;
 import com.sun.electric.database.change.DatabaseChangeListener;
 import com.sun.electric.database.geometry.EGraphics;
-import com.sun.electric.database.geometry.ERectangle;
 import com.sun.electric.database.geometry.Poly;
 import com.sun.electric.database.geometry.Poly3D;
 import com.sun.electric.database.geometry.PolyBase;
@@ -38,7 +37,6 @@ import com.sun.electric.database.prototype.NodeProto;
 import com.sun.electric.database.text.Setting;
 import com.sun.electric.database.text.TextUtils;
 import com.sun.electric.database.topology.ArcInst;
-import com.sun.electric.database.topology.Geometric;
 import com.sun.electric.database.topology.NodeInst;
 import com.sun.electric.database.variable.CodeExpression;
 import com.sun.electric.database.variable.ElectricObject;
@@ -59,22 +57,25 @@ import com.sun.electric.tool.user.Highlight;
 import com.sun.electric.tool.user.Highlighter;
 import com.sun.electric.tool.user.User;
 import com.sun.electric.tool.user.UserInterfaceMain;
-import com.sun.electric.tool.user.ui.*;
+import com.sun.electric.tool.user.ui.EditWindow;
+import com.sun.electric.tool.user.ui.ElectricPrinter;
+import com.sun.electric.tool.user.ui.LayerVisibility;
+import com.sun.electric.tool.user.ui.StatusBar;
+import com.sun.electric.tool.user.ui.TopLevel;
+import com.sun.electric.tool.user.ui.WindowContent;
+import com.sun.electric.tool.user.ui.WindowFrame;
 import com.sun.electric.util.math.DBMath;
 import com.sun.electric.util.math.FixpTransform;
-import com.sun.j3d.utils.behaviors.interpolators.KBKeyFrame;
-import com.sun.j3d.utils.behaviors.interpolators.RotPosScaleTCBSplinePathInterpolator;
-import com.sun.j3d.utils.behaviors.interpolators.TCBKeyFrame;
-import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
-import com.sun.j3d.utils.picking.PickCanvas;
-import com.sun.j3d.utils.picking.PickIntersection;
-import com.sun.j3d.utils.picking.PickResult;
-import com.sun.j3d.utils.universe.PlatformGeometry;
-import com.sun.j3d.utils.universe.SimpleUniverse;
-import com.sun.j3d.utils.universe.ViewingPlatform;
-import com.sun.j3d.utils.geometry.Primitive;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfigTemplate;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -92,25 +93,48 @@ import java.awt.image.ImageObserver;
 import java.awt.print.PageFormat;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
-import javax.media.j3d.*;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.tree.MutableTreeNode;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Point2d;
-import javax.vecmath.Point3d;
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
+
+import org.jogamp.java3d.Alpha;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.Behavior;
+import org.jogamp.java3d.BoundingBox;
+import org.jogamp.java3d.BoundingSphere;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.GraphicsConfigTemplate3D;
+import org.jogamp.java3d.Interpolator;
+import org.jogamp.java3d.Node;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.View;
+import org.jogamp.java3d.WakeupCriterion;
+import org.jogamp.java3d.WakeupOnElapsedFrames;
+import org.jogamp.java3d.utils.behaviors.interpolators.KBKeyFrame;
+import org.jogamp.java3d.utils.behaviors.interpolators.RotPosScaleTCBSplinePathInterpolator;
+import org.jogamp.java3d.utils.behaviors.interpolators.TCBKeyFrame;
+import org.jogamp.java3d.utils.behaviors.vp.OrbitBehavior;
+import org.jogamp.java3d.utils.geometry.Primitive;
+import org.jogamp.java3d.utils.picking.PickCanvas;
+import org.jogamp.java3d.utils.picking.PickIntersection;
+import org.jogamp.java3d.utils.picking.PickResult;
+import org.jogamp.java3d.utils.universe.PlatformGeometry;
+import org.jogamp.java3d.utils.universe.SimpleUniverse;
+import org.jogamp.java3d.utils.universe.ViewingPlatform;
+import org.jogamp.vecmath.Matrix4d;
+import org.jogamp.vecmath.Point2d;
+import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Quat4f;
+import org.jogamp.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3f;
 
 /**
  * This class deals with 3D View using Java3D
@@ -119,7 +143,7 @@ import javax.vecmath.Vector3f;
  */
 public class View3DWindow extends JPanel
         implements WindowContent, MouseMotionListener, MouseListener, MouseWheelListener, KeyListener, ActionListener,
-        Observer, DatabaseChangeListener
+        /* Observer, */ DatabaseChangeListener
 {
 	private SimpleUniverse u;
 	private J3DCanvas3D canvas;
@@ -255,7 +279,7 @@ public class View3DWindow extends JPanel
         this.view2D = (EditWindow)view2D;
         lv = this.view2D.getLayerVisibility();
         // Adding observer
-        this.view2D.getWindowFrame().addObserver(this);
+//        this.view2D.getWindowFrame().addObserver(this);
         this.oneTransformPerNode = transPerNode;
         this.job = job;
         this.maxNumNodes = J3DUtils.get3DMaxNumNodes();
@@ -407,8 +431,9 @@ public class View3DWindow extends JPanel
                 wakeupOn(new WakeupOnElapsedFrames(0, true));
             }
 
-            @Override
-            public void processStimulus(Enumeration criteria) {
+			@Override
+			public void processStimulus(Iterator<WakeupCriterion> arg0)
+			{
                 Transform3D t = new Transform3D();
                 viewPlatformTG.getTransform(t);
                 // Axis transform is the inverse of view platform transform
@@ -416,7 +441,7 @@ public class View3DWindow extends JPanel
                 t.invert();
                 axisTG.setTransform(t);
                 wakeupOn(new WakeupOnElapsedFrames(0, true));
-            }
+			}
         });
 
         viewingPlatform.setPlatformGeometry(pg) ;
@@ -507,7 +532,7 @@ public class View3DWindow extends JPanel
     			}
 
     			// Draw it
-                Node node = null;
+//                Node node = null;
                 Poly.Type type = poly.getStyle();
         		Point2D[] points = poly.getPoints();
                 switch (type)
@@ -527,25 +552,25 @@ public class View3DWindow extends JPanel
 	                		for(int i=0; i<points.length; i++)
 	                			pts[i] = new Point3d(points[i].getX(), points[i].getY(), distance);
                 		}
-                		node = J3DUtils.addLine3D(pts, ap, objTrans);
+                		/* node = */ J3DUtils.addLine3D(pts, ap, objTrans);
                 		break;
                     case FILLED:
                     case CLOSED:
                         if (poly.getBox() == null)
                         {
-                        	node = J3DUtils.addPolyhedron(poly.getPathIterator(null), distance, thickness, ap, objTrans);
+                        	/* node = */ J3DUtils.addPolyhedron(poly.getPathIterator(null), distance, thickness, ap, objTrans);
                         } else
                         {
                             Rectangle2D bounds = poly.getBounds2D();
-                            node = J3DUtils.addPolyhedron(bounds, distance, thickness, ap, objTrans);
+                            /* node = */ J3DUtils.addPolyhedron(bounds, distance, thickness, ap, objTrans);
                         }
                         break;
                     case CIRCLE:
                     case DISC:
-                    	node = J3DUtils.addCylinder(poly.getPoints(), distance, thickness, ap, objTrans);
+                    	/* node = */ J3DUtils.addCylinder(poly.getPoints(), distance, thickness, ap, objTrans);
                         break;
                     case TEXTCENT:
-                    	node = J3DUtils.addText(text, points[0].getX(), points[0].getY(), distance, ap, objTrans);
+                    	/* node = */ J3DUtils.addText(text, points[0].getX(), points[0].getY(), distance, ap, objTrans);
                     	break;
                     default:
                     	if (Job.getDebug())
@@ -598,7 +623,7 @@ public class View3DWindow extends JPanel
 		removeMouseMotionListener(this);
 		removeMouseWheelListener(this);
 		UserInterfaceMain.removeDatabaseChangeListener(this);
-        this.view2D.getWindowFrame().deleteObserver(this);
+//        this.view2D.getWindowFrame().deleteObserver(this);
 	}
 
 	public void bottomScrollChanged(int e) {}
@@ -1017,43 +1042,43 @@ public class View3DWindow extends JPanel
      * @param o
      * @param arg
      */
-    public void update(Observable o, Object arg)
-    {
-        if (arg instanceof LayerVisibility) {
-            lv = (LayerVisibility)arg;
-            for (Map.Entry<Layer,J3DAppearance> e: layerAppearance.entrySet()) {
-                Layer layer = e.getKey();
-                J3DAppearance app = e.getValue();
-                app.set3DVisibility(lv.isVisible(layer));
-            }
-            repaint();
-            return;
-        }
-        if (o == view2D.getWindowFrame())
-        {
-            // Undo previous highlight
-            selectObject(false, false);
-
-            Highlighter highlighter2D = view2D.getHighlighter();
-            List<Geometric> geomList = highlighter2D.getHighlightedEObjs(true, true);
-
-            for (Geometric geom : geomList)
-            {
-                ElectricObject eobj = geom;
-
-                List<Node> list = electricObjectMap.get(eobj);
-
-                if (list == null || list.size() == 0) continue;
-
-                for (Node shape : list)
-                {
-                    highlighter.addObject(new HighlightShape3D(shape), cell);
-                }
-            }
-            selectObject(true, false);
-            return; // done
-        }
-    }
+//    public void update(Observable o, Object arg)
+//    {
+//			if (arg instanceof LayerVisibility) {
+//            lv = (LayerVisibility)arg;
+//            for (Map.Entry<Layer,J3DAppearance> e: layerAppearance.entrySet()) {
+//                Layer layer = e.getKey();
+//                J3DAppearance app = e.getValue();
+//                app.set3DVisibility(lv.isVisible(layer));
+//            }
+//            repaint();
+//            return;
+//        }
+//        if (o == view2D.getWindowFrame())
+//        {
+//            // Undo previous highlight
+//            selectObject(false, false);
+//
+//            Highlighter highlighter2D = view2D.getHighlighter();
+//            List<Geometric> geomList = highlighter2D.getHighlightedEObjs(true, true);
+//
+//            for (Geometric geom : geomList)
+//            {
+//                ElectricObject eobj = geom;
+//
+//                List<Node> list = electricObjectMap.get(eobj);
+//
+//                if (list == null || list.size() == 0) continue;
+//
+//                for (Node shape : list)
+//                {
+//                    highlighter.addObject(new HighlightShape3D(shape), cell);
+//                }
+//            }
+//            selectObject(true, false);
+//            return; // done
+//        }
+//    }
 
     /** This class will help to remember original appearance of the node
      *
@@ -1570,7 +1595,7 @@ public class View3DWindow extends JPanel
             if (job != null && job.checkAbort()) return false;
 
 			NodeInst ni = no.getNodeInst();
-			ERectangle rect = ni.getBounds();
+//			ERectangle rect = ni.getBounds();
 			
 			if (ni.getBounds().isEmpty())
 			{
@@ -1916,7 +1941,7 @@ public class View3DWindow extends JPanel
             canvas.saveMovie(file);
     }
 
-    private static class J3DRotPosScaleTCBSplinePathInterpolator extends com.sun.j3d.utils.behaviors.interpolators.RotPosScaleTCBSplinePathInterpolator
+    private static class J3DRotPosScaleTCBSplinePathInterpolator extends RotPosScaleTCBSplinePathInterpolator
     {
 //        List<J3DUtils.ThreeDDemoKnot> knotList;
 //        int previousUpper = -1, previousLower = -1;
@@ -1927,9 +1952,9 @@ public class View3DWindow extends JPanel
 //            knotList = list;
         }
 
-        public void processStimulus(Enumeration criteria)
+        public void processStimulus(Iterator<WakeupCriterion> arg0)
         {
-            super.processStimulus(criteria);
+            super.processStimulus(arg0);
 //
 //            if (upperKnot == previousUpper && lowerKnot == previousLower) return;
 //            previousUpper = upperKnot;

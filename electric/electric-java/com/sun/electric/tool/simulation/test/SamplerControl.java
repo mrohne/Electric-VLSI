@@ -53,7 +53,7 @@ public class SamplerControl extends Logger {
      * Specifies whether chain control elements must be set <tt>HI</tt> to
      * enable the corresponding on-chip signal.
      */
-    private final int polarity;
+//    private final int polarity;
 
     /** Mapping from scan chain paths to pin names */
     public final Map map;
@@ -128,7 +128,7 @@ public class SamplerControl extends Logger {
                     + ", only POLARITY_NORMAL and POLARITY_INVERTED are "
                     + " supported");
         }
-        this.polarity = polarity;
+//        this.polarity = polarity;
         this.map = new java.util.HashMap();
 
         // Fill controlEnable array according to polarity
@@ -463,7 +463,7 @@ public class SamplerControl extends Logger {
         control.setSubchainPin("heater.SE_expC.transmit.sample_cT", "toad");
         control.setSubchainPin("heater.NE_expC.transmit.sample_cT", "bar");
 
-        SamplerControl samplers = new SamplerControl(control, POLARITY_INVERTED);
+        /* SamplerControl samplers = */ new SamplerControl(control, POLARITY_INVERTED);
     }
 
 }

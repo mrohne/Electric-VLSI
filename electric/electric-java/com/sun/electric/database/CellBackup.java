@@ -96,14 +96,14 @@ public class CellBackup {
     /**
      * Creates a new instance of CellBackup
      */
-    public static CellBackup newInstance(ImmutableCell d, TechPool techPool) {
+    public static CellBackup newInst(ImmutableCell d, TechPool techPool) {
         if (d.cellId.idManager != techPool.idManager) {
             throw new IllegalArgumentException();
         }
         if (techPool.getTech(d.techId) == null) {
             throw new IllegalArgumentException();
         }
-        CellRevision cellRevision = CellRevision.newInstance(d);
+        CellRevision cellRevision = CellRevision.newInst(d);
         TechPool restrictedPool = techPool.restrict(cellRevision.techUsages, techPool);
         return new CellBackup(cellRevision, restrictedPool, true);
     }

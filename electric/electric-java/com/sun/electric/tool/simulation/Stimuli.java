@@ -225,7 +225,7 @@ public class Stimuli
 		if (controlPoints == null)
 		{
 			controlPoints = new Double[1];
-			controlPoints[0] = new Double(time);
+			controlPoints[0] = Double.valueOf(time);
 			controlPointMap.put(sig, controlPoints);
 		} else
 		{
@@ -237,7 +237,7 @@ public class Stimuli
 			Double [] newCP = new Double[controlPoints.length + 1];
 			for(int i=0; i<controlPoints.length; i++)
 				newCP[i] = controlPoints[i];
-			newCP[controlPoints.length] = new Double(time);
+			newCP[controlPoints.length] = Double.valueOf(time);
 			controlPointMap.put(sig, newCP);
 		}
 	}

@@ -99,7 +99,7 @@ public class Generic extends Technology {
     }
 
     // -------------------- private and protected methods ------------------------
-    public static Generic newInstance(IdManager idManager) {
+    public static Generic newInst(IdManager idManager) {
         Generic generic = new Generic(idManager);
         generic.setup();
         return generic;
@@ -115,37 +115,37 @@ public class Generic extends Technology {
         //**************************************** LAYERS ****************************************
 
         /** Universal layer */
-        universalLay = Layer.newInstance(this, "Universal",
+        universalLay = Layer.newInst(this, "Universal",
                 new EGraphics(false, false, null, 0, 0, 0, 0, 1.0, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
         universalLay.setFunction(Layer.Function.UNKNOWN);
 
         /** Invisible layer */
-        Layer invisible_lay = Layer.newInstance(this, "Invisible",
+        Layer invisible_lay = Layer.newInst(this, "Invisible",
                 new EGraphics(false, false, null, 0, 180, 180, 180, 1.0, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
         invisible_lay.setFunction(Layer.Function.UNKNOWN, Layer.Function.NONELEC);
 
         /** Unrouted layer */
-        Layer unrouted_lay = Layer.newInstance(this, "Unrouted",
+        Layer unrouted_lay = Layer.newInst(this, "Unrouted",
                 new EGraphics(false, false, null, 0, 100, 100, 100, 1.0, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
         unrouted_lay.setFunction(Layer.Function.UNKNOWN);
 
         /** Glyph layer */
-        glyphLay = Layer.newInstance(this, "Glyph",
+        glyphLay = Layer.newInst(this, "Glyph",
                 new EGraphics(false, false, null, 0, 0, 0, 0, 1.0, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
         glyphLay.setFunction(Layer.Function.ART, Layer.Function.NONELEC);
 
         /** DRC layer */
-        drcLay = Layer.newInstance(this, "DRC",
+        drcLay = Layer.newInst(this, "DRC",
                 new EGraphics(false, false, null, 0, 255, 190, 6, 1.0, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
         drcLay.setFunction(Layer.Function.ART, Layer.Function.NONELEC);
 
         /** Routing layer */
-        routeLay = Layer.newInstance(this, "Route",
+        routeLay = Layer.newInst(this, "Route",
             new EGraphics(true, true, null, 0, 255, 86, 6, 0.8, true,
             new int[]{0x8888,	// X   X   X   X  
                 0x2222,			//   X   X   X   X 
@@ -166,13 +166,13 @@ public class Generic extends Technology {
         routeLay.setFunction(Layer.Function.ART, Layer.Function.NONELEC);
 
         /** AFG layer */
-        afgLay = Layer.newInstance(this, "AFG",
+        afgLay = Layer.newInst(this, "AFG",
                 new EGraphics(false, false, null, 0, 255, 6, 190, 1.0, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
         afgLay.setFunction(Layer.Function.ART, Layer.Function.NONELEC);
 
         /** Simulation Probe layer */
-        simProbeLay = Layer.newInstance(this, "Sim-Probe",
+        simProbeLay = Layer.newInst(this, "Sim-Probe",
                 new EGraphics(false, false, null, 0, 0, 255, 0, 1.0, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
         simProbeLay.setFunction(Layer.Function.ART, Layer.Function.NONELEC);
@@ -200,7 +200,7 @@ public class Generic extends Technology {
         //**************************************** NODES ****************************************
 
         /** Universal pin */
-        universalPinNode = PrimitiveNode.newInstance("Universal-Pin", this, 1.0, 1.0,
+        universalPinNode = PrimitiveNode.newInst("Universal-Pin", this, 1.0, 1.0,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(universalLay, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, new Technology.TechPoint[]{
                         new Technology.TechPoint(EdgeH.c(0), EdgeV.c(0)),
@@ -217,7 +217,7 @@ public class Generic extends Technology {
         invisiblePinNode = new InvisiblePin(invisible_lay);
 
         /** Unrouted pin */
-        unroutedPinNode = PrimitiveNode.newInstance("Unrouted-Pin", this, 1.0, 1.0,
+        unroutedPinNode = PrimitiveNode.newInst("Unrouted-Pin", this, 1.0, 1.0,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(unrouted_lay, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, new Technology.TechPoint[]{
                         new Technology.TechPoint(EdgeH.c(0), EdgeV.c(0)),
@@ -231,7 +231,7 @@ public class Generic extends Technology {
         unroutedPinNode.setCanBeZeroSize();
 
         /** Cell Center */
-        cellCenterNode = PrimitiveNode.newInstance("Facet-Center", this, 0.0, 0.0,
+        cellCenterNode = PrimitiveNode.newInst("Facet-Center", this, 0.0, 0.0,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(glyphLay, 0, Poly.Type.CLOSED, Technology.NodeLayer.BOX, new Technology.TechPoint[]{
                         new Technology.TechPoint(EdgeH.l(0), EdgeV.b(0)),
@@ -246,7 +246,7 @@ public class Generic extends Technology {
         cellCenterNode.setCanBeZeroSize();
 
         /** Port */
-        portNode = PrimitiveNode.newInstance("Port", this, 6.0, 6.0, ERectangle.fromLambda(-1, -1, 2, 2),
+        portNode = PrimitiveNode.newInst("Port", this, 6.0, 6.0, ERectangle.fromLambda(-1, -1, 2, 2),
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(glyphLay, 0, Poly.Type.CLOSED, Technology.NodeLayer.BOX, new Technology.TechPoint[]{
                         new Technology.TechPoint(EdgeH.l(-1), EdgeV.b(-1)),
@@ -260,7 +260,7 @@ public class Generic extends Technology {
         portNode.setCanBeZeroSize();
 
         /** Essential Bounds Node */
-        essentialBoundsNode = PrimitiveNode.newInstance("Essential-Bounds", this, 0.0, 0.0,
+        essentialBoundsNode = PrimitiveNode.newInst("Essential-Bounds", this, 0.0, 0.0,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(glyphLay, 0, Poly.Type.OPENED, Technology.NodeLayer.POINTS, new Technology.TechPoint[]{
                         new Technology.TechPoint(EdgeH.c(-1), EdgeV.c(0)),

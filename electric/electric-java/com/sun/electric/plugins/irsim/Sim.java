@@ -65,9 +65,9 @@ public class Sim implements SimAPI
 			index = theSim.nodeIndexCounter++;
 		}
 
-		void setTime(long time) { c = new Long(time); }
-		void setNIndex(long nIndex) { c = new Long(nIndex); }
-		void setCap(float cap) { c = new Float(cap); }
+		void setTime(long time) { c = Long.valueOf(time); }
+		void setNIndex(long nIndex) { c = Long.valueOf(nIndex); }
+		void setCap(float cap) { c = Float.valueOf(cap); }
 		void setEvent(Eval.Event event) { c = event; }
 
 		void setCause(Node cause) { t = cause; }
@@ -270,8 +270,8 @@ public class Sim implements SimAPI
 		void setDThev(Thev r) { dCache = r; }
 		void setSTrans(Trans t) { sCache = t; }
 		void setDTrans(Trans t) { dCache = t; }
-		void setSI(int i) { sCache = new Integer(i); }
-		void setDI(int i) { dCache = new Integer(i); }
+		void setSI(int i) { sCache = Integer.valueOf(i); }
+		void setDI(int i) { dCache = Integer.valueOf(i); }
 
 		Thev getSThev() { return (Thev)sCache; }
 		Thev getDThev() { return (Thev)dCache; }

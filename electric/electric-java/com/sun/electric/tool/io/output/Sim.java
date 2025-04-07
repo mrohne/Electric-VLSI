@@ -148,7 +148,7 @@ public class Sim extends Output
 				Export e = (Export)it.next();
 				Network net = netList.getNetwork(e, 0);
 				int globalNetNum = ci.getNetID(net);
-				globalNetNames.put(new Integer(globalNetNum), e.getName());
+				globalNetNames.put(Integer.valueOf(globalNetNum), e.getName());
 
 				if (e.isPower()) globalNetVDD = globalNetNum;
 				if (e.isGround()) globalNetGND = globalNetNum;
@@ -338,7 +338,7 @@ public class Sim extends Output
 		}
 		if (globalNetNum == globalNetPhi2L) return "phi2l";
 
-		String name = globalNetNames.get(new Integer(globalNetNum));
+		String name = globalNetNames.get(Integer.valueOf(globalNetNum));
 		if (name == null) name = Integer.toString(globalNetNum);
 		return(name);
 	}

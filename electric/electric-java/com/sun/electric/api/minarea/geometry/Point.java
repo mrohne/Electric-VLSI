@@ -31,7 +31,6 @@ import java.io.Serializable;
  * @author Felix Schmidt
  * 
  */
-@SuppressWarnings("serial")
 public class Point implements Serializable {
 
     protected final int xCoord;

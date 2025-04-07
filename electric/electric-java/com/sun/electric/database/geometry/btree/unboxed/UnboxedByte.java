@@ -23,11 +23,11 @@ package com.sun.electric.database.geometry.btree.unboxed;
 
 import java.io.*;
 
-/** An 8-bit <tt>byte</tt> in unboxed form */
+/** An 8-bit <b>byte</b> in unboxed form */
 public class UnboxedByte implements UnboxedComparable<Byte> {
     public static final UnboxedByte instance = new UnboxedByte();
     public int getSize() { return 1; }
-    public Byte deserialize(byte[] buf, int ofs) { return new Byte(deserializeByte(buf, ofs)); }
+    public Byte deserialize(byte[] buf, int ofs) { return deserializeByte(buf, ofs); }
     public void serialize(Byte k, byte[] buf, int ofs) { serializeByte(k.byteValue(), buf, ofs); }
     public byte deserializeByte(byte[] buf, int ofs) { return buf[ofs]; }
     public void serializeByte(byte b, byte[] buf, int ofs) { buf[ofs] = b; }

@@ -56,11 +56,11 @@ public class PhotoDetector extends PrimitiveNode
 			ERectangle.fromLambda(-BASEWIDTH/2, -BASEHEIGHT/2, BASEWIDTH, BASEHEIGHT), layers);
 		setMinSize(FULLWIDTH, FULLHEIGHT, "");
 
-		pp1 = PrimitivePort.newInstance(this, new ArcProto[] {Photonics.opticalArc}, "pd-bot", 270, 0, 0, PortCharacteristic.UNKNOWN,
+		pp1 = PrimitivePort.newInst(this, new ArcProto[] {Photonics.opticalArc}, "pd-bot", 270, 0, 0, PortCharacteristic.UNKNOWN,
 			EdgeH.c(0), EdgeV.b(-BASEHEIGHT/2), EdgeH.c(0), EdgeV.b(-BASEHEIGHT/2));
-		pp2 = PrimitivePort.newInstance(this, new ArcProto[] {Photonics.metal1Arc}, "pd-lft", 180, 90, 1, PortCharacteristic.UNKNOWN,
+		pp2 = PrimitivePort.newInst(this, new ArcProto[] {Photonics.metal1Arc}, "pd-lft", 180, 90, 1, PortCharacteristic.UNKNOWN,
 			EdgeH.fromLeft(-FULLWIDTH/2), EdgeV.c(0), EdgeH.fromLeft(-FULLWIDTH/2), EdgeV.c(0));
-		pp3 = PrimitivePort.newInstance(this, new ArcProto[] {Photonics.metal1Arc}, "pd-rgt", 0, 90, 2, PortCharacteristic.UNKNOWN,
+		pp3 = PrimitivePort.newInst(this, new ArcProto[] {Photonics.metal1Arc}, "pd-rgt", 0, 90, 2, PortCharacteristic.UNKNOWN,
 			EdgeH.fromRight(-FULLWIDTH/2), EdgeV.c(0), EdgeH.fromRight(-FULLWIDTH/2), EdgeV.c(0));
 		addPrimitivePorts(pp1, pp2, pp3);
 	}

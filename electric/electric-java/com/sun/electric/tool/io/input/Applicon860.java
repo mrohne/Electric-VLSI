@@ -77,7 +77,7 @@ public class Applicon860 extends Input<Object>
 	private int polylistcount = 0;
 	private int [] px, py;
 	private Point2D [] ptrace;
-	private Applicon860Preferences localPrefs;
+//	private Applicon860Preferences localPrefs;
 
 	public static class Applicon860Preferences extends InputPreferences
     {
@@ -99,7 +99,7 @@ public class Applicon860 extends Input<Object>
 	 */
 	Applicon860(EditingPreferences ep, Applicon860Preferences ap) {
         super(ep);
-        localPrefs = ap;
+//        localPrefs = ap;
     }
 
 	/**
@@ -234,7 +234,7 @@ public class Applicon860 extends Input<Object>
 						case 3: break;	// rectangle
 					}
 
-					Integer layerInt = new Integer(layer);
+					Integer layerInt = Integer.valueOf(layer);
 					layernp = appleNodeMap.get(layerInt);
 					if (layernp == null && !notFound.contains(layerInt))
 					{
@@ -308,7 +308,7 @@ public class Applicon860 extends Input<Object>
 					if (layernp != null && curfacet != null)
 					{
 						Point2D center = new Point2D.Double((lx+hx)/2, (ly+hy)/2);
-						ni = NodeInst.newInstance(layernp, ep, center, hx-lx, hy-ly, curfacet);
+						ni = NodeInst.newInst(layernp, ep, center, hx-lx, hy-ly, curfacet);
 						if (ni == null) return false;
 						ni.newVar(NodeInst.TRACE, ptrace, ep);
 					}
@@ -481,7 +481,7 @@ public class Applicon860 extends Input<Object>
 						double vx = dest.getX() + x1;
 						double vy = dest.getY() + y1;
 						Point2D center = new Point2D.Double(subBounds.getWidth(), subBounds.getHeight());
-						ni = NodeInst.newInstance(subnp, ep, center, vx*2, vy*2, curfacet, orient, null);
+						ni = NodeInst.newInst(subnp, ep, center, vx*2, vy*2, curfacet, orient, null);
 						if (ni == null) return false;
 					}
 					break;
@@ -612,7 +612,7 @@ public class Applicon860 extends Input<Object>
 					NodeLayer nl = nls[i];
 					Layer lay = nl.getLayer();
 					int appleLayer = lay.getIndex();		// TODO: should get the user-specified apple/860 layer
-					appleNodeMap.put(new Integer(appleLayer), pn);
+					appleNodeMap.put(Integer.valueOf(appleLayer), pn);
 				}
 			}
 		}

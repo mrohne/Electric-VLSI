@@ -23,11 +23,11 @@ package com.sun.electric.database.geometry.btree.unboxed;
 
 import java.io.*;
 
-/** A 32-bit <tt>int</tt> in unboxed form */
+/** A 32-bit <b>int</b> in unboxed form */
 public class UnboxedInt implements UnboxedComparable<Integer> {
     public static final UnboxedInt instance = new UnboxedInt();
     public int getSize() { return 4; }
-    public Integer deserialize(byte[] buf, int ofs) { return new Integer(deserializeInt(buf, ofs)); }
+    public Integer deserialize(byte[] buf, int ofs) { return Integer.valueOf(deserializeInt(buf, ofs)); }
     public void serialize(Integer k, byte[] buf, int ofs) { serializeInt(k.intValue(), buf, ofs); }
     public int deserializeInt(byte[] buf, int ofs) {
         return

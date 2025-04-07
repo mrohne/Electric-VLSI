@@ -79,13 +79,12 @@ public class DEQueue<T> extends IDEStructure<T> {
 		}
 		this.items.add(oldBottom, (Runnable) item);
 		this.bottom = oldBottom + 1;
-		this.size = new Integer(this.size.intValue() + 1);
+		this.size = Integer.valueOf(this.size.intValue() + 1);
 	}
 
 	/**
 	 * retrieves a element from the bottom
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public T get() throws EmptyException {
 
@@ -100,21 +99,20 @@ public class DEQueue<T> extends IDEStructure<T> {
 		T item = (T) this.items.get(this.bottom);
 
 		if (size > 0) {
-			this.size = new Integer(this.size.intValue() - 1);
+			this.size = Integer.valueOf(this.size.intValue() - 1);
 			return item;
 		}
-		if (!this.top.compareAndSet(new Integer(oldTop), new Integer(newTop))) {
+		if (!this.top.compareAndSet(Integer.valueOf(oldTop), Integer.valueOf(newTop))) {
 			item = null;
 		}
 		this.bottom = oldTop + 1;
-		this.size = new Integer(this.size.intValue() - 1);
+		this.size = Integer.valueOf(this.size.intValue() - 1);
 		return item;
 	}
 
 	/**
 	 * @return element from the top
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public T getFromTop() throws EmptyException {
 
@@ -128,8 +126,8 @@ public class DEQueue<T> extends IDEStructure<T> {
 		}
 		T item = (T) this.items.get(oldTop);
 
-		if (this.top.compareAndSet(new Integer(oldTop), new Integer(newTop))) {
-			this.size = new Integer(this.size.intValue() - 1);
+		if (this.top.compareAndSet(Integer.valueOf(oldTop), Integer.valueOf(newTop))) {
+			this.size = Integer.valueOf(this.size.intValue() - 1);
 			return item;
 		}
 		return null;

@@ -80,6 +80,7 @@ public class TechExplorer extends ESandBox {
                 commandStream = new BufferedInputStream(new FileInputStream(args[1]));
             }
             m.loop(commandStream);
+            m.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -223,7 +224,7 @@ public class TechExplorer extends ESandBox {
 //        Object cell = null;
 //        if (classCellVersionGroup != null) {
 //            cell = Cell_lowLevelAllocate.invoke(null, lib);
-//            Object versionGroup = CellVersionGroup_constructor.newInstance();
+//            Object versionGroup = CellVersionGroup_constructor.newInst();
 //            CellVersionGroup_add.invoke(versionGroup, cell);
 //            Cell_lowLevelPopulate.invoke(cell, cellName);
 //            Cell_lowLevelLink.invoke(cell);
@@ -641,7 +642,7 @@ public class TechExplorer extends ESandBox {
                 for (int row = 0; row < numRows; row++) {
                     for (int col = 0; col < numCols; col++) {
                         Object origEntry = origPalette[row][col];
-                        Object newEntry = null;
+//                        Object newEntry = null;
                         ArrayList<Object> newBox = new ArrayList<Object>();
                         if (origEntry instanceof List) {
                             List<?> list = (List<?>)origEntry;
@@ -804,7 +805,7 @@ public class TechExplorer extends ESandBox {
         if (classArcProto.isInstance(entry))
             return t.findArc((String)ArcProto_getName.invoke(entry));
         if (classPrimitiveNode.isInstance(entry)) {
-            PrimitiveNode.Function fun = PrimitiveNodeFunctions.get(PrimitiveNode_getFunction.invoke(entry));
+            /* PrimitiveNode.Function fun = */ PrimitiveNodeFunctions.get(PrimitiveNode_getFunction.invoke(entry));
             String name = (String)PrimitiveNode_getName.invoke(entry);
 //            if (fun == PrimitiveNode.Function.PIN) {
 //                Xml.MenuNodeInst n = new Xml.MenuNodeInst();

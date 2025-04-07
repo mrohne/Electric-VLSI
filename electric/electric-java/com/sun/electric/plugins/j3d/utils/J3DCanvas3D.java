@@ -35,12 +35,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.media.j3d.Canvas3D;
-import javax.media.j3d.GraphicsContext3D;
-import javax.media.j3d.ImageComponent;
-import javax.media.j3d.ImageComponent2D;
-import javax.media.j3d.Raster;
-import javax.vecmath.Point3f;
+
+import org.jogamp.java3d.Canvas3D;
+import org.jogamp.java3d.GraphicsContext3D;
+import org.jogamp.java3d.ImageComponent;
+import org.jogamp.java3d.ImageComponent2D;
+import org.jogamp.java3d.Raster;
+import org.jogamp.vecmath.Point3f;
 
 /** Inspired in example found in www.j3d.org
  * @author  Gilda Garreton

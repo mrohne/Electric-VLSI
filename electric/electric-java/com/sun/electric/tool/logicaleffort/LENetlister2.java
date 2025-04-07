@@ -76,7 +76,7 @@ public class LENetlister2 extends LENetlister {
 
     /** Sizer */                                private LESizer2 sizer;
     /** Job we are part of */                   private Job job;
-    /** Where to direct output */               private PrintStream out;
+//    /** Where to direct output */               private PrintStream out;
 
     /** True if we got aborted */               private boolean aborted;
     /** for logging errors */                   private ErrorLogger errorLogger;
@@ -93,7 +93,7 @@ public class LENetlister2 extends LENetlister {
     public LENetlister2(Job job, Technology layoutTech) {
         super(layoutTech);
         // get preferences for this package
-        Tool leTool = Tool.findTool("logical effort");
+        /* Tool leTool = */ Tool.findTool("logical effort");
         constants = null;
         topLevelCell = null;
 
@@ -104,7 +104,7 @@ public class LENetlister2 extends LENetlister {
         this.allLENodables = new ArrayList<LENodable>();
         this.nodablesDefinitions = new HashMap<Nodable,LENodable>();
         this.lePortError = new HashMap<Export,Export>();
-        this.out = new PrintStream((OutputStream)System.out);
+        /* this.out = */ new PrintStream((OutputStream)System.out);
 
         errorLogger = null;
         aborted = false;
@@ -119,7 +119,7 @@ public class LENetlister2 extends LENetlister {
         //connectedPorts.add(Schematics.tech.resistorNode.getPortsList());
         assert errorLogger == null;
 //        if (errorLogger != null) errorLogger.delete();
-        errorLogger = ErrorLogger.newInstance("LE Netlister");
+        errorLogger = ErrorLogger.newInst("LE Netlister");
 
 //        Netlist netlist = cell.getNetlist(true);
 
@@ -203,9 +203,9 @@ public class LENetlister2 extends LENetlister {
             // ignore it if not a sizeable gate
             if (!leno.isLeGate()) continue;
             String varName = "LEDRIVE_" + leno.getName();
-            //no.newVar(varName, new Float(leno.leX));
-            //topLevelCell.newVar(varName, new Float(leno.leX));
-            sizes.add(new Float(leno.leX));
+            //no.newVar(varName, Float.valueOf(leno.leX));
+            //topLevelCell.newVar(varName, Float.valueOf(leno.leX));
+            sizes.add(Float.valueOf(leno.leX));
             varNames.add(varName);
             nodes.add(ni);
             contexts.add(leno.context);
@@ -226,8 +226,8 @@ public class LENetlister2 extends LENetlister {
             // ignore it if not a sizeable gate
             if (!leno.isLeGate()) continue;
             String varName = "LEDRIVE_" + leno.getName();
-            //no.newVar(varName, new Float(leno.leX));
-            topLevelCell.newVar(varName, new Float(leno.leX),ep);
+            //no.newVar(varName, Float.valueOf(leno.leX));
+            topLevelCell.newVar(varName, Float.valueOf(leno.leX),ep);
 
             if (leno.leX < 1.0f) {
                 String msg = "WARNING: Instance "+ni+" has size "+TextUtils.formatDistance(leno.leX)+" less than 1 ("+leno.getName()+")";
@@ -259,11 +259,11 @@ public class LENetlister2 extends LENetlister {
     protected float getKeeperRatio() { return constants.keeperRatio; }
 
     private LENetwork getNetwork(int globalID, HierarchyEnumerator.CellInfo info) {
-        LENetwork net = globalNetworks.get(new Integer(globalID));
+        LENetwork net = globalNetworks.get(Integer.valueOf(globalID));
         if (net == null) {
             String name = (info == null) ? null : info.getUniqueNetName(globalID, ".");
             net = new LENetwork(name);
-            globalNetworks.put(new Integer(globalID), net);
+            globalNetworks.put(Integer.valueOf(globalID), net);
         }
         return net;
     }
@@ -644,10 +644,10 @@ public class LENetlister2 extends LENetlister {
 
 
     public void printStatistics() {
-        float totalsize = 0f;
+//        float totalsize = 0f;
         float instsize = 0f;
         int numLEGates = 0;
-        int numLEWires = 0;
+//        int numLEWires = 0;
         // iterator over all LEGATEs
         for (LENodable leno : allLENodables) {
             // ignore it if not a sizeable gate
@@ -655,9 +655,9 @@ public class LENetlister2 extends LENetlister {
                 numLEGates++;
                 instsize += leno.leX;
             }
-            if (leno.getType() == LENodable.Type.WIRE)
-                numLEWires++;
-            totalsize += leno.leX;
+//            if (leno.getType() == LENodable.Type.WIRE)
+//                numLEWires++;
+//            totalsize += leno.leX;
         }
         System.out.println("Number of LEGATEs: "+numLEGates);
         //System.out.println("Number of Wires: "+numLEWires);

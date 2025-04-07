@@ -69,10 +69,10 @@ public class NGrid
 		int widthIn = perFile.getWidthIn();
 		int heightIn = perFile.getHeightIn();
 
-		cell.newVar("PLA_data_cols", new Integer(widthIn), ep);
-		cell.newVar("PLA_access_rows", new Integer(heightIn), ep);
-		cell.newVar("PLA_cols", new Integer(width), ep);
-		cell.newVar("PLA_rows", new Integer(height), ep);
+		cell.newVar("PLA_data_cols", Integer.valueOf(widthIn), ep);
+		cell.newVar("PLA_access_rows", Integer.valueOf(heightIn), ep);
+		cell.newVar("PLA_cols", Integer.valueOf(width), ep);
+		cell.newVar("PLA_rows", Integer.valueOf(height), ep);
 
 		// initialize the columns
 		if (nmosInitColumns(width, x, y, xOffset, cell)) return null;
@@ -285,19 +285,19 @@ public class NGrid
 		// Now export port at beginning and end of this half of the row grouping
 		PortProto pp = pla.rowList[row][0].firstItem.nodeInst.getProto().getPort(0);
 		PortInst pi = pla.rowList[row][0].firstItem.nodeInst.findPortInstFromProto(pp);
-		Export.newInstance(arrayCell, pi, "ACCESS" + (row * 2) + ".m-1.w", ep);
+		Export.newInst(arrayCell, pi, "ACCESS" + (row * 2) + ".m-1.w", ep);
 
 		pp = pla.rowList[row][0].lastitem.nodeInst.getProto().getPort(0);
 		pi = pla.rowList[row][0].lastitem.nodeInst.findPortInstFromProto(pp);
-		Export.newInstance(arrayCell, pi, "ACCESS" + (row * 2) + ".m-1.e", ep);
+		Export.newInst(arrayCell, pi, "ACCESS" + (row * 2) + ".m-1.e", ep);
 
 		pp = pla.rowList[row][0].firstItem.nodeInst.getProto().getPort(0);
 		pi = pla.rowList[row][0].firstItem.nodeInst.findPortInstFromProto(pp);
-		Export.newInstance(arrayCell, pi, "ACCESS" + (row * 2) + ".p.w", ep);
+		Export.newInst(arrayCell, pi, "ACCESS" + (row * 2) + ".p.w", ep);
 
 		pp = pla.rowList[row][0].lastitem.nodeInst.getProto().getPort(0);
 		pi = pla.rowList[row][0].lastitem.nodeInst.findPortInstFromProto(pp);
-		Export.newInstance(arrayCell, pi, "ACCESS" + (row * 2) + ".p.e", ep);
+		Export.newInst(arrayCell, pi, "ACCESS" + (row * 2) + ".p.e", ep);
 
 		newItem = new PLA.UCItem();
 		newItem.nodeInst = pla.makePin(arrayCell, x, y-4, 6, pla.mpCon);
@@ -313,19 +313,19 @@ public class NGrid
 
 		pp = pla.rowList[row][2].firstItem.nodeInst.getProto().getPort(0);
 		pi = pla.rowList[row][2].firstItem.nodeInst.findPortInstFromProto(pp);
-		Export.newInstance(arrayCell, pi, "ACCESS" + (row * 2 + 1) + ".m-1.w", ep);
+		Export.newInst(arrayCell, pi, "ACCESS" + (row * 2 + 1) + ".m-1.w", ep);
 
 		pp = pla.rowList[row][2].lastitem.nodeInst.getProto().getPort(0);
 		pi = pla.rowList[row][2].lastitem.nodeInst.findPortInstFromProto(pp);
-		Export.newInstance(arrayCell, pi, "ACCESS" + (row * 2 + 1) + ".m-1.e", ep);
+		Export.newInst(arrayCell, pi, "ACCESS" + (row * 2 + 1) + ".m-1.e", ep);
 
 		pp = pla.rowList[row][2].firstItem.nodeInst.getProto().getPort(0);
 		pi = pla.rowList[row][2].firstItem.nodeInst.findPortInstFromProto(pp);
-		Export.newInstance(arrayCell, pi, "ACCESS" + (row * 2 + 1) + ".p.w", ep);
+		Export.newInst(arrayCell, pi, "ACCESS" + (row * 2 + 1) + ".p.w", ep);
 
 		pp = pla.rowList[row][2].lastitem.nodeInst.getProto().getPort(0);
 		pi = pla.rowList[row][2].lastitem.nodeInst.findPortInstFromProto(pp);
-		Export.newInstance(arrayCell, pi, "ACCESS" + (row * 2 + 1) + ".p.e", ep);
+		Export.newInst(arrayCell, pi, "ACCESS" + (row * 2 + 1) + ".p.e", ep);
 		return false;
 	}
 
@@ -355,7 +355,7 @@ public class NGrid
 			}
 			PortProto pp = pla.columnList[i].firstItem.nodeInst.getProto().getPort(0);
 			PortInst pi = pla.columnList[i].firstItem.nodeInst.findPortInstFromProto(pp);
-			Export.newInstance(arrayCell, pi, name, ep);
+			Export.newInst(arrayCell, pi, name, ep);
 		}
 		return false;
 	}
@@ -450,7 +450,7 @@ public class NGrid
 			pla.columnList[i].lastitem.bottomItem = newItem;
 			pla.columnList[i].lastitem = pla.columnList[i].lastitem.bottomItem;
 			PortInst pi = newItem.nodeInst.findPortInstFromProto(newItem.nodeInst.getProto().getPort(0));
-			Export.newInstance(arrayCell, pi, name, ep);
+			Export.newInst(arrayCell, pi, name, ep);
 		}
 		return false;
 	}

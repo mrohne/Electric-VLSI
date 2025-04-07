@@ -172,11 +172,11 @@ public class CachedCell {
         if (contextFree == null) {
             // this cell has not yet been evaluated, do it now
             if (isContainsSizableGates()) {
-                contextFree = new Boolean(false);
+                contextFree = Boolean.valueOf(false);
             } else {
                 if (DEBUG) System.out.println("**** Checking if "+cell+" is context free");
                 boolean cf = isContextFreeRecurse(VarContext.globalContext, 1f, constants);
-                contextFree = new Boolean(cf);
+                contextFree = Boolean.valueOf(cf);
             }
             if (DEBUG) System.out.println(">>>> "+cell+" set context free="+contextFree);
         }
@@ -291,13 +291,13 @@ public class CachedCell {
         }
         for (Iterator<Map.Entry<Network,LENetwork>> it = localNetworks.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Network,LENetwork> entry = (Map.Entry<Network,LENetwork>)it.next();
-            Network jnet = (Network)entry.getKey();
+            /* Network jnet =  (Network)*/ entry.getKey();
             LENetwork net = (LENetwork)entry.getValue();
             net.print(indent+"  ", out);
         }
         for (Iterator<Map.Entry<Nodable,CellNodable>> it = cellnodables.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Nodable,CellNodable> entry = (Map.Entry<Nodable,CellNodable>)it.next();
-            Nodable no = (Nodable)entry.getKey();
+            /* Nodable no = (Nodable) */ entry.getKey();
             CellNodable ceno = (CellNodable)entry.getValue();
             //ceno.subCell.printContents(indent+"  ", out);
             boolean subCachable = ceno.subCell.isContextFree(null);

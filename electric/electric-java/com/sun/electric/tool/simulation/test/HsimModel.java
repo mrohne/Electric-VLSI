@@ -105,27 +105,36 @@ public class HsimModel extends NanosimModel {
     // if it is, we will have to replace hierarchy delimiter '.' with '/'
     System.out.println(simFile);
 
-    try {
-      BufferedReader freader = new BufferedReader(new FileReader(simFile));
-      // PROGRAM will be in the first 10 or so lines, so search up till line 20
-      for (int i=0; i<20; i++) {
-	String line = freader.readLine();
-	if (line == null) break;
-	if (line.matches("\\*  PROGRAM .*?assura.*")) {
-            assuraRCXNetlist = true;
-            System.out.println("Info: Running on Assura extracted netlist, will replace all '.' in net names with '/'");
-            break;
-        } else if (line.matches("\\*|PROGRAM .*?Star-RCXT.*")) {
-            starRCXTNetlist = true;
-            System.out.println("Info: Running on Star-RCXT extracted netlist, will replace all '.x' in net names with '/'");
-            break;
+    BufferedReader freader;
+	try
+	{
+		freader = new BufferedReader(new FileReader(simFile));
+		// PROGRAM will be in the first 10 or so lines, so search up till line 20
+		for (int i = 0; i < 20; i++)
+		{
+			String line = freader.readLine();
+			if (line == null) break;
+			if (line.matches("\\*  PROGRAM .*?assura.*"))
+			{
+				assuraRCXNetlist = true;
+				System.out.println(
+					"Info: Running on Assura extracted netlist, will replace all '.' in net names with '/'");
+				break;
+			} else if (line.matches("\\*|PROGRAM .*?Star-RCXT.*"))
+			{
+				starRCXTNetlist = true;
+				System.out.println(
+					"Info: Running on Star-RCXT extracted netlist, will replace all '.x' in net names with '/'");
+				break;
+			}
+		}
+		freader.close();
+	} catch (IOException e)
+	{
+		System.out.println(e.getMessage());
+		return false;
 	}
-      }
-    } catch (IOException e) {
-      System.out.println(e.getMessage());
-      return false;
-    }
-    return true;
+	return true;
   }
 
   boolean start_(String command, String simFile, int recordSim) {
@@ -352,12 +361,12 @@ public class HsimModel extends NanosimModel {
               continue;
           }
 
-          Double voltage = new Double(0);
-          Double dvdt    = new Double(0);
-          Double time    = new Double(0);
-          Double cap     = new Double(0);
-          Double vcap    = new Double(0);
-          Double tcap    = new Double(0);
+          Double voltage = Double.valueOf(0);
+          Double dvdt    = Double.valueOf(0);
+          Double time    = Double.valueOf(0);
+          Double cap     = Double.valueOf(0);
+          Double vcap    = Double.valueOf(0);
+          Double tcap    = Double.valueOf(0);
           
           for (int patternIndex=0; patternIndex < patNodeInfo.length && !error; patternIndex++) {
               

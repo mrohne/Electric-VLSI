@@ -219,7 +219,7 @@ public class MTDRCLayoutTool extends MTDRCTool
                     {
                         Network net = nIt.next();
                         Integer[] netNumbers = new Integer[subCP.hierInstanceCount];
-                        for (int i = 0; i < subCP.hierInstanceCount; i++) netNumbers[i] = new Integer(0);
+                        for (int i = 0; i < subCP.hierInstanceCount; i++) netNumbers[i] = 0;
                         networkLists.put(net, netNumbers);
                         //totalNetworks += subCP.hierInstanceCount;
                     }
@@ -265,7 +265,7 @@ public class MTDRCLayoutTool extends MTDRCTool
             for (Iterator<Network> nIt = cp.netlist.getNetworks(); nIt.hasNext();)
             {
                 Network net = nIt.next();
-                enumeratedNets.put(net, new Integer(reportInfo.checkNetNumber));
+                enumeratedNets.put(net, Integer.valueOf(reportInfo.checkNetNumber));
                 reportInfo.checkNetNumber++;
             }
             checkEnumerateNetworks(topCell, cp, 0, enumeratedNets);
@@ -2223,7 +2223,7 @@ public class MTDRCLayoutTool extends MTDRCTool
                 CheckInst ci = new CheckInst();
                 checkInsts.put(ni, ci);
 
-                CheckProto subCP = checkEnumerateProtos(subCell, netlist.getNetlist(ni));
+                /* CheckProto subCP = */ checkEnumerateProtos(subCell, netlist.getNetlist(ni));
 //                if (subCP.treeParameterized)
 //                    cp.treeParameterized = true;
             }
@@ -2347,7 +2347,7 @@ public class MTDRCLayoutTool extends MTDRCTool
                 {
                     Network net = nIt.next();
                     if (subEnumeratedNets.get(net) == null)
-                        subEnumeratedNets.put(net, new Integer(reportInfo.checkNetNumber++));
+                        subEnumeratedNets.put(net, Integer.valueOf(reportInfo.checkNetNumber++));
                 }
                 checkEnumerateNetworks(subCell, subCP, localIndex, subEnumeratedNets);
             }

@@ -107,11 +107,11 @@ public class TechExplorerDriver {
         commandsWriter.close();
     }
 
-    private static final char MIN_LENGTH_CHAR = ' ';
+//    private static final char MIN_LENGTH_CHAR = ' ';
     private static final char HEADER_CHAR = 0x7F;
     private static final int STRLEN_WIDTH = Integer.toString(Integer.MAX_VALUE).length();
-    private static final int HEADER_LEN = 3 + STRLEN_WIDTH + 1;
-    private static final int TRAILER_LEN = 3;
+//    private static final int HEADER_LEN = 3 + STRLEN_WIDTH + 1;
+//    private static final int TRAILER_LEN = 3;
 
     private class StdOutThread extends Thread {
         private byte[] buf = new byte[128];

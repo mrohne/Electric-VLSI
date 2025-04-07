@@ -88,7 +88,7 @@ public abstract class ParameterizedModule
      * There are methods to generate SVEX module for current mod name.
      * These variables are not theread-safe.
      */
-    private ModName curModName;
+//    private ModName curModName;
     private String curInstName;
 
     private Map<String, ACL2Object> params;
@@ -204,11 +204,11 @@ public abstract class ParameterizedModule
         params = matchModName(modName);
         if (params != null)
         {
-            curModName = modName;
+//            curModName = modName;
             this.sm = sm != null ? sm : new SvexManager<>();
             return true;
         }
-        curModName = null;
+//        curModName = null;
         return false;
     }
 

@@ -22,13 +22,20 @@
  */
 package com.sun.electric.plugins.j3d.utils;
 
-import com.sun.j3d.utils.geometry.Cone;
-import com.sun.j3d.utils.geometry.Primitive;
-import com.sun.j3d.utils.geometry.Cylinder;
+import java.awt.Font;
 
-import java.awt.*;
-import javax.media.j3d.*;
-import javax.vecmath.*;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.Font3D;
+import org.jogamp.java3d.FontExtrusion;
+import org.jogamp.java3d.Group;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.Text3D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.utils.geometry.Cone;
+import org.jogamp.java3d.utils.geometry.Cylinder;
+import org.jogamp.java3d.utils.geometry.Primitive;
+import org.jogamp.vecmath.Vector3d;
 
 /**
  * Utility class to create 3D axes

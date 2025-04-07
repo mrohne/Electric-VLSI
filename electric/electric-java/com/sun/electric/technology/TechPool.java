@@ -159,14 +159,14 @@ public class TechPool extends AbstractMap<TechId, Technology> {
 
     public TechPool deepClone() {
         ArrayList<Technology> newTechs = new ArrayList<Technology>();
-        Generic newGeneric = Generic.newInstance(idManager);
+        Generic newGeneric = Generic.newInst(idManager);
         newTechs.add(newGeneric);
         for (int techIndex = 0; techIndex < techs.length; techIndex++) {
             Technology tech = techs[techIndex];
             if (tech == null || tech == generic) {
                 continue;
             }
-            Technology newTech = tech.techFactory.newInstance(generic, tech.getParamValues());
+            Technology newTech = tech.techFactory.newInst(generic, tech.getParamValues());
             newTechs.add(newTech);
         }
         return new TechPool(newTechs);
@@ -293,7 +293,7 @@ public class TechPool extends AbstractMap<TechId, Technology> {
             if (TextUtils.URLExists(url)) {
 //	        	String softTechName = TextUtils.getFileNameWithoutExtension(url);
                 TechFactory techFactory = TechFactory.fromXml(url, null);
-                Technology tech = techFactory.newInstance(generic, emptyParams);
+                Technology tech = techFactory.newInst(generic, emptyParams);
 
                 // make sure the name is unique . Tech is null if there is a pre-defined xml tech with
                 // the same nanme like mocmos.
@@ -592,7 +592,7 @@ public class TechPool extends AbstractMap<TechId, Technology> {
         reader.readDiffs();
         ArrayList<Technology> technologiesList = new ArrayList<Technology>();
         boolean newGeneric = reader.readBoolean();
-        Generic generic = newGeneric ? Generic.newInstance(reader.idManager) : old.getGeneric();
+        Generic generic = newGeneric ? Generic.newInst(reader.idManager) : old.getGeneric();
         technologiesList.add(generic);
         for (;;) {
             int techIndex = reader.readInt();
@@ -619,7 +619,7 @@ public class TechPool extends AbstractMap<TechId, Technology> {
                 Object value = Variable.readObject(reader);
                 paramValues.put(techParam, value);
             }
-            Technology newTech = techFactory.newInstance(generic, paramValues);
+            Technology newTech = techFactory.newInst(generic, paramValues);
             technologiesList.add(newTech);
         }
         return new TechPool(technologiesList);

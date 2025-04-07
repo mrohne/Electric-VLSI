@@ -103,10 +103,10 @@ public class FillCell {
             PortInst pi = LayoutLib.newNodeInst(pin, ep, x, y, G.DEF_SIZE, G.DEF_SIZE,
                                                 0, cell).getOnlyPortInst();
             G.noExtendArc(metal, ep, w, conn, pi);
-            e = Export.newInstance(cell, pi, name, ep);
+            e = Export.newInst(cell, pi, name, ep);
         }
         else
-            e = Export.newInstance(cell, conn, name, ep);
+            e = Export.newInst(cell, conn, name, ep);
 		e.setCharacteristic(gnd ? GND_CHARACTERISTIC :
 								  VDD_CHARACTERISTIC);
 	}
@@ -278,7 +278,7 @@ public class FillCell {
                                ExportConfig expCfg,
                                boolean metalFlex, boolean hierFlex) {
 		String name = fillName(botLayer, topLayer, expCfg);
-		Cell cell = Cell.newInstance(lib, name);
+		Cell cell = Cell.newInst(lib, name);
 		VddGndStraps[] layers = new VddGndStraps[topLayer+1];
 		for (int i=topLayer; i>=botLayer; i--) {
 			if (i==1) {

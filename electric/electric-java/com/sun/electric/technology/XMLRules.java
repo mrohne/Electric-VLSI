@@ -448,6 +448,8 @@ public class XMLRules implements Serializable
                 r.ruleType = DRCTemplate.DRCRuleType.CONSPA;
                 addXMLRule(index, r);
                 break;
+            default:
+            	break;
         }
         XMLRule r = new XMLRule(rule);
         r.ruleType = internalType;
@@ -750,7 +752,7 @@ public class XMLRules implements Serializable
         worstLayerRule.setValue(-1);
         boolean worstValueFound = false;
         int layerIndex = layer.getIndex();
-		int tot = tech.getNumLayers();
+//		int tot = tech.getNumLayers();
 
         // Need of marking layers which have actually spacing rules!
         MutableDouble mutableDist = new MutableDouble(-1);
@@ -829,43 +831,33 @@ public class XMLRules implements Serializable
                     if (rule != null) rule.ruleName = newValue;
 				} else if (key.equals("cw"))
 				{
-					//conListWide[index] = new Double(TextUtils.atof(newValue));
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				} else if (key.equals("cwr"))
 				{
-					//conListWideRules[index] = newValue;
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				} else if (key.equals("uw"))
 				{
-					//unConListWide[index] = new Double(TextUtils.atof(newValue));
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				} else if (key.equals("uwr"))
 				{
-					//unConListWideRules[index] = newValue;
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				} else if (key.equals("cm"))
 				{
-					//conListMulti[index] = new Double(TextUtils.atof(newValue));
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				} else if (key.equals("cmr"))
 				{
-					//conListMultiRules[index] = newValue;
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				} else if (key.equals("um"))
 				{
-					//unConListMulti[index] = new Double(TextUtils.atof(newValue));
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				} else if (key.equals("umr"))
 				{
-					//unConListMultiRules[index] = newValue;
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				} else if (key.equals("e"))
 				{
-					//edgeList[index] = new Double(TextUtils.atof(newValue));
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				} else if (key.equals("er"))
 				{
-					//edgeListRules[index] = newValue;
                     System.out.println("Not implemented in XMLRules:applyDRCOverrides");
 				}
 				pos = endKey + 1;
@@ -940,7 +932,7 @@ public class XMLRules implements Serializable
                 endKey = override.indexOf(';', startKey);
                 if (endKey < 0) break;
                 String newValue = override.substring(startKey, endKey);
-			    //rules.wideLimit = new Double(TextUtils.atof(newValue));
+			    //rules.wideLimit = Double.valueOf(TextUtils.atof(newValue));
 				double value = TextUtils.atof(newValue);
 				if (value > 0) setWideLimits(new double[] {value});
                 pos = endKey + 1;
@@ -973,7 +965,7 @@ public class XMLRules implements Serializable
 					e.printStackTrace();
 				}
 				//String newValue = override.substring(startKey, endKey);
-				//wideLimit = new Double(TextUtils.atof(newValue));
+				//wideLimit = Double.valueOf(TextUtils.atof(newValue));
 				pos = endKey + 2;
 				continue;
 			}

@@ -277,9 +277,9 @@ public class SavedViews extends EModelessDialog implements HighlightListener
 		public boolean doIt() throws JobException
 		{
 			Double [] pos = new Double[3];
-			pos[0] = new Double(scale);
-			pos[1] = new Double(offX);
-			pos[2] = new Double(offY);
+			pos[0] = Double.valueOf(scale);
+			pos[1] = Double.valueOf(offX);
+			pos[2] = Double.valueOf(offY);
 			cell.newVar("USER_windowview_" + name, pos, getEditingPreferences());
 			return true;
 		}

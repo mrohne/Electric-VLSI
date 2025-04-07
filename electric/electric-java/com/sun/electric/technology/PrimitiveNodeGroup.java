@@ -183,7 +183,7 @@ public class PrimitiveNodeGroup {
         hy = DBMath.lambdaToGrid(ng.baseHY.value);
         baseRectangle = ERectangle.fromGrid(lx, ly, hx - lx, hy - ly);
         if (baseRectangle.getWidth() < 0 || baseRectangle.getHeight() < 0) {
-        	com.sun.electric.technology.Xml.PrimitiveNode n = ng.nodes.get(0);
+        	/* com.sun.electric.technology.Xml.PrimitiveNode n = */ ng.nodes.get(0);
             throw new IllegalArgumentException("Node '" + ng.nodes.get(0).name + "' has negative base rectangle");
         }
         defaultWidth = DBMath.round(ng.defaultWidth.value + 2 * fullSize.getLambdaX());
@@ -348,7 +348,7 @@ public class PrimitiveNodeGroup {
                             elx[i], ely[i], ehx[i], ehy[i]);
                     break;
                 default:
-                    pp = PrimitivePort.newInstance(pnp, fullConnections[i], p.name, ports.length == 1,
+                    pp = PrimitivePort.newInst(pnp, fullConnections[i], p.name, ports.length == 1,
                             p.portAngle, p.portRange, p.portTopology, PortCharacteristic.UNKNOWN, false, false,
                             elx[i], ely[i], ehx[i], ehy[i]);
             }

@@ -167,8 +167,8 @@ public class TableData {
         List<Double> values1 = new ArrayList<Double>();
         List<Double> values2 = new ArrayList<Double>();
         for (double [] row : rows) {
-            Double d1 = new Double(row[i1]);
-            Double d2 = new Double(row[i2]);
+            Double d1 = Double.valueOf(row[i1]);
+            Double d2 = Double.valueOf(row[i2]);
             if (!values1.contains(d1)) values1.add(d1);
             if (!values2.contains(d2)) values2.add(d2);
         }

@@ -812,10 +812,10 @@ public class Xml {
             this.locator = locator;
         }
 
-        private void printLocator() {
-            System.out.println("publicId=" + locator.getPublicId() + " systemId=" + locator.getSystemId()
-                    + " line=" + locator.getLineNumber() + " column=" + locator.getColumnNumber());
-        }
+//        private void printLocator() {
+//            System.out.println("publicId=" + locator.getPublicId() + " systemId=" + locator.getSystemId()
+//                    + " line=" + locator.getLineNumber() + " column=" + locator.getColumnNumber());
+//        }
 
         /**
          * Receive notification of the beginning of the document.
@@ -1092,10 +1092,10 @@ public class Xml {
                     break;
                 case diskOffset:
                     if (curArc != null) {
-                        curArc.diskOffset.put(new Integer(Integer.parseInt(a("untilVersion"))),
-                                new Double(Double.parseDouble(a("width"))));
+                        curArc.diskOffset.put(Integer.parseInt(a("untilVersion")),
+                                Double.parseDouble(a("width")));
                     } else if (curNodeGroup != null) {
-                        curNodeGroup.diskOffset.put(new Integer(Integer.parseInt(a("untilVersion"))),
+                        curNodeGroup.diskOffset.put(Integer.parseInt(a("untilVersion")),
                                 EPoint.fromLambda(Double.parseDouble(a("x")), Double.parseDouble(a("y"))));
                     }
                     break;
@@ -2691,11 +2691,11 @@ public class Xml {
         }
 
         private void a(String name, double value) {
-            a(name, new Double(value));
+            a(name, Double.valueOf(value));
         }
 
         private void a(String name, int value) {
-            a(name, new Integer(value));
+            a(name, Integer.valueOf(value));
         }
 
         private void bcpel(XmlKeyword key, Object v) {
@@ -2709,11 +2709,11 @@ public class Xml {
         }
 
         private void bcpel(XmlKeyword key, int v) {
-            bcpel(key, new Integer(v));
+            bcpel(key, Integer.valueOf(v));
         }
 
         private void bcpel(XmlKeyword key, double v) {
-            bcpel(key, new Double(v));
+            bcpel(key, Double.valueOf(v));
         }
 
         private void bcl(XmlKeyword key) {

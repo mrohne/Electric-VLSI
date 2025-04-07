@@ -94,8 +94,8 @@ public class CellArrayBuilder {
             String name = proto.getName();
             if (name.indexOf('{') != -1) name = name.substring(0, name.indexOf('{'));
             name += "_" + makeArrayName(cols, rows, colspace, rowspace) + "{lay}";
-            this.cell = Cell.newInstance(theLibrary, name);
-            if (cell == null) throw new RuntimeException("Cell.newInstance("+name+") returned null");
+            this.cell = Cell.newInst(theLibrary, name);
+            if (cell == null) throw new RuntimeException("Cell.newInst("+name+") returned null");
             EPoint bottomLeftInstance = EPoint.ORIGIN;
             if (rows < 4 && cols < 4) {
                 // leaf cell of the bisection hierarchy
@@ -216,7 +216,7 @@ public class CellArrayBuilder {
             FixpCoord ptY = ptcY;
             for (int ir = 0; ir < rows; ir++) {
                 EPoint loc = EPoint.fromFixp(ptX.getFixp(), ptY.getFixp());
-                NodeInst ni = NodeInst.makeInstance(proto,ep,loc,proto.getDefWidth(null), proto.getDefHeight(null), parent, orient, null);
+                /* NodeInst ni = */ NodeInst.makeInstance(proto,ep,loc,proto.getDefWidth(null), proto.getDefHeight(null), parent, orient, null);
                 ptY = ptY.add(rowspace);
             }
             ptcX = ptcX.add(colspace);

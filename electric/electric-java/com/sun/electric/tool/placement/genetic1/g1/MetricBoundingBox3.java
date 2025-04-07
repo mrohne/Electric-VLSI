@@ -125,7 +125,7 @@ public class MetricBoundingBox3 implements Metric {
 						if (proxy.node == curPort.getPlacementNode()) {
 							port2ProxyIndexMap.put(
 									net2PlacementPortsXYOffset[netIndex][p],
-									new Integer(nodeProxyList.indexOf(proxy)));
+									Integer.valueOf(nodeProxyList.indexOf(proxy)));
 							break;
 						}
 					}
@@ -148,7 +148,7 @@ public class MetricBoundingBox3 implements Metric {
 		for (int[][] net : net2PlacementPortsXYOffset) {
 			for (Chromosome c : population) {
 				if (c.altered)
-					c.fitness = new Double(c.fitness.doubleValue() + compute(net, c));
+					c.fitness = Double.valueOf(c.fitness.doubleValue() + compute(net, c));
 			}
 		}
 		for (Chromosome c : population) {

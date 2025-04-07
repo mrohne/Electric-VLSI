@@ -500,8 +500,8 @@ public class Telesis extends Geometry {
 							List<TelesisParam> l = telesisParamsList.get(c);
 							String theNodeName = correctTelesisName(p.getNodeInst().getName());
 							
-							boolean foundPortMatch = false;
-							boolean noMatchingName = false;
+//							boolean foundPortMatch = false;
+//							boolean noMatchingName = false;
 							
 							// look for matching in connection names
 							for (Iterator<Connection> cIt = p.getConnections(); cIt.hasNext();)
@@ -515,7 +515,7 @@ public class Telesis extends Geometry {
 								{
 									// Just only one chance to find an arc -> force name matching
 									rootName = nbl.rootName;
-									noMatchingName = true;
+//									noMatchingName = true;
 //									if (listConnect.size() == 1)
 //										rootName = nbl.rootName;
 //									else
@@ -642,7 +642,7 @@ public class Telesis extends Geometry {
 									count += portCount.intValue();
 									portsVisited.add(p);
 								}
-								foundPortMatch = true;
+//								foundPortMatch = true;
 								// if there is only 1 element in listConnect -> forcing to check more connections 
 								// for this particular port.
 //								if (listConnect.size() != 1)

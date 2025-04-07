@@ -49,8 +49,8 @@ import java.util.NoSuchElementException;
 /**
  * Immutable class ImmutableNodeInst represents a node instance.
  *
- * @promise "requiresColor DBChanger;" for with*(**) | newInstance(**)
- * @promise "requiresColor (DBChanger | DBExaminer | AWT);" for check()
+ * "requiresColor DBChanger;" for with*(**) | newInst(**)
+ * "requiresColor (DBChanger | DBExaminer | AWT);" for check()
  */
 public class ImmutableNodeInst extends ImmutableElectricObject {
 
@@ -279,7 +279,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
     };
 
     /**
-     * The private constructor of ImmutableNodeInst. Use the factory "newInstance" instead.
+     * The private constructor of ImmutableNodeInst. Use the factory "newInst" instead.
      * @param nodeId id of this NodeInst in parent.
      * @param protoId the NodeProtoId of which this is an instance.
      * @param name name of new ImmutableNodeInst.
@@ -325,7 +325,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
      * @param params a map of parameter values of this ImmutableNodeInst
      * @return new ImmutableNodeInst object.
      */
-    static ImmutableNodeInst newInstance(int nodeId, NodeProtoId protoId, Name name, TextDescriptor nameDescriptor,
+    static ImmutableNodeInst newInst(int nodeId, NodeProtoId protoId, Name name, TextDescriptor nameDescriptor,
             Orientation orient, EPoint anchor, EPoint size,
             int flags, byte techBits, TextDescriptor protoDescriptor,
             Variable[] vars, ImmutablePortInst[] ports, Variable[] params) {
@@ -357,7 +357,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
      * @throws NullPointerException if protoId, name, orient or anchor is null.
      * @throws IllegalArgumentException if nodeId or size is bad.
      */
-    public static ImmutableNodeInst newInstance(int nodeId, NodeProtoId protoId, Name name, TextDescriptor nameDescriptor,
+    public static ImmutableNodeInst newInst(int nodeId, NodeProtoId protoId, Name name, TextDescriptor nameDescriptor,
             Orientation orient, EPoint anchor, EPoint size,
             int flags, int techBits, TextDescriptor protoDescriptor) {
         if (nodeId < 0) {
@@ -404,7 +404,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (protoDescriptor != null) {
             protoDescriptor = protoDescriptor.withDisplayWithoutParam();
         }
-        return newInstance(nodeId, protoId, name, nameDescriptor,
+        return newInst(nodeId, protoId, name, nameDescriptor,
                 orient, anchor, size, flags, (byte) techBits, protoDescriptor,
                 Variable.NULL_ARRAY, ImmutablePortInst.NULL_ARRAY, Variable.NULL_ARRAY);
     }
@@ -441,7 +441,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (name.hasDuplicates()) {
             throw new IllegalArgumentException("name");
         }
-        return newInstance(this.nodeId, this.protoId, name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, name, this.nameDescriptor,
                 this.orient, this.anchor, this.size, this.flags, this.techBits, this.protoDescriptor,
                 getVars(), this.ports, getDefinedParams());
     }
@@ -458,7 +458,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (this.nameDescriptor == nameDescriptor) {
             return this;
         }
-        return newInstance(this.nodeId, this.protoId, this.name, nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, nameDescriptor,
                 this.orient, this.anchor, this.size, this.flags, this.techBits, this.protoDescriptor,
                 getVars(), this.ports, getDefinedParams());
     }
@@ -482,7 +482,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (isCellCenter(protoId)) {
             return this;
         }
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 orient, this.anchor, this.size, this.flags, this.techBits, this.protoDescriptor,
                 getVars(), this.ports, getDefinedParams());
     }
@@ -503,7 +503,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (isCellCenter(protoId)) {
             return this;
         }
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 this.orient, anchor, this.size, this.flags, this.techBits, this.protoDescriptor,
                 getVars(), this.ports, getDefinedParams());
     }
@@ -531,7 +531,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (getTrace() != null) {
             return this;
         }
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 this.orient, this.anchor, size, this.flags, this.techBits, this.protoDescriptor,
                 getVars(), this.ports, getDefinedParams());
     }
@@ -546,7 +546,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (this.flags == flags) {
             return this;
         }
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 this.orient, this.anchor, this.size, flags, this.techBits, this.protoDescriptor,
                 getVars(), this.ports, getDefinedParams());
     }
@@ -584,7 +584,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (this.techBits == techBits) {
             return this;
         }
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 this.orient, this.anchor, this.size, this.flags, (byte) techBits, this.protoDescriptor,
                 getVars(), this.ports, getDefinedParams());
     }
@@ -601,7 +601,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (this.protoDescriptor == protoDescriptor) {
             return this;
         }
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 this.orient, this.anchor, this.size, this.flags, this.techBits, protoDescriptor,
                 getVars(), this.ports, getDefinedParams());
     }
@@ -634,7 +634,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
 //            }
 //        }
         int flags = updateHardShape(this.flags, vars);
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 this.orient, this.anchor, this.size, flags, this.techBits, this.protoDescriptor,
                 vars, this.ports, getDefinedParams());
     }
@@ -652,7 +652,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
             return this;
         }
         int flags = updateHardShape(this.flags, vars);
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 this.orient, this.anchor, this.size, flags, this.techBits, this.protoDescriptor,
                 vars, this.ports, getDefinedParams());
     }
@@ -690,7 +690,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (getVars() == vars && this.protoId == protoId && this.ports == ports) {
             return this;
         }
-        return newInstance(this.nodeId, protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, protoId, this.name, this.nameDescriptor,
                 this.orient, this.anchor, this.size, this.flags, this.techBits, this.protoDescriptor,
                 vars, ports, arrayWithRenamedIds(getDefinedParams(), idMapper));
     }
@@ -795,7 +795,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
             Arrays.fill(newPorts, ports.length, portChronIndex, ImmutablePortInst.EMPTY);
             newPorts[portChronIndex] = portInst;
         }
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 this.orient, this.anchor, this.size, this.flags, this.techBits, this.protoDescriptor,
                 getVars(), newPorts, getDefinedParams());
     }
@@ -984,7 +984,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (protoId instanceof CellId && ((CellId) protoId).isIcon()) {
             params = readVars(reader);
         }
-        return newInstance(nodeId, protoId, name, nameDescriptor, orient, anchor, size,
+        return newInst(nodeId, protoId, name, nameDescriptor, orient, anchor, size,
                 flags, techBits, protoDescriptor,
                 vars, ports, params);
     }
@@ -1195,7 +1195,7 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
                 }
             }
         }
-        Variable var = Variable.newInstance(NodeInst.TRACE, newPoints, traceTd);
+        Variable var = Variable.newInst(NodeInst.TRACE, newPoints, traceTd);
         Variable oldVar = getVar(NodeInst.TRACE);
         if (var.equals(oldVar)) {
             var = oldVar;
@@ -1203,12 +1203,12 @@ public class ImmutableNodeInst extends ImmutableElectricObject {
         if (newAnchor == anchor && var == oldVar) {
             return this;
         }
-        Variable[] vars = arrayWithVariable(Variable.newInstance(NodeInst.TRACE, newPoints, traceTd));
+        Variable[] vars = arrayWithVariable(Variable.newInst(NodeInst.TRACE, newPoints, traceTd));
         EPoint newSize = calcTraceSize(newPoints);
         if (newSize.equals(this.size)) {
             newSize = this.size;
         }
-        return newInstance(this.nodeId, this.protoId, this.name, this.nameDescriptor,
+        return newInst(this.nodeId, this.protoId, this.name, this.nameDescriptor,
                 Orientation.IDENT, newAnchor, newSize, this.flags, this.techBits, this.protoDescriptor,
                 vars, this.ports, getDefinedParams());
     }

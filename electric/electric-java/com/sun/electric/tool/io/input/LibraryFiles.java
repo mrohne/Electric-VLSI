@@ -214,7 +214,7 @@ public abstract class LibraryFiles extends Input
 	{
 		if (fileURL == null) return null;
 		long startTime = System.currentTimeMillis();
-        errorLogger = ErrorLogger.newInstance("Library Read");
+        errorLogger = ErrorLogger.newInst("Library Read");
 
         File f = new File(fileURL.getPath());
 
@@ -293,7 +293,7 @@ public abstract class LibraryFiles extends Input
 	{
 		if (fileURL == null) return null;
 		long startTime = System.currentTimeMillis();
-        errorLogger = ErrorLogger.newInstance("Library Read Project Preferences");
+        errorLogger = ErrorLogger.newInst("Library Read Project Preferences");
 
 		Library lib = null;
         StringBuilder errmsg = new StringBuilder();
@@ -414,7 +414,7 @@ public abstract class LibraryFiles extends Input
 		if (lib == null)
 		{
 			// create a new library
-			lib = Library.newInstance(libName, fileURL);
+			lib = Library.newInst(libName, fileURL);
 		}
 
 		in.lib = lib;
@@ -850,7 +850,7 @@ public abstract class LibraryFiles extends Input
 		if (exists)
 		{
 			System.out.println("Reading referenced library " + externalURL.getFile());
-            elib = Library.newInstance(legalLibName, externalURL);
+            elib = Library.newInst(legalLibName, externalURL);
 		}
 
         if (elib != null)
@@ -872,7 +872,7 @@ public abstract class LibraryFiles extends Input
         {
             System.out.println("Error: cannot find referenced library " + theFileName);
             System.out.println("...Creating new "+legalLibName+" Library instead");
-            elib = Library.newInstance(legalLibName, null);
+            elib = Library.newInst(legalLibName, null);
             elib.setLibFile(TextUtils.makeURLToFile(theFileName));
             elib.clearFromDisk();
         }
@@ -1348,7 +1348,7 @@ public abstract class LibraryFiles extends Input
         if (protoTd == null) {
             protoTd = ep.getInstanceTextDescriptor();
         }
-		NodeInst ni = NodeInst.newInstance(parent, proto, nil.name[nodeIndex], nameTd,
+		NodeInst ni = NodeInst.newInst(parent, proto, nil.name[nodeIndex], nameTd,
                 center, size, orient, flags, techBits, protoTd, Input.errorLogger);
         nil.theNode[nodeIndex] = ni;
 //        if (proto instanceof PrimitiveNode) {
@@ -1517,7 +1517,7 @@ public abstract class LibraryFiles extends Input
             Object value = var.getObject();
             if (!(value instanceof String)) {
                 if (value instanceof Short || value instanceof Byte)
-                    value = new Integer(((Number)value).intValue());
+                    value = Integer.valueOf(((Number)value).intValue());
                 if (!(value instanceof Number) && !(value instanceof Boolean))
                     continue;
             }

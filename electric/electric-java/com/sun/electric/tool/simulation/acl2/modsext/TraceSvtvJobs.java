@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -91,7 +92,7 @@ public class TraceSvtvJobs
             try
             {
                 ACL2Object.initHonsMananger(designName);
-                DesignHints designHints = cls.newInstance();
+                DesignHints designHints = cls.getDeclaredConstructor().newInstance();
                 ACL2Reader sr = new ACL2Reader(saoFile);
                 DesignExt design = new DesignExt(sr.root, designHints);
                 for (ModuleExt mod : design.downTop.values())
@@ -143,7 +144,7 @@ public class TraceSvtvJobs
                         }
                     }
                 }
-            } catch (InstantiationException | IllegalAccessException | IOException e)
+            } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
             {
                 return false;
             } finally
@@ -186,7 +187,7 @@ public class TraceSvtvJobs
             try
             {
                 ACL2Object.initHonsMananger(saoFile.getName());
-                DesignHints designHints = cls.newInstance();
+                DesignHints designHints = cls.getDeclaredConstructor().newInstance();
                 ACL2Reader sr = new ACL2Reader(saoFile);
 
                 List<ACL2Object> traceList = Util.getList(sr.root, true);
@@ -233,7 +234,7 @@ public class TraceSvtvJobs
                 Util.check(car(svtvList.get(9)).equals(ACL2Object.valueOf("SV", "EXPANDED-INS")));
                 Util.check(car(svtvList.get(10)).equals(ACL2Object.valueOf("SV", "EXPANDED-OVERRIDES")));
                 Util.check(car(svtvList.get(11)).equals(ACL2Object.valueOf("SV", "NPHASES")));
-                assert svtvList == svtvList;
+//                assert svtvList == svtvList;
 
                 ModuleExt topMod = design.downTop.get(design.b.top);
                 ElabMod topElabMod = topMod.elabMod;
@@ -269,7 +270,7 @@ public class TraceSvtvJobs
                     {
                         Map.Entry<Svar<Address>, Svex<Address>> e = svtvOutExprsIter.next();
                         Svar<Address> svar = e.getKey();
-                        Svex<Address> svex = e.getValue();
+                        /* Svex<Address> svex = */ e.getValue();
                         Util.check(svar.getDelay() == 0 && !svar.isNonblocking());
                         Address address = svar.getName();
                         Util.check(address.index == Address.INDEX_NIL && address.scope == 0);
@@ -343,7 +344,7 @@ public class TraceSvtvJobs
                     }
                 }
                  */
-            } catch (InstantiationException | IllegalAccessException | IOException e)
+            } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
             {
                 return false;
             } finally
@@ -432,7 +433,7 @@ public class TraceSvtvJobs
         {
             ElabMod topMod = design.moddb.topMod();
             assert svexarr.length == topMod.modTotalWires();
-            SvarNameTexter<Address> texter = topMod.getAddressTexter();
+            /* SvarNameTexter<Address> texter = */ topMod.getAddressTexter();
             try (PrintStream out = new PrintStream(outFile))
             {
                 for (int i = 0; i < topMod.modTotalWires(); i++)
@@ -626,7 +627,7 @@ public class TraceSvtvJobs
             try
             {
                 ACL2Object.initHonsMananger(saoFile.getName());
-                DesignHints designHints = cls.newInstance();
+                DesignHints designHints = cls.getDeclaredConstructor().newInstance();
                 ACL2Reader sr = new ACL2Reader(saoFile);
 
                 List<ACL2Object> traceList = Util.getList(sr.root, true);
@@ -673,7 +674,7 @@ public class TraceSvtvJobs
                 Util.check(car(svtvList.get(9)).equals(ACL2Object.valueOf("SV", "EXPANDED-INS")));
                 Util.check(car(svtvList.get(10)).equals(ACL2Object.valueOf("SV", "EXPANDED-OVERRIDES")));
                 Util.check(car(svtvList.get(11)).equals(ACL2Object.valueOf("SV", "NPHASES")));
-                assert svtvList == svtvList;
+//                assert svtvList == svtvList;
 
                 ModuleExt topMod = design.downTop.get(design.b.top);
 //                ElabMod topElabMod = topMod.elabMod;
@@ -748,7 +749,7 @@ public class TraceSvtvJobs
                 printVars(svtvOutExprs.keySet(), new File(outDir, designName + "-svtvOutExprs.txt"));
                 printVars(svtvNextState.keySet(), new File(outDir, designName + "-svtvNextState.txt"));
                  */
-            } catch (InstantiationException | IllegalAccessException | IOException e)
+            } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
             {
                 return false;
             } finally
@@ -777,17 +778,17 @@ public class TraceSvtvJobs
             return result;
         }
 
-        private Map<Svar<Address>, Svar<Address>> readSvarMap(ACL2Object l)
-        {
-            Map<Svar<Address>, Svar<Address>> result = new LinkedHashMap<>();
-            for (ACL2Object pair : Util.getList(l, true))
-            {
-                Svar<Address> svarKey = SvarImpl.fromACL2(snb, sm, car(pair));
-                Svar<Address> svarValue = SvarImpl.fromACL2(snb, sm, cdr(pair));
-                Svar<Address> old = result.put(svarKey, svarValue);
-                Util.check(old == null);
-            }
-            return result;
-        }
+//        private Map<Svar<Address>, Svar<Address>> readSvarMap(ACL2Object l)
+//        {
+//            Map<Svar<Address>, Svar<Address>> result = new LinkedHashMap<>();
+//            for (ACL2Object pair : Util.getList(l, true))
+//            {
+//                Svar<Address> svarKey = SvarImpl.fromACL2(snb, sm, car(pair));
+//                Svar<Address> svarValue = SvarImpl.fromACL2(snb, sm, cdr(pair));
+//                Svar<Address> old = result.put(svarKey, svarValue);
+//                Util.check(old == null);
+//            }
+//            return result;
+//        }
     }
 }

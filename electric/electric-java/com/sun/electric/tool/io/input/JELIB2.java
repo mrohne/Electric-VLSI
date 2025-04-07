@@ -86,7 +86,7 @@ public class JELIB2 {
     }
 
     public boolean instantiate(TechPool techPool, boolean primitiveBounds) throws JelibException {
-        ImmutableLibrary l = ImmutableLibrary.newInstance(libId, parser.fileURL, parser.version);
+        ImmutableLibrary l = ImmutableLibrary.newInst(libId, parser.fileURL, parser.version);
         for (Variable var : parser.libVars) {
             l = l.withVariable(var);
         }
@@ -94,7 +94,7 @@ public class JELIB2 {
 
         for (JelibParser.CellContents cc : parser.allCells.values()) {
             CellId cellId = cc.cellId;
-            ImmutableCell c = ImmutableCell.newInstance(cellId, cc.creationDate).withGroupName(cc.groupName).withRevisionDate(cc.revisionDate).withTechId(cc.techId);
+            ImmutableCell c = ImmutableCell.newInst(cellId, cc.creationDate).withGroupName(cc.groupName).withRevisionDate(cc.revisionDate).withTechId(cc.techId);
 
             int flags = 0;
             if (cc.expanded) {
@@ -125,7 +125,7 @@ public class JELIB2 {
             ImmutableNodeInst[] nodes = new ImmutableNodeInst[cc.nodes.size()];
             for (int nodeId = 0; nodeId < nodes.length; nodeId++) {
                 JelibParser.NodeContents nc = cc.nodes.get(nodeId);
-                ImmutableNodeInst n = ImmutableNodeInst.newInstance(nodeId, nc.protoId,
+                ImmutableNodeInst n = ImmutableNodeInst.newInst(nodeId, nc.protoId,
                         Name.findName(nc.nodeName), nc.nameTextDescriptor,
                         nc.orient, nc.anchor, nc.size, nc.flags, nc.techBits, nc.protoTextDescriptor);
                 for (Variable var : nc.vars) {
@@ -168,7 +168,7 @@ public class JELIB2 {
             ImmutableArcInst[] arcs = new ImmutableArcInst[cc.arcs.size()];
             for (int arcId = 0; arcId < arcs.length; arcId++) {
                 JelibParser.ArcContents ac = cc.arcs.get(arcId);
-                ImmutableArcInst a = ImmutableArcInst.newInstance(arcId, ac.arcProtoId, Name.findName(ac.arcName), ac.nameTextDescriptor,
+                ImmutableArcInst a = ImmutableArcInst.newInst(arcId, ac.arcProtoId, Name.findName(ac.arcName), ac.nameTextDescriptor,
                         ((JelibParser.NodeContents) ac.tailNode).n.nodeId, ac.tailPort, ac.tailPoint,
                         ((JelibParser.NodeContents) ac.headNode).n.nodeId, ac.headPort, ac.headPoint,
                         DBMath.lambdaToGrid(0.5 * ac.diskWidth), ac.angle, ac.flags);
@@ -182,7 +182,7 @@ public class JELIB2 {
             for (int exportIndex = 0; exportIndex < exports.length; exportIndex++) {
                 JelibParser.ExportContents ec = cc.exports.get(exportIndex);
                 String exportName = ec.exportUserName != null ? ec.exportUserName : ec.exportId.externalId;
-                ImmutableExport e = ImmutableExport.newInstance(ec.exportId, Name.findName(exportName), ec.nameTextDescriptor,
+                ImmutableExport e = ImmutableExport.newInst(ec.exportId, Name.findName(exportName), ec.nameTextDescriptor,
                         ((JelibParser.NodeContents) ec.originalNode).n.nodeId, ec.originalPort, ec.alwaysDrawn, ec.bodyOnly, ec.ch);
                 for (Variable var : ec.vars) {
                     e = e.withVariable(var);
@@ -190,8 +190,8 @@ public class JELIB2 {
                 exports[exportIndex] = e;
             }
 
-            CellRevision cellRevision = CellRevision.newInstance(c);
-            CellBackup cellBackup = techPool != null ? CellBackup.newInstance(c, techPool) : null;
+            CellRevision cellRevision = CellRevision.newInst(c);
+            CellBackup cellBackup = techPool != null ? CellBackup.newInst(c, techPool) : null;
             try {
                 if (techPool != null) {
                     cellBackup = cellBackup.with(c, nodes, arcs, exports, techPool).withoutModified();;
@@ -368,7 +368,7 @@ public class JELIB2 {
             Date startDate = new Date();
             FileType fileType = FileType.findTypeByExtension(TextUtils.getExtension(libFile));
             JELIB2 jelib2 = null;
-            ErrorLogger errorLogger = ErrorLogger.newInstance(libId.toString());
+            ErrorLogger errorLogger = ErrorLogger.newInst(libId.toString());
             TechPool techPool = doBackup ? getTechPool() : null;
             try {
                 JelibParser parser = JelibParser.parse(libId, libFile, fileType, false, errorLogger);

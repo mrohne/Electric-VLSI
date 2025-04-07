@@ -185,13 +185,13 @@ class SeaOfGatesEngineNonoverlappingBatch extends SeaOfGatesEngine
     }
 
     private static class InfrastructureExecutor extends JoinExecutor {
-        private ThreadPool pools;
+//        private ThreadPool pools;
         private PJob seaOfGatesJob;
 
         InfrastructureExecutor(int parallelism) {
             try
             {
-                pools = ThreadPool.initialize(SchedulingStrategy.stack, parallelism, ThreadPoolType.userDefined);
+                /* pools = */ ThreadPool.initialize(SchedulingStrategy.stack, parallelism, ThreadPoolType.userDefined);
             } catch (PoolExistsException e1)
             {
             } catch (UnknownSchedulerException e)

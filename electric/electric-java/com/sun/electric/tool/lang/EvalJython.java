@@ -156,7 +156,6 @@ public class EvalJython {
         }
     }
 
-    @SuppressWarnings("serial")
 	private static class RunJythonScriptJob extends Job {
 
         private String script;
@@ -207,7 +206,6 @@ public class EvalJython {
 	/**
 	 * Class for setting a variable in a new Job.
 	 */
-	@SuppressWarnings("serial")
 	private static class SetVarJob extends Job
 	{
 		private CellId cellId;

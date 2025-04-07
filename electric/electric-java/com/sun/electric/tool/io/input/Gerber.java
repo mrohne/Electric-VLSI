@@ -73,17 +73,17 @@ public class Gerber extends Input<Object>
 
 	private static class StandardCircle
 	{
-		int codeNumber;
-		double diameter;
-		double holeSize1;
-		double holeSize2;
+//		int codeNumber;
+//		double diameter;
+//		double holeSize1;
+//		double holeSize2;
 	}
 
 	private static class StandardRectangle
 	{
-		int codeNumber;
-		double width, height;
-		double holeWidth, holeHeight;
+//		int codeNumber;
+//		double width, height;
+//		double holeWidth, holeHeight;
 	}
 
 	private static class GerberLayer
@@ -150,7 +150,7 @@ public class Gerber extends Input<Object>
 	private boolean absoluteCoordinates;
 	private int xFormatLeft, xFormatRight, yFormatLeft, yFormatRight;
 	private double scaleFactor;
-	private boolean fullCircle = false;
+//	private boolean fullCircle = false;
 	private int currentPrepCode, currentDCode;
 	private double lastXValue=0, lastYValue=0, curXValue, curYValue, curIValue, curJValue;
 	private String lastPart;
@@ -185,7 +185,7 @@ public class Gerber extends Input<Object>
 				if (gra.getTransparentLayer() > 0)
 					colorIndex = EGraphics.makeIndex(gra.getTransparentLayer()); else
 						colorIndex = EGraphics.makeIndex(gra.getColor());
-				layerColors.put(layerName, new Integer(colorIndex));
+				layerColors.put(layerName, Integer.valueOf(colorIndex));
 
 				layerName = "Power-" + (i+1) + "-Node";
 				np = pcbTech.findNodeProto(layerName);
@@ -195,7 +195,7 @@ public class Gerber extends Input<Object>
 				if (gra.getTransparentLayer() > 0)
 					colorIndex = EGraphics.makeIndex(gra.getTransparentLayer()); else
 						colorIndex = EGraphics.makeIndex(gra.getColor());
-				layerColors.put(layerName, new Integer(colorIndex));
+				layerColors.put(layerName, Integer.valueOf(colorIndex));
 			}
         }
 
@@ -481,7 +481,7 @@ public class Gerber extends Input<Object>
 						scaleFactor = 1000000.0/UNSCALE;		// 1 millimeter = 1,000,000 nanometers
 						break;
 					case 75:		// full circles
-						fullCircle = true;
+//						fullCircle = true;
 						break;
 					case 90:		// Absolute coordinates
 						absoluteCoordinates = true;
@@ -775,11 +775,11 @@ public class Gerber extends Input<Object>
 				return;
 			}
 			StandardCircle sc = new StandardCircle();
-			sc.codeNumber = codeNumber;
-			sc.diameter = parts.get(0).value;
-			if (parts.size() > 1) sc.holeSize1 = parts.get(1).value; else sc.holeSize1 = -1;
-			if (parts.size() > 2) sc.holeSize2 = parts.get(2).value; else sc.holeSize2 = -1;
-			standardCircles.put(new Integer(codeNumber), sc);
+//			sc.codeNumber = codeNumber;
+//			sc.diameter = parts.get(0).value;
+//			if (parts.size() > 1) sc.holeSize1 = parts.get(1).value; else sc.holeSize1 = -1;
+//			if (parts.size() > 2) sc.holeSize2 = parts.get(2).value; else sc.holeSize2 = -1;
+			standardCircles.put(Integer.valueOf(codeNumber), sc);
 		} else if (line.charAt(pos) == 'R')
 		{
 			if (parts.size() != 2 && parts.size() != 4)
@@ -788,19 +788,19 @@ public class Gerber extends Input<Object>
 				return;
 			}
 			StandardRectangle sr = new StandardRectangle();
-			sr.codeNumber = codeNumber;
-			sr.width = parts.get(0).value;
-			sr.height = parts.get(1).value;
-			if (parts.size() > 2)
-			{
-				sr.holeWidth = parts.get(2).value;
-				sr.holeHeight = parts.get(3).value;
-			} else
-			{
-				sr.holeWidth = -1;
-				sr.holeHeight = -1;
-			}
-			standardRectangles.put(new Integer(codeNumber), sr);
+//			sr.codeNumber = codeNumber;
+//			sr.width = parts.get(0).value;
+//			sr.height = parts.get(1).value;
+//			if (parts.size() > 2)
+//			{
+//				sr.holeWidth = parts.get(2).value;
+//				sr.holeHeight = parts.get(3).value;
+//			} else
+//			{
+//				sr.holeWidth = -1;
+//				sr.holeHeight = -1;
+//			}
+			standardRectangles.put(Integer.valueOf(codeNumber), sr);
 		}
 	}
 

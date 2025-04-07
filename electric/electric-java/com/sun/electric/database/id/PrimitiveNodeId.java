@@ -138,7 +138,7 @@ public class PrimitiveNodeId implements NodeProtoId, Serializable {
     }
 
     PrimitivePortId newPrimitivePortIdInternal(String primitivePortName) {
-        int chronIndex = primitivePortIds.size();
+//        int chronIndex = primitivePortIds.size();
         PrimitivePortId primitivePortId = new PrimitivePortId(this, primitivePortName, primitivePortIds.size());
         primitivePortIds.add(primitivePortId);
         primitivePortIdsByName.put(primitivePortId.externalId, primitivePortId);

@@ -127,7 +127,7 @@ public class FillCellGenJob extends FillGenJob {
 		// Don't change List by Set otherwise the sequence given by Set is not
 		// deterministic and hard to debug
 		List<PortInst> portList = new ArrayList<PortInst>();
-		Netlist topCellNetlist = topCell.getNetlist();
+		/* Netlist topCellNetlist = */ topCell.getNetlist();
 		List<Export> exportList = new ArrayList<Export>();
 
 		for (Iterator<NodeInst> it = topCell.getNodes(); it.hasNext();) {
@@ -177,7 +177,7 @@ public class FillCellGenJob extends FillGenJob {
 					assert (p.getPortProto() instanceof Export);
 					Export ex = (Export) p.getPortProto();
 					Network net = netlist.getNetwork(ex.getOriginalPort());
-					Network topNet = topCellNetlist.getNetwork(p);
+//					Network topNet = topCellNetlist.getNetwork(p);
 					Cell fillCell = null;
 
 					// search for possible existing fill already defined
@@ -691,7 +691,7 @@ public class FillCellGenJob extends FillGenJob {
 		if (topCell == null) /* || portList == null || portList.size() == 0) */
 			return false; // not sure if false is correct
 
-		Cell connectionCell = Cell.newInstance(topCell.getLibrary(), topCell.getName() + "fill{lay}");
+		Cell connectionCell = Cell.newInst(topCell.getLibrary(), topCell.getName() + "fill{lay}");
 		connectionCell.setTechnology(topCell.getTechnology());
 
 		Rectangle2D fillBnd = fillCell.getBounds();
@@ -741,7 +741,7 @@ public class FillCellGenJob extends FillGenJob {
 		for (Iterator<Export> it = container.fillCell.getExports(); it.hasNext();) {
 			Export export = it.next();
 			PortInst p = container.fillNi.findPortInstFromProto(export);
-			Export e = Export.newInstance(container.connectionCell, p, p.getPortProto().getName(), ep);
+			Export e = Export.newInst(container.connectionCell, p, p.getPortProto().getName(), ep);
 			e.setCharacteristic(p.getPortProto().getCharacteristic());
 			switch (p.getPortProto().getCharacteristic()) {
 			case GND:
@@ -778,8 +778,7 @@ public class FillCellGenJob extends FillGenJob {
 				// if (p.p.getPortProto() instanceof Export)
 				{
 					// Export ex = (Export)p.p.getPortProto();
-					List<Export> list = (ex.getCharacteristic() == PortCharacteristic.GND) ? gndList
-							: vddList;
+//					List<Export> list = (ex.getCharacteristic() == PortCharacteristic.GND) ? gndList : vddList;
 					Export fillE = null;
 					// Search for the closest pin in
 					if (ex.getCharacteristic() == PortCharacteristic.GND)
@@ -1094,7 +1093,7 @@ public class FillCellGenJob extends FillGenJob {
 		InteractiveRouter router;
 		Cell fillCell, connectionCell;
 		NodeInst fillNi, connectionNi;
-		List<PortInst> fillPortInstList;
+//		List<PortInst> fillPortInstList;
 		List<NodeInst> fillContactList;
 		double drcSpacing;
 		boolean rotated; // tmp fix
@@ -1106,7 +1105,7 @@ public class FillCellGenJob extends FillGenJob {
 			this.fillNi = fNi;
 			this.connectionCell = cC;
 			this.connectionNi = cNi;
-			this.fillPortInstList = new ArrayList<PortInst>();
+//			this.fillPortInstList = new ArrayList<PortInst>();
 			this.fillContactList = new ArrayList<NodeInst>();
 			this.drcSpacing = drcSpacing;
 			this.rotated = rotated;
@@ -1284,7 +1283,7 @@ public class FillCellGenJob extends FillGenJob {
 						NodeInst ni = nodes.get(0);
 						// Check lower layer of the contact so it won't add
 						// unnecessary contacts
-						PrimitiveNode np = (PrimitiveNode) ni.getProto();
+//						PrimitiveNode np = (PrimitiveNode) ni.getProto();
 						// layerTmpList.clear();
 						// for (Iterator<Layer> it = np.getLayerIterator();
 						// it.hasNext(); )
@@ -1298,7 +1297,7 @@ public class FillCellGenJob extends FillGenJob {
 						// theLayer = layerTmpList.get(0);
 						Rectangle2D r = ni.getBounds();
 						double contactW = ni.getXSizeWithoutOffset();
-						double contactH = ni.getYSizeWithoutOffset();
+//						double contactH = ni.getYSizeWithoutOffset();
 						r = new Rectangle2D.Double(r.getCenterX() - contactW / 2, contactArea.getY(),
 								contactW, contactAreaHeight);
 						geomBnd = r;
@@ -1391,15 +1390,15 @@ public class FillCellGenJob extends FillGenJob {
 		return false;
 	}
 
-	private static class FillGenArcConnect {
-		Rectangle2D rect;
-		ArcInst ai;
-
-		FillGenArcConnect(Rectangle2D r, ArcInst ai) {
-			this.rect = r;
-			this.ai = ai;
-		}
-	}
+//	private static class FillGenArcConnect {
+//		Rectangle2D rect;
+//		ArcInst ai;
+//
+//		FillGenArcConnect(Rectangle2D r, ArcInst ai) {
+//			this.rect = r;
+//			this.ai = ai;
+//		}
+//	}
 
 	/**
 	 * Second try
@@ -1442,7 +1441,7 @@ public class FillCellGenJob extends FillGenJob {
 						p, contactArea, fillIn, fillUp, noClosestPin);
 				if (export != null) {
 					PortInst pinPort = ni.findPortInstFromProto(export);
-					Export pinExport = Export.newInstance(searchCell, pinPort, "proj-" + p.e.getName(), ep);
+					Export pinExport = Export.newInst(searchCell, pinPort, "proj-" + p.e.getName(), ep);
 					pinExport.setCharacteristic(p.e.getCharacteristic());
 					noIntermediateCells = true;
 					return pinExport;
@@ -1564,7 +1563,7 @@ public class FillCellGenJob extends FillGenJob {
 						NodeInst ni = nodes.get(0);
 						// Check lower layer of the contact so it won't add
 						// unnecessary contacts
-						PrimitiveNode np = (PrimitiveNode) ni.getProto();
+//						PrimitiveNode np = (PrimitiveNode) ni.getProto();
 						// layerTmpList.clear();
 						// for (Iterator<Layer> it = np.getLayerIterator();
 						// it.hasNext(); )
@@ -1578,7 +1577,7 @@ public class FillCellGenJob extends FillGenJob {
 						// theLayer = layerTmpList.get(0);
 						Rectangle2D r = ni.getBounds();
 						double contactW = ni.getXSizeWithoutOffset();
-						double contactH = ni.getYSizeWithoutOffset();
+//						double contactH = ni.getYSizeWithoutOffset();
 						r = new Rectangle2D.Double(r.getCenterX() - contactW / 2, contactArea.getY(),
 								contactW, contactAreaHeight);
 						geomBnd = r;
@@ -1677,7 +1676,7 @@ public class FillCellGenJob extends FillGenJob {
 			Map<ArcProto, Integer> arcsCreatedMap = new HashMap<ArcProto, Integer>();
 			Map<NodeProto, Integer> nodesCreatedMap = new HashMap<NodeProto, Integer>();
 			Router.createRouteNoJob(exportRoute, closestArc.getParent(), arcsCreatedMap, nodesCreatedMap, ep);
-			Export pinExport = Export.newInstance(closestArc.getParent(), pinOnArc.getOnlyPortInst(), "proj-"
+			Export pinExport = Export.newInst(closestArc.getParent(), pinOnArc.getOnlyPortInst(), "proj-"
 					+ p.e.getName(), ep);
 			pinExport.setCharacteristic(p.e.getCharacteristic());
 			return pinExport;
@@ -1939,7 +1938,7 @@ public class FillCellGenJob extends FillGenJob {
 			// Export connect projected pin in ConnectionCell
 			if (pinNode != null) // at least done for one
 			{
-				Export pinExport = Export.newInstance(container.connectionCell, pin, "proj-" + p.e.getName(), ep);
+				Export pinExport = Export.newInst(container.connectionCell, pin, "proj-" + p.e.getName(), ep);
 				assert (pinExport != null);
 				pinExport.setCharacteristic(p.e.getCharacteristic());
 				// Connect projected pin in ConnectionCell with real port
@@ -2015,7 +2014,7 @@ public class FillCellGenJob extends FillGenJob {
 
 		// Connecting with top cell
 
-		Export pinExport = Export.newInstance(container.connectionCell, pin, "proj-" + p.e.getName(), ep);
+		Export pinExport = Export.newInst(container.connectionCell, pin, "proj-" + p.e.getName(), ep);
 		// assert(pinExport != null);
 		if (pinExport != null) {
 			pinExport.setCharacteristic(p.e.getCharacteristic());

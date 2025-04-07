@@ -836,7 +836,7 @@ class NetSchem extends NetCell {
     void reportDrawnWidthError(Export pp, ArcInst ai, String firstname, String badname) {
         // first occurrence is initial width which all subsequents are compared to
         int numPorts = cell.getNumPorts();
-        int numArcs = cell.getNumArcs();
+//        int numArcs = cell.getNumArcs();
 
         String msg = "Network: Schematic " + cell + " has net with conflict width of names <"
                 + firstname + "> and <" + badname + ">";
@@ -1009,28 +1009,28 @@ class NetSchem extends NetCell {
         Netlist.closureMap(netMap);
     }
 
-    private void pushName(Name name) {
-        for (Iterator<Export> it = cell.getExports(); it.hasNext();) {
-            Export e = it.next();
-            Name n = e.getNameKey();
-            for (int i = 0; i < n.busWidth(); i++) {
-                if (n.subname(i) == name) {
-                    networkManager.pushHighlight(e);
-                    return;
-                }
-            }
-        }
-        for (Iterator<ArcInst> it = cell.getArcs(); it.hasNext();) {
-            ArcInst ai = it.next();
-            Name n = ai.getNameKey();
-            for (int i = 0; i < n.busWidth(); i++) {
-                if (n.subname(i) == name) {
-                    networkManager.pushHighlight(ai);
-                    return;
-                }
-            }
-        }
-    }
+//    private void pushName(Name name) {
+//        for (Iterator<Export> it = cell.getExports(); it.hasNext();) {
+//            Export e = it.next();
+//            Name n = e.getNameKey();
+//            for (int i = 0; i < n.busWidth(); i++) {
+//                if (n.subname(i) == name) {
+//                    networkManager.pushHighlight(e);
+//                    return;
+//                }
+//            }
+//        }
+//        for (Iterator<ArcInst> it = cell.getArcs(); it.hasNext();) {
+//            ArcInst ai = it.next();
+//            Name n = ai.getNameKey();
+//            for (int i = 0; i < n.busWidth(); i++) {
+//                if (n.subname(i) == name) {
+//                    networkManager.pushHighlight(ai);
+//                    return;
+//                }
+//            }
+//        }
+//    }
 
     private void connectWireCon(int[] netMap, NodeInst ni) {
         ArcInst ai1 = null;

@@ -937,7 +937,7 @@ public class GetInfoMulti extends EModelessDialog implements HighlightListener, 
 					{
 						Variable oldLen = ni.getVar(Schematics.ATTR_LENGTH);
 		                TextDescriptor ltd = oldLen != null ? oldLen.getTextDescriptor() : ep.getNodeTextDescriptor();
-		                Object newVL = new Double(TextUtils.atof(mcp.traLength));
+		                Object newVL = Double.valueOf(TextUtils.atof(mcp.traLength));
 						ni.newVar(Schematics.ATTR_LENGTH, newVL, ltd);
 					}
 					if (mcp.traWidth.length() > 0)
@@ -945,7 +945,7 @@ public class GetInfoMulti extends EModelessDialog implements HighlightListener, 
 						// update length/width on transistor
 						Variable oldWid = ni.getVar(Schematics.ATTR_WIDTH);
 		                TextDescriptor wtd = oldWid != null ? oldWid.getTextDescriptor() : ep.getNodeTextDescriptor();
-		                Object newV = new Double(TextUtils.atof(mcp.traWidth));
+		                Object newV = Double.valueOf(TextUtils.atof(mcp.traWidth));
 						ni.newVar(Schematics.ATTR_WIDTH, newV, wtd);
 					}
 				}
@@ -1439,7 +1439,7 @@ public class GetInfoMulti extends EModelessDialog implements HighlightListener, 
         for(int i=0; i<items.length; i++)
         {
             if (items[i] < highlightList.size())
-                indices.add(new Integer(items[i]));
+                indices.add(Integer.valueOf(items[i]));
             else
                 System.out.println("Trying to remove an invalid element: " + items[i]);
         }
@@ -1573,11 +1573,11 @@ public class GetInfoMulti extends EModelessDialog implements HighlightListener, 
 	{//GEN-HEADEREND:event_removeOthersActionPerformed
 		int [] items = list.getSelectedIndices();
 		Set<Integer> keepIndices = new HashSet<Integer>();
-		for(int i=0; i<items.length; i++) keepIndices.add(new Integer(items[i]));
+		for(int i=0; i<items.length; i++) keepIndices.add(Integer.valueOf(items[i]));
 		int len = highlightList.size();
 		for(int i=len-1; i>=0; i--)
 		{
-			if (keepIndices.contains(new Integer(i))) continue;
+			if (keepIndices.contains(Integer.valueOf(i))) continue;
 			highlightList.remove(i);
 		}
         if (wnd != null) {

@@ -68,7 +68,6 @@ public class Lhs<N extends SvarName> implements ACL2Backed
         this.hashCode = hashCode;
     }
 
-    @SuppressWarnings("unchecked")
     public static <N extends SvarName> Lhs<N> empty()
     {
         return (Lhs<N>)EMPTY;
@@ -392,7 +391,7 @@ public class Lhs<N extends SvarName> implements ACL2Backed
     public String toString(SvarNameTexter<N> texter)
     {
         String s = "";
-        int offset = width();
+        /* int offset = */ width();
         for (int i = ranges.size() - 1; i >= 0; i--)
         {
             s += ranges.get(i).toString(texter);
@@ -404,7 +403,6 @@ public class Lhs<N extends SvarName> implements ACL2Backed
         return s;
     }
 
-    @SuppressWarnings("unchecked")
     public static <N extends SvarName> Lhs<N>[] newLhsArray(int length)
     {
         return new Lhs[length];

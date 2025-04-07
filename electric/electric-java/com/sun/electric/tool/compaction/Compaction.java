@@ -282,7 +282,7 @@ if (--limitLoops <= 0) change = false;
 				{
 					Integer oIndex = portIndices.get(found);
 					portIndices.put(pp, oIndex);
-				} else portIndices.put(pp, new Integer(flatIndex++));
+				} else portIndices.put(pp, Integer.valueOf(flatIndex++));
 			}
 
 			// copy port numbering onto arcs
@@ -1114,7 +1114,7 @@ if (--limitLoops <= 0) change = false;
 						}
 					}
 				}
-				if (!found) localPortIndices.put(pp, new Integer(flatIndex++));
+				if (!found) localPortIndices.put(pp, Integer.valueOf(flatIndex++));
 			}
 			return localPortIndices;
 		}
@@ -1243,7 +1243,7 @@ if (--limitLoops <= 0) change = false;
 				if (!found)
 				{
 					// copy new net number to all of these connected arcs
-					Integer pIndex = new Integer(flatIndex++);
+					Integer pIndex = Integer.valueOf(flatIndex++);
 					for(Iterator<ArcInst> aIt = topCell.getArcs(); aIt.hasNext(); )
 					{
 						ArcInst oAi = aIt.next();

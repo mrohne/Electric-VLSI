@@ -87,7 +87,7 @@ public class LENetlister1 extends LENetlister {
     public LENetlister1(Job job, Technology layoutTech) {
         super(layoutTech);
         // get preferences for this package
-        Tool leTool = Tool.findTool("logical effort");
+        /* Tool leTool = */ Tool.findTool("logical effort");
         constants = null;
         topLevelCell = null;
 
@@ -111,7 +111,7 @@ public class LENetlister1 extends LENetlister {
         //connectedPorts.add(Schematics.tech.resistorNode.getPortsList());
         assert errorLogger == null;
 //        if (errorLogger != null) errorLogger.delete();
-        errorLogger = ErrorLogger.newInstance("LE Netlister");
+        errorLogger = ErrorLogger.newInst("LE Netlister");
 
 //        Netlist netlist = cell.getNetlist(true);
 
@@ -163,9 +163,9 @@ public class LENetlister1 extends LENetlister {
             if (!inst.isLeGate()) continue;
 
             String varName = "LEDRIVE_" + inst.getName();
-            //no.newVar(varName, new Float(inst.getLeX()));
-            //topLevelCell.newVar(varName, new Float(inst.getLeX()));
-            sizes.add(new Float(inst.getLeX()));
+            //no.newVar(varName, Float.valueOf(inst.getLeX()));
+            //topLevelCell.newVar(varName, Float.valueOf(inst.getLeX()));
+            sizes.add(Float.valueOf(inst.getLeX()));
             varNames.add(varName);
             nodes.add(ni);
             contexts.add(inst.getContext());

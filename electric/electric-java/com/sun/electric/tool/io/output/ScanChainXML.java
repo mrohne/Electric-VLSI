@@ -54,7 +54,7 @@ public class ScanChainXML {
         public final String name;
         public final String access;
         public final String clears;
-        public final String inport;
+//        public final String inport;
         public final String outport;
         public final DataNet dataport;
         public final DataNet dataport2;
@@ -64,7 +64,7 @@ public class ScanChainXML {
             this.name = name;
             this.access = access;
             this.clears = clears;
-            this.inport = inport;
+//            this.inport = inport;
             this.outport = outport;
             if (dataport == null || dataport.equals(""))
                 this.dataport = null;
@@ -158,12 +158,12 @@ public class ScanChainXML {
      */
     private static class PassThroughCell {
         public final String cellName;
-        public final String inport;
+//        public final String inport;
         public final String outport;
 
         public PassThroughCell(String cellName, String inport, String outport) {
             this.cellName = cellName;
-            this.inport = inport;
+//            this.inport = inport;
             this.outport = outport;
         }
     }
@@ -542,8 +542,8 @@ public class ScanChainXML {
             this.no = no;
             this.content = content;
         }
-        protected void setInport(Port port) { this.inport = port; }
-        protected Port getInport() { return inport; }
+//        protected void setInport(Port port) { this.inport = port; }
+//        protected Port getInport() { return inport; }
         protected void setOutport(Port port) { this.outport = port; }
         protected Port getOutport() { return outport; }
 
@@ -593,16 +593,16 @@ public class ScanChainXML {
             return inst.getSubChain();
         }
         protected Iterator<SubChainInst> getSubChainInsts() { return subchains.iterator(); }
-        protected Iterator<SubChain> getSubChains() {
-            List<SubChain> subs = new ArrayList<SubChain>();
-            for (SubChainInst inst : subchains) {
-                subs.add(inst.getSubChain());
-            }
-            return subs.iterator();
-        }
+//        protected Iterator<SubChain> getSubChains() {
+//            List<SubChain> subs = new ArrayList<SubChain>();
+//            for (SubChainInst inst : subchains) {
+//                subs.add(inst.getSubChain());
+//            }
+//            return subs.iterator();
+//        }
         protected int getLength() { return length; }
-        protected String getAccess() { return access; }
-        protected String getClears() { return clears; }
+//        protected String getAccess() { return access; }
+//        protected String getClears() { return clears; }
 
         protected void write(PrintWriter out, StringBuffer indent, String instName, Map<Cell,Cell> cellsToFlatten) {
             if (numScanElements() == 0) return;   // nothing to print
@@ -679,10 +679,10 @@ public class ScanChainXML {
                 subchains.remove(sci);
             }
         }
-        protected void replaceSubChainInsts(List<SubChainInst> newSubChainInsts) {
-            subchains.clear();
-            subchains.addAll(newSubChainInsts);
-        }
+//        protected void replaceSubChainInsts(List<SubChainInst> newSubChainInsts) {
+//            subchains.clear();
+//            subchains.addAll(newSubChainInsts);
+//        }
         protected void remove(SubChainInst inst) {
             subchains.remove(inst);
         }
@@ -815,12 +815,12 @@ public class ScanChainXML {
             this.index = index;
         }
         public String toString() { if (name == null) return null; return no.getName() +":"+name.toString(); }
-        public void print() {
-            System.out.println("  Name: "+name);
-            System.out.println("  No: "+no);
-            System.out.println("  int: "+index);
-            System.out.println("  pp: "+pp);
-        }
+//        public void print() {
+//            System.out.println("  Name: "+name);
+//            System.out.println("  No: "+no);
+//            System.out.println("  int: "+index);
+//            System.out.println("  pp: "+pp);
+//        }
     }
 
     private static class ExPort {
@@ -834,11 +834,11 @@ public class ScanChainXML {
             this.index = index;
         }
         public String toString() { if (name == null) return null; return name.toString(); }
-        public void print() {
-            System.out.println("  Name: "+name);
-            System.out.println("  Ex: "+ex);
-            System.out.println("  int: "+index);
-        }
+//        public void print() {
+//            System.out.println("  Name: "+name);
+//            System.out.println("  Ex: "+ex);
+//            System.out.println("  int: "+index);
+//        }
     }
 
     // -------------------------------------------------------------------------
@@ -981,23 +981,23 @@ public class ScanChainXML {
 //    }
 
     // get the network name connect to port 'portName' on 'no'.  Returns null if none found.
-    private String getNetName(Nodable no, String portName) {
-        String netName = null;
-        PortInst pi = no.getNodeInst().findPortInst(portName);
-        if (pi == null) return null;
-        if (pi.hasConnections()) {
-//        if (pi.getConnections().hasNext()) {
-            ArcInst ai = pi.getConnections().next().getArc();
-            // see if there is a bus name
-            Name busName = no.getParent().getNetlist(SHORT_RESISTORS).getBusName(ai);
-            if (busName == null) {
-                netName = no.getParent().getNetlist(SHORT_RESISTORS).getNetwork(ai, 0).getName();
-            } else {
-                netName = busName.toString();
-            }
-        }
-        return netName;
-    }
+//    private String getNetName(Nodable no, String portName) {
+//        String netName = null;
+//        PortInst pi = no.getNodeInst().findPortInst(portName);
+//        if (pi == null) return null;
+//        if (pi.hasConnections()) {
+////        if (pi.getConnections().hasNext()) {
+//            ArcInst ai = pi.getConnections().next().getArc();
+//            // see if there is a bus name
+//            Name busName = no.getParent().getNetlist(SHORT_RESISTORS).getBusName(ai);
+//            if (busName == null) {
+//                netName = no.getParent().getNetlist(SHORT_RESISTORS).getNetwork(ai, 0).getName();
+//            } else {
+//                netName = busName.toString();
+//            }
+//        }
+//        return netName;
+//    }
 
     /**
      * Create the subchain for the cell

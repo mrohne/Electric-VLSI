@@ -59,8 +59,8 @@ import java.net.URL;
  */
 public class VerilogModel extends SimulationModel {
 
-    private static final boolean DEBUG = false;      // general debugging messages
-    private static final boolean DEBUGOUTPUT = false; // for debugging the verilog stdout parser
+//    private static final boolean DEBUG = false;      // general debugging messages
+//    private static final boolean DEBUGOUTPUT = false; // for debugging the verilog stdout parser
 
     /** Do not record simulation */
     public static final int NORECORD = 0;

@@ -101,7 +101,7 @@ public class Sim
 		{
 			nodeHead.sumState = Stimuli.LOGIC_LOW;
 			nodeHead.sumStrength = Stimuli.OFF_STRENGTH;
-			nodeHead.newState = new Integer(Stimuli.LOGIC_LOW);
+			nodeHead.newState = Integer.valueOf(Stimuli.LOGIC_LOW);
 			nodeHead.newStrength = Stimuli.OFF_STRENGTH;
 			nodeHead.arrive = 0;
 			nodeHead.depart = 0;
@@ -319,7 +319,7 @@ public class Sim
 					calculateClockTime(linkHead, rowHead);
 					return false;
 				}
-				linkHead.state = new Integer(((Integer)linkHead.state).intValue() - 1);
+				linkHead.state = Integer.valueOf(((Integer)linkHead.state).intValue() - 1);
 				if (((Integer)linkHead.state).intValue() != 0)
 				{
 					calculateClockTime(linkHead, rowHead);

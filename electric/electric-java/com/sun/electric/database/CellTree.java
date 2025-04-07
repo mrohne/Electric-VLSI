@@ -68,8 +68,8 @@ public class CellTree {
         this.allCells = allCells;
     }
 
-    public static CellTree newInstance(ImmutableCell d, TechPool techPool) {
-        CellBackup top = CellBackup.newInstance(d, techPool);
+    public static CellTree newInst(ImmutableCell d, TechPool techPool) {
+        CellBackup top = CellBackup.newInst(d, techPool);
         assert top.cellRevision.cellUsages.length == 0;
         return new CellTree(top, NULL_ARRAY, top.techPool, Collections.singleton(top.cellRevision.d.cellId));
     }

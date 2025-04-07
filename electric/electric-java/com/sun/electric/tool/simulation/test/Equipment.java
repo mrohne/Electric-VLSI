@@ -217,7 +217,7 @@ public class Equipment extends Logger implements EquipmentInterface {
 
     /** test program */
     public static void main(String[] argv) {
-        Equipment pulse = new Equipment("SRS535"); // Stanford Pulse Generator
+        /* Equipment pulse = */ new Equipment("SRS535"); // Stanford Pulse Generator
         Equipment osc = new Equipment("HPINF54845A"); // HP Infinium Scope
         osc.write("MEAS:FREQ? CHAN1");
         System.out.println("Freq:" + osc.read(30));

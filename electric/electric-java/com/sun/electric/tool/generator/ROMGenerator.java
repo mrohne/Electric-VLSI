@@ -202,10 +202,10 @@ public class ROMGenerator
 		romplane(destLib, lambda, romarray, rp);
 
 		int bits =
-			(new Double(Math.ceil(Math.log(globalbits)/Math.log(2.0)))).intValue();
+			(Double.valueOf(Math.ceil(Math.log(globalbits)/Math.log(2.0)))).intValue();
 		int words = (int) (Math.pow(2.0, bits));
 		int foldbits =
-			(new Double(Math.ceil(Math.log(folds)/Math.log(2.0)))).intValue();
+			(Double.valueOf(Math.ceil(Math.log(folds)/Math.log(2.0)))).intValue();
 
 		boolean top = true;
 		boolean bot = false;
@@ -318,7 +318,7 @@ public class ROMGenerator
 		}
 
 		// create new layout named "rom{lay}" in destination library
-		Cell rom = Cell.newInstance(destLib, romname+"{lay}");
+		Cell rom = Cell.newInst(destLib, romname+"{lay}");
 
 		////////// calculate pplane offset
 		double offset = (2*bits*(8*lambda)) + (16*lambda);
@@ -1009,7 +1009,7 @@ public class ROMGenerator
 		ArcProto pdiffarc = tech.findArcProto("P-Active");
 
 		// create a cell called "romplane{lay}" in the destination library
-		Cell romplane = Cell.newInstance(destLib, rp+"{lay}");
+		Cell romplane = Cell.newInst(destLib, rp+"{lay}");
 
 		makeCStyleNodeInst(pwnode,-4*lambda,(8*lambda*(inputs+2)),
 										-4*lambda,3*8*lambda*(wordlines)/2,0,0,romplane);
@@ -1603,7 +1603,7 @@ public class ROMGenerator
 		ArcProto ndiffarc = tech.findArcProto("N-Active");
 
 		// create a cell called cellname+"{lay}" in the destination library
-		Cell decn = Cell.newInstance(destLib, cellname+"{lay}");
+		Cell decn = Cell.newInst(destLib, cellname+"{lay}");
 
 		NodeProto nsnode = tech.findNodeProto("N-Select-Node");
 
@@ -2020,7 +2020,7 @@ public class ROMGenerator
 		NodeProto nwnode = tech.findNodeProto("N-Well-Node");
 
 		// create a cell called cellname+"{lay}" in the destination library
-		Cell decp = Cell.newInstance(destLib, cellname+"{lay}");
+		Cell decp = Cell.newInst(destLib, cellname+"{lay}");
 
 		NodeProto psnode = tech.findNodeProto("P-Select-Node");
 
@@ -2456,7 +2456,7 @@ public class ROMGenerator
 		NodeProto pwnode = tech.findNodeProto("P-Well-Node");
 
 		// create a cell called "muxplane{lay}" in the destination library
-		Cell muxplane = Cell.newInstance(destLib, mp+"{lay}");
+		Cell muxplane = Cell.newInst(destLib, mp+"{lay}");
 
 		makeCStyleNodeInst(pwnode,-8*lambda,lambda*8*(folds+1),
 										-8*lambda,8*lambda*3*romoutputs/2,0,0,muxplane);
@@ -2777,7 +2777,7 @@ public class ROMGenerator
 		ArcProto pdiffarc = tech.findArcProto("P-Active");
 
 		// create a cell called "inverterplane{lay}" in the destination library
-		Cell invp = Cell.newInstance(destLib, ip+"{lay}");
+		Cell invp = Cell.newInst(destLib, ip+"{lay}");
 
 		makeCStyleNodeInst(pwnode,-32*lambda,(3*lambda*8*outs/2)+8*lambda,
 										-18*lambda,16*lambda,0,0,invp);
@@ -3401,7 +3401,7 @@ public class ROMGenerator
 		ArcProto pdiffarc = tech.findArcProto("P-Active");
 
 		// create a cell called layoutname+lay}" in the destination library
-		Cell ininvp = Cell.newInstance(destLib, layoutname+"{lay}");
+		Cell ininvp = Cell.newInst(destLib, layoutname+"{lay}");
 
 		double lowX = -8*lambda;
 lowX += 7*lambda;
@@ -3868,9 +3868,10 @@ highX -= 64*lambda;
 		boolean end = false;
 		int[][] returnarray = new int[1][1];
 
+		BufferedReader in;
 		try
 		{
-			BufferedReader in = new BufferedReader(new FileReader(romfile));
+			in = new BufferedReader(new FileReader(romfile));
 			try
 			{
 				int w = -1;
@@ -4056,7 +4057,7 @@ highX -= 64*lambda;
 	private void makeCStyleExport(Cell parent, NodeInst ni, PortProto pp, String name, PortCharacteristic exporttype)
 	{
 		PortInst pi = ni.findPortInstFromProto(pp);
-		Export.newInstance(parent, pi, name, ep, exporttype);
+		Export.newInst(parent, pi, name, ep, exporttype);
 	}
 
 	/**

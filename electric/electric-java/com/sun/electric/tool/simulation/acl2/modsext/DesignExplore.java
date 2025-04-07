@@ -44,6 +44,7 @@ import com.sun.electric.util.acl2.ACL2Writer;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public class DesignExplore<H extends DesignHints>
         try
         {
             ACL2Object.initHonsMananger(saoFile.getName());
-            DesignHints designHints = cls.newInstance();
+            DesignHints designHints = cls.getDeclaredConstructor().newInstance();
             ACL2Reader sr = new ACL2Reader(saoFile);
             SvarName.Builder<Address> snb = new Address.SvarNameBuilder();
             Design<Address> design = new Design<>(snb, sr.root);
@@ -152,7 +153,7 @@ public class DesignExplore<H extends DesignHints>
                 }
             }
             gen.showLibs();
-        } catch (InstantiationException | IllegalAccessException | IOException e)
+        } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
         {
             System.out.println(e.getMessage());
         } finally
@@ -255,7 +256,7 @@ public class DesignExplore<H extends DesignHints>
             ACL2Reader sr = new ACL2Reader(saoFile);
             SvarName.Builder<Address> snb = new Address.SvarNameBuilder();
             Design<Address> design = new Design<>(snb, sr.root);
-            DesignHints designHints = cls.newInstance();
+            DesignHints designHints = cls.getDeclaredConstructor().newInstance();
             GenFsmNew gen = new GenFsmNew(designHints);
             SvexFunction.isFnSym(NIL); // for proper initialization of class SvexFunction
             for (ModName modName : design.modalist.keySet())
@@ -275,7 +276,7 @@ public class DesignExplore<H extends DesignHints>
             outFileName += "-restored.sao";
             File outFile = new File(saoDir, outFileName);
             ACL2Writer.write(design.getACL2Object(), outFile);
-        } catch (InstantiationException | IllegalAccessException | IOException e)
+        } catch (InstantiationException | IllegalAccessException | IOException | InvocationTargetException | NoSuchMethodException e)
         {
             System.out.println(e.getMessage());
         } finally

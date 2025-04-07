@@ -45,7 +45,7 @@ public class ImmutableIconInst extends ImmutableNodeInst {
     final Variable[] params;
 
     /**
-     * The private constructor of ImmutableIconInst. Use the factory "newInstance" instead.
+     * The private constructor of ImmutableIconInst. Use the factory "newInst" instead.
      * @param nodeId id of this NodeInst in parent.
      * @param protoId the NodeProtoId of which this is an instance.
      * @param name name of new ImmutableIconInst.

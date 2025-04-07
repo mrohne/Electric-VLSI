@@ -1070,13 +1070,13 @@ public final class ExportChanges
 				}
 			}
 
-			// get unique name here so Export.newInstance doesn't print message
+			// get unique name here so Export.newInst doesn't print message
 			String protoNameString = protoName.toString();
 			protoNameString = ElectricObject.uniqueObjectName(protoNameString, cell, Export.class, already,
 				nextPlainIndex, false, fromRight);
 
 			// create export
-			Export newPp = Export.newInstance(cell, pi, protoNameString, ep, pc);
+			Export newPp = Export.newInst(cell, pi, protoNameString, ep, pc);
 			if (newPp != null)
 			{
 				System.out.println("Exported port " + protoNameString + " from port " + pi.getPortProto().getName() + " of node " +
@@ -1906,7 +1906,7 @@ public final class ExportChanges
 							np, oNi.getOrient(), null, oNi.getTechSpecific());
 						if (ni == null) continue;
 						PortInst pi = ni.findPortInstFromEquivalentProto(oPp.getOriginalPort().getPortProto());
-						pp = Export.newInstance(np, pi, oPp.getName(), ep, oPp.getCharacteristic());
+						pp = Export.newInst(np, pi, oPp.getName(), ep, oPp.getCharacteristic());
 						if (pp == null) continue;
 						pp.copyTextDescriptorFrom(oPp, Export.EXPORT_NAME);
 						pp.copyVarsFrom(oPp);

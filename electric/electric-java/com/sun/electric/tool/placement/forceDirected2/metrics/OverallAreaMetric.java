@@ -51,7 +51,7 @@ public class OverallAreaMetric extends AbstractMetric {
 
 	@Override
 	public Double compute() {
-		return new Double(this.computeAsBigDecimal().doubleValue());
+		return Double.valueOf(this.computeAsBigDecimal().doubleValue());
 	}
 
 	public BigDecimal computeAsBigDecimal() {

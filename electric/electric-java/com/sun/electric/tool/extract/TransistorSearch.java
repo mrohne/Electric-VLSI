@@ -85,7 +85,7 @@ public class TransistorSearch
     private static class TransistorSearchEnumerator extends HierarchyEnumerator.Visitor
     {
         private int transistorTotalNumber;
-        private int transistorRealNumber; // doesn't include cap transistors where drain/source ports are connected
+//        private int transistorRealNumber; // doesn't include cap transistors where drain/source ports are connected
         private int transistorRealNumber2; // doesn't include cap transistors where drain/source ports are connected - other consideration
 
         public TransistorSearchEnumerator() {}
@@ -141,8 +141,8 @@ public class TransistorSearch
                 transistorTotalNumber++;
                 if (!found1)
                 	transistorRealNumber2++;
-                if (!found)
-                    transistorRealNumber++;
+//                if (!found)
+//                    transistorRealNumber++;
             }
             return true;
         }

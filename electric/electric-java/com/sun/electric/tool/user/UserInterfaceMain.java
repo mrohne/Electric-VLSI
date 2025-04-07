@@ -85,7 +85,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,6 +92,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -102,8 +103,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.EventListenerList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +113,8 @@ import org.slf4j.LoggerFactory;
  */
 public class UserInterfaceMain extends AbstractUserInterface {
 
-    static final Logger logger = LoggerFactory.getLogger("com.sun.electric.tool.user");
+	private static final Logger logger = LoggerFactory.getLogger("com.sun.electric.tool.user");
+    private static final long MINIMUMSPLASHDURATION = 3000;
 
     /**
      * Describe the windowing mode.  The current modes are MDI and SDI.
@@ -121,7 +123,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
 
         MDI, SDI
     }
-    static volatile boolean initializationFinished = false;
     private static volatile boolean undoEnabled = false;
     private static volatile boolean redoEnabled = false;
     private static EventListenerList listenerList = new EventListenerList();
@@ -130,6 +131,7 @@ public class UserInterfaceMain extends AbstractUserInterface {
     /** The progress during input. */
     protected static Progress progress = null;
     private SplashWindow sw = null;
+    private long swStarted;
 
     public UserInterfaceMain(List<String> argsList, Mode mode, boolean showSplash) {
         // Pushing new EventQueue fails on JDK 7
@@ -140,7 +142,7 @@ public class UserInterfaceMain extends AbstractUserInterface {
             EventQueue.invokeAndWait(new Runnable() {
 
                 public void run() {
-                    logger.trace("init original EventDispatchThread {}", Thread.currentThread().getId());
+                    logger.trace("init original EventDispatchThread {}", TextUtils.getThreadID(Thread.currentThread()));
                     assert SwingUtilities.isEventDispatchThread();
                 }
             });
@@ -155,7 +157,7 @@ public class UserInterfaceMain extends AbstractUserInterface {
             @Override
             protected void dispatchEvent(AWTEvent e) {
                 if (logger.isTraceEnabled()) {
-                    logger.trace("enter dispatchEvent {} in thread {}", e, Thread.currentThread().getId());
+                    logger.trace("enter dispatchEvent {} in thread {}", e, TextUtils.getThreadID(Thread.currentThread()));
                 }
                 try {
                     super.dispatchEvent(e);
@@ -177,7 +179,7 @@ public class UserInterfaceMain extends AbstractUserInterface {
             EventQueue.invokeAndWait(new Runnable() {
 
                 public void run() {
-                    logger.trace("set client thread to the new EventDispatchThread {}", Thread.currentThread().getId());
+                    logger.trace("set client thread to the new EventDispatchThread {}", TextUtils.getThreadID(Thread.currentThread()));
                     assert SwingUtilities.isEventDispatchThread();
                     setClientThread();
                     Environment.setThreadEnvironment(IdManager.stdIdManager.getInitialEnvironment());
@@ -322,7 +324,13 @@ public class UserInterfaceMain extends AbstractUserInterface {
             EditingPreferences.lowLevelSetThreadLocalEditingPreferences(lastSavedEp = new EditingPreferences(true, techPool));
             currentGraphicsPreferences = new GraphicsPreferences(true, techPool);
 
-            // see if there is a Macintosh OS/X interface
+    		// set the proper look-and-feel
+    		try
+			{
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {}
+
+            // see if there is a Macintosh interface
             if (ClientOS.isOSMac())
             {
         		// tell it to use the system menu bar
@@ -333,14 +341,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
         		// set the name of the leftmost pulldown menu (under the apple) to "Electric"
 //            	System.setProperty("apple.awt.application.name", "Electric");
 //        		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Electric");
-
-        		// set the proper look-and-feel
-        		try
-				{
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} catch (Exception e)
-				{
-				}
 
         		// plug appropriate operations into the "Electric" menu
         		Desktop desktop = Desktop.getDesktop();
@@ -361,6 +361,7 @@ public class UserInterfaceMain extends AbstractUserInterface {
 
             if (showSplash) {
                 sw = new SplashWindow();
+                swStarted = System.currentTimeMillis();
             }
 
             TopLevel.OSInitialize(mode);
@@ -372,16 +373,21 @@ public class UserInterfaceMain extends AbstractUserInterface {
      * Method is called when initialization was finished.
      */
     public void finishInitialization() {
-        initializationFinished = true;
         // default is last used dir
         if (ClientOS.isOSLinux()) {
             // switch to current dir
             User.setWorkingDirectory(System.getProperty("user.dir"));
         }
 
+        // turn off the splash screen (but keep it for a minimum amount of time)
         if (sw != null) {
-            sw.removeNotify();
-            sw = null;
+        	long initDoneTime = System.currentTimeMillis();
+        	long timeNeeded = MINIMUMSPLASHDURATION - (initDoneTime - swStarted);
+        	if (timeNeeded <= 0) timeNeeded = 1;
+    		new Timer().schedule(new TimerTask() { public void run() {
+                sw.removeNotify();
+                sw = null;
+    		}}, timeNeeded);
         }
         TopLevel.InitializeWindows();
         WindowFrame.wantToOpenCurrentLibrary(true, null);
@@ -1183,7 +1189,6 @@ public class UserInterfaceMain extends AbstractUserInterface {
             JLabel v = new JLabel("Version " + Version.getVersion(), JLabel.CENTER);
             whole.add(v, BorderLayout.SOUTH);
             String fontName = User.getFactoryDefaultFont();
-            //String fontName = User.getDefaultFont();
             Font font = new Font(fontName, Font.BOLD, 24);
             v.setFont(font);
             v.setForeground(Color.BLACK);
@@ -1199,6 +1204,7 @@ public class UserInterfaceMain extends AbstractUserInterface {
             addWindowListener(new WindowsEvents(this));
             setVisible(true);
             toFront();
+            setAlwaysOnTop(true);
             paint(getGraphics());
         }
     }

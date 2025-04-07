@@ -429,7 +429,7 @@ public class TreeTiledCell extends TiledCell {
 
         if (tiledCell == null || !stdC)
         {
-            tiledCell = Cell.newInstance(empty.getLibrary(), tileName);
+            tiledCell = Cell.newInst(empty.getLibrary(), tileName);
             TechType techType = config.getTechType();
             LayoutLib.newNodeInst(techType.essentialBounds(), ep, -w/2, -h/2,
                                   G.DEF_SIZE, G.DEF_SIZE, 180, tiledCell);
@@ -450,6 +450,8 @@ public class TreeTiledCell extends TiledCell {
                 case XY:
                     rows = new NodeInst[2][2];
                     break;
+                default:
+                	break;
             }
             assert(boxes.size() == childrenList.size());
 
@@ -470,6 +472,8 @@ public class TreeTiledCell extends TiledCell {
                         break;
                     case XY:
                         rows[(int)i/2][i%2] = node;
+                    default:
+                    	break;
                 }
             }
 

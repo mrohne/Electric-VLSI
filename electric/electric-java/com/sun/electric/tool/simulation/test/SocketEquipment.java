@@ -29,12 +29,12 @@ import java.net.*;
  */
 public class SocketEquipment implements EquipmentInterface {
 
-    private Socket socket;
+//    private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
 
     public SocketEquipment(Socket socket){
-	this.socket=socket;
+//	this.socket=socket;
 	try {
 	    out=new PrintWriter(socket.getOutputStream(),true);
 	    in=new BufferedReader(new InputStreamReader(socket.getInputStream()));

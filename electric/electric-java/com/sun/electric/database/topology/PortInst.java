@@ -120,7 +120,7 @@ public class PortInst extends ElectricObject implements SteinerTree.SteinerTreeP
      * @param nodeInst the NodeInst that owns the port.
      * @return the newly created PortInst.
      */
-    public static PortInst newInstance(PortProto portProto, NodeInst nodeInst) {
+    public static PortInst newInst(PortProto portProto, NodeInst nodeInst) {
         PortInst pi = new PortInst(portProto, nodeInst);
         return pi;
     }

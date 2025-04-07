@@ -506,7 +506,7 @@ public class CircuitChangeJobs
         @Override
 		public boolean doIt() throws JobException
 		{
-            EditingPreferences ep = getEditingPreferences();
+//            EditingPreferences ep = getEditingPreferences();
 			// first adjust the nodes
 			int adjustedNodes = 0;
 			for(Geometric geom : list)
@@ -609,7 +609,7 @@ public class CircuitChangeJobs
 						int constr = 0;
 						if (ai.isRigid()) constr |= 1;
 						if (ai.isFixedAngle()) constr |= 2;
-						constraints.put(ai, new Integer(constr));
+						constraints.put(ai, Integer.valueOf(constr));
 					}
 					ni.move(bodyXOffset, bodyYOffset);
 					adjustedNodes++;
@@ -890,6 +890,8 @@ public class CircuitChangeJobs
 					case HEADEXTEND:
 					case TAILEXTEND:
 						repaintContents = true;   break;
+					default:
+						break;
 				}
 				if (numUnset == 0) System.out.println("Made " + numSet + " arcs " + action); else
 					if (numSet == 0) System.out.println("Made " + numUnset + " arcs not " + action); else
@@ -2867,12 +2869,12 @@ public class CircuitChangeJobs
 		 * @param pn the PrimitiveNode to examine.
 		 * @return an Iterator over the Variable Keys on the Primitive Node.
 		 */
-		public Iterator<Variable.Key> getPossibleVarKeys(PrimitiveNode pn) {
-			List<Variable.Key> varKeys = posVarsMap.get(pn);
-			if (varKeys == null)
-				varKeys = new ArrayList<Variable.Key>();
-			return varKeys.iterator();
-		}
+//		public Iterator<Variable.Key> getPossibleVarKeys(PrimitiveNode pn) {
+//			List<Variable.Key> varKeys = posVarsMap.get(pn);
+//			if (varKeys == null)
+//				varKeys = new ArrayList<Variable.Key>();
+//			return varKeys.iterator();
+//		}
 
 		/**
 		 * Method to decide a PrimitiveNode has a Variable key.
@@ -3073,7 +3075,7 @@ public class CircuitChangeJobs
 			double yd = td.getYOff() - bounds.getCenterY();
 			td = td.withOff(xd, yd);
 			Object value = inheritAddress(cell, var, ep);
-            ni.addParameter(Variable.newInstance(var.getKey(), value, td));
+            ni.addParameter(Variable.newInst(var.getKey(), value, td));
 		}
 	}
 
@@ -3290,7 +3292,7 @@ public class CircuitChangeJobs
 		{
 			if (EDatabase.serverDatabase().checkInvariants())
 			{
-				ErrorLogger errorLogger = ErrorLogger.newInstance(repair ? "Repair Libraries" : "Check Libraries");
+				ErrorLogger errorLogger = ErrorLogger.newInst(repair ? "Repair Libraries" : "Check Libraries");
 				int errorCount = 0;
 				for(Iterator<Library> it = Library.getLibraries(); it.hasNext(); )
 				{

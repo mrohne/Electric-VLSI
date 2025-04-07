@@ -272,7 +272,7 @@ public abstract class LENetlister extends HierarchyEnumerator.Visitor {
             return false;
         }
         System.out.println("Creating new LESETTINGS box on "+cell+" from User Preferences because none found. Logical effort requires this box");
-        SaveSettings job = new SaveSettings(cell, settings, constants);
+        /* SaveSettings job = */ new SaveSettings(cell, settings, constants);
         return true;
     }
 
@@ -302,16 +302,16 @@ public abstract class LENetlister extends HierarchyEnumerator.Visitor {
                 System.out.println("Could not make instance of LESETTINGS in "+cell+" to save settings.");
                 return false;
             }
-            ni.updateVar(ATTR_su, new Float(constants.su), ep);
-            ni.updateVar(ATTR_wire_ratio, new Float(constants.wireRatio), ep);
-            ni.updateVar(ATTR_epsilon, new Float(constants.epsilon), ep);
-            ni.updateVar(ATTR_max_iter, new Integer(constants.maxIterations), ep);
-            ni.updateVar(ATTR_gate_cap, new Float(constants.gateCap), ep);
-            ni.updateVar(ATTR_alpha, new Float(constants.alpha), ep);
-            ni.updateVar(ATTR_keeper_ratio, new Float(constants.keeperRatio), ep);
-            ni.updateVar(ATTR_x1inverter_nwidth, new Float(constants.x1inverter_nwidth), ep);
-            ni.updateVar(ATTR_x1inverter_pwidth, new Float(constants.x1inverter_pwidth), ep);
-            ni.updateVar(ATTR_x1inverter_length, new Float(constants.x1inverter_length), ep);
+            ni.updateVar(ATTR_su, Float.valueOf(constants.su), ep);
+            ni.updateVar(ATTR_wire_ratio, Float.valueOf(constants.wireRatio), ep);
+            ni.updateVar(ATTR_epsilon, Float.valueOf(constants.epsilon), ep);
+            ni.updateVar(ATTR_max_iter, Integer.valueOf(constants.maxIterations), ep);
+            ni.updateVar(ATTR_gate_cap, Float.valueOf(constants.gateCap), ep);
+            ni.updateVar(ATTR_alpha, Float.valueOf(constants.alpha), ep);
+            ni.updateVar(ATTR_keeper_ratio, Float.valueOf(constants.keeperRatio), ep);
+            ni.updateVar(ATTR_x1inverter_nwidth, Float.valueOf(constants.x1inverter_nwidth), ep);
+            ni.updateVar(ATTR_x1inverter_pwidth, Float.valueOf(constants.x1inverter_pwidth), ep);
+            ni.updateVar(ATTR_x1inverter_length, Float.valueOf(constants.x1inverter_length), ep);
 
             return true;
         }

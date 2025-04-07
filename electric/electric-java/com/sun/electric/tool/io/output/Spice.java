@@ -346,9 +346,10 @@ public class Spice extends Topology
                 // set up run probe
                 Exec.FinishedListener l = new SpiceFinishedListener();
 
+                String[] commandWords = command.split(" ");
                 if (runSpice.equals(SimulationTool.spiceRunChoiceRunIgnoreOutput))
                 {
-                    Exec e = new Exec(command, null, dir, null, null);
+                    Exec e = new Exec(commandWords, null, dir, null, null);
                     if (runProbe) e.addFinishedListener(l);
                     e.start();
                 }
@@ -356,7 +357,7 @@ public class Spice extends Topology
                 {
                     ExecDialog dialog = new ExecDialog(TopLevel.getCurrentJFrame(), false);
                     if (runProbe) dialog.addFinishedListener(l);
-                    dialog.startProcess(command, null, dir);
+                    dialog.startProcess(commandWords, null, dir);
                 }
                 System.out.println("Running spice command: "+command);
             }
@@ -1384,7 +1385,7 @@ public class Spice extends Topology
 	                            if (!localPrefs.writeTransSizeInLambda && !st090laytrans) infstr.append("U");
 	                        }
 	                    }
-	                	foundLen = new Double(l);
+	                	foundLen = Double.valueOf(l);
 	                } else
 	                {
 	                    // get gate length subtraction in lambda
@@ -1430,7 +1431,7 @@ public class Spice extends Topology
 	                            if (!localPrefs.writeTransSizeInLambda && !st090laytrans) infstr.append("U");
 	                        }
 	                    }
-	                	foundWid = new Double(w);
+	                	foundWid = Double.valueOf(w);
 	                } else
 	                {
 	                    // get gate length subtraction in lambda
@@ -1713,7 +1714,7 @@ public class Spice extends Topology
 //		{
 //			Integer i = uniqueNames.get(uniqueCellName.toString());
 //			if (i == null) {
-//				i = new Integer(uniqueID);
+//				i = Integer.valueOf(uniqueID);
 //				uniqueID++;
 //				uniqueNames.put(uniqueCellName.toString(), i);
 //			}
@@ -1742,7 +1743,7 @@ public class Spice extends Topology
         {
             Integer i = uniqueNames.get(uniqueCellName.toString());
             if (i == null) {
-                i = new Integer(uniqueID);
+                i = Integer.valueOf(uniqueID);
                 uniqueID++;
                 uniqueNames.put(uniqueCellName.toString(), i);
             }

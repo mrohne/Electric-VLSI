@@ -31,7 +31,7 @@ public class NanosimLogicSettable implements LogicSettable {
     private final NanosimModel nm;
     private final String port;          // port name
 
-    private static final boolean DEBUG = true;
+//    private static final boolean DEBUG = true;
 
     NanosimLogicSettable(NanosimModel nm, String port) {
         this.nm = nm;

@@ -417,11 +417,11 @@ public class ToolSettings extends AbstractToolSettings {
 	 * @param description the description of this meaning option.
 	 * @param factory the "factory" default value (if nothing is stored).
 	 */
-    private Setting makeLongSetting(String name, String location, String description, long factory) {
-        if (attach)
-            return findSetting(name, location, description, Long.valueOf(factory));
-        return curXmlGroup.makeLongSetting(name, curPrefGroup, name, location, description, factory);
-    }
+//    private Setting makeLongSetting(String name, String location, String description, long factory) {
+//        if (attach)
+//            return findSetting(name, location, description, Long.valueOf(factory));
+//        return curXmlGroup.makeLongSetting(name, curPrefGroup, name, location, description, factory);
+//    }
 
 	/**
 	 * Factory methods to create a double project preference objects.

@@ -284,9 +284,9 @@ public class NetworkTool extends Tool {
         return getIgnoreResistorsSetting().getBoolean();
     }
 
-    private static Netlist.ShortResistors isIgnoreResistors_() {
-        return Netlist.ShortResistors.NO;
-    }
+//    private static Netlist.ShortResistors isIgnoreResistors_() {
+//        return Netlist.ShortResistors.NO;
+//    }
 
     /**
      * Returns project preferences to tell whether resistors are ignored in the circuit.

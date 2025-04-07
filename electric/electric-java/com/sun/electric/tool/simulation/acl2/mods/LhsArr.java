@@ -379,10 +379,10 @@ public class LhsArr
         }
     }
 
-    private void empty()
-    {
-        arr.clear();
-    }
+//    private void empty()
+//    {
+//        arr.clear();
+//    }
 
     public void putPairs(Collection<Aliaspair<IndexName>> aliaspairs)
     {

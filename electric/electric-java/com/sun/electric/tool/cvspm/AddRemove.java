@@ -370,9 +370,11 @@ public class AddRemove {
             File entriestemp = new File(CVSDIR, "Entries.temp");
             String filename = FD.getName();
             boolean success = false;
+            PrintWriter pw;
+            LineNumberReader reader;
             try {
-                LineNumberReader reader = new LineNumberReader(new FileReader(entries));
-                PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(entriestemp, false)));
+                reader = new LineNumberReader(new FileReader(entries));
+                pw = new PrintWriter(new BufferedWriter(new FileWriter(entriestemp, false)));
                 for (;;) {
                     String line = reader.readLine();
                     if (line == null) break;

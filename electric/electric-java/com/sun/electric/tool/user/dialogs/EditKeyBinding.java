@@ -379,7 +379,7 @@ public class EditKeyBinding extends EDialog {
         }
 
         // warn if an ALT key conflicts with a pulldown menu
-        if ((key1.getModifiers() & InputEvent.ALT_MASK) != 0)
+        if ((key1.getModifiers() & InputEvent.ALT_DOWN_MASK) != 0)
         {
 			TopLevel top = TopLevel.getCurrentJFrame();
 			EMenuBar menuBar = top.getEMenuBar();
@@ -387,7 +387,7 @@ public class EditKeyBinding extends EDialog {
 			{
 				char reservedAlt = menu.getMnemonicChar();
 				if (reservedAlt == 0) continue;
-				KeyStroke ksRes = KeyStroke.getKeyStroke(reservedAlt, InputEvent.ALT_MASK);
+				KeyStroke ksRes = KeyStroke.getKeyStroke(reservedAlt, InputEvent.ALT_DOWN_MASK);
 				if (ksRes == key1)
 				{
 			        String [] objects = new String[1];

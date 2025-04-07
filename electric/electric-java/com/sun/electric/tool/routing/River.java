@@ -572,7 +572,7 @@ public class River
 		}
 		toLine = remapSecond(toLine, xfInverse);
 		fromLine = remapSecond(fromLine, xfInverse);
-		return new Double(remapSecond(maxHeight, xfInverse));
+		return Double.valueOf(remapSecond(maxHeight, xfInverse));
 	}
 
 	/**

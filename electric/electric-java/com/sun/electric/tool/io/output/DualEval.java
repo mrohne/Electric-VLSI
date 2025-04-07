@@ -53,7 +53,7 @@ public class DualEval extends Output
     private final List<Cell> downTop = new ArrayList<>();
     private final Map<String, PrimitiveTemplate> primNames = new HashMap<>();
 
-    private DualEvalPreferences localPrefs;
+//    private DualEvalPreferences localPrefs;
 
     public static class DualEvalPreferences extends OutputPreferences
     {
@@ -88,7 +88,7 @@ public class DualEval extends Output
      */
     DualEval(DualEval.DualEvalPreferences dp)
     {
-        localPrefs = dp;
+//        localPrefs = dp;
         initPrims();
     }
 
@@ -122,7 +122,7 @@ public class DualEval extends Output
         printWriter.println("|#");
         for (Cell c : downTop)
         {
-            String name = c.getName();
+            /* String name = */ c.getName();
             List<IconNodeInst> nodes = new ArrayList<>();
             for (Iterator<NodeInst> it = c.getNodes(); it.hasNext();)
             {
@@ -327,20 +327,20 @@ public class DualEval extends Output
         return graph;
     }
 
-    private void printDepGraph(Map<IconNodeInst, Set<IconNodeInst>> graph)
-    {
-        for (Map.Entry<IconNodeInst, Set<IconNodeInst>> e : graph.entrySet())
-        {
-            IconNodeInst niTo = e.getKey();
-            Set<IconNodeInst> niFroms = e.getValue();
-            System.out.print(niTo.getName() + " <-");
-            for (IconNodeInst niFrom : niFroms)
-            {
-                System.out.print(" " + niFrom.getName());
-            }
-            System.out.println();
-        }
-    }
+//    private void printDepGraph(Map<IconNodeInst, Set<IconNodeInst>> graph)
+//    {
+//        for (Map.Entry<IconNodeInst, Set<IconNodeInst>> e : graph.entrySet())
+//        {
+//            IconNodeInst niTo = e.getKey();
+//            Set<IconNodeInst> niFroms = e.getValue();
+//            System.out.print(niTo.getName() + " <-");
+//            for (IconNodeInst niFrom : niFroms)
+//            {
+//                System.out.print(" " + niFrom.getName());
+//            }
+//            System.out.println();
+//        }
+//    }
 
     private Collection<IconNodeInst> toposort(List<IconNodeInst> nodes, Map<IconNodeInst, Set<IconNodeInst>> graph)
     {
@@ -479,7 +479,7 @@ public class DualEval extends Output
         StringBuilder sb = new StringBuilder();
         Netlist netlist = ni.getParent().getNetlist();
         sb.append("(list");
-        boolean first = true;
+//        boolean first = true;
         for (String portName : portNames)
         {
             Network net = netlist.getNetwork(ni.getNodable(0), Name.findName(portName));
@@ -550,7 +550,7 @@ public class DualEval extends Output
 
     private static class PrimitiveTemplate
     {
-        private final String cellName;
+//        private final String cellName;
         private final String primName;
         private final String[] outputs;
         private final String[] inputs;
@@ -561,7 +561,7 @@ public class DualEval extends Output
         PrimitiveTemplate(String cellName, String primName,
             String[] outputs, String[] inputs, boolean propagates, int numGo)
         {
-            this.cellName = cellName;
+//            this.cellName = cellName;
             this.primName = primName;
             this.outputs = outputs;
             this.inputs = inputs;

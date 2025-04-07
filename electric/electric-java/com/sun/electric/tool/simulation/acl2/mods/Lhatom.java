@@ -60,7 +60,6 @@ public abstract class Lhatom<N extends SvarName> implements ACL2Backed
         return new Var<>(svar, rsh);
     }
 
-    @SuppressWarnings("unchecked")
     public static <N extends SvarName> Lhatom<N> Z()
     {
         return (Lhatom<N>)Z;

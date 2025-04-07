@@ -522,7 +522,7 @@ public class Project extends Listener
 				if (oCell.getNewestVersion() == oCell)
 				{
 					if (oCell.getVar(PROJLOCKEDKEY) == null)
-						oCell.newVar(PROJLOCKEDKEY, new Integer(1), ep);
+						oCell.newVar(PROJLOCKEDKEY, Integer.valueOf(1), ep);
 				} else
 				{
 					if (oCell.getVar(PROJLOCKEDKEY) != null)
@@ -575,7 +575,7 @@ public class Project extends Listener
 							if (subLib == null && recursively)
 							{
 								// find a new library in the repository
-								subLib = Library.newInstance(subLibName, null);
+								subLib = Library.newInst(subLibName, null);
 								String projFile = Project.getRepositoryLocation() + File.separator + subLibName + File.separator + PROJECTFILE;
 								File pf = new File(projFile);
 								if (!pf.exists())
@@ -716,7 +716,7 @@ public class Project extends Listener
 		String extension = pc.getLibType().getFirstExtension();
 		String libName = dirName + File.separator + cell.getVersion() + "-" + cell.getView().getFullName() + "." + extension;
 		String tempLibName = getTempLibraryName();
-		Library fLib = Library.newInstance(tempLibName, TextUtils.makeURLToFile(libName));
+		Library fLib = Library.newInst(tempLibName, TextUtils.makeURLToFile(libName));
 		if (fLib == null)
 		{
 			System.out.println("Cannot create library " + libName);

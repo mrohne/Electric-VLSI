@@ -210,7 +210,7 @@ public class LibraryDialog extends EDialog
 			Library lib = Library.findLibrary(libName);
 			if (lib != null)
 				throw new JobException("Library '" + lib.getName() + "' already exists");
-			lib = Library.newInstance(libName, null);
+			lib = Library.newInst(libName, null);
 			String projFile = Project.getRepositoryLocation() + File.separator + libName + File.separator + Project.PROJECTFILE;
 			File pf = new File(projFile);
 			if (!pf.exists())

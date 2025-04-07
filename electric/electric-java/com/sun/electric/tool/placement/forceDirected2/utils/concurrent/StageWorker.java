@@ -38,7 +38,7 @@ public abstract class StageWorker implements Runnable {
 	protected int id;
 
 	public StageWorker() {
-		this.abort = new Boolean(false);
+		this.abort = Boolean.valueOf(false);
 		this.id = ThreadID.getID();
 	}
 

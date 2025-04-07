@@ -102,22 +102,22 @@ public class FPGA extends Technology
 		//**************************************** LAYERS ****************************************
 
 		/** Wire layer */
-		wireLayer = Layer.newInstance(this, "Wire",
+		wireLayer = Layer.newInst(this, "Wire",
 			new EGraphics(false, false, null, 0, 255,0,0,1,true,
 			new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
 		/** Component layer */
-		componentLayer = Layer.newInstance(this, "Component",
+		componentLayer = Layer.newInst(this, "Component",
 			new EGraphics(false, false, null, 0, 0,0,0,1,true,
 			new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
 		/** Pip layer */
-		pipLayer = Layer.newInstance(this, "Pip",
+		pipLayer = Layer.newInst(this, "Pip",
 			new EGraphics(false, false, null, 0, 0,255,0,1,true,
 			new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
 		/** Repeater layer */
-		repeaterLayer = Layer.newInstance(this, "Repeater",
+		repeaterLayer = Layer.newInst(this, "Repeater",
 			new EGraphics(false, false, null, 0, 0,0,255,1,true,
 			new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
@@ -140,7 +140,7 @@ public class FPGA extends Technology
 		//**************************************** NODES ****************************************
 
 		/** wire pin */
-		wirePinNode = PrimitiveNode.newInstance("Wire_Pin", this, 1, 1,
+		wirePinNode = PrimitiveNode.newInst("Wire_Pin", this, 1, 1,
 			new Technology.NodeLayer []
 			{
 				new Technology.NodeLayer(wireLayer, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, new Technology.TechPoint [] {
@@ -156,7 +156,7 @@ public class FPGA extends Technology
 		wirePinNode.setWipeOn1or2();
 
 		/** pip */
-		pipNode = PrimitiveNode.newInstance("Pip", this, 2, 2,
+		pipNode = PrimitiveNode.newInst("Pip", this, 2, 2,
 			new Technology.NodeLayer []
 			{
 				new Technology.NodeLayer(pipLayer, 0, Poly.Type.FILLED, Technology.NodeLayer.BOX, new Technology.TechPoint [] {
@@ -171,7 +171,7 @@ public class FPGA extends Technology
 		pipNode.setSquare();
 
 		/** repeater */
-		repeaterNode = PrimitiveNode.newInstance("Repeater", this, 10, 3,
+		repeaterNode = PrimitiveNode.newInst("Repeater", this, 10, 3,
 			new Technology.NodeLayer []
 			{
 				new Technology.NodeLayer(repeaterLayer, 0, Poly.Type.FILLED, Technology.NodeLayer.BOX, new Technology.TechPoint [] {
@@ -179,9 +179,9 @@ public class FPGA extends Technology
 					new Technology.TechPoint(EdgeH.r(5), EdgeV.t(1.5))})
 			});
 		repeaterNode.addPrimitivePorts(
-				PrimitivePort.newInstance(repeaterNode, new ArcProto[] {wireArc}, "a", 180,45, 0, PortCharacteristic.UNKNOWN,
+				PrimitivePort.newInst(repeaterNode, new ArcProto[] {wireArc}, "a", 180,45, 0, PortCharacteristic.UNKNOWN,
                     EdgeH.l(-5), EdgeV.c(0), EdgeH.l(-5), EdgeV.c(0)),
-				PrimitivePort.newInstance(repeaterNode, new ArcProto[] {wireArc}, "b", 0,45, 1, PortCharacteristic.UNKNOWN,
+				PrimitivePort.newInst(repeaterNode, new ArcProto[] {wireArc}, "b", 0,45, 1, PortCharacteristic.UNKNOWN,
                     EdgeH.r(5), EdgeV.c(0), EdgeH.r(5), EdgeV.c(0))
 			);
 		repeaterNode.setFunction(PrimitiveNode.Function.CONNECT);
@@ -233,8 +233,8 @@ public class FPGA extends Technology
 	/**   display only active internals */		private static final int ACTIVEPRIMDISPLAY  =  02;
 	/** set to display text */					private static final int TEXTDISPLAY        = 010;
 
-	/** set if segment or pip is active */		private static final int ACTIVEPART = 1;
-	/** saved area for segment/pip activity */	private static final int ACTIVESAVE = 2;
+//	/** set if segment or pip is active */		private static final int ACTIVEPART = 1;
+//	/** saved area for segment/pip activity */	private static final int ACTIVESAVE = 2;
 
 	private static class FPGAPort
 	{
@@ -248,7 +248,7 @@ public class FPGA extends Technology
 	private static class FPGANet
 	{
 		String     name;
-		int        segActive;
+//		int        segActive;
 		Point2D [] segFrom;
 		Point2D [] segTo;
 	};
@@ -256,9 +256,9 @@ public class FPGA extends Technology
 	private static class FPGAPip
 	{
 		String  name;
-		int     pipActive;
-		int     con1, con2;
-		double  posX, posY;
+//		int     pipActive;
+//		int     con1, con2;
+//		double  posX, posY;
 	};
 
 	private static class FPGANode extends PrimitiveNode
@@ -285,23 +285,23 @@ public class FPGA extends Technology
 			return netList.length;
 		}
 
-		int numPips()
-		{
-			if (pipList == null) return 0;
-			return pipList.length;
-		}
+//		int numPips()
+//		{
+//			if (pipList == null) return 0;
+//			return pipList.length;
+//		}
 	};
 
 	/** key of Variable holding active pips. */				private static final Variable.Key ACTIVEPIPS_KEY = Variable.newKey("FPGA_activepips");
-	/** key of Variable holding active repeaters. */		private static final Variable.Key ACTIVEREPEATERS_KEY = Variable.newKey("FPGA_activerepeaters");
+//	/** key of Variable holding active repeaters. */		private static final Variable.Key ACTIVEREPEATERS_KEY = Variable.newKey("FPGA_activerepeaters");
 //	/** key of Variable holding cache of pips on node. */	private static final Variable.Key NODEPIPCACHE_KEY = Variable.newKey("FPGA_nodepipcache");
 //	/** key of Variable holding cache of active arcs. */	private static final Variable.Key ARCACTIVECACHE_KEY = Variable.newKey("FPGA_arcactivecache");
-	/** name of current repeater for activity examining */	private String         repeaterName;
-	/** nonzero if current repeater is found to be active */private boolean        repeaterActive;
+//	/** name of current repeater for activity examining */	private String         repeaterName;
+//	/** nonzero if current repeater is found to be active */private boolean        repeaterActive;
 	/** what is being displayed */							private int            internalDisplay = FULLPRIMDISPLAY | TEXTDISPLAY;
 	/** whether the technology has been read */				private boolean        defined = false;
 
-	private static final Technology.NodeLayer[] NULLNODELAYER = new Technology.NodeLayer[0];
+//	private static final Technology.NodeLayer[] NULLNODELAYER = new Technology.NodeLayer[0];
 
 //	/**
 //	 * Method to return a list of Polys that describe a given NodeInst.
@@ -505,188 +505,188 @@ public class FPGA extends Technology
 
 	/******************** TECHNOLOGY INTERFACE SUPPORT ********************/
 
-	private boolean arcEndActive(ArcInst ai, int j, VarContext curContext)
-	{
-		// examine end
-		PortInst pi = ai.getPortInst(j);
-		NodeInst ni = pi.getNodeInst();
-		PortProto pp = pi.getPortProto();
-		NodeProto np = ni.getProto();
-		if (ni.isCellInstance())
-		{
-			// follow down into cell
-			VarContext down = curContext.push(ni);
-			NodeInst subni = ((Export)pp).getOriginalPort().getNodeInst();
-			for(Iterator<Connection> it = subni.getConnections(); it.hasNext(); )
-			{
-				Connection nextCon = it.next();
-				ArcInst oAi = nextCon.getArc();
-				int newEnd = 0;
-				if (oAi.getPortInst(0).getNodeInst() == subni) newEnd = 1;
-				if (arcEndActive(oAi, newEnd, down)) return true;
-			}
-			return false;
-		}
-
-		// primitive: see if it is one of ours
-		if (np instanceof FPGANode)
-		{
-			FPGANode fn = (FPGANode)np;
-			reEvaluatePips(ni, fn, curContext);
-			for(int i = 0; i < fn.numPorts(); i++)
-			{
-				if (fn.portList[i].pp != pp) continue;
-				int index = fn.portList[i].con;
-				if (index >= 0 && fn.netList != null)
-				{
-					if ((fn.netList[index].segActive&ACTIVEPART) != 0) return true;
-				}
-				break;
-			}
-		}
-
-		// propagate
-		Cell parent = ai.getParent();
-		if (parent != null)
-		{
-			Netlist nl = parent.getNetlist();
-			Network net = nl.getNetwork(ni, pp, 0);
-			if (net != null)
-			{
-				for(Iterator<Connection> it = ni.getConnections(); it.hasNext(); )
-				{
-					Connection nextCon = it.next();
-					ArcInst oAi = nextCon.getArc();
-					if (oAi == ai) continue;
-					Network oNet = nl.getNetwork(oAi, 0);
-					if (oNet != net) continue;
-					int newEnd = 1 - nextCon.getEndIndex();
-					if (arcEndActive(oAi, newEnd, curContext)) return true;
-				}
-
-				VarContext higher = curContext.pop();
-				if (higher != null && higher.getNodable() != null)
-				{
-					NodeInst oNi = (NodeInst)higher.getNodable();
-					for (Iterator<Export> it = ni.getExports(); it.hasNext(); )
-					{
-						Export opp = it.next();
-						Network oNet = nl.getNetwork(opp, 0);
-						if (oNet != net) continue;
-
-						for(Iterator<Connection> uIt = oNi.getConnections(); uIt.hasNext(); )
-						{
-							Connection nextCon = uIt.next();
-							ArcInst oAi = nextCon.getArc();
-							if (nextCon.getPortInst().getPortProto() != opp) continue;
-							int newEnd = 1 - nextCon.getEndIndex();
-							if (arcEndActive(oAi, newEnd, higher)) return true;
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
+//	private boolean arcEndActive(ArcInst ai, int j, VarContext curContext)
+//	{
+//		// examine end
+//		PortInst pi = ai.getPortInst(j);
+//		NodeInst ni = pi.getNodeInst();
+//		PortProto pp = pi.getPortProto();
+//		NodeProto np = ni.getProto();
+//		if (ni.isCellInstance())
+//		{
+//			// follow down into cell
+//			VarContext down = curContext.push(ni);
+//			NodeInst subni = ((Export)pp).getOriginalPort().getNodeInst();
+//			for(Iterator<Connection> it = subni.getConnections(); it.hasNext(); )
+//			{
+//				Connection nextCon = it.next();
+//				ArcInst oAi = nextCon.getArc();
+//				int newEnd = 0;
+//				if (oAi.getPortInst(0).getNodeInst() == subni) newEnd = 1;
+//				if (arcEndActive(oAi, newEnd, down)) return true;
+//			}
+//			return false;
+//		}
+//
+//		// primitive: see if it is one of ours
+//		if (np instanceof FPGANode)
+//		{
+//			FPGANode fn = (FPGANode)np;
+//			reEvaluatePips(ni, fn, curContext);
+//			for(int i = 0; i < fn.numPorts(); i++)
+//			{
+//				if (fn.portList[i].pp != pp) continue;
+//				int index = fn.portList[i].con;
+//				if (index >= 0 && fn.netList != null)
+//				{
+//					if ((fn.netList[index].segActive&ACTIVEPART) != 0) return true;
+//				}
+//				break;
+//			}
+//		}
+//
+//		// propagate
+//		Cell parent = ai.getParent();
+//		if (parent != null)
+//		{
+//			Netlist nl = parent.getNetlist();
+//			Network net = nl.getNetwork(ni, pp, 0);
+//			if (net != null)
+//			{
+//				for(Iterator<Connection> it = ni.getConnections(); it.hasNext(); )
+//				{
+//					Connection nextCon = it.next();
+//					ArcInst oAi = nextCon.getArc();
+//					if (oAi == ai) continue;
+//					Network oNet = nl.getNetwork(oAi, 0);
+//					if (oNet != net) continue;
+//					int newEnd = 1 - nextCon.getEndIndex();
+//					if (arcEndActive(oAi, newEnd, curContext)) return true;
+//				}
+//
+//				VarContext higher = curContext.pop();
+//				if (higher != null && higher.getNodable() != null)
+//				{
+//					NodeInst oNi = (NodeInst)higher.getNodable();
+//					for (Iterator<Export> it = ni.getExports(); it.hasNext(); )
+//					{
+//						Export opp = it.next();
+//						Network oNet = nl.getNetwork(opp, 0);
+//						if (oNet != net) continue;
+//
+//						for(Iterator<Connection> uIt = oNi.getConnections(); uIt.hasNext(); )
+//						{
+//							Connection nextCon = uIt.next();
+//							ArcInst oAi = nextCon.getArc();
+//							if (nextCon.getPortInst().getPortProto() != opp) continue;
+//							int newEnd = 1 - nextCon.getEndIndex();
+//							if (arcEndActive(oAi, newEnd, higher)) return true;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return false;
+//	}
 
 	/**
 	 * Method to reevaluate primitive node "ni" (which is associated with internal
 	 * structure "fn").  Finds programming of pips and sets pip and net activity.
 	 */
-	private void reEvaluatePips(NodeInst ni, FPGANode fn, VarContext context)
-	{
-		// primitives with no pips or nets need no evaluation
-		if (fn.numNets() == 0 && fn.numPips() == 0) return;
-
-		// reevaluate: presume all nets and pips are inactive
-		for(int i=0; i<fn.numNets(); i++) fn.netList[i].segActive &= ~ACTIVEPART;
-		for(int i=0; i<fn.numPips(); i++) fn.pipList[i].pipActive &= ~ACTIVEPART;
-
-		// look for pip programming
-		findVariableObjects(fn, ni, ACTIVEPIPS_KEY, true, context);
-
-		// set nets active where they touch active pips
-		for(int i=0; i<fn.numPips(); i++)
-		{
-			FPGAPip fPip = fn.pipList[i];
-			if ((fPip.pipActive&ACTIVEPART) == 0) continue;
-			if (fPip.con1 > 0) fn.netList[fPip.con1].segActive |= ACTIVEPART;
-			if (fPip.con2 > 0) fn.netList[fPip.con2].segActive |= ACTIVEPART;
-		}
-	}
+//	private void reEvaluatePips(NodeInst ni, FPGANode fn, VarContext context)
+//	{
+//		// primitives with no pips or nets need no evaluation
+//		if (fn.numNets() == 0 && fn.numPips() == 0) return;
+//
+//		// reevaluate: presume all nets and pips are inactive
+////		for(int i=0; i<fn.numNets(); i++) fn.netList[i].segActive &= ~ACTIVEPART;
+//		for(int i=0; i<fn.numPips(); i++) fn.pipList[i].pipActive &= ~ACTIVEPART;
+//
+//		// look for pip programming
+//		findVariableObjects(fn, ni, ACTIVEPIPS_KEY, true, context);
+//
+//		// set nets active where they touch active pips
+//		for(int i=0; i<fn.numPips(); i++)
+//		{
+//			FPGAPip fPip = fn.pipList[i];
+//			if ((fPip.pipActive&ACTIVEPART) == 0) continue;
+////			if (fPip.con1 > 0) fn.netList[fPip.con1].segActive |= ACTIVEPART;
+////			if (fPip.con2 > 0) fn.netList[fPip.con2].segActive |= ACTIVEPART;
+//		}
+//	}
 
 	/**
 	 * Method to examine primitive node "ni" and return true if the repeater is active.
 	 */
-	private boolean repeaterActive(NodeInst ni)
-	{
-		repeaterName = ni.getName();
-		repeaterActive = false;
-		findVariableObjects(null, ni, ACTIVEREPEATERS_KEY, false, null);
-		return repeaterActive;
-	}
+//	private boolean repeaterActive(NodeInst ni)
+//	{
+//		repeaterName = ni.getName();
+//		repeaterActive = false;
+//		findVariableObjects(null, ni, ACTIVEREPEATERS_KEY, false, null);
+//		return repeaterActive;
+//	}
 
 	Nodable [] path = new Nodable[100];
 
-	private void findVariableObjects(FPGANode fn, NodeInst ni, Variable.Key varKey, boolean setPips, VarContext context)
-	{
-		// search hierarchical path
-		int depth = 0;
-		path[depth++] = ni;
-		while (context != null)
-		{
-			Nodable niClimb = context.getNodable();
-			if (niClimb == null) break;
-			path[depth++] = niClimb;
-			context = context.pop();
-		}
-
-		// look for programming variables on the nodes
-		for(int c=0; c<depth; c++)
-		{
-			Nodable niClimb = path[c];
-			Variable var = niClimb.getVar(varKey);
-			if (var == null) continue;
-
-			// found pip settings: evaluate them
-			String pt = (String)var.getObject();
-			String [] pipNames = pt.split(" ");
-			for(int i=0; i<pipNames.length; i++)
-			{
-				String start = pipNames[i];
-				if (start.length() == 0) continue;
-
-				// find pip name in "start"
-				String [] pipParts = start.split("\\.");
-				if (pipParts.length == 0 || pipParts.length > depth) continue;
-				boolean pathGood = true;
-				for(int j=0; j<pipParts.length-1; j++)
-				{
-					if (!pipParts[j].equalsIgnoreCase(path[depth-2-j].getName()))
-					{
-						pathGood = false;
-						break;
-					}
-				}
-				if (pathGood)
-				{
-					String lastPart = pipParts[pipParts.length-1];
-					if (setPips)
-					{
-						for(int k=0; k<fn.numPips(); k++)
-							if (fn.pipList[k].name.equalsIgnoreCase(lastPart))
-						{
-							fn.pipList[k].pipActive |= ACTIVEPART;
-						}
-					} else
-					{
-						if (repeaterName.equalsIgnoreCase(lastPart)) repeaterActive = true;
-					}
-				}
-			}
-			break;
-		}
-	}
+//	private void findVariableObjects(FPGANode fn, NodeInst ni, Variable.Key varKey, boolean setPips, VarContext context)
+//	{
+//		// search hierarchical path
+//		int depth = 0;
+//		path[depth++] = ni;
+//		while (context != null)
+//		{
+//			Nodable niClimb = context.getNodable();
+//			if (niClimb == null) break;
+//			path[depth++] = niClimb;
+//			context = context.pop();
+//		}
+//
+//		// look for programming variables on the nodes
+//		for(int c=0; c<depth; c++)
+//		{
+//			Nodable niClimb = path[c];
+//			Variable var = niClimb.getVar(varKey);
+//			if (var == null) continue;
+//
+//			// found pip settings: evaluate them
+//			String pt = (String)var.getObject();
+//			String [] pipNames = pt.split(" ");
+//			for(int i=0; i<pipNames.length; i++)
+//			{
+//				String start = pipNames[i];
+//				if (start.length() == 0) continue;
+//
+//				// find pip name in "start"
+//				String [] pipParts = start.split("\\.");
+//				if (pipParts.length == 0 || pipParts.length > depth) continue;
+//				boolean pathGood = true;
+//				for(int j=0; j<pipParts.length-1; j++)
+//				{
+//					if (!pipParts[j].equalsIgnoreCase(path[depth-2-j].getName()))
+//					{
+//						pathGood = false;
+//						break;
+//					}
+//				}
+//				if (pathGood)
+//				{
+//					String lastPart = pipParts[pipParts.length-1];
+//					if (setPips)
+//					{
+//						for(int k=0; k<fn.numPips(); k++)
+//							if (fn.pipList[k].name.equalsIgnoreCase(lastPart))
+//						{
+////							fn.pipList[k].pipActive |= ACTIVEPART;
+//						}
+//					} else
+//					{
+////						if (repeaterName.equalsIgnoreCase(lastPart)) repeaterActive = true;
+//					}
+//				}
+//			}
+//			break;
+//		}
+//	}
 
 	/******************** TECHNOLOGY CONTROL ********************/
 
@@ -1211,7 +1211,7 @@ public class FPGA extends Technology
 		for(int i=0; i<primNP.numPorts(); i++)
 		{
 			FPGAPort fp = primNP.portList[i];
-            fp.pp = PrimitivePort.newInstance(primNP, new ArcProto [] {wireArc}, fp.name, primNP.numPorts() == 1,
+            fp.pp = PrimitivePort.newInst(primNP, new ArcProto [] {wireArc}, fp.name, primNP.numPorts() == 1,
                     0,180, fp.con, fp.characteristic, false, false,
                     EdgeH.c(fp.posX), EdgeV.c(fp.posY), EdgeH.c(fp.posX), EdgeV.c(fp.posY));
 			ports[i] = fp.pp;
@@ -1450,7 +1450,7 @@ public class FPGA extends Technology
 	{
 		// scan for information in this FPGAPIP object
 		fPip.name = null;
-		fPip.con1 = fPip.con2 = -1;
+//		fPip.con1 = fPip.con2 = -1;
 		for(int j=0; j<lt.size(); j++)
 		{
 			if (lt.isLeaf(j)) continue;
@@ -1468,18 +1468,18 @@ public class FPGA extends Technology
 			if (scanLT.keyword.equalsIgnoreCase("position") && scanLT.size() == 2 &&
 				scanLT.isLeaf(0) && scanLT.isLeaf(1))
 			{
-				fPip.posX = TextUtils.atof(scanLT.getLeaf(0)) - np.getDefWidth(ep)/2;
-				fPip.posY = TextUtils.atof(scanLT.getLeaf(1)) - np.getDefHeight(ep)/2;
+//				fPip.posX = TextUtils.atof(scanLT.getLeaf(0)) - np.getDefWidth(ep)/2;
+//				fPip.posY = TextUtils.atof(scanLT.getLeaf(1)) - np.getDefHeight(ep)/2;
 				continue;
 			}
 			if (scanLT.keyword.equalsIgnoreCase("connectivity") && scanLT.size() == 2 &&
 				scanLT.isLeaf(0) && scanLT.isLeaf(1))
 			{
-				for(int i=0; i<fn.numNets(); i++)
-				{
-					if (fn.netList[i].name.equalsIgnoreCase(scanLT.getLeaf(0))) fPip.con1 = i;
-					if (fn.netList[i].name.equalsIgnoreCase(scanLT.getLeaf(1))) fPip.con2 = i;
-				}
+//				for(int i=0; i<fn.numNets(); i++)
+//				{
+//					if (fn.netList[i].name.equalsIgnoreCase(scanLT.getLeaf(0))) fPip.con1 = i;
+//					if (fn.netList[i].name.equalsIgnoreCase(scanLT.getLeaf(1))) fPip.con2 = i;
+//				}
 				continue;
 			}
 		}
@@ -1606,7 +1606,7 @@ public class FPGA extends Technology
 		}
 
 		// make the cell
-		Cell cell = Cell.newInstance(Library.getCurrent(), blockName);
+		Cell cell = Cell.newInst(Library.getCurrent(), blockName);
 		if (cell == null) return null;
 		System.out.println("Creating cell '" + blockName + "'");
 
@@ -1892,7 +1892,7 @@ public class FPGA extends Technology
 			return true;
 		}
 		PortInst pi = ni.getOnlyPortInst();
-		Export e = Export.newInstance(cell, pi, ltName.getLeaf(0), ep);
+		Export e = Export.newInst(cell, pi, ltName.getLeaf(0), ep);
 		if (e == null)
 		{
 			System.out.println("Error creating port '" + ltName.getLeaf(0) + "' (line " + lt.lineNumber + ")");

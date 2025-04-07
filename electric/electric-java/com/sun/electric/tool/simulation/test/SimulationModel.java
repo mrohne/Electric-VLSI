@@ -490,34 +490,35 @@ public abstract class SimulationModel implements ChipModel {
         PipedOutputStream ostream = new PipedOutputStream();
         try {
             PipedInputStream istream = new PipedInputStream(ostream);
-            processReader = new BufferedReader(new InputStreamReader(istream));
+            InputStreamReader isr = new InputStreamReader(istream);
+            processReader = new BufferedReader(isr);
+
+            // setup and start the process
+            if (additionalCommandLineArgs.length() > 0)
+                command = command + " " + additionalCommandLineArgs;
+                process = new ExecProcess(command.split(" "), null, null, ostream, ostream);
+            System.out.println("  Starting process: "+command);
+            if (process == null) {
+                suppressErrorMsgs = true;
+                return false;
+            }
+
+            long startTime = System.currentTimeMillis();
+            process.start();
+
+            // wait for process to start before returning
+            if (!readProcessOutputUntilReady()) {
+                process = null;
+                return false;
+            }
+            long duration = System.currentTimeMillis() - startTime;
+            if (duration > 60000) 
+                System.out.println("  external process is ready, took "+Infrastructure.getElapsedTime(duration));
         } catch (IOException e) {
             System.out.println("Unable to create pipe to process output: "+e.getMessage());
             suppressErrorMsgs = true;
             return false;
         }
-
-        // setup and start the process
-        if (additionalCommandLineArgs.length() > 0)
-            command = command + " " + additionalCommandLineArgs;
-            process = new ExecProcess(command, null, null, ostream, ostream);
-        System.out.println("  Starting process: "+command);
-        if (process == null) {
-            suppressErrorMsgs = true;
-            return false;
-        }
-
-        long startTime = System.currentTimeMillis();
-        process.start();
-
-        // wait for process to start before returning
-        if (!readProcessOutputUntilReady()) {
-            process = null;
-            return false;
-        }
-        long duration = System.currentTimeMillis() - startTime;
-        if (duration > 60000) 
-            System.out.println("  external process is ready, took "+Infrastructure.getElapsedTime(duration));
         return true;
     }
 

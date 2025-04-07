@@ -142,7 +142,7 @@ public class SCLibraryGen {
         scLibraryName = libraryName;
         scLibrary = Library.findLibrary(scLibraryName);
         if (scLibrary == null) {
-            scLibrary = Library.newInstance(scLibraryName, null);
+            scLibrary = Library.newInst(scLibraryName, null);
             prMsg("Created standard cell library "+scLibraryName);
         }
         prMsg("Using standard cell library "+scLibraryName);
@@ -200,17 +200,17 @@ public class SCLibraryGen {
             // add size text
             NodeInst sizeni = NodeInst.makeInstance(pin, ep, EPoint.ORIGIN,
                     0, 0, iconcell);
-            sizeni.newVar(Artwork.ART_MESSAGE, new Double(size),
+            sizeni.newVar(Artwork.ART_MESSAGE, Double.valueOf(size),
                     ep.getAnnotationTextDescriptor().withColorIndex(blueColorIndex));
 
             // change all arcs to blue
             for (Iterator<ArcInst> it = iconcell.getArcs(); it.hasNext(); ) {
                 ArcInst ai = it.next();
-                ai.newVar(Artwork.ART_COLOR, new Integer(blueColorIndex), ep);
+                ai.newVar(Artwork.ART_COLOR, Integer.valueOf(blueColorIndex), ep);
             }
             for (Iterator<NodeInst> it = iconcell.getNodes(); it.hasNext(); ) {
                 NodeInst ni = it.next();
-                ni.newVar(Artwork.ART_COLOR, new Integer(blueColorIndex), ep);
+                ni.newVar(Artwork.ART_COLOR, Integer.valueOf(blueColorIndex), ep);
             }
             // remove 'X' parameter
             if (iconcell.isParam(sizeKey) && iconcell.getCellGroup() != null) {
@@ -318,7 +318,7 @@ public class SCLibraryGen {
             TextDescriptor td = ep.getCellTextDescriptor().withInterior(true).withDispPart(TextDescriptor.DispPos.NAMEVALUE);
             if (standardCells != null)
             	for(Cell cell : standardCells)
-            		cell.newVar(varName, new Integer(1), td);
+            		cell.newVar(varName, Integer.valueOf(1), td);
             if (notStandardCells != null)
 	            for(Cell cell : notStandardCells)
 	            	cell.delVar(varName);
@@ -385,9 +385,9 @@ public class SCLibraryGen {
 
     public static class StandardCellHierarchy extends HierarchyEnumerator.Visitor {
 
-        private static final Integer standardCell = new Integer(0);
-        private static final Integer containsStandardCell = new Integer(1);
-        private static final Integer doesNotContainStandardCell = new Integer(2);
+        private static final Integer standardCell = Integer.valueOf(0);
+        private static final Integer containsStandardCell = Integer.valueOf(1);
+        private static final Integer doesNotContainStandardCell = Integer.valueOf(2);
 
         private Map<Cell,Integer> standardCellMap = new HashMap<Cell,Integer>();
         private Map<String,Cell> standardCellsByName = new HashMap<String,Cell>();

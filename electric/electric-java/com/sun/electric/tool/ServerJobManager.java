@@ -57,7 +57,7 @@ import javax.swing.JFrame;
  */
 public class ServerJobManager {
 
-    private static final String CLASS_NAME = Job.class.getName();
+//    private static final String CLASS_NAME = Job.class.getName();
     private static final int defaultNumThreads = Math.max(2, Runtime.getRuntime().availableProcessors());
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -216,11 +216,9 @@ public class ServerJobManager {
                 case SERVER_DONE:
                     setEJobState(ejob, EJob.State.CLIENT_DONE, null);
                 case CLIENT_DONE:
-//                    finishedJobs.remove(j.ejob);
-//                    if (!Job.BATCHMODE && !guiChanged)
-//                        SwingUtilities.invokeLater(this);
-//                    guiChanged = true;
                     break;
+        		default:
+        			break;
             }
         } finally {
             unlock();
@@ -372,8 +370,6 @@ public class ServerJobManager {
                     }
                 }
                 assert removed;
-//                if (Job.threadMode != Job.Mode.BATCH && ejob.client == null)
-//                    finishedJobs.add(ejob);
                 ejob.state = newState;
                 Client.fireServerEvent(new Client.EJobEvent(ejob.jobKey, ejob.jobName,
                         ejob.getJob().getTool(), ejob.jobType, ejob.serializedJob,
@@ -381,16 +377,12 @@ public class ServerJobManager {
                 break;
             case CLIENT_DONE:
                 assert oldState == EJob.State.SERVER_DONE;
-//                if (ejob.clientJob.deleteWhenDone)
-//                    finishedJobs.remove(ejob);
+    		default:
+    			break;
         }
         ejob.state = newState;
         List<Job.Inform> jobs = getAllJobInforms();
         Client.fireServerEvent(new Client.JobQueueEvent(jobs.toArray(new Job.Inform[jobs.size()])));
-
-//        if (!Job.BATCHMODE && !guiChanged)
-//            SwingUtilities.invokeLater(this);
-//        guiChanged = true;
         Job.logger.trace("exiting setJobState");
     }
 
@@ -533,11 +525,11 @@ public class ServerJobManager {
             database = EDatabase.clientDatabase();
         }
 
-        private UserInterfaceRedirect(EDatabase database) {
-            jobKey = null;
-            client = null;
-            this.database = database;
-        }
+//        private UserInterfaceRedirect(EDatabase database) {
+//            jobKey = null;
+//            client = null;
+//            this.database = database;
+//        }
 
         void setCurrents(Job job) {
             assert jobKey == job.getKey();

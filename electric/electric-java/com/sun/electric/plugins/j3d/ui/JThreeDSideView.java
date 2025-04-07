@@ -22,35 +22,50 @@
 
 package com.sun.electric.plugins.j3d.ui;
 
-import com.sun.electric.plugins.j3d.*;
-import com.sun.electric.plugins.j3d.utils.J3DUtils;
+import com.sun.electric.plugins.j3d.JMouseRotate;
+import com.sun.electric.plugins.j3d.JMouseTranslate;
+import com.sun.electric.plugins.j3d.JMouseZoom;
 import com.sun.electric.plugins.j3d.utils.J3DAppearance;
+import com.sun.electric.plugins.j3d.utils.J3DUtils;
 import com.sun.electric.technology.Layer;
 import com.sun.electric.tool.user.User;
-import com.sun.electric.tool.user.dialogs.PreferencesFrame;
 import com.sun.electric.tool.user.ui.TopLevel;
 import com.sun.electric.util.math.MutableDouble;
 
-import com.sun.j3d.utils.universe.SimpleUniverse;
-import com.sun.j3d.utils.universe.ViewingPlatform;
-import com.sun.j3d.utils.universe.Viewer;
-import com.sun.j3d.utils.universe.PlatformGeometry;
-import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
-import com.sun.j3d.utils.behaviors.mouse.MouseZoom;
-import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
-import com.sun.j3d.utils.picking.PickCanvas;
-import com.sun.j3d.utils.picking.PickResult;
-
-import javax.media.j3d.*;
-import javax.vecmath.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Iterator;
+
+import javax.swing.JPanel;
+
+import org.jogamp.java3d.Background;
+import org.jogamp.java3d.BoundingSphere;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.Canvas3D;
+import org.jogamp.java3d.GraphicsConfigTemplate3D;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.utils.behaviors.mouse.MouseRotate;
+import org.jogamp.java3d.utils.behaviors.mouse.MouseTranslate;
+import org.jogamp.java3d.utils.behaviors.mouse.MouseZoom;
+import org.jogamp.java3d.utils.picking.PickCanvas;
+import org.jogamp.java3d.utils.picking.PickResult;
+import org.jogamp.java3d.utils.universe.PlatformGeometry;
+import org.jogamp.java3d.utils.universe.SimpleUniverse;
+import org.jogamp.java3d.utils.universe.Viewer;
+import org.jogamp.java3d.utils.universe.ViewingPlatform;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Vector3d;
 
 /**
  * Support class for 3D viewing.
@@ -194,7 +209,7 @@ public class JThreeDSideView extends JPanel
         objRoot.setCapability(BranchGroup.ALLOW_BOUNDS_WRITE);
 
         // Create a simple Shape3D node; add it to the scene graph.
-        Background bg = new Background(new Color3f(new Color(User.getColor(User.ColorPrefType.BACKGROUND))));
+        Background bg = new Background(J3DUtils.makeColor3f(User.ColorPrefType.BACKGROUND.getFactoryDefaultColor()));
         bg.setApplicationBounds(infiniteBounds);
         objRoot.addChild(bg);
 

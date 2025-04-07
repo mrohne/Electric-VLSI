@@ -135,7 +135,7 @@ public class PlacementTab extends PreferencePanel
                 		value = Integer.valueOf(TextUtils.atoi(((JTextField)comp).getText()));
                 	} else
                 	{
-                		value = new Integer(((JComboBox)comp).getSelectedIndex());
+                		value = Integer.valueOf(((JComboBox)comp).getSelectedIndex());
                 	}
                     break;
                 case PlacementFrame.PlacementParameter.TYPESTRING:

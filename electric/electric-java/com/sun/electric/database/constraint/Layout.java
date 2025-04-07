@@ -66,7 +66,7 @@ public class Layout extends Constraints {
     private static boolean doChangesQuietly;
     private static Snapshot oldSnapshot;
     private static long revisionDate;
-    private static String userName;
+//    private static String userName;
     private static Set<Cell> goodSpacingDRCCells, goodAreaDRCCells;
     private static Variable goodSpacingDRCDate, goodSpacingDRCBit, goodAreaDRCDate;
     /** Shadow Cell info */
@@ -125,16 +125,16 @@ public class Layout extends Constraints {
                 System.out.println("\t" + e.getKey() + " --> " + e.getValue());
             }
         }
-        Layout.userName = userName;
+//        Layout.userName = userName;
         revisionDate = System.currentTimeMillis();
         if (goodSpacingDRCCells != null) {
             TextDescriptor td = ep.getCellTextDescriptor().withDisplay(false);
-            goodSpacingDRCDate = Variable.newInstance(DRC_LAST_GOOD_DATE_SPACING, new Long(revisionDate + 1), td); // If cell is changed during this 1 millisecond ???
+            goodSpacingDRCDate = Variable.newInst(DRC_LAST_GOOD_DATE_SPACING, Long.valueOf(revisionDate + 1), td); // If cell is changed during this 1 millisecond ???
         }
 
         if (goodAreaDRCCells != null) {
             TextDescriptor td = ep.getCellTextDescriptor().withDisplay(false);
-            goodAreaDRCDate = Variable.newInstance(DRC_LAST_GOOD_DATE_AREA, new Long(revisionDate + 1), td); // If cell is changed during this 1 millisecond ???
+            goodAreaDRCDate = Variable.newInst(DRC_LAST_GOOD_DATE_AREA, Long.valueOf(revisionDate + 1), td); // If cell is changed during this 1 millisecond ???
         }
         if (!doChangesQuietly) {
             // Propagate changes and mark changed cells.
@@ -309,7 +309,7 @@ public class Layout extends Constraints {
         if (key == DRC_LAST_GOOD_DATE_SPACING) {
             Layout.goodSpacingDRCCells = goodDRCCells;
             TextDescriptor td = ep.getCellTextDescriptor().withDisplay(false);
-            goodSpacingDRCBit = Variable.newInstance(DRC_LAST_GOOD_BIT_SPACING, new Integer(activeBits), td);
+            goodSpacingDRCBit = Variable.newInst(DRC_LAST_GOOD_BIT_SPACING, Integer.valueOf(activeBits), td);
         } else // min area
         {
             Layout.goodAreaDRCCells = goodDRCCells;

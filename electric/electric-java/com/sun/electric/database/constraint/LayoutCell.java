@@ -82,8 +82,8 @@ class LayoutCell {
      * ni.getChangeClock() == changeClock-1  size-changed       nodes
      * ni.getChangeClock() == changeClock    position-changed   nodes
      */
-    private static final Integer AI_RIGID = new Integer(0);
-    private static final Integer AI_FLEX = new Integer(1);
+    private static final Integer AI_RIGID = 0;
+    private static final Integer AI_FLEX = 1;
     final Cell cell;
     private HashMap<Export, PortInst> oldExports;
     private HashMap<ArcInst, ImmutableArcInst> oldArcs;
@@ -948,16 +948,16 @@ class LayoutCell {
             double oldyB = oldyA;
             double oldxA = headPt.getX();
             double oldxB = tailPt.getX();
-            no1 = NodeInst.newInstance(np, ep, new Point2D.Double(oldxB, oldyB), psx, psy, pnt);
-            no2 = NodeInst.newInstance(np, ep, new Point2D.Double(oldxA, oldyA), psx, psy, pnt);
+            no1 = NodeInst.newInst(np, ep, new Point2D.Double(oldxB, oldyB), psx, psy, pnt);
+            no2 = NodeInst.newInst(np, ep, new Point2D.Double(oldxA, oldyA), psx, psy, pnt);
         } else {
             // assume horizontal arcinst
             double oldyA = headPt.getY();
             double oldyB = tailPt.getY();
             double oldxA = (tailPt.getX() + headPt.getX()) / 2;
             double oldxB = oldxA;
-            no1 = NodeInst.newInstance(np, ep, new Point2D.Double(oldxB, oldyB), psx, psy, pnt);
-            no2 = NodeInst.newInstance(np, ep, new Point2D.Double(oldxA, oldyA), psx, psy, pnt);
+            no1 = NodeInst.newInst(np, ep, new Point2D.Double(oldxB, oldyB), psx, psy, pnt);
+            no2 = NodeInst.newInst(np, ep, new Point2D.Double(oldxA, oldyA), psx, psy, pnt);
         }
         if (no1 == null || no2 == null) {
             System.out.println("Problem creating jog pins");

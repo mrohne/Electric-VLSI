@@ -241,7 +241,7 @@ public class KeyBindingManager implements KeyEventDispatcher
                 tmpSet.add(key);
                 row.addHit(tmpSet);
             }
-            String modifier = KeyEvent.getKeyModifiersText(keyS.getModifiers());
+            String modifier = KeyEvent.getModifiersExText(keyS.getModifiers());
             KeyBindingColumn newCol = new KeyBindingColumn(modifier);
             int index = columnList.indexOf(newCol);
             KeyBindingColumn col = (index > -1) ? columnList.get(index) : null;
@@ -353,7 +353,7 @@ public class KeyBindingManager implements KeyEventDispatcher
         Object source = e.getSource();
         if (source instanceof JTextComponent)
         {
-            if ((e.getModifiers() & InputEvent.CTRL_MASK) == 0)
+            if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == 0)
             {
 	        	lastPrefix = null;
 	        	return false;
@@ -391,7 +391,7 @@ public class KeyBindingManager implements KeyEventDispatcher
         	if (c instanceof OpenFile.OpenFileSwing) { lastPrefix = null;  return false; }
         	c = c.getParent();
         }
-        if (!valid && (e.getModifiers() & InputEvent.CTRL_MASK) == 0)
+        if (!valid && (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == 0)
         {
         	lastPrefix = null;
         	return false;
@@ -415,7 +415,7 @@ public class KeyBindingManager implements KeyEventDispatcher
 
 		// remove shift modifier from Events.  Lets KeyStrokes like '<' register correctly,
 		// because they are always delivered as SHIFT-'<'.
-		if ((e.getModifiers() & InputEvent.SHIFT_MASK) != 0 && !Character.isLetter(e.getKeyCode()) && !Character.isDigit(e.getKeyCode()))
+		if ((e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0 && !Character.isLetter(e.getKeyCode()) && !Character.isDigit(e.getKeyCode()))
 		{
 			if (e.getKeyCode() != KeyEvent.VK_LEFT && e.getKeyCode() != KeyEvent.VK_RIGHT &&
 				e.getKeyCode() != KeyEvent.VK_UP && e.getKeyCode() != KeyEvent.VK_DOWN)

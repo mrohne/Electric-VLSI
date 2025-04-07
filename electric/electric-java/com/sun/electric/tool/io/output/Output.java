@@ -257,7 +257,7 @@ public class Output
 		String classPath = getClass().getName();
 		int lastDot = classPath.lastIndexOf('.');
 		if (lastDot >= 0) classPath = classPath.substring(lastDot+1);
-        errorLogger = ErrorLogger.newInstance(classPath + " Output");
+        errorLogger = ErrorLogger.newInst(classPath + " Output");
     }
 
     /**

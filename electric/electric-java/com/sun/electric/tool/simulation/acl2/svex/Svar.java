@@ -106,7 +106,6 @@ public interface Svar<N extends SvarName> extends ACL2Backed
         return cons(KEYWORD_VAR, cons(name, ACL2Object.valueOf(nonblocking ? -delay - 1 : delay)));
     }
 
-    @SuppressWarnings("unchecked")
     public static <N extends SvarName> Svar<N>[] newSvarArray(int length)
     {
         return new Svar[length];

@@ -133,7 +133,7 @@ public class FillCellTool extends FillGeneratorTool {
     		Cell topCell, List<Rectangle2D> topBoxList, Area area)
     {
         // Create an empty cell for cases where all nodes/arcs are moved due to collision
-        Cell empty = Cell.newInstance(lib, "empty"+masters.get(0).getName()+"{lay}");
+        Cell empty = Cell.newInst(lib, "empty"+masters.get(0).getName()+"{lay}");
         empty.setTechnology(topCell.getTechnology());
         double cellWidth = masters.get(0).getBounds().getWidth();
         double cellHeight = masters.get(0).getBounds().getHeight();

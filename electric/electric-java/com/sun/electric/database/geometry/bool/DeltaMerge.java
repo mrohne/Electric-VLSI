@@ -82,17 +82,14 @@ public class DeltaMerge {
             return;
         }
         out.writeBoolean(true);
-//        System.out.print("x=" + DBMath.gridToLambda(x));
         out.writeInt(x);
         out.writeInt(outC);
         for (int i = 0; i < outC; i++) {
             int outVal = outA[i];
-            int y = outVal >> 1;
-            boolean df = (outVal & 1) != 0;
-//            System.out.print(" " + DBMath.gridToLambda(y) + (df?"^":"_"));
+//            int y = outVal >> 1;
+//            boolean df = (outVal & 1) != 0;
             out.writeInt(outVal);
         }
-//        System.out.println();
     }
 
     private boolean getLine() {
@@ -108,7 +105,6 @@ public class DeltaMerge {
 
     private void printSegments() {
         for (Segment cp = chain; cp.next != segLast; cp = cp.next) {
-//            System.out.println("y="+cp.y+" val="+cp.val);
             assert cp.y < cp.next.y;
             assert cp.val >= 0;
         }

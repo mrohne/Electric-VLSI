@@ -33,11 +33,11 @@ public abstract class LatticeOperation<V extends Serializable>
     implements
         Serializable {
 
-    private final Unboxed<V> uv;
+//    private final Unboxed<V> uv;
 
     public LatticeOperation(Unboxed<V> uv) {
         super(uv, uv);
-        this.uv = uv;
+//        this.uv = uv;
     }
 
     public abstract void lub(byte[] buf1, int ofs1, byte[] buf2, int ofs2, byte[] dest, int dest_ofs);

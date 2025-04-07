@@ -115,7 +115,7 @@ public class StartUpStageWorker extends StageWorker {
 		List<Integer> places = new ArrayList<Integer>(this.heightCheckBoarding * this.widthCheckBoarding);
 
 		for (int i = 0; i < (this.heightCheckBoarding * this.widthCheckBoarding); i++) {
-			places.add(new Integer(i));
+			places.add(Integer.valueOf(i));
 		}
 
 		for (PlacementNode node : this.nodesToPlace) {
@@ -182,10 +182,10 @@ public class StartUpStageWorker extends StageWorker {
 			resolveOverlap.start();
 			endStage.start();
 
-			int totalNumOfPorts = 0;
-			for (PlacementNode node : this.nodesToPlace) {
-				totalNumOfPorts += node.getPorts().size();
-			}
+//			int totalNumOfPorts = 0;
+//			for (PlacementNode node : this.nodesToPlace) {
+//				totalNumOfPorts += node.getPorts().size();
+//			}
 
 			int stepWidth = 10;
 			for (int i = 0; i < this.heightCheckBoarding; i += stepWidth) {

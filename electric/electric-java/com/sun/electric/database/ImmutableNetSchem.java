@@ -94,7 +94,7 @@ class ImmutableNetSchem extends ImmutableNet {
     /** Counter for enumerating NetNames. */
     private int netNameCount;
     /** Counter for enumerating NetNames. */
-    private int exportedNetNameCount;
+//    private int exportedNetNameCount;
     /** */
     final int[] portOffsets;
     /** Node offsets. */
@@ -364,7 +364,7 @@ class ImmutableNetSchem extends ImmutableNet {
         }
 
         assert numExportedDrawns == numExportedDrawns_;
-        assert numConnectedDrawns == numConnectedDrawns;
+        assert numConnectedDrawns == numConnectedDrawns_;
         assert numDrawns == numDrawns_;
         assert Arrays.equals(drawns, drawns_);
     }
@@ -374,7 +374,7 @@ class ImmutableNetSchem extends ImmutableNet {
         for (ImmutableExport e : exports) {
             addNetNames(e.name);
         }
-        exportedNetNameCount = netNameCount;
+//        exportedNetNameCount = netNameCount;
         for (ImmutableArcInst a : arcs) {
             ArcProto ap = techPool.getArcProto(a.protoId);
             if (ap.getFunction() == ArcProto.Function.NONELEC) {
@@ -1115,36 +1115,20 @@ class ImmutableNetSchem extends ImmutableNet {
     }
 
 //    /**
-//     * Method to tell whether this NodeInst is an icon of its parent.
-//     * Electric does not allow recursive circuit hierarchies (instances of Cells inside of themselves).
-//     * However, it does allow one exception: a schematic may contain its own icon for documentation purposes.
-//     * This method determines whether this NodeInst is such an icon.
-//     * @return true if this NodeInst is an icon of its parent.
+//     * Method to find the Export on another Cell that is equivalent to this Export.
+//     * @param otherCell the other cell to equate.
+//     * @return the Export on that other Cell which matches this Export.
+//     * Returns null if none can be found.
 //     */
-//    private boolean isIconOfParent(ImmutableNodeInst n) {
-//        if (!(n.protoId instanceof CellId)) {
-//            return false;
+//    private ImmutableExport getEquivalentPort(CellRevision otherCell, ImmutableExport e) {
+//        /* don't waste time searching if the two views are the same */
+//        if (cellRevision == otherCell) {
+//            return e;
 //        }
-//        CellBackup subCell = snapshot.getCell((CellId) n.protoId);
-//        CellId subCellId = subCell.cellRevision.d.cellId;
-//        return subCellId.isIcon() && cellId.isSchematic() && subCellId.libId == cellId.libId
-//                && subCell.cellRevision.d.groupName.equals(cellRevision.d.groupName);
+//
+//        // this is the non-cached way to do it
+//        return findExport(otherCell, e.name);
 //    }
-    /**
-     * Method to find the Export on another Cell that is equivalent to this Export.
-     * @param otherCell the other cell to equate.
-     * @return the Export on that other Cell which matches this Export.
-     * Returns null if none can be found.
-     */
-    private ImmutableExport getEquivalentPort(CellRevision otherCell, ImmutableExport e) {
-        /* don't waste time searching if the two views are the same */
-        if (cellRevision == otherCell) {
-            return e;
-        }
-
-        // this is the non-cached way to do it
-        return findExport(otherCell, e.name);
-    }
 
     /**
      * Method to find the PortProto that has a particular Name.

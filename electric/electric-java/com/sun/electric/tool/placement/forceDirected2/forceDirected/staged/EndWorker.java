@@ -85,7 +85,7 @@ public class EndWorker extends StageWorker {
 			dtos.add(tmp);
 		}
 
-		for (int i = stepWidth + 1, j = 0; i < this.height; i += stepWidth, j++) {
+		for (int i = stepWidth + 1; i < this.height; i += stepWidth) {
 			CheckboardingField[][] fields = this.checkPattern.getFields(0, i, stepWidth + 1, stepWidth);
 			PlacementDTO tmp = new PlacementDTO(fields, -1);
 			tmp.setCounter(this.currentStep);
@@ -131,7 +131,7 @@ public class EndWorker extends StageWorker {
 				PlacementDTO data = this.stage.getInput(this).get();
 				data.incCounter();
 
-				this.elementCounter.put(data, new Integer(data.getCounter()));
+				this.elementCounter.put(data, Integer.valueOf(data.getCounter()));
 
 				// current timestamp
 				long now = System.currentTimeMillis();
@@ -140,7 +140,7 @@ public class EndWorker extends StageWorker {
 					// if (data.getCounter() < iterations) {
 					data.setTimestamp(now);
 					if ((data.getCounter() % 6) == 0) {
-						this.formatEnsmallElementCounter.put(data, new Integer(data.getIndex()));
+						this.formatEnsmallElementCounter.put(data, Integer.valueOf(data.getIndex()));
 
 						if (this.elementCounter.size() == this.formatEnsmallElementCounter.size()) {
 							// PlacementForceDirectedStaged.setMovementCounter(0);
@@ -150,13 +150,13 @@ public class EndWorker extends StageWorker {
 
 							for (PlacementDTO dto : dtos) {
 								this.stage.sendToNextStage(dto);
-								this.elementCounter.put(dto, new Integer(dto.getIndex()));
+								this.elementCounter.put(dto, Integer.valueOf(dto.getIndex()));
 							}
 
 							this.formatEnsmallElementCounter.clear();
 						}
 					} else if ((data.getCounter() % 5) == 0) {
-						this.formatEnlargeElementCounter.put(data, new Integer(data.getIndex()));
+						this.formatEnlargeElementCounter.put(data, Integer.valueOf(data.getIndex()));
 						if (this.elementCounter.size() == this.formatEnlargeElementCounter.size()) {
 							this.currentStep = data.getCounter();
 							List<PlacementDTO> dtos = this.enlargeDTO();
@@ -165,7 +165,7 @@ public class EndWorker extends StageWorker {
 							for (PlacementDTO dto : dtos) {
 								dto.setVelocityFactor(this.velocityFactor);
 								this.stage.sendToNextStage(dto);
-								this.elementCounter.put(dto, new Integer(dto.getIndex()));
+								this.elementCounter.put(dto, Integer.valueOf(dto.getIndex()));
 							}
 
 							this.formatEnlargeElementCounter.clear();
@@ -175,7 +175,7 @@ public class EndWorker extends StageWorker {
 					}
 
 				} else {
-					GlobalVars.rounds = new Integer(data.getCounter());
+					GlobalVars.rounds = Integer.valueOf(data.getCounter());
 					this.startUpStage.stop();
 				}
 

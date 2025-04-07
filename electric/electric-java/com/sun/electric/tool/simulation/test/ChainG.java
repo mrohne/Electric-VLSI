@@ -531,14 +531,14 @@ public class ChainG extends JFrame implements TreeModelListener, ChainNode.Shift
         }
     }
 
-    private ChainNode getParentChainNode(MyTreeNode node) {
-        if (node instanceof ChainNode) return (ChainNode)node;
-        while (node != null) {
-            node = node.getParent();
-            if (node instanceof ChainNode) return (ChainNode)node;
-        }
-        return null;
-    }
+//    private ChainNode getParentChainNode(MyTreeNode node) {
+//        if (node instanceof ChainNode) return (ChainNode)node;
+//        while (node != null) {
+//            node = node.getParent();
+//            if (node instanceof ChainNode) return (ChainNode)node;
+//        }
+//        return null;
+//    }
 
     /** main program: instantiate ChainModel and JFrame */
     public static void main(String[] argv) {

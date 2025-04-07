@@ -83,7 +83,7 @@ public class SubcircuitInfo {
 	                                   Map<String,Integer> exportNameToPortIndex, 
 	                                   Port[] refPorts) {
 		for (int i=0; i<refPorts.length; i++) {
-			Integer portIndex = new Integer(i);
+			Integer portIndex = Integer.valueOf(i);
 			Port port = refPorts[i];
 			for (Iterator<String> it=port.getExportNames(); it.hasNext();) {
 				String exportName = it.next();

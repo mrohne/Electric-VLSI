@@ -1767,7 +1767,7 @@ public class SCTiming {
                                             double tmholdminPS, double tmholdmaxPS, double tmholdguessPS,
                                             boolean verbose, int maxSpiceIterations
                                             ) throws SCTimingException {
-        int optphase = 0;
+//        int optphase = 0;
         String arcDesc = arc.toString();
         if (verbose) {
             msg.println();
@@ -1919,10 +1919,10 @@ public class SCTiming {
      * @throws SCTimingException
      */
     private void runSpice(String outputFileName, boolean verbose) throws SCTimingException {
-        String command = settings.simulator+ " "+outputFileName+".sp";
+        String [] command = new String[] {settings.simulator, outputFileName+".sp"};
         if (verbose) {
             msg.println();
-            msg.println("Running spice: "+command);
+            msg.println("Running spice: "+command[0] + " " + command[1]);
             msg.println("   In directory "+outputDir);
             msg.println("   Logging output to "+outputFileName+".out");
             msg.println("   "+new Date(System.currentTimeMillis()));
@@ -2945,19 +2945,19 @@ public class SCTiming {
         private String outputNeg;
         private String inputPin;
         private String clockedOnPin;
-        private boolean ddr = false;
+//        private boolean ddr = false;
         public FlipFlopFunction(String outputPin, String outputNegPin, String inputPin, String clockedOnPin, boolean ddr) {
             this.outputPos = outputPin;
             this.outputNeg = outputNegPin;
             this.inputPin = inputPin;
             this.clockedOnPin = clockedOnPin;
-            this.ddr = ddr;
+//            this.ddr = ddr;
         }
         public String getOutputPosPin() { return outputPos; }
         public String getOutputNegPin() { return outputNeg; }
         public String getInputPin() { return inputPin; }
         public String getClockedOnPin() { return clockedOnPin; }
-        public boolean isDDR() { return ddr; }
+//        public boolean isDDR() { return ddr; }
     }
 
     private static class FlipFlopFunctionSDRtoDDR {
@@ -2984,16 +2984,16 @@ public class SCTiming {
     private static class FlipFlopFunctionDDRtoSDR {
         private String outputRisePos;
         private String outputRiseNeg;
-        private String outputFallPos;
-        private String outputFallNeg;
+//        private String outputFallPos;
+//        private String outputFallNeg;
         private String input;
         private String clockedOnPin;
         public FlipFlopFunctionDDRtoSDR(String outputRisePos, String outputRiseNeg, String outputFallPos, String outputFallNeg,
                                    String input, String clockedOnPin) {
             this.outputRisePos = outputRisePos;
             this.outputRiseNeg = outputRiseNeg;
-            this.outputFallPos = outputFallPos;
-            this.outputFallNeg = outputFallNeg;
+//            this.outputFallPos = outputFallPos;
+//            this.outputFallNeg = outputFallNeg;
             this.input = input;
             this.clockedOnPin = clockedOnPin;
         }
@@ -3002,8 +3002,8 @@ public class SCTiming {
         }
         public String getOutputRisePos() { return outputRisePos; }
         public String getOutputRiseNeg() { return outputRiseNeg; }
-        public String getOutputFallPos() { return outputFallPos; }
-        public String getOutputFallNeg() { return outputFallNeg; }
+//        public String getOutputFallPos() { return outputFallPos; }
+//        public String getOutputFallNeg() { return outputFallNeg; }
         public String getInput() { return input; }
         public String getClockedOnPin() { return clockedOnPin; }
     }
@@ -3035,17 +3035,17 @@ public class SCTiming {
             this.scanEnPin = scanEnPin;
         }
         public String getScanInPin() { return scanInPin; }
-        public String getScanOutPin() { return scanOutPin; }
+//        public String getScanOutPin() { return scanOutPin; }
         public String getScanEnPin() { return scanEnPin; }
         public boolean isScanIn(String s) { return (scanInPin != null) && s.equals(scanInPin); }
         public boolean isScanOut(String s) { return (scanOutPin != null) && s.equals(scanOutPin); }
         public boolean isScanEn(String s) { return (scanEnPin != null) && s.equals(scanEnPin); }
     }
 
-    private String toStringQuote(double val, double scale) {
-        double [] a = {val};
-        return toStringQuote(a, scale);
-    }
+//    private String toStringQuote(double val, double scale) {
+//        double [] a = {val};
+//        return toStringQuote(a, scale);
+//    }
 
     private String toStringQuote(double [] vals, double scale) {
         StringBuffer buf = new StringBuffer("\"");

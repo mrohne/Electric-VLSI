@@ -675,7 +675,7 @@ public class RoutingFrameLeeMoore extends BenchmarkRouter {
 						+ TextUtils.formatDouble(this.xFinish) + ", "
 						+ TextUtils.formatDouble(this.yFinish) + ", "
 						+ this.zFinish + ")" + " - NetID=" + this.netID + ", "
-						+ "Thread ID: " + Thread.currentThread().getId());
+						+ "Thread ID: " + TextUtils.getThreadID(Thread.currentThread()));
 			}
 		}
 
@@ -1660,12 +1660,12 @@ public class RoutingFrameLeeMoore extends BenchmarkRouter {
 	 */
 	private static class LMVia implements RTBounds {
         private FixpRectangle bound;
-		private Point2D loc;
+//		private Point2D loc;
 		private int netID;
 
 		LMVia(Point2D loc, int netID) {
             bound = FixpRectangle.from(new Rectangle2D.Double(loc.getX(), loc.getY(), 0, 0));
-			this.loc = loc;
+//			this.loc = loc;
 			this.netID = netID;
 		}
 

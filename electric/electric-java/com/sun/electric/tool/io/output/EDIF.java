@@ -1462,7 +1462,7 @@ public class EDIF extends Topology
 							wireFound = true;
 					}
 					if (wireFound && busWidthFound > 1)
-						rippers.add(new Integer(busWidthFound));
+						rippers.add(Integer.valueOf(busWidthFound));
 				}
 				continue;
 			}
@@ -1479,13 +1479,13 @@ public class EDIF extends Topology
 		}
 	}
 
-    private String getPrimKey(NodeInst ni, int i) {
-        if (ni.isCellInstance()) return null;
-        PrimitiveNode pn = (PrimitiveNode)ni.getProto();
-        PrimitiveNode.Function func = ni.getFunction();
-        String key = pn.getTechnology().getTechShortName() + "_" + pn.getName() + "_" + func.getConstantName() + "_" +i;
-        return key;
-    }
+//    private String getPrimKey(NodeInst ni, int i) {
+//        if (ni.isCellInstance()) return null;
+//        PrimitiveNode pn = (PrimitiveNode)ni.getProto();
+//        PrimitiveNode.Function func = ni.getFunction();
+//        String key = pn.getTechnology().getTechShortName() + "_" + pn.getName() + "_" + func.getConstantName() + "_" +i;
+//        return key;
+//    }
 
 	/**
 	 * Method to generate a pt symbol (pt x y)

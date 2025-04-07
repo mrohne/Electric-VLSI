@@ -317,8 +317,8 @@ public class Reference
 		for(PlacementNode n : nodesToPlace)
 		{
 			b.valuesFrom(n);
-			xPositions.add(new Double(b.getX()));
-			yPositions.add(new Double(b.getY()));
+			xPositions.add(Double.valueOf(b.getX()));
+			yPositions.add(Double.valueOf(b.getY()));
 			
 			if(b.getWidth() > maxW)
 			{

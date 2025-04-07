@@ -36,17 +36,17 @@ import java.util.LinkedList;
 public class ExprEval {
 
     private LinkedList<Expr> el = new LinkedList<Expr>();
-    private boolean printDetailed = false;
+//    private boolean printDetailed = false;
     boolean hasBoth = false;
 
     public void printAll( boolean detailed )
     {
-		printDetailed = detailed;
+//		printDetailed = detailed;
 		for(Expr e : el) {
 			//if (bp->_opref <= 0 || !detailed && (bp->_opref <= 1 || bp->isConst())) continue;
 			System.out.println(/*"[" + e._opref + "] " +*/ (e.name != null ? e.name : "_") + "." + e.id + " = " + e);
 		}
-		printDetailed = false;
+//		printDetailed = false;
     }
 
     public void calcAll()

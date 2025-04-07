@@ -286,7 +286,7 @@ public class IdWriter {
         if (i != null) {
             out.writeInt(i.intValue());
         } else {
-            i = new Integer(varKeys.size());
+            i = varKeys.size();
             varKeys.put(key, i);
             out.writeInt(i.intValue());
 
@@ -307,7 +307,7 @@ public class IdWriter {
         if (i != null) {
             out.writeInt(i.intValue());
         } else {
-            i = new Integer(textDescriptors.size());
+            i = textDescriptors.size();
             textDescriptors.put(td, i);
             out.writeInt(i.intValue());
 
@@ -329,7 +329,7 @@ public class IdWriter {
         if (i != null) {
             out.writeInt(i.intValue());
         } else {
-            i = new Integer(tools.size());
+            i = tools.size();
             tools.put(tool, i);
             out.writeInt(i.intValue());
             out.writeUTF(tool.getName());
@@ -421,7 +421,7 @@ public class IdWriter {
         if (i != null) {
             out.writeInt(i.intValue());
         } else {
-            i = new Integer(orients.size());
+            i = orients.size();
             orients.put(orient, i);
             out.writeInt(i.intValue());
 

@@ -195,7 +195,7 @@ public class SchemToLay {
 			pStkPorts = new ArrayList<PortInst>();
 			pPorts.add(nonStkPorts.get(0));
 
-			Integer pExpTrk = hasPmosExpTrk() ? new Integer(getExpTrk()) : null;
+			Integer pExpTrk = hasPmosExpTrk() ? Integer.valueOf(getExpTrk()) : null;
 			Iterator<Export> pExports = hasPmosExpTrk() ? removeExports() : NO_EXPORTS;
 
 			return new RouteSeg(pPorts, pExports, pExpTrk);
@@ -206,18 +206,18 @@ public class SchemToLay {
 			ports.addAll(nonStkPorts);
 			return ports;
 		}
-		public double estimateLength() {
-			double minX = Double.POSITIVE_INFINITY;
-			double maxX = Double.NEGATIVE_INFINITY;
-			ArrayList<PortInst> ports = getAllPorts();
-			for (int i=0; i<ports.size(); i++) {
-				double x = LayoutLib.roundCenterX(ports.get(i));
-				minX = Math.min(minX, x);
-				maxX = Math.max(maxX, x);
-			}
-			double weight = hasExports() ? 1/*.5*/ : 1;
-			return weight*(maxX-minX);
-		}
+//		public double estimateLength() {
+//			double minX = Double.POSITIVE_INFINITY;
+//			double maxX = Double.NEGATIVE_INFINITY;
+//			ArrayList<PortInst> ports = getAllPorts();
+//			for (int i=0; i<ports.size(); i++) {
+//				double x = LayoutLib.roundCenterX(ports.get(i));
+//				minX = Math.min(minX, x);
+//				maxX = Math.max(maxX, x);
+//			}
+//			double weight = hasExports() ? 1/*.5*/ : 1;
+//			return weight*(maxX-minX);
+//		}
 		public double getLoX() {
 			double minX = Double.POSITIVE_INFINITY;
 			ArrayList<PortInst> ports = getAllPorts();
@@ -936,10 +936,10 @@ public class SchemToLay {
 										   stdCell.getVddY(), tech, ep, gasp);
 
 		// place vdd and gnd exports on the first full height layout instance
-		Export.newInstance(gasp, findFirstPort(layInsts, "gnd"), "gnd", ep)
+		Export.newInst(gasp, findFirstPort(layInsts, "gnd"), "gnd", ep)
 		    .setCharacteristic(PortCharacteristic.GND);
 		gnd.connect(gasp.findExport("gnd"));
-		Export.newInstance(gasp, findFirstPort(layInsts, "vdd"), "vdd", ep)
+		Export.newInst(gasp, findFirstPort(layInsts, "vdd"), "vdd", ep)
 		    .setCharacteristic(PortCharacteristic.PWR);
 		vdd.connect(gasp.findExport("vdd"));
 

@@ -160,7 +160,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
 
     // --------------------- private and protected methods ---------------------
     /**
-     * The constructor of NodeInst. Use the factory "newInstance" instead.
+     * The constructor of NodeInst. Use the factory "newInst" instead.
      * @param d persistent data of this NodeInst.
      * @param topology the Topology in which this NodeInst will reside.
      */
@@ -173,7 +173,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
         portInsts = new PortInst[protoType.getNumPorts()];
         for (int i = 0; i < portInsts.length; i++) {
             PortProto pp = protoType.getPort(i);
-            portInsts[i] = PortInst.newInstance(pp, this);
+            portInsts[i] = PortInst.newInst(pp, this);
         }
     }
 
@@ -187,7 +187,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
         portInsts = new PortInst[protoType.getNumPorts()];
         for (int i = 0; i < portInsts.length; i++) {
             PortProto pp = protoType.getPort(i);
-            portInsts[i] = PortInst.newInstance(pp, this);
+            portInsts[i] = PortInst.newInst(pp, this);
         }
     }
 
@@ -226,19 +226,41 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
     }
 
     /****************************** CREATE, DELETE, MODIFY ******************************/
+
     /**
      * Short form method to create a NodeInst and do extra things necessary for it. Angle, name
      * and techBits are set to defaults.
      * @param protoType the NodeProto of which this is an instance.
+     * @param ep EditingPreferences with default sizes and text descriptors.
      * @param center the center location of this NodeInst.
      * @param width the width of this NodeInst (can't be negative).
      * @param height the height of this NodeInst (can't be negative).
      * @param parent the Cell in which this NodeInst will reside.
      * @return the newly created NodeInst, or null on error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
+     * @deprecated but kept around for Python and BSH access
      */
+    @Deprecated
     public static NodeInst makeInstance(NodeProto protoType, Point2D center, double width, double height, Cell parent) {
-        return makeInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent);
+        return makeInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent, Orientation.IDENT, null);
+    }
+
+    /**
+     * Short form method to create a NodeInst and do extra things necessary for it. Angle, name
+     * and techBits are set to defaults.
+     * @param protoType the NodeProto of which this is an instance.
+     * @param ep EditingPreferences with default sizes and text descriptors.
+     * @param center the center location of this NodeInst.
+     * @param width the width of this NodeInst (can't be negative).
+     * @param height the height of this NodeInst (can't be negative).
+     * @param parent the Cell in which this NodeInst will reside.
+     * @param orient the orientation of this NodeInst.
+     * @param name name of new NodeInst
+     * @return the newly created NodeInst, or null on error.
+     * @deprecated but kept around for Python and BSH access
+     */
+    public static NodeInst makeInstance(NodeProto protoType, Point2D center, double width, double height,
+            Cell parent, Orientation orient, String name) {
+        return makeInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent, orient, name, 0);
     }
 
     /**
@@ -261,24 +283,6 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * Short form method to create a NodeInst and do extra things necessary for it. Angle, name
      * and techBits are set to defaults.
      * @param protoType the NodeProto of which this is an instance.
-     * @param center the center location of this NodeInst.
-     * @param width the width of this NodeInst (can't be negative).
-     * @param height the height of this NodeInst (can't be negative).
-     * @param parent the Cell in which this NodeInst will reside.
-     * @param orient the orientation of this NodeInst.
-     * @param name name of new NodeInst
-     * @return the newly created NodeInst, or null on error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static NodeInst makeInstance(NodeProto protoType, Point2D center, double width, double height,
-            Cell parent, Orientation orient, String name) {
-        return makeInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent, orient, name);
-    }
-
-    /**
-     * Short form method to create a NodeInst and do extra things necessary for it. Angle, name
-     * and techBits are set to defaults.
-     * @param protoType the NodeProto of which this is an instance.
      * @param ep EditingPreferences with default sizes and text descriptors.
      * @param center the center location of this NodeInst.
      * @param width the width of this NodeInst (can't be negative).
@@ -292,24 +296,6 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
             Point2D center, double width, double height,
             Cell parent, Orientation orient, String name) {
         return makeInstance(protoType, ep, center, width, height, parent, orient, name, 0);
-    }
-
-    /**
-     * Short form method to create a NodeInst and do extra things necessary for it. Angle, name
-     * and techBits are set to defaults.
-     * @param protoType the NodeProto of which this is an instance.
-     * @param center the center location of this NodeInst.
-     * @param width the width of this NodeInst (can't be negative).
-     * @param height the height of this NodeInst (can't be negative).
-     * @param parent the Cell in which this NodeInst will reside.
-     * @param orient the orientation of this NodeInst.
-     * @param name name of new NodeInst
-     * @return the newly created NodeInst, or null on error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static NodeInst makeInstance(NodeProto protoType, Point2D center, double width, double height,
-            Cell parent, Orientation orient, String name, PrimitiveNode.Function function) {
-        return makeInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent, orient, name, function);
     }
 
     /**
@@ -340,24 +326,6 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
     /**
      * Long form method to create a NodeInst and do extra things necessary for it.
      * @param protoType the NodeProto of which this is an instance.
-     * @param center the center location of this NodeInst.
-     * @param width the width of this NodeInst (can't be negative).
-     * @param height the height of this NodeInst (can't be negative).
-     * @param parent the Cell in which this NodeInst will reside.
-     * @param orient the orientation of this NodeInst.
-     * @param name name of new NodeInst
-     * @param techBits bits associated to different technologies
-     * @return the newly created NodeInst, or null on error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static NodeInst makeInstance(NodeProto protoType, Point2D center, double width, double height,
-            Cell parent, Orientation orient, String name, int techBits) {
-        return makeInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent, orient, name, techBits);
-    }
-
-    /**
-     * Long form method to create a NodeInst and do extra things necessary for it.
-     * @param protoType the NodeProto of which this is an instance.
      * @param ep EditingPreferences with default sizes and text descriptors.
      * @param center the center location of this NodeInst.
      * @param width the width of this NodeInst (can't be negative).
@@ -371,7 +339,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
     public static NodeInst makeInstance(NodeProto protoType, EditingPreferences ep,
             Point2D center, double width, double height,
             Cell parent, Orientation orient, String name, int techBits) {
-        NodeInst ni = newInstance(protoType, ep, center, width, height, parent, orient, name, techBits);
+        NodeInst ni = newInst(protoType, ep, center, width, height, parent, orient, name, techBits);
         if (ni != null) {
             // set default information from the prototype
             if (protoType instanceof Cell) {
@@ -466,7 +434,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
             long gridHeight = DBMath.lambdaToSizeGrid(height - full.getLambdaHeight());
             size = EPoint.fromGrid(gridWidth, gridHeight);
         }
-        ImmutableNodeInst d = ImmutableNodeInst.newInstance(0, np.getId(), Name.findName("node@0"), ep.getNodeTextDescriptor(),
+        ImmutableNodeInst d = ImmutableNodeInst.newInst(0, np.getId(), Name.findName("node@0"), ep.getNodeTextDescriptor(),
                 orient, center, size, 0, techBits, ep.getInstanceTextDescriptor());
         return makeDummyInstance(np, d);
     }
@@ -489,21 +457,6 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * Short form method to create a NodeInst. Angle, name
      * and techBits are set to defaults.
      * @param protoType the NodeProto of which this is an instance.
-     * @param center the center location of this NodeInst.
-     * @param width the width of this NodeInst (can't be negative).
-     * @param height the height of this NodeInst (can't be negative).
-     * @param parent the Cell in which this NodeInst will reside.
-     * @return the newly created NodeInst, or null on error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static NodeInst newInstance(NodeProto protoType, Point2D center, double width, double height, Cell parent) {
-        return newInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent);
-    }
-
-    /**
-     * Short form method to create a NodeInst. Angle, name
-     * and techBits are set to defaults.
-     * @param protoType the NodeProto of which this is an instance.
      * @param ep EditingPreferences with default sizes and text descriptors.
      * @param center the center location of this NodeInst.
      * @param width the width of this NodeInst (can't be negative).
@@ -511,26 +464,9 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @param parent the Cell in which this NodeInst will reside.
      * @return the newly created NodeInst, or null on error.
      */
-    public static NodeInst newInstance(NodeProto protoType, EditingPreferences ep,
+    public static NodeInst newInst(NodeProto protoType, EditingPreferences ep,
             Point2D center, double width, double height, Cell parent) {
-        return newInstance(protoType, ep, center, width, height, parent, Orientation.IDENT, null);
-    }
-
-    /**
-     * Long form method to create a NodeInst.
-     * @param protoType the NodeProto of which this is an instance.
-     * @param center the center location of this NodeInst.
-     * @param width the width of this NodeInst (can't be negative).
-     * @param height the height of this NodeInst (can't be negative).
-     * @param parent the Cell in which this NodeInst will reside.
-     * @param orient the orientation of this NodeInst.
-     * @param name name of new NodeInst
-     * @return the newly created NodeInst, or null on error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static NodeInst newInstance(NodeProto protoType, Point2D center, double width, double height,
-            Cell parent, Orientation orient, String name) {
-        return newInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent, orient, name);
+        return newInst(protoType, ep, center, width, height, parent, Orientation.IDENT, null);
     }
 
     /**
@@ -545,29 +481,10 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @param name name of new NodeInst
      * @return the newly created NodeInst, or null on error.
      */
-    public static NodeInst newInstance(NodeProto protoType, EditingPreferences ep,
+    public static NodeInst newInst(NodeProto protoType, EditingPreferences ep,
             Point2D center, double width, double height,
             Cell parent, Orientation orient, String name) {
-        return newInstance(protoType, ep, center, width, height, parent, orient, name, 0);
-    }
-
-    /**
-     * Long form method to create a NodeInst.
-     * @param protoType the NodeProto of which this is an instance.
-     * @param center the center location of this NodeInst.
-     * @param width the width of this NodeInst (can't be negative).
-     * @param height the height of this NodeInst (can't be negative).
-     * @param parent the Cell in which this NodeInst will reside.
-     * @param orient the orientation of this NodeInst.
-     * @param name name of new NodeInst
-     * @param techBits bits associated to different technologies
-     * @return the newly created NodeInst, or null on error.
-     * @deprecated Use method with explicit EditingPreferences parameter.
-     */
-    public static NodeInst newInstance(NodeProto protoType,
-            Point2D center, double width, double height,
-            Cell parent, Orientation orient, String name, int techBits) {
-        return newInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent, orient, name, techBits);
+        return newInst(protoType, ep, center, width, height, parent, orient, name, 0);
     }
 
     /**
@@ -583,7 +500,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @param techBits bits associated to different technologies
      * @return the newly created NodeInst, or null on error.
      */
-    public static NodeInst newInstance(NodeProto protoType, EditingPreferences ep,
+    public static NodeInst newInst(NodeProto protoType, EditingPreferences ep,
             Point2D center, double width, double height,
             Cell parent, Orientation orient, String name, int techBits) {
         if (name != null && parent.findNode(name) != null) {
@@ -599,7 +516,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
         }
         TextDescriptor nameDescriptor = ep.getNodeTextDescriptor();
         TextDescriptor protoDescriptor = ep.getInstanceTextDescriptor();
-        return newInstance(parent, protoType, name, nameDescriptor, center, size, orient, 0, techBits, protoDescriptor, null);
+        return newInst(parent, protoType, name, nameDescriptor, center, size, orient, 0, techBits, protoDescriptor, null);
     }
 
     /**
@@ -617,7 +534,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @param errorLogger error logger to report node rename.
      * @return the newly created NodeInst, or null on error.
      */
-    public static NodeInst newInstance(Cell parent, NodeProto protoType,
+    public static NodeInst newInst(Cell parent, NodeProto protoType,
             String name, TextDescriptor nameDescriptor,
             Point2D center, EPoint size, Orientation orient,
             int flags, int techBits, TextDescriptor protoDescriptor, ErrorLogger errorLogger) {
@@ -676,7 +593,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
         do {
             nodeId = parentId.newNodeId();
         } while (parent.getNodeById(nodeId) != null);
-        ImmutableNodeInst d = ImmutableNodeInst.newInstance(nodeId, protoType.getId(), nameKey, nameDescriptor,
+        ImmutableNodeInst d = ImmutableNodeInst.newInst(nodeId, protoType.getId(), nameKey, nameDescriptor,
                 orient, anchor, size, flags, techBits, protoDescriptor);
 
         NodeInst ni = parent.addNode(d);
@@ -1072,7 +989,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
 		}
 		for (Export e : exportList.keySet())
 		{
-			NodeInst dummyNi = NodeInst.newInstance(Generic.tech().universalPinNode, ep, EPoint.ORIGIN, 0, 0, topology.cell);
+			NodeInst dummyNi = NodeInst.newInst(Generic.tech().universalPinNode, ep, EPoint.ORIGIN, 0, 0, topology.cell);
 			boolean ok = e.move(dummyNi.getOnlyPortInst());
 			assert (!ok);
 		}
@@ -1211,7 +1128,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
 				NodeProto pinNp = ai.getProto().findOverridablePinProto(ep);
 				double psx = pinNp.getDefWidth(ep);
 				double psy = pinNp.getDefHeight(ep);
-				NodeInst pinNi = NodeInst.newInstance(pinNp, ep, new Point2D.Double(cX, cY), psx, psy, topology.cell);
+				NodeInst pinNi = NodeInst.newInst(pinNp, ep, new Point2D.Double(cX, cY), psx, psy, topology.cell);
 				PortInst pinPi = pinNi.getOnlyPortInst();
 				newAi = ArcInst.newInstanceBase(ai.getProto(), ep, ai.getLambdaBaseWidth(), newPortInst[ArcInst.HEADEND], pinPi, newPoint[ArcInst.HEADEND],
 					new Point2D.Double(cX, cY), null, ArcInst.DEFAULTANGLE);
@@ -1514,10 +1431,10 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
             return topology.cell.tree();
         }
         CellId clipCellId = Clipboard.getClipCellId();
-        ImmutableCell cell = ImmutableCell.newInstance(clipCellId, 0);
+        ImmutableCell cell = ImmutableCell.newInst(clipCellId, 0);
         cell = cell.withTechId(getProto().getTechnology().getId());
         TechPool techPool = TechPool.getThreadTechPool();
-        CellBackup cellBackup = CellBackup.newInstance(cell, techPool);
+        CellBackup cellBackup = CellBackup.newInst(cell, techPool);
         cellBackup = cellBackup.with(cell, new ImmutableNodeInst[]{getD()}, null, null, techPool);
         CellTree[] subTrees = CellTree.NULL_ARRAY;
         if (isCellInstance()) {
@@ -1526,7 +1443,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
             subTrees = new CellTree[cu.indexInParent + 1];
             subTrees[cu.indexInParent] = subCell.tree();
         }
-        CellTree cellTree = CellTree.newInstance(cell, techPool).with(cellBackup, subTrees, techPool);
+        CellTree cellTree = CellTree.newInst(cell, techPool).with(cellBackup, subTrees, techPool);
         return cellTree;
     }
 
@@ -1540,10 +1457,10 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
             return topology.cell.backup();
         }
         CellId clipCellId = Clipboard.getClipCellId();
-        ImmutableCell cell = ImmutableCell.newInstance(clipCellId, 0);
+        ImmutableCell cell = ImmutableCell.newInst(clipCellId, 0);
         cell = cell.withTechId(getProto().getTechnology().getId());
         TechPool techPool = TechPool.getThreadTechPool();
-        CellBackup cellBackup = CellBackup.newInstance(cell, techPool);
+        CellBackup cellBackup = CellBackup.newInst(cell, techPool);
         cellBackup = cellBackup.with(cell, new ImmutableNodeInst[]{getD()}, null, null, techPool);
         return cellBackup;
     }
@@ -1855,8 +1772,8 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
             delVar(Artwork.ART_DEGREES);
         } else {
             Float[] fAddr = new Float[2];
-            fAddr[0] = new Float(start);
-            fAddr[1] = new Float(curvature);
+            fAddr[0] = Float.valueOf((float)start);
+            fAddr[1] = Float.valueOf((float)curvature);
             newVar(Artwork.ART_DEGREES, fAddr, ep);
         }
     }
@@ -2730,7 +2647,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
         PortInst[] newPortInsts = new PortInst[pattern.length];
         for (int i = 0; i < newPortInsts.length; i++) {
             int p = pattern[i];
-            newPortInsts[i] = p >= 0 ? portInsts[p] : PortInst.newInstance(protoType.getPort(i), this);
+            newPortInsts[i] = p >= 0 ? portInsts[p] : PortInst.newInst(protoType.getPort(i), this);
         }
         portInsts = newPortInsts;
     }
@@ -2764,7 +2681,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
             if (newPortInsts[i] != null) {
                 continue;
             }
-            newPortInsts[i] = PortInst.newInstance(protoType.getPort(i), this);
+            newPortInsts[i] = PortInst.newInst(protoType.getPort(i), this);
         }
         portInsts = newPortInsts;
     }
@@ -3764,7 +3681,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
         {
             double x = getLambdaBaseXSize();
             double y = getLambdaBaseYSize();
-            size = new PrimitiveNodeSize(new Double(x), new Double(y), true);
+            size = new PrimitiveNodeSize(x, y, true);
         }
         return size;
     }
@@ -3861,7 +3778,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @param ep EditingPreferences with default text descriptors
      */
     public void setSerpentineTransistorLength(double length, EditingPreferences ep) {
-        updateVar(TRANSISTOR_LENGTH_KEY, new Double(length), ep);
+        updateVar(TRANSISTOR_LENGTH_KEY, length, ep);
     }
 
     /**

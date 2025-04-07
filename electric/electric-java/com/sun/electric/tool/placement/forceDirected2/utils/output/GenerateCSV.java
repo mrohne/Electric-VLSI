@@ -89,6 +89,7 @@ public class GenerateCSV {
 			while (scanner.hasNextLine()) {
 				in.add(scanner.nextLine());
 			}
+			scanner.close();
 		}
 
 		List<List<String>> out = new ArrayList<List<String>>();

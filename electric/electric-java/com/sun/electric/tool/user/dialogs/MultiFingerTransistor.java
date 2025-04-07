@@ -428,7 +428,7 @@ public class MultiFingerTransistor extends EDialog
 						}
 						char suffix = (char)('a' + index++);
 						String exportName = "F" + (f+1) + suffix;
-						Export.newInstance(cell, pi, exportName, ep);
+						Export.newInst(cell, pi, exportName, ep);
 					}
 				}
 			}
@@ -444,7 +444,7 @@ public class MultiFingerTransistor extends EDialog
 				NodeInst pin = NodeInst.makeInstance(metalPin, ep, center, metalPin.getDefWidth(ep), metalPin.getDefHeight(ep), cell);
 				ArcInst.makeInstance(metalArc,ep,  contacts[f].getOnlyPortInst(), pin.getOnlyPortInst());
 				String exportName = "Act_" + (f+1);
-				Export.newInstance(cell, pin.getOnlyPortInst(), exportName, ep);
+				Export.newInst(cell, pin.getOnlyPortInst(), exportName, ep);
 			}
 
 			// connect the contacts to the transistors

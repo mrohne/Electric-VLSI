@@ -1132,7 +1132,7 @@ public class GetInfoArc extends EModelessDialog implements HighlightListener, Da
 		int currentDirectional = directionality.getSelectedIndex();
 		if (currentDirectional != initialDirectional)
 		{
-			newDirectional = new Integer(currentDirectional);
+			newDirectional = Integer.valueOf(currentDirectional);
 			initialDirectional = currentDirectional;
 		}
 
@@ -1140,7 +1140,7 @@ public class GetInfoArc extends EModelessDialog implements HighlightListener, Da
 		int currentExtend = extension.getSelectedIndex();
 		if (currentExtend != initialExtension)
 		{
-			newExtended = new Integer(currentExtend);
+			newExtended = Integer.valueOf(currentExtend);
 			initialExtension = currentExtend;
 		}
 
@@ -1148,7 +1148,7 @@ public class GetInfoArc extends EModelessDialog implements HighlightListener, Da
 		int currentNegated = negation.getSelectedIndex();
 		if (currentNegated != initialNegated)
 		{
-			newNegated = new Integer(currentNegated);
+			newNegated = Integer.valueOf(currentNegated);
 			initialNegated = currentNegated;
 		}
 
@@ -1156,7 +1156,7 @@ public class GetInfoArc extends EModelessDialog implements HighlightListener, Da
 		double currentWidth = TextUtils.atofDistance(width.getText(), shownArc.getParent().getTechnology());
 		if (!DBMath.doublesEqual(currentWidth, initialWidth))
 		{
-			newDWidth = new Double(currentWidth - initialWidth);
+			newDWidth = Double.valueOf(currentWidth - initialWidth);
 			initialWidth = currentWidth;
 		}
 
@@ -1295,7 +1295,7 @@ public class GetInfoArc extends EModelessDialog implements HighlightListener, Da
 
 			if (newDWidth != null || changed)
 			{
-				if (newDWidth == null) newDWidth = new Double(0);
+				if (newDWidth == null) newDWidth = Double.valueOf(0);
 				ai.setLambdaBaseWidth(ai.getLambdaBaseWidth() + newDWidth.doubleValue());
 			}
 			return true;

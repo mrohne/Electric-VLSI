@@ -438,7 +438,7 @@ if (OLD) continue;
                         if (j == rowCount || time[j] < time[j-1])
                         {
                             int sl = j - sweepStart;
-                            sweepLengths.add(new Integer(sl));
+                            sweepLengths.add(Integer.valueOf(sl));
                             sweepStart = j;
                             sweepCount++;
                         }

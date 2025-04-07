@@ -136,7 +136,7 @@ public class Exec extends Thread {
         public File getWorkingDir() { return dir; }
     }
 
-    private final String command;
+//    private final String command;
     private final String [] exec;
     private final String [] envVars;
     private final File dir;                       // working directory
@@ -151,33 +151,33 @@ public class Exec extends Thread {
     private int exitVal;
     private final ArrayList<FinishedListener> finishedListeners;    // list of listeners waiting for process to finish
 
-    /**
-     * Execute an external process.
-     * Note: command is not a shell command line command, it is a single program and arguments.
-     * Therefore, <code>/bin/sh -c /bin/ls > file.txt</code> will NOT work.
-     * <p>
-     * Instead, use String[] exec = {"/bin/sh", "-c", "/bin/ls > file.txt"};
-     * and use the other constructor.
-     * @param command the command to run.
-     * @param envVars environment variables of the form name=value. If null, inherits vars from current process.
-     * @param dir the working directory. If null, uses the working dir from the current process
-     * @param outStreamRedir stdout of the process will be redirected to this stream if not null
-     * @param errStreamRedir stderr of the process will be redirected to this stream if not null
-     */
-    public Exec(String command, String [] envVars, File dir, OutputStream outStreamRedir, OutputStream errStreamRedir) {
-        this.command = command;
-        this.exec = null;
-        this.envVars = envVars;
-        this.dir = dir;
-        launcherEnvironment = Environment.getThreadEnvironment();
-        userInterface = new UserInterfaceExec();
-        this.outStreamRedir = outStreamRedir;
-        this.errStreamRedir = errStreamRedir;
-        this.processWriter = null;
-        this.finishedListeners = new ArrayList<FinishedListener>();
-        this.exitVal = -1;
-        setName(command);
-    }
+//    /**
+//     * Execute an external process.
+//     * Note: command is not a shell command line command, it is a single program and arguments.
+//     * Therefore, <code>/bin/sh -c /bin/ls > file.txt</code> will NOT work.
+//     * <p>
+//     * Instead, use String[] exec = {"/bin/sh", "-c", "/bin/ls > file.txt"};
+//     * and use the other constructor.
+//     * @param command the command to run.
+//     * @param envVars environment variables of the form name=value. If null, inherits vars from current process.
+//     * @param dir the working directory. If null, uses the working dir from the current process
+//     * @param outStreamRedir stdout of the process will be redirected to this stream if not null
+//     * @param errStreamRedir stderr of the process will be redirected to this stream if not null
+//     */
+//    public Exec(String command, String [] envVars, File dir, OutputStream outStreamRedir, OutputStream errStreamRedir) {
+//        this.command = command;
+//        this.exec = null;
+//        this.envVars = envVars;
+//        this.dir = dir;
+//        launcherEnvironment = Environment.getThreadEnvironment();
+//        userInterface = new UserInterfaceExec();
+//        this.outStreamRedir = outStreamRedir;
+//        this.errStreamRedir = errStreamRedir;
+//        this.processWriter = null;
+//        this.finishedListeners = new ArrayList<FinishedListener>();
+//        this.exitVal = -1;
+//        setName(command);
+//    }
 
     /**
      * Execute an external process.
@@ -189,7 +189,7 @@ public class Exec extends Thread {
      * @param errStreamRedir stderr of the process will be redirected to this stream if not null
      */
     public Exec(String [] exec, String [] envVars, File dir, OutputStream outStreamRedir, OutputStream errStreamRedir) {
-        this.command = null;
+//        this.command = null;
         this.exec = exec;
         this.envVars = envVars;
         this.dir = dir;
@@ -224,12 +224,12 @@ public class Exec extends Thread {
             // run program
             synchronized(this) {
                 try {
-                    if (command != null)
-                        p = rt.exec(command, envVars, dir);
-                    else
+//                    if (command != null)
+//                        p = rt.exec(command, envVars, dir);
+//                    else
                         p = rt.exec(exec, envVars, dir);
                 } catch (IOException e) {
-                    System.out.println("Error running "+command+": "+e.getMessage());
+                    System.out.println("Error running "+exec[0]+": "+e.getMessage());
                     return;
                 }
 
@@ -251,9 +251,10 @@ public class Exec extends Thread {
             if (errStreamRedir != null) errReader.join();
 
             StringBuffer com = new StringBuffer();
-            if (command != null)
-                com.append(command);
-            else {
+//            if (command != null)
+//                com.append(command);
+//            else
+            {
                 for (int i=0; i<exec.length; i++)
                     com.append(exec[i]+" ");
             }

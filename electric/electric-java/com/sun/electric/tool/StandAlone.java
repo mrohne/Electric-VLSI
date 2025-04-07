@@ -82,12 +82,12 @@ public class StandAlone
         // init technologies
         database.setToolSettings((Setting.RootGroup) ToolSettings.getToolSettings(""));
         assert database.getGeneric() == null;
-        Generic generic = Generic.newInstance(database.getIdManager());
+        Generic generic = Generic.newInst(database.getIdManager());
         database.addTech(generic);
         Map<String, TechFactory> techFactories = TechFactory.getKnownTechs();
         Map<TechFactory.Param, Object> paramValues = Collections.emptyMap();
         for (String techName : techNames) {
-            database.addTech(techFactories.get(techName).newInstance(generic, paramValues));
+            database.addTech(techFactories.get(techName).newInst(generic, paramValues));
         }
         // allow database changes
         database.lowLevelBeginChanging(null);

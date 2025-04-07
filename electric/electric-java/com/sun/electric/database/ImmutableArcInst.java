@@ -292,7 +292,7 @@ public class ImmutableArcInst extends ImmutableElectricObject {
     private final short angle;
 
     /**
-     * The private constructor of ImmutableArcInst. Use the factory "newInstance" instead.
+     * The private constructor of ImmutableArcInst. Use the factory "newInst" instead.
      *
      * @param arcId id of this ArcInst in parent.
      * @param protoId Id of arc prototype.
@@ -631,7 +631,7 @@ public class ImmutableArcInst extends ImmutableElectricObject {
      * @throws NullPointerException if protoType, name, tailPortId, headPortId, tailLocation, headLocation is null.
      * @throws IllegalArgumentException if arcId, tailNodeId, headNodeId or name is not valid, or width is bad.
      */
-    public static ImmutableArcInst newInstance(int arcId, ArcProtoId protoId, Name name, TextDescriptor nameDescriptor,
+    public static ImmutableArcInst newInst(int arcId, ArcProtoId protoId, Name name, TextDescriptor nameDescriptor,
             int tailNodeId, PortProtoId tailPortId, EPoint tailLocation,
             int headNodeId, PortProtoId headPortId, EPoint headLocation,
             long gridExtendOverMin, int angle, int flags) {
@@ -1169,7 +1169,7 @@ public class ImmutableArcInst extends ImmutableElectricObject {
             return (Double) obj;
         }
         if (obj instanceof Integer) {
-            return new Double(((Integer) obj).intValue() / 2000.0);
+            return ((Integer) obj).intValue() / 2000.0;
         }
         return null;
     }

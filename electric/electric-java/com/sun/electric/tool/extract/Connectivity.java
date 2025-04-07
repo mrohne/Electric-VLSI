@@ -202,7 +202,7 @@ public class Connectivity
 			super("Extract Connectivity from " + cell, Extract.getExtractTool(), Job.Type.CHANGE, null, null, Job.Priority.USER);
 			this.cell = cell;
 			this.recursive = recursive;
-			this.errorLogger = ErrorLogger.newInstance("Extraction Tool on cell " + cell.getName());
+			this.errorLogger = ErrorLogger.newInst("Extraction Tool on cell " + cell.getName());
 			smallestPolygonSize = Extract.isIgnoreTinyPolygons() ? Extract.getSmallestPolygonSize() : 0;
 			activeHandling = Extract.getActiveHandling();
 			expansionPattern = Extract.getCellExpandPattern().trim();
@@ -895,7 +895,7 @@ public class Connectivity
 				{
 					Export e = it.next();
 					PortInst pi = newNi.findPortInstFromEquivalentProto(e.getOriginalPort().getPortProto());
-					Export.newInstance(newCell, pi, e.getName(), ep);
+					Export.newInst(newCell, pi, e.getName(), ep);
 				}
 				continue;
 			}
@@ -1033,7 +1033,7 @@ public class Connectivity
 		for(Iterator<Variable> vIt = oldCell.getParametersAndVariables(); vIt.hasNext(); )
 		{
 			Variable var = vIt.next();
-            Variable newVar = Variable.newInstance(var.getKey(), var.getObject(), var.getTextDescriptor());
+            Variable newVar = Variable.newInst(var.getKey(), var.getObject(), var.getTextDescriptor());
             if (var.getTextDescriptor().isParam())
             {
             	if (newCell.getCellGroup() != null)
@@ -1937,7 +1937,7 @@ public class Connectivity
 						boolean genFakeName = (exportName == null);
 						if (genFakeName) exportName = "E";
 						exportName = ElectricObject.uniqueObjectName(exportName, subCell, Export.class, true, true);
-						Export e = Export.newInstance(subCell, pi, exportName, ep);
+						Export e = Export.newInst(subCell, pi, exportName, ep);
 						if (genFakeName)
                             generatedExports.add(e);
 						foundPi = subNi.findPortInstFromEquivalentProto(e);
@@ -2917,7 +2917,7 @@ public class Connectivity
 					cutSizeY = poly.getBounds2D().getHeight();
 				} else
 				{
-					pvLayers.add(new Integer(i));
+					pvLayers.add(Integer.valueOf(i));
 				}
 			}
 			if (cutNodeLayer < 0) continue;
@@ -4466,38 +4466,38 @@ public class Connectivity
 			int angle = GenMath.figureAngle(thisPt, lastPt);
 			while (angle < 0) angle += 1800;
 			while (angle >= 1800) angle -= 1800;
-			Integer iAngle = new Integer(angle);
+			Integer iAngle = Integer.valueOf(angle);
 			List<Integer> linesSoFar = linesAtAngle.get(iAngle);
 			if (linesSoFar == null)
 			{
 				linesSoFar = new ArrayList<Integer>();
 				linesAtAngle.put(iAngle, linesSoFar);
 			}
-			linesSoFar.add(new Integer(i));
+			linesSoFar.add(Integer.valueOf(i));
 		}
 
-		// now see how many holes there are (by counting colinear segments)
-		int colinearSegs = 0;
-		for(Integer iAangle : linesAtAngle.keySet())
-		{
-			// get list of all line segments that are parallel to each other
-			List<Integer> linesAtThisAngle = linesAtAngle.get(iAangle);
-			if (linesAtThisAngle == null) continue;
-			for(int ai=0; ai<linesAtThisAngle.size(); ai++)
-			{
-				int i = linesAtThisAngle.get(ai).intValue();
-				int lastI = i-1;
-				if (lastI < 0) lastI = points.length-1;
-				Point2D lastPt = points[lastI];
-				Point2D thisPt = points[i];
-
-				for(int aj = ai+2; aj<linesAtThisAngle.size()-1; aj++)
-				{
-					int j = linesAtThisAngle.get(aj).intValue();
-					if (GenMath.isOnLine(lastPt, thisPt, points[j])) colinearSegs++;
-				}
-			}
-		}
+//		// now see how many holes there are (by counting colinear segments)
+//		int colinearSegs = 0;
+//		for(Integer iAangle : linesAtAngle.keySet())
+//		{
+//			// get list of all line segments that are parallel to each other
+//			List<Integer> linesAtThisAngle = linesAtAngle.get(iAangle);
+//			if (linesAtThisAngle == null) continue;
+//			for(int ai=0; ai<linesAtThisAngle.size(); ai++)
+//			{
+//				int i = linesAtThisAngle.get(ai).intValue();
+//				int lastI = i-1;
+//				if (lastI < 0) lastI = points.length-1;
+//				Point2D lastPt = points[lastI];
+//				Point2D thisPt = points[i];
+//
+//				for(int aj = ai+2; aj<linesAtThisAngle.size()-1; aj++)
+//				{
+//					int j = linesAtThisAngle.get(aj).intValue();
+//					if (GenMath.isOnLine(lastPt, thisPt, points[j])) colinearSegs++;
+//				}
+//			}
+//		}
 //		boolean tooManyHoles = colinearSegs*7 > points.length;
 //System.out.println("   so have "+points.length+" points with "+colinearSegs+" colinear segments"+ (tooManyHoles?" TOO MANY":""));
 //		if (tooManyHoles) return null;
@@ -5391,7 +5391,7 @@ public class Connectivity
 					EPoint pLoc = pi.getPoly().getCenter();
 					if (loc.equals(pLoc))
 					{
-						Export.newInstance(newCell, pi, e.getName(), ep);
+						Export.newInst(newCell, pi, e.getName(), ep);
 						found = true;
 						break;
 					}
@@ -5411,7 +5411,7 @@ public class Connectivity
 				}
 				if (pnUse == null) continue;
 				NodeInst ni = NodeInst.makeInstance(pnUse, ep, loc, pnUse.getDefWidth(ep), pnUse.getDefHeight(ep), newCell);
-				Export.newInstance(newCell, ni.getOnlyPortInst(), e.getName(), ep);
+				Export.newInst(newCell, ni.getOnlyPortInst(), e.getName(), ep);
 			}
 		}
 
@@ -5445,7 +5445,7 @@ public class Connectivity
 					continue;
 				}
 				PortInst newPi = newNi.findPortInstFromEquivalentProto(e.getOriginalPort().getPortProto());
-				Export.newInstance(newCell, newPi, e.getName(), ep);
+				Export.newInst(newCell, newPi, e.getName(), ep);
 			}
 		}
 

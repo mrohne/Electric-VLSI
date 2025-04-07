@@ -372,7 +372,7 @@ public class Snapshot {
             }
             cellTree = getCellTree(topCellId);
             if (cellTree == null) {
-                cellTree = CellTree.newInstance(top.cellRevision.d, techPool);
+                cellTree = CellTree.newInst(top.cellRevision.d, techPool);
             }
             cellTree = cellTree.with(top, subTrees, techPool);
             cellTrees[cellIndex] = cellTree;

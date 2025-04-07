@@ -50,7 +50,7 @@ public class UnivariateTaylorModel {
         remainder = evalRemainder = ENTIRE;
     }
     
-    public static UnivariateTaylorModel newInstance(double x) {
+    public static UnivariateTaylorModel newInst(double x) {
         double[] coeff = NULL_DOUBLE_ARRAY;
         double inf = 0;
         double sup = 0;
@@ -69,7 +69,7 @@ public class UnivariateTaylorModel {
         return new UnivariateTaylorModel(coeff, inf, sup);
     }
     
-    public static UnivariateTaylorModel newInstance(MutableInterval x) {
+    public static UnivariateTaylorModel newInst(MutableInterval x) {
         return null;
     }
 
@@ -83,10 +83,10 @@ public class UnivariateTaylorModel {
             return;
         }
         double value = 0;
-        double sumAbs = 0;
+//        double sumAbs = 0;
         for (int k = coeff.length - 1; k >= 0; k--) {
             value = value*t + coeff[k];
-            sumAbs += Math.abs(coeff[k]);
+//            sumAbs += Math.abs(coeff[k]);
         }
         result.add(evalRemainder);
     }
@@ -140,7 +140,7 @@ public class UnivariateTaylorModel {
                 result.assignEntire();
             return;
         }
-        BigDecimal tb = BigDecimal.valueOf(t);
+//        BigDecimal tb = BigDecimal.valueOf(t);
         BigDecimal[] lb = new BigDecimal[results.length];
         BigDecimal[] hb = new BigDecimal[results.length];
         for (int i = 0; i < results.length; i++)
@@ -235,9 +235,9 @@ public class UnivariateTaylorModel {
         return new UnivariateTaylorModel(newCoeff);
     }
     
-    private UnivariateTaylorModel check() {
-        for (double c: coeff)
-            assert -Double.MAX_VALUE <= c && c <= Double.MAX_VALUE;
-        return this;
-    }
+//    private UnivariateTaylorModel check() {
+//        for (double c: coeff)
+//            assert -Double.MAX_VALUE <= c && c <= Double.MAX_VALUE;
+//        return this;
+//    }
 }

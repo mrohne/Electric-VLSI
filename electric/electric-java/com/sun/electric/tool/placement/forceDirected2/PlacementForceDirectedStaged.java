@@ -104,8 +104,8 @@ public class PlacementForceDirectedStaged extends PlacementFrame {
 
 	@Override
 	public void setParamterValues(int threads, int runtime) {
-		GlobalVars.numOfThreads = new Integer(threads);
-		GlobalVars.timeout = new Integer(runtime);
+		GlobalVars.numOfThreads = Integer.valueOf(threads);
+		GlobalVars.timeout = Integer.valueOf(runtime);
 
 		this.numOfThreads = threads;
 		this.runtime = runtime;
@@ -129,7 +129,7 @@ public class PlacementForceDirectedStaged extends PlacementFrame {
 
 		}
 
-		GlobalVars.numOfNodes = new Integer(nodesToPlace.size());
+		GlobalVars.numOfNodes = Integer.valueOf(nodesToPlace.size());
 
 		System.out.println("Algorithm: " + this.getAlgorithmName());
 

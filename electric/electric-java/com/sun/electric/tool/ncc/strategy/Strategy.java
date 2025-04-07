@@ -54,7 +54,7 @@ import com.sun.electric.tool.Job;
 public abstract class Strategy {
 	// ---------------------------- constants ---------------------------------
 	public static final Integer CODE_ERROR = null;
-    public static final Integer CODE_NO_CHANGE = new Integer(0);
+    public static final Integer CODE_NO_CHANGE = Integer.valueOf(0);
 
     // --------------- local variables -------------------
     protected int depth; //depth in the tree
@@ -86,9 +86,9 @@ public abstract class Strategy {
 		return out;
 	}
 	
-	private LeafList apply(RecordList r) {
-		return apply(r.iterator());
-	}
+//	private LeafList apply(RecordList r) {
+//		return apply(r.iterator());
+//	}
     
 	/** Apply this Strategy to a list of leaf and internal records.
 	 * @param r a RecordList of EquivRecords to process

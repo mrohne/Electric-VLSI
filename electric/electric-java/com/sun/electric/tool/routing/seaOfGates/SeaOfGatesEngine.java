@@ -314,7 +314,7 @@ public abstract class SeaOfGatesEngine
 		if (initializeDesignRules()) return;
 		initializeGrids();
 		netIDs = new HashMap<Network, Integer>();
-		errorLogger = ErrorLogger.newInstance("Routing (Sea of gates) " + cell.describe(false));
+		errorLogger = ErrorLogger.newInst("Routing (Sea of gates) " + cell.describe(false));
 		prefs.theTimer = ElapseTimer.createInstance().start();
 		Netlist netList = cell.getNetlist();
 
@@ -1720,12 +1720,12 @@ public abstract class SeaOfGatesEngine
 				for(PossibleEndpoint pe : choices)
 				{
 					if (curY == pe.coord.getY() && lowX < pe.coord.getX() && highX > pe.coord.getX())
-						return new Double(pe.coord.getX());
+						return Double.valueOf(pe.coord.getX());
 				}
 				return null;
 			}
 
-			if (curY == y && lowX < x && highX > x) return new Double(x);
+			if (curY == y && lowX < x && highX > x) return Double.valueOf(x);
 			return null;
 		}
 
@@ -1743,12 +1743,12 @@ public abstract class SeaOfGatesEngine
 				for(PossibleEndpoint pe : choices)
 				{
 					if (curX == pe.coord.getX() && lowY < pe.coord.getY() && highY > pe.coord.getY())
-						return new Double(pe.coord.getY());
+						return Double.valueOf(pe.coord.getY());
 				}
 				return null;
 			}
 
-			if (curX == x && lowY < y && highY > y) return new Double(y);
+			if (curX == x && lowY < y && highY > y) return Double.valueOf(y);
 			return null;
 		}
 
@@ -1765,12 +1765,12 @@ public abstract class SeaOfGatesEngine
 				for(PossibleEndpoint pe : choices)
 				{
 					if (curX > pe.coord.getX() && DBMath.areEquals(curY, pe.coord.getY()))
-						return new Double(pe.coord.getX());
+						return Double.valueOf(pe.coord.getX());
 				}
 				return null;
 			}
 
-			if (curX > x && curY >= rect.getMinY() && curY <= rect.getMaxY()) return new Double(x);
+			if (curX > x && curY >= rect.getMinY() && curY <= rect.getMaxY()) return Double.valueOf(x);
 			return null;
 		}
 
@@ -1787,12 +1787,12 @@ public abstract class SeaOfGatesEngine
 				for(PossibleEndpoint pe : choices)
 				{
 					if (curX < pe.coord.getX() && DBMath.areEquals(curY, pe.coord.getY()))
-						return new Double(pe.coord.getX());
+						return Double.valueOf(pe.coord.getX());
 				}
 				return null;
 			}
 
-			if (curX < x && curY >= rect.getMinY() && curY <= rect.getMaxY()) return new Double(x);
+			if (curX < x && curY >= rect.getMinY() && curY <= rect.getMaxY()) return Double.valueOf(x);
 			return null;
 		}
 
@@ -1809,12 +1809,12 @@ public abstract class SeaOfGatesEngine
 				for(PossibleEndpoint pe : choices)
 				{
 					if (curY > pe.coord.getY() && DBMath.areEquals(curX, pe.coord.getX()))
-						return new Double(pe.coord.getY());
+						return Double.valueOf(pe.coord.getY());
 				}
 				return null;
 			}
 
-			if (curY > y && curX >= rect.getMinX() && curX <= rect.getMaxX()) return new Double(y);
+			if (curY > y && curX >= rect.getMinX() && curX <= rect.getMaxX()) return Double.valueOf(y);
 			return null;
 		}
 
@@ -1831,12 +1831,12 @@ public abstract class SeaOfGatesEngine
 				for(PossibleEndpoint pe : choices)
 				{
 					if (curY < pe.coord.getY() && DBMath.areEquals(curX, pe.coord.getX()))
-						return new Double(pe.coord.getY());
+						return Double.valueOf(pe.coord.getY());
 				}
 				return null;
 			}
 
-			if (curY < y && curX >= rect.getMinX() && curX <= rect.getMaxX()) return new Double(y);
+			if (curY < y && curX >= rect.getMinX() && curX <= rect.getMaxX()) return Double.valueOf(y);
 			return null;
 		}
 	}
@@ -4955,9 +4955,7 @@ public abstract class SeaOfGatesEngine
 		/** Global routing lowest bucket for each step. */				int [] orderedBase;
 		/** Network ID bits for ends of route. */						final int fromBit;
 		/** Direction to move through global routing buckets */			final int globalRoutingDelta;
-		@SuppressWarnings({ "unchecked" } )
 		/** Search vertices found while running the wavefront. */		final Map<Integer, Map<Integer,SearchVertex>>[] searchVertexPlanes = new Map[numMetalLayers];
-		@SuppressWarnings({ "unchecked" } )
 		/** true when searching finished successfully or failed */		private boolean finished;
 		/** array for optimized vertices (allocated once) */			private List<SearchVertex> optimizedList = new ArrayList<SearchVertex>();
 
@@ -5112,9 +5110,9 @@ public abstract class SeaOfGatesEngine
 		{
 			Map<Integer, Map<Integer,SearchVertex>> plane = searchVertexPlanes[z];
 			if (plane == null) return null;
-			Map<Integer,SearchVertex> row = plane.get(new Integer((int)Math.round(y * DBMath.GRID)));
+			Map<Integer,SearchVertex> row = plane.get(Integer.valueOf((int)Math.round(y * DBMath.GRID)));
 			if (row == null) return null;
-			SearchVertex found = row.get(new Integer((int)Math.round(x * DBMath.GRID)));
+			SearchVertex found = row.get(Integer.valueOf((int)Math.round(x * DBMath.GRID)));
 			return found;
 		}
 
@@ -5129,11 +5127,11 @@ public abstract class SeaOfGatesEngine
 			Map<Integer, Map<Integer,SearchVertex>> plane = searchVertexPlanes[z];
 			if (plane == null)
 				searchVertexPlanes[z] = plane = new TreeMap<Integer, Map<Integer,SearchVertex>>();
-			Integer iY = new Integer((int)Math.round(y * DBMath.GRID));
+			Integer iY = Integer.valueOf((int)Math.round(y * DBMath.GRID));
 			Map<Integer,SearchVertex> row = plane.get(iY);
 			if (row == null)
 				plane.put(iY, row = new TreeMap<Integer,SearchVertex>());
-			row.put(new Integer((int)Math.round(x * DBMath.GRID)), sv);
+			row.put(Integer.valueOf((int)Math.round(x * DBMath.GRID)), sv);
 		}
 
 		public Map<Integer, Map<Integer,SearchVertex>>[] getSearchVertexPlanes() { return searchVertexPlanes; }
@@ -7345,8 +7343,8 @@ public abstract class SeaOfGatesEngine
 			double dY = yBlock - yPos;
 			if (dY >= drDist) return null;
 			double dX = Math.sqrt(drDist*drDist - dY*dY);
-			if (xPos > xBlock) return new Double(xBlock + dX);
-			return new Double(xBlock - dX);
+			if (xPos > xBlock) return Double.valueOf(xBlock + dX);
+			return Double.valueOf(xBlock - dX);
 		}
 
 		/**
@@ -7364,8 +7362,8 @@ public abstract class SeaOfGatesEngine
 			double dX = xBlock - xPos;
 			if (dX >= drDist) return null;
 			double dY = Math.sqrt(drDist*drDist - dX*dX);
-			if (yPos > yBlock) return new Double(yBlock + dY);
-			return new Double(yBlock - dY);
+			if (yPos > yBlock) return Double.valueOf(yBlock + dY);
+			return Double.valueOf(yBlock - dY);
 		}
 
 		private double getJumpSize(SearchVertex sv, double curX, double curY, int curZ, double dx, double dy,
@@ -9165,12 +9163,12 @@ public abstract class SeaOfGatesEngine
 			for(PortInst pi : uniquePorts)
 			{
 				EPoint pt = pi.getCenter();
-				Double xv = new Double(pt.getX());
+				Double xv = Double.valueOf(pt.getX());
 				List<PortInst> xTotal = xMap.get(xv);
 				if (xTotal == null) xMap.put(xv, xTotal = new ArrayList<PortInst>());
 				xTotal.add(pi);
 
-				Double yv = new Double(pt.getY());
+				Double yv = Double.valueOf(pt.getY());
 				List<PortInst> yTotal = yMap.get(yv);
 				if (yTotal == null) yMap.put(yv, yTotal = new ArrayList<PortInst>());
 				yTotal.add(pi);

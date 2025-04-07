@@ -139,13 +139,13 @@ public class KeeperHigh {
 									   pmos.findPortInst("g")});
 
 		// exports
-		Export.newInstance(keep, mc.findPortInst("in"), "mc", ep)
+		Export.newInst(keep, mc.findPortInst("in"), "mc", ep)
 			.setCharacteristic(PortCharacteristic.IN);
-		Export.newInstance(keep, pmos.findPortInst("d"), "d", ep)
+		Export.newInst(keep, pmos.findPortInst("d"), "d", ep)
 			.setCharacteristic(PortCharacteristic.BIDIR);
-		Export.newInstance(keep, invK.findPortInst("vdd"), "vdd", ep)
+		Export.newInst(keep, invK.findPortInst("vdd"), "vdd", ep)
 			.setCharacteristic(PortCharacteristic.PWR);
-		Export.newInstance(keep, invK.findPortInst("gnd"), "gnd", ep)
+		Export.newInst(keep, invK.findPortInst("gnd"), "gnd", ep)
 			.setCharacteristic(PortCharacteristic.GND);
 
 		// patch well over pullup

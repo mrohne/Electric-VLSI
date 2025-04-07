@@ -197,7 +197,7 @@ public class CIF extends Geometry
 			sb.append(ch);
 		}
 		writeLine("9 " + sb.toString());
-		cellNumbers.put(cellGeom.cell, new Integer(cellNumber));
+		cellNumbers.put(cellGeom.cell, Integer.valueOf(cellNumber));
 
 		// write all polys by Layer
 		Set<Layer> layers = cellGeom.polyMap.keySet();

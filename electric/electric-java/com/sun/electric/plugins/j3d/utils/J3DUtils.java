@@ -29,14 +29,6 @@ import com.sun.electric.tool.io.FileType;
 import com.sun.electric.tool.user.User;
 import com.sun.electric.tool.user.dialogs.OpenFile;
 import com.sun.electric.util.math.DBMath;
-import com.sun.j3d.utils.behaviors.interpolators.KBKeyFrame;
-import com.sun.j3d.utils.behaviors.interpolators.TCBKeyFrame;
-import com.sun.j3d.utils.geometry.Cylinder;
-import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.NormalGenerator;
-import com.sun.j3d.utils.geometry.Primitive;
-import com.sun.j3d.utils.picking.PickTool;
-import com.sun.j3d.utils.universe.SimpleUniverse;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -53,39 +45,45 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.StringTokenizer;
 
-import javax.media.j3d.AmbientLight;
-import javax.media.j3d.Appearance;
-import javax.media.j3d.Background;
-import javax.media.j3d.BoundingSphere;
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Canvas3D;
-import javax.media.j3d.DirectionalLight;
-import javax.media.j3d.Font3D;
-import javax.media.j3d.FontExtrusion;
-import javax.media.j3d.Geometry;
-import javax.media.j3d.GeometryArray;
-import javax.media.j3d.GeometryUpdater;
-import javax.media.j3d.ImageComponent;
-import javax.media.j3d.ImageComponent2D;
-import javax.media.j3d.Light;
-import javax.media.j3d.LineArray;
-import javax.media.j3d.Node;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.Text3D;
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.TransformGroup;
-import javax.media.j3d.View;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3d;
-import javax.vecmath.Point3f;
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Vector4f;
+import org.jogamp.java3d.AmbientLight;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.Background;
+import org.jogamp.java3d.BoundingSphere;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.Canvas3D;
+import org.jogamp.java3d.DirectionalLight;
+import org.jogamp.java3d.Font3D;
+import org.jogamp.java3d.FontExtrusion;
+import org.jogamp.java3d.Geometry;
+import org.jogamp.java3d.GeometryArray;
+import org.jogamp.java3d.GeometryUpdater;
+import org.jogamp.java3d.ImageComponent;
+import org.jogamp.java3d.ImageComponent2D;
+import org.jogamp.java3d.Light;
+import org.jogamp.java3d.LineArray;
+import org.jogamp.java3d.Node;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.Text3D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.View;
+import org.jogamp.java3d.utils.behaviors.interpolators.KBKeyFrame;
+import org.jogamp.java3d.utils.behaviors.interpolators.TCBKeyFrame;
+import org.jogamp.java3d.utils.geometry.Cylinder;
+import org.jogamp.java3d.utils.geometry.GeometryInfo;
+import org.jogamp.java3d.utils.geometry.NormalGenerator;
+import org.jogamp.java3d.utils.geometry.Primitive;
+import org.jogamp.java3d.utils.picking.PickTool;
+import org.jogamp.java3d.utils.universe.SimpleUniverse;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.Quat4f;
+import org.jogamp.vecmath.Vector3d;
+import org.jogamp.vecmath.Vector3f;
+import org.jogamp.vecmath.Vector4f;
 
 /**
  * Utility class for 3D module
@@ -334,8 +332,9 @@ public final class J3DUtils
         String[] possibleValues = { "Accept All", "OK", "Skip", "Cancel" };
 
         List<J3DUtils.ThreeDDemoKnot> knotList = null;
+        LineNumberReader lineReader;
         try {
-            LineNumberReader lineReader = new LineNumberReader(new FileReader(fileName));
+            lineReader = new LineNumberReader(new FileReader(fileName));
             int response = -1;
             for(;;)
             {
@@ -412,7 +411,7 @@ public final class J3DUtils
     /**
      * Class using view-model paradigm to update Vector3d-type of variables like directions
      */
-    private static class Vector3fObservable extends Observable
+    private static class Vector3fObservable /* extends Observable */
     {
         private Vector3f vector;
 
@@ -423,9 +422,9 @@ public final class J3DUtils
         public void setValue(Vector3f vec)
         {
             this.vector = vec;
-            setChanged();
-            notifyObservers(vector);
-            clearChanged();
+//            setChanged();
+//            notifyObservers(vector);
+//            clearChanged();
         }
         public Vector3f getValue() {return vector;}
     }
@@ -433,37 +432,37 @@ public final class J3DUtils
     /**
      * Observer class for directional light
      */
-    private static class DirectionalLightObserver extends DirectionalLight implements Observer
+    private static class DirectionalLightObserver extends DirectionalLight /* implements Observer */
     {
         public DirectionalLightObserver(Color3f color3f, Vector3f vector3f)
         {
             super(color3f, vector3f);
         }
-        public void update(Observable o, Object arg)
-        {
-            if (arg != null)
-            {
-                if (arg instanceof Vector3f) // Change direction
-                {
-                    // change the direction
-                    setDirection((Vector3f)arg);
-                    return;
-                }
-
-                if (arg instanceof Color3f) // Change direction
-                {
-                    // change the direction
-                    setColor((Color3f)arg);
-                    return;
-                }
-            }
-        }
+//        public void update(Observable o, Object arg)
+//        {
+//            if (arg != null)
+//            {
+//                if (arg instanceof Vector3f) // Change direction
+//                {
+//                    // change the direction
+//                    setDirection((Vector3f)arg);
+//                    return;
+//                }
+//
+//                if (arg instanceof Color3f) // Change direction
+//                {
+//                    // change the direction
+//                    setColor((Color3f)arg);
+//                    return;
+//                }
+//            }
+//        }
     }
 
     /********************************************************************************************************
      *   Observer-Observable pattern for Color3f
      *******************************************************************************************************/
-    private static class Color3fObservable extends Observable
+    private static class Color3fObservable /* extends Observable */
     {
         private Color3f color;
 
@@ -474,30 +473,30 @@ public final class J3DUtils
         public void setValue(Color3f color)
         {
             this.color = color;
-            setChanged();
-            notifyObservers(color);
-            clearChanged();
+//            setChanged();
+//            notifyObservers(color);
+//            clearChanged();
         }
         public Color3f getValue() {return color;}
     }
 
-    private static class AmbientLightObserver extends AmbientLight implements Observer
+    private static class AmbientLightObserver extends AmbientLight /* implements Observer */
     {
         public AmbientLightObserver(Color3f color3f)
         {
             super(color3f);
         }
-        public void update(Observable o, Object arg)
-        {
-            if (arg != null && arg instanceof Color3f)
-            {
-                // change the color
-                setColor((Color3f)arg);
-            }
-        }
+//        public void update(Observable o, Object arg)
+//        {
+//            if (arg != null && arg instanceof Color3f)
+//            {
+//                // change the color
+//                setColor((Color3f)arg);
+//            }
+//        }
     }
 
-    private static class BackgroundObserver extends Background implements Observer
+    private static class BackgroundObserver extends Background /* implements Observer */
     {
         public BackgroundObserver(Color3f color3f)
         {
@@ -505,14 +504,14 @@ public final class J3DUtils
             setCapability(Background.ALLOW_COLOR_WRITE);
             setCapability(Background.ALLOW_COLOR_READ);
         }
-        public void update(Observable o, Object arg)
-        {
-            if (arg != null && arg instanceof Color3f)
-            {
-                // change the color
-                setColor((Color3f)arg);
-            }
-        }
+//        public void update(Observable o, Object arg)
+//        {
+//            if (arg != null && arg instanceof Color3f)
+//            {
+//                // change the color
+//                setColor((Color3f)arg);
+//            }
+//        }
     }
 
     public static Vector3f[] transformIntoVectors(String dir)
@@ -564,7 +563,7 @@ public final class J3DUtils
      */
     public static void setAmbientalColor(Object initValue)
     {
-        Color3f userColor = new Color3f(new Color(User.getColor(User.ColorPrefType.AMBIENT_3D)));
+        Color3f userColor = makeColor3f(User.ColorPrefType.AMBIENT_3D.getFactoryDefaultColor());
         if (ambientalColor == null)
             ambientalColor = new Color3fObservable(userColor);
         else if (initValue == null)
@@ -577,7 +576,7 @@ public final class J3DUtils
      */
     public static void setDirectionalColor(Object initValue)
     {
-        Color3f userColor = new Color3f(new Color(User.getColor(User.ColorPrefType.DIRECTIONAL_LIGHT_3D)));
+        Color3f userColor = makeColor3f(User.ColorPrefType.DIRECTIONAL_LIGHT_3D.getFactoryDefaultColor());
         if (directionalColor == null)
             directionalColor = new Color3fObservable(userColor);
         else if (initValue == null)
@@ -590,7 +589,7 @@ public final class J3DUtils
      */
     public static void setBackgroundColor(Object initValue)
     {
-        Color3f userColor = new Color3f(new Color(User.getColor(User.ColorPrefType.BACKGROUND)));
+        Color3f userColor = makeColor3f(User.ColorPrefType.BACKGROUND.getFactoryDefaultColor());
         if (backgroundColor == null)
             backgroundColor = new Color3fObservable(userColor);
         else if (initValue == null)
@@ -604,7 +603,7 @@ public final class J3DUtils
     {
         setBackgroundColor(scene);
         BackgroundObserver bg = new BackgroundObserver(backgroundColor.getValue());
-        backgroundColor.addObserver(bg);
+//        backgroundColor.addObserver(bg);
 		bg.setApplicationBounds(infiniteBounds);
 		scene.addChild(bg);
     }
@@ -619,6 +618,16 @@ public final class J3DUtils
             jAlpha = new J3DAlpha(speed, true, 0.5f);
         else
             jAlpha.setAlphaSpeed(speed);
+    }
+
+    /**
+     * Method to convert Java Color to a JColor3f
+     * @param color the color with R/G/B in the 0-255 range.
+     * @return Color3f that has colors in the 0-1 range.
+     */
+    public static Color3f makeColor3f(Color color)
+    {
+    	return new Color3f(color.getRed()/255.0f, color.getGreen()/255.0f, color.getBlue()/255.0f);
     }
 
     /**
@@ -638,7 +647,7 @@ public final class J3DUtils
         ambientalLight.setCapability(AmbientLight.ALLOW_COLOR_READ);
         ambientalLight.setCapability(AmbientLight.ALLOW_COLOR_WRITE);
         // adding observer
-        ambientalColor.addObserver(ambientalLight);
+//        ambientalColor.addObserver(ambientalLight);
         // Add ambient light to the environment
         scene.addChild(ambientalLight);
 
@@ -658,8 +667,8 @@ public final class J3DUtils
             directionalLight.setCapability(DirectionalLight.ALLOW_COLOR_READ);
             directionalLight.setCapability(DirectionalLight.ALLOW_COLOR_WRITE);
             // adding observers
-            lights[i].addObserver(directionalLight);
-            directionalColor.addObserver(directionalLight);
+//            lights[i].addObserver(directionalLight);
+//            directionalColor.addObserver(directionalLight);
 
             // Add lights to the environment
             scene.addChild(directionalLight);

@@ -387,7 +387,7 @@ public class DriverExt
      */
     private <N extends SvarName> Svex<N> substNorm(Lhs<N>[] lhses, SvexManager<N> sm)
     {
-        Svex<N> Z = SvexQuote.Z();
+        /* Svex<N> Z = */ SvexQuote.Z();
         Svex.TraverseVisitor<PathExt, Svex<N>> visitor = new Svex.TraverseVisitor<PathExt, Svex<N>>()
         {
             @Override

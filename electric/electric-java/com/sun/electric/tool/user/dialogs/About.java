@@ -32,18 +32,15 @@ import com.sun.electric.tool.io.FileType;
 import com.sun.electric.tool.lang.EvalJython;
 import com.sun.electric.tool.simulation.irsim.IRSIM;
 import com.sun.electric.tool.user.Resources;
+import com.sun.electric.tool.user.help.ManualViewer;
 
 import java.awt.Frame;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -53,6 +50,8 @@ import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import org.jogamp.java3d.VirtualUniverse;
 
 
 /**
@@ -1237,9 +1236,7 @@ public class About extends EDialog
 			while (cl != null)
 			{
 				model.addElement("ClassLoader: " + cl.getClass());
-//				for (URL url: cl.getURLs())
-//					model.addElement("  " + url.toString());
-				URLClassLoader nextCl =(URLClassLoader)cl.getParent();
+				URLClassLoader nextCl = (URLClassLoader)cl.getParent();
 				try { cl.close(); } catch (IOException e) {}
 				cl = nextCl;
 			}
@@ -1252,28 +1249,12 @@ public class About extends EDialog
 		model.addElement("Classpath:");
 		for(String cpe : cps) model.addElement("    " + cpe);
 		showingCast = null;
-        
-//		for (Enumeration en = model.elements(); en.hasMoreElements(); )
-//			System.out.println(en.nextElement());
 	}//GEN-LAST:event_dump
 
     private static Object get3DVersion()
     {
-        try
-        {
-            Class<?> cls = Class.forName("javax.media.j3d.VirtualUniverse");
-            Object objVu = cls.newInstance();
-            Method getProperties = objVu.getClass().getMethod("getProperties");
-            Map<String, Object> vuMap = (Map<String, Object>) getProperties.invoke(objVu);
-            return vuMap.get("j3d.version");
-        } catch (ClassNotFoundException e) {
-        } catch (InstantiationException e) {
-        } catch (NoSuchMethodException e) {
-        } catch (IllegalAccessException e) {
-        } catch (InvocationTargetException e) {
-        } catch (UnsatisfiedLinkError e) {
-        }
-        return null;
+    	if (!ManualViewer.isJava3DAvailable()) return null;
+    	return (String)VirtualUniverse.getProperties().get("j3d.version");
     }
     
     private void dump(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plugins

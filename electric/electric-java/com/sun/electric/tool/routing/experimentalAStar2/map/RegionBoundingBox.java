@@ -82,28 +82,28 @@ public class RegionBoundingBox extends AStarMapBase<AStarRegionNode>
     this.regionGrid = regionGrid;
   }
 
-  /**
-   * Sets the size of the bounding box
-   * 
-   * @deprecated The bounds are currently calculated internally.
-   * 
-   * @param westernBound
-   * @param easternBound
-   * @param northernBound
-   * @param southernBound
-   * @param upperBound
-   * @param lowerBound
-   */
-  @Deprecated
-  public void setBounds(int westernBound, int easternBound, int northernBound, int southernBound, int upperBound, int lowerBound)
-  {
-    this.westernBound = westernBound;
-    this.easternBound = easternBound;
-    this.northernBound = northernBound;
-    this.southernBound = southernBound;
-    this.upperBound = upperBound;
-    this.lowerBound = lowerBound;
-  }
+//  /**
+//   * Sets the size of the bounding box
+//   * 
+//   * @deprecated The bounds are currently calculated internally.
+//   * 
+//   * @param westernBound
+//   * @param easternBound
+//   * @param northernBound
+//   * @param southernBound
+//   * @param upperBound
+//   * @param lowerBound
+//   */
+//  @Deprecated
+//  public void setBounds(int westernBound, int easternBound, int northernBound, int southernBound, int upperBound, int lowerBound)
+//  {
+//    this.westernBound = westernBound;
+//    this.easternBound = easternBound;
+//    this.northernBound = northernBound;
+//    this.southernBound = southernBound;
+//    this.upperBound = upperBound;
+//    this.lowerBound = lowerBound;
+//  }
 
   /**
    * Increases the size of the bounding box by one in all directions. Can be

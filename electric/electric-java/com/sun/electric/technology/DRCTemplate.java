@@ -582,9 +582,9 @@ public class DRCTemplate implements Serializable
             else if (attributes.getQName(i).equals("valueY"))
                 values[1] = Double.parseDouble(attributes.getValue(i));
             else if (attributes.getQName(i).equals("maxW"))
-                maxW = new Double(Double.parseDouble(attributes.getValue(i)));
+                maxW = Double.parseDouble(attributes.getValue(i));
             else if (attributes.getQName(i).equals("minLen"))
-                minLen = new Double(Double.parseDouble(attributes.getValue(i)));
+                minLen = Double.parseDouble(attributes.getValue(i));
             else
             {
                 System.out.println("Invalid attribute in DRCXMLParser in " + localName);

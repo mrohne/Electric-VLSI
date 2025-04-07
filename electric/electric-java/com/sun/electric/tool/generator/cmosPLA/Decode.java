@@ -116,8 +116,8 @@ public class Decode
 			if (newNode2 == null) return(null);
 			if (lastPNode == null && lastNNode == null)
 			{
-				Export.newInstance(decodeCell, newNode2.findPortInstFromProto(pwrEPort), "PWR.m-2.e", ep);
-				Export.newInstance(decodeCell, newNode2.findPortInstFromProto(gndEPort), "GND.m-2.e", ep);
+				Export.newInst(decodeCell, newNode2.findPortInstFromProto(pwrEPort), "PWR.m-2.e", ep);
+				Export.newInst(decodeCell, newNode2.findPortInstFromProto(gndEPort), "GND.m-2.e", ep);
 				firstPNode = lastPNode = newNode;
 				lastNNode = lastNode = newNode2;
 			} else
@@ -152,12 +152,12 @@ public class Decode
 		if (pwrWPort != null && pwrEPort != null)
 		{
 			pla.makeWire(pla.m2Arc, 14, lastNNode, pwrWPort, firstPNode, pwrEPort, decodeCell);
-			Export.newInstance(decodeCell, lastPNode.findPortInstFromProto(pwrWPort), "PWR.m-2.w", ep);
+			Export.newInst(decodeCell, lastPNode.findPortInstFromProto(pwrWPort), "PWR.m-2.w", ep);
 		}
 		if (gndWPort != null && gndEPort != null)
 		{
 			pla.makeWire(pla.m2Arc, 14, lastNNode, gndWPort, firstPNode, gndEPort, decodeCell);
-			Export.newInstance(decodeCell, lastPNode.findPortInstFromProto(gndWPort), "GND.m-2.w", ep);
+			Export.newInst(decodeCell, lastPNode.findPortInstFromProto(gndWPort), "GND.m-2.w", ep);
 		}
 		NodeInst [] both = new NodeInst[2];
 		both[0] = lastPNode;
@@ -173,7 +173,7 @@ public class Decode
 		Export pp = nmosCell.findExport(name);
 		while (pp != null)
 		{
-			Export.newInstance(decodeCell, nNode.findPortInstFromProto(pp), name, ep);
+			Export.newInst(decodeCell, nNode.findPortInstFromProto(pp), name, ep);
 			x++;
 			name = "DATA" + x + ".m-1." + side;
 			pp = nmosCell.findExport(name);
@@ -349,7 +349,7 @@ public class Decode
 			if (pmNode1 == null) return true;
 			pla.makeWire(pla.m1Arc, 4, pmNode1,
 				pmNode1.getProto().getPort(0), pmNode2, pmNode2.getProto().getPort(0), decodeCell);
-			Export.newInstance(decodeCell, pmNode1.findPortInstFromProto(pmNode1.getProto().getPort(0)), "INPUT" + inCnt + ".m-1." + side, ep);
+			Export.newInst(decodeCell, pmNode1.findPortInstFromProto(pmNode1.getProto().getPort(0)), "INPUT" + inCnt + ".m-1." + side, ep);
 			cnt += 2;  // Only route every second one
 			name = "ACCESS" + cnt + ".m-1." + acSide;
 			pPort = pmosCell.findExport(name);

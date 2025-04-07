@@ -94,7 +94,7 @@ public class STL extends Output {
 		for(Iterator<NodeInst> it = cell.getNodes(); it.hasNext(); )
 		{
 			NodeInst ni = it.next();
-			NodeProto np = ni.getProto();
+//			NodeProto np = ni.getProto();
 			if (ni.isCellInstance())
 				continue; // skipping subscell for now
 

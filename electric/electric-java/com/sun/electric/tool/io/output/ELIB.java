@@ -226,7 +226,7 @@ public class ELIB extends Output {
         putNameSpace(ArcInst.ARC_NAME.getName());
         short varIndex = 0;
         for (Map.Entry<String, Short> e : nameSpace.entrySet()) {
-            e.setValue(new Short(varIndex++));
+            e.setValue(Short.valueOf(varIndex++));
         }
 
         // make sure all technologies with irrelevant scale information have the same scale value
@@ -274,7 +274,7 @@ public class ELIB extends Output {
 
         for (CellRevision cellRevision : localCells) {
             CellId cellId = cellRevision.d.cellId;
-            cellOrdering.put(cellId, new Integer(nodeProtoIndex));
+            cellOrdering.put(cellId, Integer.valueOf(nodeProtoIndex));
             putObjIndex(cellId, nodeProtoIndex++);
             for (ImmutableExport e : cellRevision.exports) {
                 putObjIndex(e.exportId, portProtoIndex++);
@@ -417,7 +417,7 @@ public class ELIB extends Output {
         int cellCount = 0;
         if (compatibleWith6) {
             for (Map.Entry<String, Integer> e : cellIndexMap.entrySet()) {
-                e.setValue(new Integer(cellCount++));
+                e.setValue(Integer.valueOf(cellCount++));
             }
             writeBigInteger(cellCount);
         }
@@ -717,7 +717,7 @@ public class ELIB extends Output {
      * @param index index of object.
      */
     private void putObjIndex(Object obj, int index) {
-        objInfo.put(obj, new Integer(index));
+        objInfo.put(obj, Integer.valueOf(index));
     }
 
     /**
@@ -1268,8 +1268,8 @@ public class ELIB extends Output {
             Float[] newPoints = new Float[len];
             for (int j = 0; j < points.length; j++) {
                 if (points[j] != null) {
-                    newPoints[j * 2] = new Float(points[j].getLambdaX());
-                    newPoints[j * 2 + 1] = new Float(points[j].getLambdaY());
+                    newPoints[j * 2] = Float.valueOf((float)points[j].getLambdaX());
+                    newPoints[j * 2 + 1] = Float.valueOf((float)points[j].getLambdaY());
                 } else {
                     newPoints[j * 2] = newPoints[j * 2 + 1] = Float.valueOf(Float.NaN);
                 }
@@ -1277,7 +1277,7 @@ public class ELIB extends Output {
             varObj = newPoints;
         } else if (varObj instanceof EPoint) {
             EPoint p = (EPoint) varObj;
-            varObj = new Float[]{new Float(p.getLambdaX()), new Float(p.getLambdaY())};
+            varObj = new Float[]{Float.valueOf((float)p.getLambdaX()), Float.valueOf((float)p.getLambdaY())};
         }
 
         int type = ELIBConstants.getVarType(varObj);
@@ -1471,9 +1471,9 @@ public class ELIB extends Output {
      * @param keyword keywork fro ReadableDump
      * @param gridCoord coordinate in grid units.
      */
-    private void writeGridCoord(CellBackup cellBackup, String keyword, double gridCoord) throws IOException {
-        writeGridCoord(cellBackup.cellRevision, keyword, gridCoord);
-    }
+//    private void writeGridCoord(CellBackup cellBackup, String keyword, double gridCoord) throws IOException {
+//        writeGridCoord(cellBackup.cellRevision, keyword, gridCoord);
+//    }
 
     /**
      * Method to write a coordinate as (4 bytes) integer to the ouput stream.

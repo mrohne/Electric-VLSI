@@ -123,7 +123,7 @@ public class ImmutableExport extends ImmutableElectricObject {
     };
 
     /**
-     * The private constructor of ImmutableExport. Use the factory "newInstance" instead.
+     * The private constructor of ImmutableExport. Use the factory "newInst" instead.
      * @param exportId id of new Export.
      * @param name name of new ImmutableExport.
      * @param nameDescriptor TextDescriptor of name of this ImmutableExport.
@@ -162,7 +162,7 @@ public class ImmutableExport extends ImmutableElectricObject {
      * @throws NullPointerException if exportId, name, originalPortId is null.
      * @throws IllegalArgumentException if originalNodeId is bad.
      */
-    public static ImmutableExport newInstance(ExportId exportId, Name name, TextDescriptor nameDescriptor,
+    public static ImmutableExport newInst(ExportId exportId, Name name, TextDescriptor nameDescriptor,
             int originalNodeId, PortProtoId originalPortId,
             boolean alwaysDrawn, boolean bodyOnly, PortCharacteristic characteristic) {
         if (exportId == null) {

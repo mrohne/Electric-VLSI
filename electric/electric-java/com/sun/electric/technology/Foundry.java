@@ -37,11 +37,12 @@ import java.util.ArrayList;
 public class Foundry {
 
     public static class Type {
-        public static Type NONE = new Type("NONE", -1, 040); // DRC_BIT_NONE_FOUNDRY = 040; /* For NONE foundry selection */
-        public static Type TSMC = new Type("TSMC", 010000, 010);  // DRC_BIT_TSMC_FOUNDRY = 010; /* For TSMC foundry selection */
-        public static Type ST = new Type("ST", 020000, 04); // DRC_BIT_ST_FOUNDRY = 04; /* For ST foundry selection */
-        public static Type MOSIS = new Type("MOSIS", 040000, 020); // DRC_BIT_MOSIS_FOUNDRY = 020; /* For Mosis foundry selection */
-        private static List<Type> typeList = new ArrayList<Type>(4);
+        public static Type NONE     = new Type("NONE",          -1, 040); // DRC_BIT_NONE_FOUNDRY  = 040; /* For NONE foundry selection */
+        public static Type TSMC     = new Type("TSMC",      010000, 010); // DRC_BIT_TSMC_FOUNDRY  = 010; /* For TSMC foundry selection */
+        public static Type ST       = new Type("ST",        020000,  04); // DRC_BIT_ST_FOUNDRY    =  04; /* For ST foundry selection */
+        public static Type MOSIS    = new Type("MOSIS",     040000, 020); // DRC_BIT_MOSIS_FOUNDRY = 020; /* For Mosis foundry selection */
+        public static Type SKYWATER = new Type("SKYWATER", 0100000,  02); // DRC_BIT_MOSIS_FOUNDRY =  02; /* For Skywater foundry selection */
+        private static List<Type> typeList = new ArrayList<Type>(5);
 
         static
         {
@@ -49,12 +50,8 @@ public class Foundry {
             typeList.add(TSMC);
             typeList.add(ST);
             typeList.add(MOSIS);
+            typeList.add(SKYWATER);
         }
-//    public enum Type {
-//        /** None */                                                         NONE (-1),
-//        /** only for TSMC technology */                                     TSMC (010000),
-//        /** only for ST technology */                                       ST (020000),
-//        /** only for MOSIS technology */                                    MOSIS (040000);
         private final String name;  // foundry name
         private final int mode; // foundry mode
         private int bit; // foundry bit for DRC
@@ -73,7 +70,7 @@ public class Foundry {
         	if (n == null) return NONE;
             for (Type t : typeList)
             {
-                if (t.getName().equals(n))
+                if (t.getName().equalsIgnoreCase(n))
                     return t;
             }
             // none of the known foundries
@@ -110,59 +107,6 @@ public class Foundry {
         setFactoryGDSLayers(gdsLayers);
     }
     public Type getType() { return type; }
-//    /**
-//     * Method to search rule names per node names.
-//     * @param ruleName
-//     * @param type
-//     * @param modes
-//     * @return
-//     */
-//    public DRCTemplate getRuleForNode(String ruleName, DRCTemplate.DRCRuleType type, int[] modes)
-//    {
-//        for (DRCTemplate tmp : rules)
-//        {
-//            if (tmp.ruleType == type && tmp.nodeName.equals(ruleName))
-//            {
-//                for (int i = 0; i < modes.length; i++)
-//                {
-//                    int mode = modes[i];
-//                    if (tmp.when == DRCTemplate.DRCMode.ALL.mode() || tmp.when == mode || (tmp.when&mode) == mode)
-//                        return tmp;
-//                }
-////                if ((tmp.when == DRCTemplate.DRCMode.ALL.mode() || (tmp.when&mode) == mode) && tmp.nodeName.equals(ruleName))
-//            }
-//        }
-//        return null;
-//    }
-//    /**
-//     * Method to search rule names per layer names. If second layer is null, then it searches the rule for a particular layer.
-//     * @param layer1Name
-//     * @param layer2Name
-//     * @param type
-//     * @param modes
-//     * @return
-//     */
-//    public DRCTemplate getRuleForLayers(String layer1Name, String layer2Name, DRCTemplate.DRCRuleType type, int[] modes)
-//    {
-//        for (DRCTemplate tmp : rules)
-//        {
-//            if (tmp.ruleType == type && (tmp.name1.equals(layer1Name) && (layer2Name == null || tmp.name2.equals(layer2Name))))
-//            {
-//                for (int i = 0; i < modes.length; i++)
-//                {
-//                    int mode = modes[i];
-//                    if (tmp.when == DRCTemplate.DRCMode.ALL.mode() || tmp.when == mode || (tmp.when&mode) == mode)
-//                        return tmp;
-//                }
-//            }
-////            if (tmp.ruleType == type && (tmp.when == DRCTemplate.DRCMode.ALL.mode() || (tmp.when&mode) == mode))
-////            {
-////                if (tmp.name1.equals(layer1Name) && (layer2Name == null || tmp.name2.equals(layer2Name)))
-////                return tmp;
-////            }
-//        }
-//        return null;
-//    }
     public List<DRCTemplate> getRules() {
         if (!rulesLoaded)
             parseRules();
@@ -245,21 +189,6 @@ public class Foundry {
         }
     }
 
-//    private static Foundry curFoundry = null;
-//    public void setFactoryGDSLayer(Layer layer, String factoryDefault)
-//    {
-//        if (!toString().equals("ST")) {
-//            if (this != curFoundry) {
-//                System.out.println(layer.getTechnology() + " " + this);
-//                curFoundry = this;
-//            }
-//            System.out.println("\"" + layer.getName() + " " + factoryDefault + "\",");
-//        }
-//        // Getting rid of spaces
-//        String value = factoryDefault.replaceAll(", ", ",");
-//        makeLayerSetting(layer, getGDSPrefName(), gdsLayerPrefs, value);
-//    }
-
     /**
      * Generate key name for GDS value depending on the foundry
      * @return key name.
@@ -277,6 +206,8 @@ public class Foundry {
             return gdsNode.node("MOSIS");
         else if (type == Type.ST)
             return gdsNode.node("ST");
+        else if (type == Type.SKYWATER)
+            return gdsNode.node("SKYWATER");
         else
             return gdsNode;
     }

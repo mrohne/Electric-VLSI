@@ -433,7 +433,7 @@ public class ToolbarTab extends PreferencePanel implements TreeSelectionListener
 			this.menuName = menuName;
 		}
 
-		public EMenuItem getMenuItem() { return menuItem; }
+//		public EMenuItem getMenuItem() { return menuItem; }
 
 		/**
 		 * Convert to String to show on dialog tree

@@ -133,7 +133,7 @@ public class Artwork extends Technology {
         //**************************************** LAYERS ****************************************
 
         /** Graphics layer */
-        defaultLayer = Layer.newInstance(this, "Graphics",
+        defaultLayer = Layer.newInst(this, "Graphics",
                 new EGraphics(false, false, null, 0, 0, 0, 0, 0.8, true,
                 new int[]{0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
                     0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff}));

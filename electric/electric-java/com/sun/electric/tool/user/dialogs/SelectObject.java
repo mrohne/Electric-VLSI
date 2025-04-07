@@ -343,7 +343,7 @@ public class SelectObject extends EModelessDialog implements DatabaseChangeListe
 	    			String s = (String)model.get(i);
 	                Matcher m = p.matcher(s);
 	                if (m.find())
-	    				selected.add(new Integer(i));
+	    				selected.add(Integer.valueOf(i));
 	    		}
 	        } catch (PatternSyntaxException e)
 	        {
@@ -356,7 +356,7 @@ public class SelectObject extends EModelessDialog implements DatabaseChangeListe
 		{
 			String s = (String)model.get(i);
             if (s.indexOf(currentSearchText) >= 0)
-				selected.add(new Integer(i));
+				selected.add(Integer.valueOf(i));
 		}
 		
 		// 1000 is an arbitrary number at this point.

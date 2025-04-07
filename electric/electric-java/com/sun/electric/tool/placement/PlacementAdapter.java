@@ -532,7 +532,7 @@ public class PlacementAdapter {
 				continue;
 			}
 			PortInst portToExport = newNI.findPortInstFromProto(plPort.getPortProto());
-			Export.newInstance(newCell, portToExport, exportName, ep, plExport.getCharacteristic());
+			Export.newInst(newCell, portToExport, exportName, ep, plExport.getCharacteristic());
 		}
 
 		ImmutableArcInst a = Generic.tech().unrouted_arc.getDefaultInst(ep);
@@ -575,18 +575,18 @@ public class PlacementAdapter {
 
 	private static class PlacementSteinerTree extends SteinerTree
 	{
-		private boolean isRail;
+//		private boolean isRail;
 
 		public PlacementSteinerTree(List<SteinerTreePort> portList, boolean isRail)
 		{
 			super(portList, false);
-			this.isRail = isRail;
+//			this.isRail = isRail;
 		}
 
-		public SteinerTreePortPair makeTreeBranch(SteinerTreePort p1, SteinerTreePort p2)
-		{
-			return new PlacementConnection(p1, p2, isRail);
-		}
+//		public SteinerTreePortPair makeTreeBranch(SteinerTreePort p1, SteinerTreePort p2)
+//		{
+//			return new PlacementConnection(p1, p2, isRail);
+//		}
 	}
 
 	private static final boolean NEWWAY = false;

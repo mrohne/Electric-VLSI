@@ -42,7 +42,7 @@ public class ExecMulti implements Exec.FinishedListener {
         execs.add(e);
         preRunComments.add(preRunComment);
         postRunComments.add(postRunComment);
-        ignoreExitValues.add(new Boolean(ignoreExitValue));
+        ignoreExitValues.add(Boolean.valueOf(ignoreExitValue));
     }
 
     public void start() {

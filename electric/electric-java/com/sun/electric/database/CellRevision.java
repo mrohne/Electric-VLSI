@@ -142,7 +142,7 @@ public abstract class CellRevision {
     /**
      * Creates a new instance of CellRevision
      */
-    public static CellRevision newInstance(ImmutableCell d) {
+    public static CellRevision newInst(ImmutableCell d) {
         return getProvider().createCellRevision(d);
     }
 
@@ -778,7 +778,7 @@ public abstract class CellRevision {
      */
     static CellRevision read(IdReader reader) throws IOException {
         ImmutableCell d = ImmutableCell.read(reader);
-        CellRevision revision = CellRevision.newInstance(d.withoutVariables());
+        CellRevision revision = CellRevision.newInst(d.withoutVariables());
 
         int nodesLength = reader.readInt();
         ImmutableNodeInst[] nodes = new ImmutableNodeInst[nodesLength];
@@ -817,7 +817,7 @@ public abstract class CellRevision {
         // Check nodes
         nodes.check();
         boolean hasCellCenter = false;
-        int nodeInd = 0;
+//        int nodeInd = 0;
         for (ImmutableNodeInst n : nodes) {
             if (ImmutableNodeInst.isCellCenter(n.protoId)) {
                 assert !hasCellCenter;
@@ -852,7 +852,7 @@ public abstract class CellRevision {
                 TechId techId = ((PrimitiveNodeId) n.protoId).techId;
                 checkTechUsages.set(techId.techIndex);
             }
-            nodeInd++;
+//            nodeInd++;
         }
         for (int i = 0; i < checkCellUsages.length; i++) {
             assert checkCellUsages[i] == 0;

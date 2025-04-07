@@ -31,7 +31,7 @@ import java.math.BigInteger;
 import java.util.Map;
 
 /**
- * Unsafe, Verilog-style “case equality” of 4vecs.
+ * Unsafe, Verilog-style "case equality" of 4vecs.
  * See<http://www.cs.utexas.edu/users/moore/acl2/manuals/current/manual/?topic=SV____4VEC-_D3_D3_D3>.
  *
  * @param <N> Type of name of Svex variables

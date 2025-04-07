@@ -187,11 +187,11 @@ public class ChainControl extends Logger {
         return system;
     }
 
-    /** Finalizer. Disconnects from JTAG tester if necessary */
-    protected void finalize() throws Throwable {
-        super.finalize();
-        jtag.disconnect();
-    }
+//    /** Finalizer. Disconnects from JTAG tester if necessary */
+//    protected void finalize() throws Throwable {
+//        super.finalize();
+//        jtag.disconnect();
+//    }
 
     /**
      * Returns device-independent JTAG tester object

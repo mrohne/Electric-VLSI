@@ -833,7 +833,7 @@ public class DEF extends LEFDEF
 					NodeInst ni = makeNode(cp.np, loc, sX, sY, cell);
 					if (ni == null) return true;
 					pi = ni.findPortInstFromProto(cp.np.getPort(0));
-					Export e = Export.newInstance(cell, pi, newPinName, ep, portCharacteristic);
+					Export e = Export.newInst(cell, pi, newPinName, ep, portCharacteristic);
 					if (e == null)
 					{
 						reportError("Unable to create pin " + newPinName, cell);
@@ -915,7 +915,7 @@ public class DEF extends LEFDEF
 			NodeInst ni = makeNode(curPin.np, loc, sX, sY, cell);
 			if (ni == null) return true;
 			PortInst pi = ni.findPortInstFromProto(curPin.np.getPort(0));
-			Export e = Export.newInstance(cell, pi, pinName, ep, portCharacteristic);
+			Export e = Export.newInst(cell, pi, pinName, ep, portCharacteristic);
 			if (e == null)
 			{
 				reportError("Unable to create pin name", cell);
@@ -982,7 +982,7 @@ public class DEF extends LEFDEF
 		double portWid = portNp.getDefWidth(ep);
 		double portHei = portNp.getDefHeight(ep);
 		NodeInst ni = NodeInst.makeInstance(portNp, ep, EPoint.fromLambda(0, 0), portWid, portHei, cell);
-		Export.newInstance(cell, ni.getOnlyPortInst(), "dummyPort", ep);
+		Export.newInst(cell, ni.getOnlyPortInst(), "dummyPort", ep);
 		return cell;
 	}
 
@@ -2799,7 +2799,7 @@ public class DEF extends LEFDEF
 				// place a universal export in the via
 				NodeInst ni = makeNode(Generic.tech().universalPinNode, EPoint.fromLambda(0, 0), 0, 0, cell);
 				if (ni == null) return null;
-				Export e = Export.newInstance(cell, ni.getOnlyPortInst(), "viaPort", ep, PortCharacteristic.UNKNOWN);
+				Export e = Export.newInst(cell, ni.getOnlyPortInst(), "viaPort", ep, PortCharacteristic.UNKNOWN);
 				if (e == null)
 				{
 					reportError("Unable to create export in " + viaName + " via", cell);
@@ -2994,7 +2994,7 @@ public class DEF extends LEFDEF
 		} else
 		{
 			// the old way (faster, doesn't find ports on existing nodes)
-			Double key = new Double(x+y);
+			Double key = Double.valueOf(x+y);
 			List<NodeInst> pl = portHT.get(key);
 			if (pl != null)
 			{
@@ -3045,7 +3045,7 @@ public class DEF extends LEFDEF
 		} else
 		{
 			// store this pin in the data structure (old way)
-			Double key = new Double(x+y);
+			Double key = Double.valueOf(x+y);
 			List<NodeInst> pl = portHT.get(key);
 			if (pl == null) portHT.put(key, pl = new ArrayList<NodeInst>());
 			pl.add(ni);

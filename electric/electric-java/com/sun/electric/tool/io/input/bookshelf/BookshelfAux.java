@@ -64,6 +64,7 @@ public class BookshelfAux implements BookshelfInputParser<Map<BookshelfFiles, St
 				}
 			}
 		}
+		rin.close();
 		
 		return result;
 	}

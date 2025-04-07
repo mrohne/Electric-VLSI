@@ -322,7 +322,7 @@ public class Mos extends Part {
 		hc += getClass().hashCode();
 		// include whether its NMOS or PMOS
 		hc += type().hashCode();
-		return new Integer(hc);
+		return Integer.valueOf(hc);
 	}
 
 	// merge into this transistor
@@ -483,7 +483,7 @@ public class Mos extends Part {
 		}
 		int sum = sumLo * sumHi;
 		if (hasBody) sum += pins[bodyNdx()].getCode() * pin_coeffs[bodyNdx()];
-		return new Integer(sum);
+		return Integer.valueOf(sum);
 	}
 
 }

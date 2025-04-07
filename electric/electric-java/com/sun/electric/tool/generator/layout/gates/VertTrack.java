@@ -48,7 +48,7 @@ public class VertTrack {
 		double inY = 0;
 		PortInst inPin = LayoutLib.newNodeInst(tech.m1pin(), ep, inX, inY, 1, 1, 0,
 											   vtrack).getOnlyPortInst();
-		Export.newInstance(vtrack, inPin, "in", ep)
+		Export.newInst(vtrack, inPin, "in", ep)
 			.setCharacteristic(PortCharacteristic.IN);
 		// Add some metal to port to allow software to guess the width
 		// of metal to use to connect to this port.

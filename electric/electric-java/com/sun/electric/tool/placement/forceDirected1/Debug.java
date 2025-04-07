@@ -57,7 +57,7 @@ public class Debug {
 	 */
 	public void tick() {
 		long now = System.currentTimeMillis();
-		tick.push(new Long(now));
+		tick.push(Long.valueOf(now));
 	}
 	public void tack() {
 		tack("Time");

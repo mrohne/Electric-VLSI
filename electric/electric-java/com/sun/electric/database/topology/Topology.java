@@ -818,7 +818,6 @@ public class Topology {
     }
 
     private void rebuildRTree() {
-//        long startTime = System.currentTimeMillis();
         if (!validArcBounds) {
             computeArcBounds();
         }
@@ -835,98 +834,96 @@ public class Topology {
         root.checkRTree(0, cellId);
         rTree = root;
         rTreeFresh = true;
-//        long stopTime = System.currentTimeMillis();
-//        if (Job.getDebug()) System.out.println("Rebuilding R-Tree in " + this + " took " + (stopTime - startTime) + " msec");
     }
     
-    private void rebuildRTree2() {
-        long startTime = System.currentTimeMillis();
-        BitSet remainingNodes = new BitSet();
-        BitSet remainingArcs = new BitSet();
-        removeRTNodes(remainingNodes, remainingArcs, rTree);
-        CellId cellId = cell.getId();
-        for (Iterator<NodeInst> it = cell.getNodes(); it.hasNext();) {
-            NodeInst ni = it.next();
-            if (remainingNodes.get(ni.getNodeId())) {
-                continue;
-            }
-            rTree = RTNode.linkGeom(cellId, rTree, ni);
-        }
-        for (Iterator<ArcInst> it = cell.getArcs(); it.hasNext();) {
-            ArcInst ai = it.next();
-            if (remainingArcs.get(ai.getArcId())) {
-                continue;
-            }
-            rTree = RTNode.linkGeom(cellId, rTree, ai);
-        }
-        rTree.checkRTree(0, cellId);
-        rTreeFresh = true;
-        long stopTime = System.currentTimeMillis();
-        if (Job.getDebug()) System.out.println("Rebuilding R-Tree in " + cell + " took " + (stopTime - startTime) + " msec");
-    }
+//    private void rebuildRTree2() {
+//        long startTime = System.currentTimeMillis();
+//        BitSet remainingNodes = new BitSet();
+//        BitSet remainingArcs = new BitSet();
+//        removeRTNodes(remainingNodes, remainingArcs, rTree);
+//        CellId cellId = cell.getId();
+//        for (Iterator<NodeInst> it = cell.getNodes(); it.hasNext();) {
+//            NodeInst ni = it.next();
+//            if (remainingNodes.get(ni.getNodeId())) {
+//                continue;
+//            }
+//            rTree = RTNode.linkGeom(cellId, rTree, ni);
+//        }
+//        for (Iterator<ArcInst> it = cell.getArcs(); it.hasNext();) {
+//            ArcInst ai = it.next();
+//            if (remainingArcs.get(ai.getArcId())) {
+//                continue;
+//            }
+//            rTree = RTNode.linkGeom(cellId, rTree, ai);
+//        }
+//        rTree.checkRTree(0, cellId);
+//        rTreeFresh = true;
+//        long stopTime = System.currentTimeMillis();
+//        if (Job.getDebug()) System.out.println("Rebuilding R-Tree in " + cell + " took " + (stopTime - startTime) + " msec");
+//    }
     
     /**
      * Method to remove entry "ind" from this R-tree node in cell "cell"
      */
-    private void removeRTNodes(BitSet remainingNodes, BitSet remainingArcs, RTNode<Geometric> top) {
-        long fixpMinX = Long.MAX_VALUE;
-        long fixpMinY = Long.MAX_VALUE;
-        long fixpMaxX = Long.MIN_VALUE;
-        long fixpMaxY = Long.MIN_VALUE;
-        if (top.getFlag()) {
-            int j = 0;
-            for (int i = 0; i < top.getTotal(); i++) {
-                Geometric geom = top.getChildLeaf(j);
-                ERectangle bounds;
-                if (geom instanceof NodeInst) {
-                    NodeInst ni = (NodeInst) geom;
-                    if (ni != getNodeById(ni.getNodeId())) {
-                        continue;
-                    }
-                    bounds = geom.getBounds();
-                    if (!top.contains(bounds)) {
-                        continue;
-                    }
-                    remainingNodes.set(ni.getNodeId());
-                } else {
-                    ArcInst ai = (ArcInst) geom;
-                    if (ai != getArcById(ai.getArcId())) {
-                        continue;
-                    }
-                    bounds = geom.getBounds();
-                    if (!top.contains(bounds)) {
-                        continue;
-                    }
-                    remainingArcs.set(ai.getArcId());
-                }
-                fixpMinX = Math.min(fixpMinX, bounds.getFixpMinX());
-                fixpMinY = Math.min(fixpMinY, bounds.getFixpMinY());
-                fixpMaxX = Math.max(fixpMaxX, bounds.getFixpMaxX());
-                fixpMaxY = Math.max(fixpMaxY, bounds.getFixpMaxY());
-                top.setChild(j++, geom);
-            }
-            top.setTotal(j);
-        } else {
-            int j = 0;
-            for (int i = 0; i < top.getTotal(); i++) {
-                RTNode<Geometric> child = top.getChildTree(i);
-                removeRTNodes(remainingNodes, remainingArcs, child);
-                if (child.getTotal() == 0) {
-                    continue;
-                }
-                fixpMinX = Math.min(fixpMinX, child.getFixpMinX());
-                fixpMinY = Math.min(fixpMinY, child.getFixpMinY());
-                fixpMaxX = Math.max(fixpMaxX, child.getFixpMaxX());
-                fixpMaxY = Math.max(fixpMaxY, child.getFixpMaxY());
-                top.setChild(j++, child);
-            }
-            top.setTotal(j);
-        }
-        if (top.getTotal() == 0) {
-            fixpMinX = fixpMinY = fixpMaxX = fixpMaxY = 0;
-        }
-        top.setFixpLow(fixpMinX, fixpMinY, fixpMaxX, fixpMaxY);
-    }
+//    private void removeRTNodes(BitSet remainingNodes, BitSet remainingArcs, RTNode<Geometric> top) {
+//        long fixpMinX = Long.MAX_VALUE;
+//        long fixpMinY = Long.MAX_VALUE;
+//        long fixpMaxX = Long.MIN_VALUE;
+//        long fixpMaxY = Long.MIN_VALUE;
+//        if (top.getFlag()) {
+//            int j = 0;
+//            for (int i = 0; i < top.getTotal(); i++) {
+//                Geometric geom = top.getChildLeaf(j);
+//                ERectangle bounds;
+//                if (geom instanceof NodeInst) {
+//                    NodeInst ni = (NodeInst) geom;
+//                    if (ni != getNodeById(ni.getNodeId())) {
+//                        continue;
+//                    }
+//                    bounds = geom.getBounds();
+//                    if (!top.contains(bounds)) {
+//                        continue;
+//                    }
+//                    remainingNodes.set(ni.getNodeId());
+//                } else {
+//                    ArcInst ai = (ArcInst) geom;
+//                    if (ai != getArcById(ai.getArcId())) {
+//                        continue;
+//                    }
+//                    bounds = geom.getBounds();
+//                    if (!top.contains(bounds)) {
+//                        continue;
+//                    }
+//                    remainingArcs.set(ai.getArcId());
+//                }
+//                fixpMinX = Math.min(fixpMinX, bounds.getFixpMinX());
+//                fixpMinY = Math.min(fixpMinY, bounds.getFixpMinY());
+//                fixpMaxX = Math.max(fixpMaxX, bounds.getFixpMaxX());
+//                fixpMaxY = Math.max(fixpMaxY, bounds.getFixpMaxY());
+//                top.setChild(j++, geom);
+//            }
+//            top.setTotal(j);
+//        } else {
+//            int j = 0;
+//            for (int i = 0; i < top.getTotal(); i++) {
+//                RTNode<Geometric> child = top.getChildTree(i);
+//                removeRTNodes(remainingNodes, remainingArcs, child);
+//                if (child.getTotal() == 0) {
+//                    continue;
+//                }
+//                fixpMinX = Math.min(fixpMinX, child.getFixpMinX());
+//                fixpMinY = Math.min(fixpMinY, child.getFixpMinY());
+//                fixpMaxX = Math.max(fixpMaxX, child.getFixpMaxX());
+//                fixpMaxY = Math.max(fixpMaxY, child.getFixpMaxY());
+//                top.setChild(j++, child);
+//            }
+//            top.setTotal(j);
+//        }
+//        if (top.getTotal() == 0) {
+//            fixpMinX = fixpMinY = fixpMaxX = fixpMaxY = 0;
+//        }
+//        top.setFixpLow(fixpMinX, fixpMinY, fixpMaxX, fixpMaxY);
+//    }
 
     /**
      * Method to check invariants in this Cell.

@@ -552,8 +552,8 @@ public class Attributes extends EModelessDialog implements HighlightListener, Da
         {
             int i = TextUtils.atoi(text);
             double d = TextUtils.atof(text);
-            if (i == d) return new Integer(i);
-            return new Double(d);
+            if (i == d) return Integer.valueOf(i);
+            return Double.valueOf(d);
         }
         return text;
     }
@@ -704,7 +704,7 @@ public class Attributes extends EModelessDialog implements HighlightListener, Da
 
             newValue = dialog.attrPanel.withPanelCode(newValue);
 
-            newVar = Variable.newInstance(Variable.newKey(newName), newValue, td);
+            newVar = Variable.newInst(Variable.newKey(newName), newValue, td);
 
             startJob();
         }

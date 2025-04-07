@@ -23,11 +23,11 @@ package com.sun.electric.database.geometry.btree.unboxed;
 
 import java.io.*;
 
-/** A 64-bit <tt>double</tt>  */
+/** A 64-bit <b>double</b>  */
 public class UnboxedDouble implements UnboxedComparable<Double> {
     public static final UnboxedDouble instance = new UnboxedDouble();
     public int getSize() { return 8; }
-    public Double deserialize(byte[] buf, int ofs) { return new Double(deserializeDouble(buf, ofs)); }
+    public Double deserialize(byte[] buf, int ofs) { return deserializeDouble(buf, ofs); }
     public void serialize(Double k, byte[] buf, int ofs) { serializeDouble(k.doubleValue(), buf, ofs); }
     public Double deserializeDouble(byte[] buf, int ofs) {
         return

@@ -161,7 +161,8 @@ public class View implements Comparable<View> {
      * The short name is used inside of braces when naming a cell (for example "gate{lay}").
      * @return the newly created View.
      */
-    public static View newInstance(String fullName, String abbreviation) {
+    public static View newInst
+    (String fullName, String abbreviation) {
         // make sure this can be done now
         EDatabase.serverDatabase().checkChanging();
 

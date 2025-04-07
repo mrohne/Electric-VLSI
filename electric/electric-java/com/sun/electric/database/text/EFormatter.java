@@ -62,7 +62,7 @@ public class EFormatter extends Formatter {
         sb.append(" ");
         sb.append(record.getMillis());
         sb.append(" ");
-        sb.append(record.getThreadID());
+        sb.append(record.getLongThreadID());
         sb.append(" ");
         if (record.getSourceClassName() != null) {
             sb.append(record.getSourceClassName());

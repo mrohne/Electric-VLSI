@@ -198,8 +198,8 @@ public class GenerateVHDL extends Topology
 		for(Iterator<ArcInst> it = cell.getArcs(); it.hasNext(); )
 		{
 			ArcInst ai = it.next();
-			if (ai.getHead().isNegated()) negatedHeads.put(ai, new Integer(instNum++));
-			if (ai.getTail().isNegated()) negatedTails.put(ai, new Integer(instNum++));
+			if (ai.getHead().isNegated()) negatedHeads.put(ai, Integer.valueOf(instNum++));
+			if (ai.getTail().isNegated()) negatedTails.put(ai, Integer.valueOf(instNum++));
 		}
 
 		// write prototypes for each node; gather information for NAND, NOR, and XNOR
@@ -224,17 +224,17 @@ public class GenerateVHDL extends Topology
 			}
 			if (special == BLOCKNAND)
 			{
-				multiInputNAND.add(new Integer(TextUtils.atoi(pt.substring(4))));
+				multiInputNAND.add(Integer.valueOf(TextUtils.atoi(pt.substring(4))));
 				continue;
 			}
 			if (special == BLOCKNOR)
 			{
-				multiInputNOR.add(new Integer(TextUtils.atoi(pt.substring(3))));
+				multiInputNOR.add(Integer.valueOf(TextUtils.atoi(pt.substring(3))));
 				continue;
 			}
 			if (special == BLOCKXNOR)
 			{
-				multiInputNXOR.add(new Integer(TextUtils.atoi(pt.substring(4))));
+				multiInputNXOR.add(Integer.valueOf(TextUtils.atoi(pt.substring(4))));
 				continue;
 			}
 

@@ -145,7 +145,8 @@ public class NanosimModel extends SimulationModel {
             System.out.println("Unable to create pipe to process output: "+e.getMessage());
             return false;
         }
-        ExecProcess process = new ExecProcess(command+" --version", null, null, ostream, ostream);
+        String[] commands = new String[] {command, "--version"};
+        ExecProcess process = new ExecProcess(commands, null, null, ostream, ostream);
         process.start();
         boolean found = false;
         String version = null;
@@ -197,6 +198,7 @@ public class NanosimModel extends SimulationModel {
                     break;
                 }
             }
+            freader.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
             return false;
@@ -375,7 +377,7 @@ public class NanosimModel extends SimulationModel {
     public void setNodeVoltage(String node, double voltage) {
         node = node.toLowerCase();
         //issueCommand("set_node_v "+node+" "+voltage+" r=5 l=1n");
-        nodesToSet.put(node, new Double(voltage));
+        nodesToSet.put(node, Double.valueOf(voltage));
     }
 
     /**
@@ -548,18 +550,18 @@ public class NanosimModel extends SimulationModel {
                 Integer state;
                 // state can be one of 1, 0, or U
                 if (m.group(3).equals("1"))
-                    state = new Integer(1);
+                    state = Integer.valueOf(1);
                 else if (m.group(3).equals("0"))
-                    state = new Integer(0);
+                    state = Integer.valueOf(0);
                 else if (m.group(3).equals("U"))
-                    state = new Integer(-2);
+                    state = Integer.valueOf(-2);
                 else {
                     System.out.println("Uknown state of "+node+": "+m.group(3)+", setting it to -1 (Undefined)");
-                    state = new Integer(-1);
+                    state = Integer.valueOf(-1);
                 }
                 Double voltage;
                 try {
-                    voltage = new Double(m.group(4));
+                    voltage = Double.valueOf(m.group(4));
                 } catch (NumberFormatException e) {
                     System.out.println("Error on get_info_node: NumberFormatException converting node "+node+" state/voltage ("+m.group(3)+"/"+m.group(4)+") to integer/double");
                     return null;
@@ -578,14 +580,14 @@ public class NanosimModel extends SimulationModel {
                 Integer state;
                 // state can be one of 1, 0, or U
                 if (m2.group(3).equals("1"))
-                    state = new Integer(1);
+                    state = Integer.valueOf(1);
                 else if (m2.group(3).equals("0"))
-                    state = new Integer(0);
+                    state = Integer.valueOf(0);
                 else if (m2.group(3).equals("U"))
-                    state = new Integer(-2);
+                    state = Integer.valueOf(-2);
                 else {
                     System.out.println("Uknown state of "+node+": "+m2.group(3)+", setting it to -1 (Undefined)");
-                    state = new Integer(-1);
+                    state = Integer.valueOf(-1);
                 }
                 states.add(state);
                 nodeIndex++;

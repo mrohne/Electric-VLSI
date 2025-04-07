@@ -2091,6 +2091,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
      * be using getBounds2D() instead.
      */
     @Override
+    @Deprecated
     public Rectangle getBounds() {
         if (bounds == null) {
             calcBounds();

@@ -790,7 +790,7 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
 
     // ------------------ private and protected methods ----------------------
     /**
-     * The constructor is never called externally.  Use the factory "newInstance" instead.
+     * The constructor is never called externally.  Use the factory "newInst" instead.
      */
     protected PrimitiveNode(String protoName, Technology tech, EPoint fullSizeCorrector,
             double defWidth, double defHeight, ERectangle baseRectangle, Technology.NodeLayer[] layers) {
@@ -827,7 +827,7 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
         double factoryExtendX = DBMath.round(0.5 * (defWidth - fullRectangle.getLambdaWidth()));
         double factoryExtendY = DBMath.round(0.5 * (defHeight - fullRectangle.getLambdaHeight()));
         EPoint factorySize = EPoint.fromLambda(factoryExtendX * 2, factoryExtendY * 2);
-        factoryDefaultInst = ImmutableNodeInst.newInstance(0, protoId, function.getBasename(), null, Orientation.IDENT,
+        factoryDefaultInst = ImmutableNodeInst.newInst(0, protoId, function.getBasename(), null, Orientation.IDENT,
                 EPoint.ORIGIN, factorySize, 0, 0, null);
         factoryDefaultBaseDimension = new EDimension(baseRectangle.getCoordWidth().add(factorySize.getCoordX()),
                 baseRectangle.getCoordHeight().add(factorySize.getCoordY()));
@@ -1081,7 +1081,7 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
      * @param layers the Layers that comprise the PrimitiveNode.
      * @return the newly created PrimitiveNode.
      */
-    public static PrimitiveNode newInstance(String protoName, Technology tech, double width, double height,
+    public static PrimitiveNode newInst(String protoName, Technology tech, double width, double height,
             Technology.NodeLayer[] layers) {
         EPoint sizeCorrector = EPoint.fromLambda(0.5 * width, 0.5 * height);
         ERectangle baseRectangle = ERectangle.fromGrid(-sizeCorrector.getGridX(), -sizeCorrector.getGridY(),
@@ -1101,7 +1101,7 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
      * @param layers the Layers that comprise the PrimitiveNode.
      * @return the newly created PrimitiveNode.
      */
-    public static PrimitiveNode newInstance(String protoName, Technology tech, double width, double height,
+    public static PrimitiveNode newInst(String protoName, Technology tech, double width, double height,
             ERectangle baseRectangle, Technology.NodeLayer[] layers) {
         EPoint sizeCorrector = EPoint.fromLambda(0.5 * width, 0.5 * height);
         return new PrimitiveNode(protoName, tech, sizeCorrector,
@@ -1369,8 +1369,9 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
      * Method to return the default full width of this PrimitiveNode.
      * The default size is fetched from thread-local EditingPreferences
      * @return the default width of this PrimitiveNode.
-     * @deprecated Use method with explicit EditingPreferences parameter.
+     * @deprecated but kept around for Python and Bean Shell
      */
+    @Deprecated
     public double getDefWidth() {
         return getDefWidth(EditingPreferences.getInstance());
     }
@@ -1390,8 +1391,9 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
      * Method to return the default full height of this PrimitiveNode.
      * The default size is fetched from thread-local EditingPreferences
      * @return the default height of this PrimitiveNode.
-     * @deprecated Use method with explicit EditingPreferences parameter.
+     * @deprecated but kept around for Python and Bean Shell
      */
+    @Deprecated
     public double getDefHeight() {
         return getDefHeight(EditingPreferences.getInstance());
     }
@@ -2631,22 +2633,13 @@ public class PrimitiveNode implements NodeProto, Comparable<PrimitiveNode>, Seri
         n.curvePin = isNodeBitOn(PrimitiveNode.CURVEPIN);
 
         PrimitiveNode.NodeSizeRule nodeSizeRule = getMinSizeRule();
-        EPoint minFullSize = EPoint.fromGrid(
-                (fullRectangle.getGridWidth() + 1) / 2,
-                (fullRectangle.getGridHeight() + 1) / 2);
-//        if (getFunction() == PrimitiveNode.Function.PIN && isArcsShrink()) {
-//            assert getNumPorts() == 1;
-//            PrimitivePort pp = getPort(0);
-//            assert pp.getLeft().getMultiplier() == -0.5 && pp.getRight().getMultiplier() == 0.5 && pp.getBottom().getMultiplier() == -0.5 && pp.getTop().getMultiplier() == 0.5;
-//            assert pp.getLeft().getAdder() == -pp.getRight().getAdder() && pp.getBottom().getAdder() == -pp.getTop().getAdder();
-//            minFullSize = EPoint.fromLambda(pp.getLeft().getAdder(), pp.getBottom().getAdder());
-//        }
-//            DRCTemplate nodeSize = xmlRules.getRule(pnp.getPrimNodeIndexInTech(), DRCTemplate.DRCRuleType.NODSIZ);
+//        EPoint minFullSize = EPoint.fromGrid(
+//                (fullRectangle.getGridWidth() + 1) / 2,
+//                (fullRectangle.getGridHeight() + 1) / 2);
         ng.baseLX.value = baseRectangle.getLambdaMinX();
         ng.baseHX.value = baseRectangle.getLambdaMaxX();
         ng.baseLY.value = baseRectangle.getLambdaMinY();
         ng.baseHY.value = baseRectangle.getLambdaMaxY();
-//            EPoint minFullSize = EPoint.fromLambda(0.5*pnp.getDefWidth(), 0.5*pnp.getDefHeight());
         EPoint p1 = getSizeCorrector(0);
         EPoint p2 = getSizeCorrector(1);
         if (!p1.equals(p2)) {

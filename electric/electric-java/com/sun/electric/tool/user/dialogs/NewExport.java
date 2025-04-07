@@ -373,7 +373,7 @@ public class NewExport extends EDialog
 
 			PortInst pi = ni.findPortInstFromEquivalentProto(pp);
 			PortCharacteristic characteristic = PortCharacteristic.findCharacteristic(ch);
-			e = Export.newInstance(cell, pi, name, ep, characteristic);
+			e = Export.newInst(cell, pi, name, ep, characteristic);
 			if (e == null)
 			{
 				System.out.println("Failed to create export");

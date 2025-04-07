@@ -86,7 +86,6 @@ public class UnloadPolys {
 
     private boolean rotated;
 
-    @SuppressWarnings("unchecked")
     public Iterable<PolyBase.PolyBaseTree> loop(DataInputStream inpS, boolean rotated) throws IOException {
         this.rotated = rotated;
     	mainArc = newArc();
@@ -264,95 +263,87 @@ public class UnloadPolys {
         }
     }
 
-    private void out(Polys pl, int v) {
-        Polys pg = pl;
-        int n = 0;
-
-        int lx = Integer.MAX_VALUE, ly = Integer.MAX_VALUE, hx = Integer.MIN_VALUE, hy = Integer.MIN_VALUE;
-    	do {
-            lx = Math.min(lx, pg.x);
-            hx = Math.max(hx, pg.x);
-            ly = Math.min(ly, pg.y);
-            hy = Math.max(hy, pg.y);
-            pg = pg.next;
-            n++;
-        } while (pg != pl);
-        if (v == B && n == 2 && ((lx + hx)&1) == 0) {
-            System.out.println("WIRE " + prCoord(false, (lx + hx)/2) + " " + prCoord(true, ly) +
-                    " w=" + DBMath.gridToLambda(hx - lx) + " " + prCoord(true, hy));
-//            System.out.println("BOX " + prPoint(lx, ly) + " " + prPoint(hx, hy));
-            return;
-        }
-
-        if (v == B) {
-            Polys top = pl;
-            while (top.y != hy) {
-                top = top.next;
-            }
-            List<Polys> left = new ArrayList<Polys>();
-            Polys bottom = top;
-            while (bottom.next.y < bottom.y) {
-                left.add(bottom);
-                bottom = bottom.next;
-            }
-            left.add(bottom);
-            List<Polys> right = new ArrayList<Polys>();
-            Polys p = bottom;
-            while (p.next.y > p.y) {
-                right.add(p);
-                p = p.next;
-            }
-            right.add(p);
-            if (p == top) {
-                int mx = (lx + hx)/2;
-                System.out.print("WIRE " + prCoord(false, mx) + " " + prCoord(true, ly));
-                int leftI = left.size() - 1;
-                int rightI = 0;
-                for (;;) {
-                    int leftW = mx - left.get(leftI - 1).x;
-                    int rightW = right.get(rightI).x - mx;
-                    System.out.print(" w=");
-                    if (leftW == rightW) {
-                        System.out.print(DBMath.gridToLambda(leftW + rightW));
-                    } else {
-                        System.out.print(DBMath.gridToLambda(leftW) + "+" + DBMath.gridToLambda(rightW));
-                    }
-                    int nextY = Math.min(left.get(leftI - 1).y, right.get(rightI + 1).y);
-                    System.out.print(" " + prCoord(true, nextY));
-                    if (nextY == hy) {
-                        assert leftI == 1 && rightI == right.size() - 2;
-                        break;
-                    }
-                    if (nextY == left.get(leftI - 1).y) {
-                        leftI--;
-                    }
-                    if (nextY == right.get(rightI + 1).y) {
-                        rightI++;
-                    }
-                }
-                System.out.println();
-//                System.out.print("POLY");
-//                do {
-//                    System.out.print(" " + prPoint(pg.x, pg.y));
-//                    System.out.print(" " + prPoint(pg.x, pg.next.y));
-//                    pg = pg.next;
-//                } while (pg != pl);
+//    private void out(Polys pl, int v) {
+//        Polys pg = pl;
+//        int n = 0;
+//
+//        int lx = Integer.MAX_VALUE, ly = Integer.MAX_VALUE, hx = Integer.MIN_VALUE, hy = Integer.MIN_VALUE;
+//    	do {
+//            lx = Math.min(lx, pg.x);
+//            hx = Math.max(hx, pg.x);
+//            ly = Math.min(ly, pg.y);
+//            hy = Math.max(hy, pg.y);
+//            pg = pg.next;
+//            n++;
+//        } while (pg != pl);
+//        if (v == B && n == 2 && ((lx + hx)&1) == 0) {
+//            System.out.println("WIRE " + prCoord(false, (lx + hx)/2) + " " + prCoord(true, ly) +
+//                    " w=" + DBMath.gridToLambda(hx - lx) + " " + prCoord(true, hy));
+//            return;
+//        }
+//
+//        if (v == B) {
+//            Polys top = pl;
+//            while (top.y != hy) {
+//                top = top.next;
+//            }
+//            List<Polys> left = new ArrayList<Polys>();
+//            Polys bottom = top;
+//            while (bottom.next.y < bottom.y) {
+//                left.add(bottom);
+//                bottom = bottom.next;
+//            }
+//            left.add(bottom);
+//            List<Polys> right = new ArrayList<Polys>();
+//            Polys p = bottom;
+//            while (p.next.y > p.y) {
+//                right.add(p);
+//                p = p.next;
+//            }
+//            right.add(p);
+//            if (p == top) {
+//                int mx = (lx + hx)/2;
+//                System.out.print("WIRE " + prCoord(false, mx) + " " + prCoord(true, ly));
+//                int leftI = left.size() - 1;
+//                int rightI = 0;
+//                for (;;) {
+//                    int leftW = mx - left.get(leftI - 1).x;
+//                    int rightW = right.get(rightI).x - mx;
+//                    System.out.print(" w=");
+//                    if (leftW == rightW) {
+//                        System.out.print(DBMath.gridToLambda(leftW + rightW));
+//                    } else {
+//                        System.out.print(DBMath.gridToLambda(leftW) + "+" + DBMath.gridToLambda(rightW));
+//                    }
+//                    int nextY = Math.min(left.get(leftI - 1).y, right.get(rightI + 1).y);
+//                    System.out.print(" " + prCoord(true, nextY));
+//                    if (nextY == hy) {
+//                        assert leftI == 1 && rightI == right.size() - 2;
+//                        break;
+//                    }
+//                    if (nextY == left.get(leftI - 1).y) {
+//                        leftI--;
+//                    }
+//                    if (nextY == right.get(rightI + 1).y) {
+//                        rightI++;
+//                    }
+//                }
 //                System.out.println();
-                return;
-            }
-        }
-        if (v == B) {
-            System.out.print("POLY");
-        } else {
-            System.out.print("NEGATIVE POLY");
-        }
-    	do {
-            System.out.print(" " + prPoint(pg.x, pg.y));
-            System.out.print(" " + prPoint(pg.x, pg.next.y));
-            pg = pg.next;
-        } while (pg != pl);
-        System.out.println();
-    }
+//                return;
+//            }
+//        }
+//        if (v == B) {
+//            System.out.print("POLY");
+//        } else {
+//            System.out.print("NEGATIVE POLY");
+//        }
+//    	do {
+//            System.out.print(" " + prPoint(pg.x, pg.y));
+//            System.out.print(" " + prPoint(pg.x, pg.next.y));
+//            pg = pg.next;
+//        } while (pg != pl);
+//        System.out.println();
+//    }
 
     PolyBase.PolyBaseTreeImpl outTree(Polys pl) {
         Polys pg = pl;
@@ -383,19 +374,19 @@ public class UnloadPolys {
         return new PolyBase.PolyBaseTreeImpl(p);
     }
 
-    private String prPoint(int x, int y) {
-        return rotated ? prCoord(y) + "," + prCoord(x) : prCoord(x) + "," + prCoord(y);
-    }
+//    private String prPoint(int x, int y) {
+//        return rotated ? prCoord(y) + "," + prCoord(x) : prCoord(x) + "," + prCoord(y);
+//    }
+//
+//    private String prCoord(boolean isY, int v) {
+//        return (isY^rotated ? "y=" : "x=") + prCoord(v);
+//    }
 
-    private String prCoord(boolean isY, int v) {
-        return (isY^rotated ? "y=" : "x=") + prCoord(v);
-    }
-
-    private String prCoord(int v) {
-        double period = 144*400;
-        int n = (int)Math.floor(v/period);
-        return n+"#"+DBMath.gridToLambda(v - n*period);
-    }
+//    private String prCoord(int v) {
+//        double period = 144*400;
+//        int n = (int)Math.floor(v/period);
+//        return n+"#"+DBMath.gridToLambda(v - n*period);
+//    }
 
     private void GLUE(Arc al, Arc ar, int v)	{
         al.t[v] = ar;
@@ -432,31 +423,30 @@ public class UnloadPolys {
         /*pl=*/ return v == IN ? pl : pg;
     }
 
-    private void printInp() throws IOException {
-        System.out.print("x=" + DBMath.gridToLambda(x));
-        for (int i = 0; i < inpC; i++) {
-            int inpVal = inpA[i];
-            int y = inpVal >> 1;
-            boolean df = (inpVal & 1) != 0;
-            System.out.print(" " + DBMath.gridToLambda(y) + (df?"^":"_"));
-        }
-        System.out.println();
-    }
+//    private void printInp() throws IOException {
+//        System.out.print("x=" + DBMath.gridToLambda(x));
+//        for (int i = 0; i < inpC; i++) {
+//            int inpVal = inpA[i];
+//            int y = inpVal >> 1;
+//            boolean df = (inpVal & 1) != 0;
+//            System.out.print(" " + DBMath.gridToLambda(y) + (df?"^":"_"));
+//        }
+//        System.out.println();
+//    }
 
     private void resetInp() {
         inpC = 0;
     }
 
-    private void putPointInp(int y, int val) {
-        if (inpC >= inpA.length) {
-            int[] newInpA = new int[inpA.length*2];
-            System.arraycopy(inpA, 0, newInpA, 0, inpA.length);
-            inpA = newInpA;
-        }
-//        System.out.println("putPointInp " + y + " " + val);
-        inpA[inpC++] = (y << 1) | (val > 0 ? 1 : 0);
-
-    }
+//    private void putPointInp(int y, int val) {
+//        if (inpC >= inpA.length) {
+//            int[] newInpA = new int[inpA.length*2];
+//            System.arraycopy(inpA, 0, newInpA, 0, inpA.length);
+//            inpA = newInpA;
+//        }
+//        inpA[inpC++] = (y << 1) | (val > 0 ? 1 : 0);
+//
+//    }
 
     private Polys newPolys() {
         Polys result;
@@ -470,10 +460,10 @@ public class UnloadPolys {
         return result;
     }
 
-    private void dispPolys(Polys p) {
-        p.next = polyPool;
-        polyPool = p;
-    }
+//    private void dispPolys(Polys p) {
+//        p.next = polyPool;
+//        polyPool = p;
+//    }
 
     private Arc newArc() {
         Arc result;

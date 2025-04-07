@@ -210,7 +210,7 @@ public class RowCol extends PlacementFrame
 	public static Boolean isColumnPlacement(List<PlacementNode> placementNodes, Set<Double> widths, Set<Double> heights, boolean quiet)
 	{
 		// make sure cells have the same girth
-		Double commonWid = new Double(-1), commonHei = new Double(-1);
+		Double commonWid = Double.valueOf(-1), commonHei = Double.valueOf(-1);
 		for(PlacementNode p : placementNodes)
 		{
 			PlacementAdapter.PlacementNode papn = (PlacementAdapter.PlacementNode)p;
@@ -220,16 +220,16 @@ public class RowCol extends PlacementFrame
 				continue;
 			}
 			if (!papn.getOriginal().isCellInstance()) continue;
-			if (widths != null) widths.add(new Double(p.getWidth()));
-			if (heights != null) heights.add(new Double(p.getHeight()));
+			if (widths != null) widths.add(Double.valueOf(p.getWidth()));
+			if (heights != null) heights.add(Double.valueOf(p.getHeight()));
 			if (commonWid != null)
 			{
-				if (commonWid.doubleValue() < 0) commonWid = new Double(p.getWidth());
+				if (commonWid.doubleValue() < 0) commonWid = Double.valueOf(p.getWidth());
 				if (commonWid.doubleValue() != p.getWidth()) commonWid = null;
 			}
 			if (commonHei != null)
 			{
-				if (commonHei.doubleValue() < 0) commonHei = new Double(p.getHeight());
+				if (commonHei.doubleValue() < 0) commonHei = Double.valueOf(p.getHeight());
 				if (commonHei.doubleValue() != p.getHeight()) commonHei = null;
 			}
 		}

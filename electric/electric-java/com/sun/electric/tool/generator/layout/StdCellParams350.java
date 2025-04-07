@@ -164,7 +164,7 @@ public class StdCellParams350 extends StdCellParams {
 			NodeInst pinProt = LayoutLib.newNodeInst(tech.m1pin(), ep, x,
 			                                         busY, LayoutLib.DEF_SIZE, LayoutLib.DEF_SIZE, 0, f);
 			PortInst pin = pinProt.getOnlyPortInst();
-			Export e = Export.newInstance(f, pin, exportNm, ep);
+			Export e = Export.newInst(f, pin, exportNm, ep);
 			PortCharacteristic role =
 				mos instanceof FoldedPmos ? getVddExportRole() : getGndExportRole();
 			e.setCharacteristic(role);

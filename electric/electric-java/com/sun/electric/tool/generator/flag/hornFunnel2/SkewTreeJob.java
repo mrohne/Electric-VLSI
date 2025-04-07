@@ -38,8 +38,8 @@ import com.sun.electric.tool.user.ncc.NccMsgsFrame;
 public class SkewTreeJob extends Job {
     static final long serialVersionUID = 0;
 
-	private void prln(String s) {System.out.println(s);}
-	private void pr(String s) {System.out.print(s);}
+//	private void prln(String s) {System.out.println(s);}
+//	private void pr(String s) {System.out.print(s);}
 	
 	// Some day we may run this on server
 	@Override

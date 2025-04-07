@@ -46,7 +46,7 @@ public class ActivityLogger {
     /** log menu activations */         private static boolean logMenuActivations;
     /** log jobs starting */            private static boolean logJobs;
     /** timestamp everything */         private static boolean logTimeStamps;
-    /** if an exception was logged */   private static boolean exceptionLogged;
+//    /** if an exception was logged */   private static boolean exceptionLogged;
 
     /** Writer */                       private static PrintWriter out = null;
     /** the output file */              private static String outputFile;
@@ -71,7 +71,7 @@ public class ActivityLogger {
 
         String dirName = ClientOS.isOSMac() ? System.getProperty("user.home") : System.getProperty("user.dir");
         outputFile = dirName + File.separator + fileName;
-        File dir = new File(dirName);
+//        File dir = new File(dirName);
         
         try {
 //            outputFile = File.createTempFile(fileName+"-", ".log").getAbsolutePath();
@@ -215,7 +215,7 @@ public class ActivityLogger {
         } else {
             System.out.println(msg);
         }
-        exceptionLogged = true;
+//        exceptionLogged = true;
     }
 
     /**

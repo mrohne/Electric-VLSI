@@ -40,10 +40,10 @@ import com.sun.electric.util.math.Orientation;
 
 public class InstFifoAll extends FlagDesign {
 	private final double DEF_SIZE = LayoutLib.DEF_SIZE;
-	private final double LEFT_COL_X = -1224;
-	private final double RIGHT_COL_X = 1224;
-	private final double START_COL_Y = -504;
-	private final double Y_PITCH = 144;
+//	private final double LEFT_COL_X = -1224;
+//	private final double RIGHT_COL_X = 1224;
+//	private final double START_COL_Y = -504;
+//	private final double Y_PITCH = 144;
 	
 	private List<NodeInst> lCol = new ArrayList<NodeInst>(), 
 	                       rCol = new ArrayList<NodeInst>();

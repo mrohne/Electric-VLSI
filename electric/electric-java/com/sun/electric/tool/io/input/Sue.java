@@ -799,17 +799,17 @@ public class Sue extends Input<Object>
 						{
 							// unit == null is the original code
 							if (unit == null || unit == TextDescriptor.Unit.DISTANCE)
-								newObject = new Double(TextUtils.convertFromDistance(TextUtils.atof(pt), curTech, scale));
+								newObject = Double.valueOf(TextUtils.convertFromDistance(TextUtils.atof(pt), curTech, scale));
 							else
-								newObject = new Double(TextUtils.atof(pt.substring(0, len)));
+								newObject = Double.valueOf(TextUtils.atof(pt.substring(0, len)));
 						}
 							
 						if (newObject == null && TextUtils.isANumber(pt))
 						{
-							newObject = new Integer(TextUtils.atoi(pt));
+							newObject = Integer.valueOf(TextUtils.atoi(pt));
 							if (pt.indexOf('.') >= 0 || pt.toLowerCase().indexOf('e') >= 0)
 							{
-								newObject = new Double(TextUtils.atof(pt));
+								newObject = Double.valueOf(TextUtils.atof(pt));
 							}
 						}
 						if (newObject == null)
@@ -865,7 +865,7 @@ public class Sue extends Input<Object>
 							TextDescriptor td = ep.getCellTextDescriptor().withParam(true).
 								withDispPart(TextDescriptor.DispPos.NAMEVALUE);
 							newObject = Variable.withCode(newObject, CodeExpression.Code.SPICE);
-							Variable newVar = Variable.newInstance(varKey, newObject, td).withInherit(true);
+							Variable newVar = Variable.newInst(varKey, newObject, td).withInherit(true);
 							if (unit != null)
 								newVar = newVar.withUnit(unit);
 							cnp.getCellGroup().addParam(newVar);
@@ -900,7 +900,7 @@ public class Sue extends Input<Object>
 				if (ni == null) continue;
 
 				PortInst pi = ni.getOnlyPortInst();
-				Export ppt = Export.newInstance(cell, pi, parP.theName, ep, parP.portType);
+				Export ppt = Export.newInst(cell, pi, parP.theName, ep, parP.portType);
 				if (ppt == null)
 				{
 					String msg = "Cell " + cellName + ", line " + lr.getLineNumber() +
@@ -1133,7 +1133,7 @@ public class Sue extends Input<Object>
 					if (unit != null) // found variable
 					{
 						String sueVarName = "ATTR_" + parP.theName;
-						newObject = new Double(TextUtils.atof(pt.substring(0, len))); // *scale.getMultiplier().doubleValue());
+						newObject = Double.valueOf(TextUtils.atof(pt.substring(0, len))); // *scale.getMultiplier().doubleValue());
 						Variable.Key varKey = Variable.newKey(sueVarName);
 						MutableTextDescriptor mtd = new MutableTextDescriptor(ep.getNodeTextDescriptor());
 						mtd.setUnit(unit);
@@ -1148,7 +1148,7 @@ public class Sue extends Input<Object>
 							TextDescriptor td = ep.getCellTextDescriptor().withParam(true).
 								withDispPart(TextDescriptor.DispPos.NAMEVALUE);
 							newObject = Variable.withCode(newObject, CodeExpression.Code.SPICE);
-							Variable newVar = Variable.newInstance(varKey, newObject, td).withInherit(true);
+							Variable newVar = Variable.newInst(varKey, newObject, td).withInherit(true);
 							newVar = newVar.withUnit(unit);
 							cnp.getCellGroup().addParam(newVar);
 						}
@@ -1292,7 +1292,7 @@ public class Sue extends Input<Object>
 			Export ppt = (Export)cell.findPortProto(portName);
 			if (ppt == null)
 			{
-				return Export.newInstance(cell, pi, portName, ep, pc);
+				return Export.newInst(cell, pi, portName, ep, pc);
 			}
 
 			// make space for modified name

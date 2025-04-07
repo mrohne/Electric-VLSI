@@ -58,7 +58,7 @@ public class VddGndM3 {
 		Library layLib = layCell.getLibrary();
 		CellName nm = layCell.getCellName();
 		String m3Nm = nm.getName()+"_m3{lay}";
-		Cell m3Cell = Cell.newInstance(layLib, m3Nm);
+		Cell m3Cell = Cell.newInst(layLib, m3Nm);
 		Rectangle2D bounds = layCell.findEssentialBounds();
 		double minX = bounds.getMinX();
 		double minY = bounds.getMinY();

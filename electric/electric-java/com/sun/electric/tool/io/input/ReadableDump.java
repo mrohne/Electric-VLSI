@@ -142,7 +142,7 @@ public class ReadableDump extends LibraryFiles {
     /** The current keyword from the file. */
     private String keyWord;
     /** Flags on the Library */
-    private int libBits;
+//    private int libBits;
     /** Variables on the Library */
     private Variable[] libVars;
     /** All Tools found in the file. */
@@ -838,7 +838,7 @@ public class ReadableDump extends LibraryFiles {
     }
 
     private void finishCellInitialization(int cellNumber, HashMap<Cell, Variable[]> originalVars) {
-        Cell curCell = Cell.newInstance(lib, cellNames[cellNumber].toString());
+        Cell curCell = Cell.newInst(lib, cellNames[cellNumber].toString());
         allCellsArray[cellNumber] = nodeProtoList[cellNumber] = curCell;
         curCell.setTempInt(cellGroups[cellNumber]);
 //		curCell.lowLevelPopulate(curCellName.toString());
@@ -1063,11 +1063,11 @@ public class ReadableDump extends LibraryFiles {
         }
 
         ArcInstList ail = arcInstList[cellIndex];
-        int numArcs = 0;
+//        int numArcs = 0;
         ArcProto[] arcPrototypes = null;
         if (ail != null) {
             arcPrototypes = ail.arcProto;
-            numArcs = arcPrototypes.length;
+//            numArcs = arcPrototypes.length;
         }
         Technology cellTech = Technology.whatTechnology(cell, nodePrototypes, 0, numNodes, arcPrototypes);
         cell.setTechnology(cellTech);
@@ -1400,9 +1400,9 @@ public class ReadableDump extends LibraryFiles {
      * get tool information for the library (keyword "bits")
      */
     private void keywordLibBit() {
-        if (bitCount == 0) {
-            libBits = TextUtils.atoi(keyWord);
-        }
+//        if (bitCount == 0) {
+//            libBits = TextUtils.atoi(keyWord);
+//        }
         bitCount++;
     }
 
@@ -1410,7 +1410,7 @@ public class ReadableDump extends LibraryFiles {
      * get the number of toolbits (keyword "userbits")
      */
     private void keywordLibUsb() {
-        libBits = TextUtils.atoi(keyWord);
+//        libBits = TextUtils.atoi(keyWord);
     }
 
     /**
@@ -1514,7 +1514,7 @@ public class ReadableDump extends LibraryFiles {
             }
         }
         if (v == null) {
-            v = View.newInstance(fullName, abbrev);
+            v = View.newInst(fullName, abbrev);
         } else {
             if (!v.getAbbreviation().equals(abbrev)) {
                 System.out.println("Error on line " + lineReader.getLineNumber() + ": view " + fullName + " has abbreviation '" + abbrev
@@ -2263,7 +2263,7 @@ public class ReadableDump extends LibraryFiles {
             }
 
             value = Variable.withCode(value, code);
-            vars[i] = Variable.newInstance(Variable.newKey(varName), value, td);
+            vars[i] = Variable.newInst(Variable.newKey(varName), value, td);
         }
         return vars;
     }
@@ -2277,15 +2277,15 @@ public class ReadableDump extends LibraryFiles {
         switch (thistype & ELIBConstants.VTYPE) {
             case ELIBConstants.VINTEGER:
             case ELIBConstants.VADDRESS:
-                return new Integer(TextUtils.atoi(name));
+                return Integer.valueOf(TextUtils.atoi(name));
             case ELIBConstants.VSHORT:
-                return new Short((short) TextUtils.atoi(name));
+                return Short.valueOf((short) TextUtils.atoi(name));
             case ELIBConstants.VBOOLEAN:
-                return new Boolean(TextUtils.atoi(name) != 0);
+                return Boolean.valueOf(TextUtils.atoi(name) != 0);
             case ELIBConstants.VFRACT:
-                return new Float(TextUtils.atoi(name) / 120.0f);
+                return Float.valueOf(TextUtils.atoi(name) / 120.0f);
             case ELIBConstants.VCHAR:
-                return new Byte((byte) name.charAt(0));
+                return Byte.valueOf((byte) name.charAt(0));
             case ELIBConstants.VSTRING:
                 char[] letters = new char[name.length()];
                 int outpos = 0;
@@ -2306,9 +2306,9 @@ public class ReadableDump extends LibraryFiles {
                 }
                 return new String(letters, 0, outpos);
             case ELIBConstants.VFLOAT:
-                return new Float(Float.parseFloat(name));
+                return Float.valueOf(Float.parseFloat(name));
             case ELIBConstants.VDOUBLE:
-                return new Double(Double.parseDouble(name));
+                return Double.valueOf(Double.parseDouble(name));
             case ELIBConstants.VLIBRARY:
                 if (name.length() == 0) {
                     return null;

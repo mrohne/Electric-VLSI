@@ -180,10 +180,11 @@ public class Silos extends Topology
 					reportError("Cannot find SILOS behavior file " + fileName + " on " + cell);
 				} else
 				{
+					BufferedReader br;
 					try
 					{
 						FileReader fr = new FileReader(test);
-						BufferedReader br = new BufferedReader(fr);
+						br = new BufferedReader(fr);
 						for(;;)
 						{
 							String line = br.readLine();

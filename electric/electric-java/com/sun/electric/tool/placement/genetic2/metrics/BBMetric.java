@@ -57,7 +57,7 @@ public class BBMetric
 		Iterator<PlacementNode> it = nodesToPlace.iterator();
 		for(int i = 0; i < nodesToPlace.size(); i++)
 		{
-			nodeBlocks.put(it.next(), new Integer(i));
+			nodeBlocks.put(it.next(), Integer.valueOf(i));
 		}
 	}
 

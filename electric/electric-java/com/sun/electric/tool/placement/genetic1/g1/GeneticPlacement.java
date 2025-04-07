@@ -564,17 +564,6 @@ public class GeneticPlacement extends PlacementFrame {
 		return true;
 	}
 
-	/**
-	 * @deprecated
-	 * 
-	 *             Don't use. For Performance test Purpose only.
-	 * 
-	 * @param nets
-	 */
-	public static void setAllNetworks(List<PlacementNetwork> nets) {
-		allNetworks = nets;
-	}
-
 	public static List<PlacementNetwork> getAllNetworks() {
 		return allNetworks;
 	}

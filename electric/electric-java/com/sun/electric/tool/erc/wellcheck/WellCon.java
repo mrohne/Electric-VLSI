@@ -89,8 +89,8 @@ public class WellCon {
 		}
 
 		public int compare(WellCon o1, WellCon o2) {
-			Double o1Dist = new Double(o1.getCenter().distance(base.getCenter()));
-			Double o2Dist = new Double(o2.getCenter().distance(base.getCenter()));
+			Double o1Dist = Double.valueOf(o1.getCenter().distance(base.getCenter()));
+			Double o2Dist = Double.valueOf(o2.getCenter().distance(base.getCenter()));
 			return Double.compare(o1Dist, o2Dist);
 		}
 

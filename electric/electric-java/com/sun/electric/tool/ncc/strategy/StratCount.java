@@ -49,11 +49,11 @@ public class StratCount extends Strategy {
 			data[type.ordinal()] += delta;
 		}
 		public int get(NetObject.Type type) {return data[type.ordinal()];}
-		public int getSumForAllTypes() {
-			int sum = 0;
-			for (int i=0; i<NUM_TYPES; i++)  sum+=data[i];
-			return sum;
-		}
+//		public int getSumForAllTypes() {
+//			int sum = 0;
+//			for (int i=0; i<NUM_TYPES; i++)  sum+=data[i];
+//			return sum;
+//		}
 		public String toString() {
 			String out = "";
 			for (int i=0; i<NUM_TYPES; i++) {
@@ -67,7 +67,7 @@ public class StratCount extends Strategy {
 	private class SizeHistogram {
 		TreeMap<Integer,NetObjStats> sizeToStats = new TreeMap<Integer,NetObjStats>();
 		void incr(NetObject.Type type, int size) {
-			Integer sz = new Integer(size);
+			Integer sz = Integer.valueOf(size);
 			NetObjStats stats = sizeToStats.get(sz);
 			if (stats==null) {
 				stats = new NetObjStats(0);
@@ -121,19 +121,19 @@ public class StratCount extends Strategy {
 	private static final int FIELD_WIDTH = 15; 
 
     private int maxDepth; //depth in the tree
-    private int numInternalRecs;
+//    private int numInternalRecs;
 	private NetObjStats numMismatchedNetObjs = new NetObjStats(0);
 	private NetObjStats numMatchedNetObjs = new NetObjStats(0);
 	private NetObjStats numActiveNetObjs = new NetObjStats(0);
 	private NetObjStats numMismatchedLeafRecs = new NetObjStats(0);
 	private NetObjStats numMatchedLeafRecs = new NetObjStats(0);
 	private NetObjStats numActiveLeafRecs = new NetObjStats(0);
-	private int numCircuits;
-    private int totalEqGrpSize;
-    private int numberOfWireConnections;
-    private long numberOfWireConnectionsSquared;
-    private int numberOfPartConnections;
-	private String workingOnString;
+//	private int numCircuits;
+//    private int totalEqGrpSize;
+//    private int numberOfWireConnections;
+//    private long numberOfWireConnectionsSquared;
+//    private int numberOfPartConnections;
+//	private String workingOnString;
 	private NetObject.Type netObjType;
 	private SizeHistogram sizeHistogram = new SizeHistogram();
 
@@ -161,12 +161,12 @@ public class StratCount extends Strategy {
     				    leftJustifyInField(label, LABEL_WIDTH) +
     				    rightJustifyInField(String.valueOf(data), FIELD_WIDTH));
     }
-	private void printLine(String label, double data) {
-		data = Math.rint(data * 10)/10;
-		globals.status2(spaces(INDENT_WIDTH) +
-					    leftJustifyInField(label, LABEL_WIDTH) +
-					    rightJustifyInField(String.valueOf(data), FIELD_WIDTH));
-	}
+//	private void printLine(String label, double data) {
+//		data = Math.rint(data * 10)/10;
+//		globals.status2(spaces(INDENT_WIDTH) +
+//					    leftJustifyInField(label, LABEL_WIDTH) +
+//					    rightJustifyInField(String.valueOf(data), FIELD_WIDTH));
+//	}
 
     // ---------- the tree walking code ---------
 
@@ -190,9 +190,9 @@ public class StratCount extends Strategy {
 		printLine("# matched net objects", numMatchedNetObjs);
 		printLine("# active net objects", numActiveNetObjs);
 
-    	int numEquivRecs = numMismatchedLeafRecs.getSumForAllTypes() +
-    					   numMatchedLeafRecs.getSumForAllTypes() +
-    					   numActiveLeafRecs.getSumForAllTypes();
+//    	int numEquivRecs = numMismatchedLeafRecs.getSumForAllTypes() +
+//    					   numMatchedLeafRecs.getSumForAllTypes() +
+//    					   numActiveLeafRecs.getSumForAllTypes();
 		globals.status2("");
 		sizeHistogram.print();
 		
@@ -238,14 +238,14 @@ public class StratCount extends Strategy {
     	if (j.isLeaf()) {
 			doEquivRec((EquivRecord)j);
 	    } else {
-			numInternalRecs++; 
+//			numInternalRecs++; 
 	    }
 		return super.doFor(j);
     }
 	
 	private void doEquivRec(EquivRecord er){
 		int erSize = er.maxSize();
-		totalEqGrpSize += erSize;
+//		totalEqGrpSize += erSize;
 
 		netObjType = er.getNetObjType();
 		int numNetObjs = er.numNetObjs();
@@ -262,7 +262,7 @@ public class StratCount extends Strategy {
 			numActiveNetObjs.incr(netObjType, numNetObjs);
 			sizeHistogram.incr(netObjType, erSize);
 		}
-		numCircuits += er.numCircuits();
+//		numCircuits += er.numCircuits();
 	}
 	
     /** 
@@ -287,14 +287,14 @@ public class StratCount extends Strategy {
     }
 
     private void doFor(Wire w){
-        int n= w.numParts();
-        numberOfWireConnections += n;
-        float nf= n;
-        numberOfWireConnectionsSquared += nf*nf;
+//        int n= w.numParts();
+//        numberOfWireConnections += n;
+//        float nf= n;
+//        numberOfWireConnectionsSquared += nf*nf;
     }
 
     private void doFor(Part p){
-        numberOfPartConnections += p.numDistinctWires();
+        /* numberOfPartConnections += */ p.numDistinctWires();
     }
     
     // ----------------------- intended interface -----------------------------

@@ -120,7 +120,7 @@ public class Wire extends NetObject implements WireReportable {
             Part pp= it.next();
             sum += pp.getHashFor(this);
         }
-        return new Integer(sum);
+        return Integer.valueOf(sum);
     }
 
     /** count the number of Parts connected to this wire.

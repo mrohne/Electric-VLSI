@@ -152,8 +152,8 @@ class OutlierRecord {
  * widths and lengths. This must be done before random matching or else we'll 
  * get width and length mismatches. */
 public class StratSizes extends Strategy {
-	private static final Integer CODE_OUTLIER = new Integer(1);
-	private static final Integer CODE_REST = new Integer(2);
+	private static final Integer CODE_OUTLIER = Integer.valueOf(1);
+	private static final Integer CODE_REST = Integer.valueOf(2);
 	private OutlierRecord outlierRecord;
 
 	private StratSizes(NccGlobals globals) {super(globals);}

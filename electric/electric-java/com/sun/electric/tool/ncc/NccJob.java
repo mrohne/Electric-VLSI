@@ -63,7 +63,7 @@ public class NccJob extends Job {
 	private NccResults results;
 
 	private void prln(String s) {System.out.println(s);}
-	private void pr(String s) {System.out.print(s);}
+//	private void pr(String s) {System.out.print(s);}
 	
 	private void initInteractiveStatics() {
 		if (passed==null) passed = new PassedNcc();

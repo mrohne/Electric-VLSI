@@ -134,7 +134,7 @@ public class LocalPartitionWires {
 		}
 		public void setID(int id) {
 			Job.error(this.id!=null, "assigned a second ID?");
-			this.id = new Integer(id);
+			this.id = Integer.valueOf(id);
 		}
 		public Integer getID() {return id;}
 		public List<String> getReasons() {

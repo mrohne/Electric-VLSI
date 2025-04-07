@@ -235,7 +235,7 @@ public class JelibParser
 
     // Were in LibraryFiles
     final URL fileURL;
-    private final FileType fileType;
+//    private final FileType fileType;
     private final IdManager idManager;
     private final LibId libId;
     private final String filePath;
@@ -276,7 +276,7 @@ public class JelibParser
         idManager = libId.idManager;
         this.libId = libId;
         this.fileURL = fileURL;
-        this.fileType = fileType;
+//        this.fileType = fileType;
         filePath = TextUtils.decodeString(fileURL.getFile()); // to decode possible encoded spaces
         this.errorLogger = errorLogger;
 
@@ -492,7 +492,7 @@ public class JelibParser
 				View view = View.findView(viewName);
 				if (view == null) {
 					String viewAbbr = unQuote(pieces.get(1));
-					view = View.newInstance(viewName, viewAbbr);
+					view = View.newInst(viewName, viewAbbr);
 					if (view == null) {
 						logError("Cannot create view " + viewName);
 						continue;
@@ -500,7 +500,7 @@ public class JelibParser
 				}
 
 				// get additional variables starting at position 2
-                Variable[] vars = readVariables(pieces, 2);
+                /* Variable[] vars = */ readVariables(pieces, 2);
 				continue;
 			}
 
@@ -1377,7 +1377,7 @@ public class JelibParser
 			// create the variable
             TextDescriptorAndCode tdc = loadTextDescriptor(varBits, true);
             obj = Variable.withCode(obj, tdc.code);
-            Variable d = Variable.newInstance(varKey, obj, tdc.td);
+            Variable d = Variable.newInst(varKey, obj, tdc.td);
             variablesBuf.add(d);
 		}
         return variablesBuf.toArray(Variable.NULL_ARRAY);
@@ -1608,7 +1608,7 @@ public class JelibParser
 		switch (varType)
 		{
 			case 'B':		// Boolean
-				return new Boolean(piece.charAt(0)=='T' ? true : false);
+				return Boolean.valueOf(piece.charAt(0)=='T' ? true : false);
 			case 'C':		// Cell (should delay analysis until database is built!!!)
 				if (piece.length() == 0) return null;
 				colonPos = piece.indexOf(':');

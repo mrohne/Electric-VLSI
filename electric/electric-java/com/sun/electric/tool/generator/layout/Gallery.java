@@ -175,7 +175,7 @@ public class Gallery {
 
 		sortCellsByName(cells);
 
-		Cell gallery = Cell.newInstance(lib, "gallery{lay}");
+		Cell gallery = Cell.newInst(lib, "gallery{lay}");
 		ArrayList<NodeInst> insts = addOneInstOfEveryCell(cells, gallery);
 
 		placeInstsOnPage(insts, gallery);

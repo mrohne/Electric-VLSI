@@ -58,9 +58,9 @@ public class UserCom
 			if (ctl.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 			{
 				scheduleNodeUpdate(primHead, side[0], '=',
-					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 				scheduleNodeUpdate(primHead, side[1], '=',
-					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 				return;
 			}
 			calculateBidirOutputs(primHead, side, Stimuli.GATE_STRENGTH);
@@ -81,9 +81,9 @@ public class UserCom
 			if (ctl.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 			{
 				scheduleNodeUpdate(primHead, side[0], '=',
-					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 				scheduleNodeUpdate(primHead, side[1], '=',
-					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 				return;
 			}
 			calculateBidirOutputs(primHead, side, Stimuli.NODE_STRENGTH);
@@ -112,9 +112,9 @@ public class UserCom
 			if (ctl.nodePtr.sumState == Stimuli.LOGIC_LOW)
 			{
 				scheduleNodeUpdate(primHead, side[0], '=',
-					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 				scheduleNodeUpdate(primHead, side[1], '=',
-					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 				return;
 			}
 			calculateBidirOutputs(primHead, side, Stimuli.GATE_STRENGTH);
@@ -135,9 +135,9 @@ public class UserCom
 			if (ctl.nodePtr.sumState == Stimuli.LOGIC_LOW)
 			{
 				scheduleNodeUpdate(primHead, side[0], '=',
-					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 				scheduleNodeUpdate(primHead, side[1], '=',
-					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 				return;
 			}
 			calculateBidirOutputs(primHead, side, Stimuli.NODE_STRENGTH);
@@ -173,17 +173,17 @@ public class UserCom
 			{
 				if (k == Stimuli.LOGIC_LOW) return;
 				scheduleNodeUpdate(primHead, argPtr, '=',
-					new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs);
 				scheduleNodeUpdate(primHead, argPtrBar, '=',
-					new Integer(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs);
 				return;
 			}
 			if (k == Stimuli.LOGIC_LOW)
 			{
 				scheduleNodeUpdate(primHead, argPtr, '=',
-					new Integer(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs);
 				scheduleNodeUpdate(primHead, argPtrBar, '=',
-					new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs);
 				return;
 			}
 
@@ -191,15 +191,15 @@ public class UserCom
 			if (out == Stimuli.LOGIC_HIGH)
 			{
 				scheduleNodeUpdate(primHead, argPtr, '=',
-					new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs);
 				scheduleNodeUpdate(primHead, argPtrBar, '=',
-					new Integer(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs);
 			} else
 			{
 				scheduleNodeUpdate(primHead, argPtr, '=',
-					new Integer(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs);
 				scheduleNodeUpdate(primHead, argPtrBar, '=',
-					new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs);
+					Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs);
 			}
 		}
 	}
@@ -243,7 +243,7 @@ public class UserCom
 			argPtr = primHead.exList.get(2);
 			int q = dIn;
 			scheduleNodeUpdate(primHead, argPtr, '=',
-				new Integer(q), Stimuli.GATE_STRENGTH, als.timeAbs);
+				Integer.valueOf(q), Stimuli.GATE_STRENGTH, als.timeAbs);
 		}
 	}
 
@@ -274,7 +274,7 @@ public class UserCom
 				argPtr = it.next();
 			}
 			scheduleNodeUpdate(primHead, argPtr, '=',
-				new Integer(state), Stimuli.VDD_STRENGTH, als.timeAbs);
+				Integer.valueOf(state), Stimuli.VDD_STRENGTH, als.timeAbs);
 		}
 	}
 
@@ -306,11 +306,11 @@ public class UserCom
 				if ((input & mask) != 0)
 				{
 					scheduleNodeUpdate(primHead, argPtr, '=',
-						new Integer(Stimuli.LOGIC_HIGH), Stimuli.VDD_STRENGTH, als.timeAbs);
+						Integer.valueOf(Stimuli.LOGIC_HIGH), Stimuli.VDD_STRENGTH, als.timeAbs);
 				} else
 				{
 					scheduleNodeUpdate(primHead, argPtr, '=',
-						new Integer(Stimuli.LOGIC_LOW), Stimuli.VDD_STRENGTH, als.timeAbs);
+						Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.VDD_STRENGTH, als.timeAbs);
 				}
 			}
 		}
@@ -347,24 +347,24 @@ public class UserCom
 //			if (reset == Stimuli.LOGIC_LOW)
 //			{
 //				scheduleNodeUpdate(primHead, countPtr, '=',
-//					new Integer(0), Stimuli.GATE_STRENGTH, als.timeAbs + 30e-9);
+//					Integer.valueOf(0), Stimuli.GATE_STRENGTH, als.timeAbs + 30e-9);
 //				scheduleNodeUpdate(primHead, argPtr, '=',
-//					new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 30e-9);
+//					Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 30e-9);
 //				return;
 //			}
 //
 //			count = (count + 1) % 16;
 //			scheduleNodeUpdate(primHead, countPtr, '=',
-//				new Integer(count), Stimuli.GATE_STRENGTH, als.timeAbs + 20e-9);
+//				Integer.valueOf(count), Stimuli.GATE_STRENGTH, als.timeAbs + 20e-9);
 //
 //			if (count == 15)
 //			{
 //				scheduleNodeUpdate(primHead, argPtr, '=',
-//					new Integer(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs + 18e-9);
+//					Integer.valueOf(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs + 18e-9);
 //			} else
 //			{
 //				scheduleNodeUpdate(primHead, argPtr, '=',
-//					new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 22e-9);
+//					Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 22e-9);
 //			}
 //		}
 //	}
@@ -394,9 +394,9 @@ public class UserCom
 //			double delay = 2.0 * Math.random() * baseDelay *
 //				(1 << (retX.nodePtr.sumState - 1)) + als.timeAbs;
 //			scheduleNodeUpdate(primHead, server, '=',
-//				new Integer(1), Stimuli.VDD_STRENGTH, delay);
+//				Integer.valueOf(1), Stimuli.VDD_STRENGTH, delay);
 //			scheduleNodeUpdate(primHead, server, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, delay);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, delay);
 //		}
 //	}
 //
@@ -448,9 +448,9 @@ public class UserCom
 //			if (inputPtr.nodePtr.sumState > 0)
 //			{
 //				scheduleNodeUpdate(primHead, inputPtr, '=',
-//					new Integer(0), Stimuli.VDD_STRENGTH, als.timeAbs);
+//					Integer.valueOf(0), Stimuli.VDD_STRENGTH, als.timeAbs);
 //				scheduleNodeUpdate(primHead, inputPtr, '=',
-//					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //				if (sizePtr.nodePtr.sumState >= FIFO_SIZE)
 //				{
 //					System.out.println("Data loss has occured: Value = " + inputPtr.nodePtr.sumState + ", Time = " + als.timeAbs);
@@ -458,9 +458,9 @@ public class UserCom
 //				}
 //				int newSize = sizePtr.nodePtr.sumState + 1;
 //				scheduleNodeUpdate(primHead, sizePtr, '=',
-//					new Integer(newSize), Stimuli.VDD_STRENGTH, als.timeAbs);
+//					Integer.valueOf(newSize), Stimuli.VDD_STRENGTH, als.timeAbs);
 //				scheduleNodeUpdate(primHead, sizePtr, '=',
-//					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //				fifoHead.state[fifoHead.wPtr] = inputPtr.nodePtr.sumState;
 //				fifoHead.wPtr = ((fifoHead.wPtr) + 1) % FIFO_SIZE;
 //			}
@@ -468,14 +468,14 @@ public class UserCom
 //			if (outputPtr.nodePtr.sumState == 0 && sizePtr.nodePtr.sumState != 0)
 //			{
 //				scheduleNodeUpdate(primHead, outputPtr, '=',
-//					new Integer(fifoHead.state[fifoHead.rPtr]), Stimuli.VDD_STRENGTH, als.timeAbs);
+//					Integer.valueOf(fifoHead.state[fifoHead.rPtr]), Stimuli.VDD_STRENGTH, als.timeAbs);
 //				scheduleNodeUpdate(primHead, outputPtr, '=',
-//					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //				int newSize = sizePtr.nodePtr.sumState - 1;
 //				scheduleNodeUpdate(primHead, sizePtr, '=',
-//					new Integer(newSize), Stimuli.VDD_STRENGTH, als.timeAbs);
+//					Integer.valueOf(newSize), Stimuli.VDD_STRENGTH, als.timeAbs);
 //				scheduleNodeUpdate(primHead, sizePtr, '=',
-//					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //				fifoHead.rPtr = ((fifoHead.rPtr) + 1) % FIFO_SIZE;
 //			}
 //		}
@@ -511,54 +511,54 @@ public class UserCom
 //			ALS.ALSExport dataOut = primHead.exList.get(6);
 //
 //			scheduleNodeUpdate(primHead, addIn, '=',
-//				new Integer(0), Stimuli.VDD_STRENGTH, als.timeAbs);
+//				Integer.valueOf(0), Stimuli.VDD_STRENGTH, als.timeAbs);
 //			scheduleNodeUpdate(primHead, addIn, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //			scheduleNodeUpdate(primHead, dataIn, '=',
-//				new Integer(0), Stimuli.VDD_STRENGTH, als.timeAbs);
+//				Integer.valueOf(0), Stimuli.VDD_STRENGTH, als.timeAbs);
 //			scheduleNodeUpdate(primHead, dataIn, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //			if (((dataIn.nodePtr.sumState) % 2) != 0)
 //			{
 //				scheduleNodeUpdate(primHead, dataType, '=',
-//					new Integer(dataIn.nodePtr.sumState), Stimuli.VDD_STRENGTH, als.timeAbs);
+//					Integer.valueOf(dataIn.nodePtr.sumState), Stimuli.VDD_STRENGTH, als.timeAbs);
 //				scheduleNodeUpdate(primHead, dataType, '=',
-//					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //				if (remXOff.nodePtr.sumState != 0)
 //				{
 //					scheduleNodeUpdate(primHead, remXOff, '=',
-//						new Integer(0), Stimuli.VDD_STRENGTH, als.timeAbs);
+//						Integer.valueOf(0), Stimuli.VDD_STRENGTH, als.timeAbs);
 //					scheduleNodeUpdate(primHead, remXOff, '=',
-//						new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//						Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //					scheduleNodeUpdate(primHead, addOut, '=',
-//						new Integer(address.nodePtr.sumState), Stimuli.VDD_STRENGTH, als.timeAbs + 50e-6);
+//						Integer.valueOf(address.nodePtr.sumState), Stimuli.VDD_STRENGTH, als.timeAbs + 50e-6);
 //					scheduleNodeUpdate(primHead, addOut, '=',
-//						new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs + 50e-6);
+//						Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs + 50e-6);
 //					scheduleNodeUpdate(primHead, dataOut, '=',
-//						new Integer(5), Stimuli.VDD_STRENGTH, als.timeAbs + 50e-6);
+//						Integer.valueOf(5), Stimuli.VDD_STRENGTH, als.timeAbs + 50e-6);
 //					scheduleNodeUpdate(primHead, dataOut, '=',
-//						new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs + 50e-6);
+//						Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs + 50e-6);
 //				}
 //			} else
 //			{
 //				scheduleNodeUpdate(primHead, dataType, '=',
-//					new Integer(((dataIn.nodePtr.sumState) - 1)), Stimuli.VDD_STRENGTH, als.timeAbs);
+//					Integer.valueOf(((dataIn.nodePtr.sumState) - 1)), Stimuli.VDD_STRENGTH, als.timeAbs);
 //				scheduleNodeUpdate(primHead, dataType, '=',
-//					new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//					Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //				if (remXOff.nodePtr.sumState == 0)
 //				{
 //					scheduleNodeUpdate(primHead, remXOff, '=',
-//						new Integer(1), Stimuli.VDD_STRENGTH, als.timeAbs);
+//						Integer.valueOf(1), Stimuli.VDD_STRENGTH, als.timeAbs);
 //					scheduleNodeUpdate(primHead, remXOff, '=',
-//						new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
+//						Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs);
 //					scheduleNodeUpdate(primHead, addOut, '=',
-//						new Integer(address.nodePtr.sumState), Stimuli.VDD_STRENGTH, als.timeAbs + 50e-6);
+//						Integer.valueOf(address.nodePtr.sumState), Stimuli.VDD_STRENGTH, als.timeAbs + 50e-6);
 //					scheduleNodeUpdate(primHead, addOut, '=',
-//						new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs + 50e-6);
+//						Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs + 50e-6);
 //					scheduleNodeUpdate(primHead, dataOut, '=',
-//						new Integer(7), Stimuli.VDD_STRENGTH, als.timeAbs + 50e-6);
+//						Integer.valueOf(7), Stimuli.VDD_STRENGTH, als.timeAbs + 50e-6);
 //					scheduleNodeUpdate(primHead, dataOut, '=',
-//						new Integer(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs + 50e-6);
+//						Integer.valueOf(Stimuli.LOGIC_X), Stimuli.OFF_STRENGTH, als.timeAbs + 50e-6);
 //				}
 //			}
 //		}
@@ -585,12 +585,12 @@ public class UserCom
 //				if (aLoad.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 //				{
 //					scheduleNodeUpdate(primHead, aMid, '=',
-//						new Integer(aIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(aIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				}
 //				if (fLoad.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 //				{
 //					scheduleNodeUpdate(primHead, fMid, '=',
-//						new Integer(fIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(fIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				}
 //				return;
 //			}
@@ -600,24 +600,24 @@ public class UserCom
 //				if (aLoad.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 //				{
 //					scheduleNodeUpdate(primHead, aOut, '=',
-//						new Integer(aMid.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(aMid.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				}
 //				if (fLoad.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 //				{
 //					scheduleNodeUpdate(primHead, fOut, '=',
-//						new Integer(fMid.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(fMid.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				}
 //				return;
 //			}
 //
 //			scheduleNodeUpdate(primHead, aMid, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //			scheduleNodeUpdate(primHead, aOut, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //			scheduleNodeUpdate(primHead, fMid, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //			scheduleNodeUpdate(primHead, aOut, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //		}
 //	}
 //
@@ -637,34 +637,34 @@ public class UserCom
 //			if (b.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 //			{
 //				scheduleNodeUpdate(primHead, aOut, '=',
-//					new Integer(aIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//					Integer.valueOf(aIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //			} else
 //			{
 //				 if (b.nodePtr.sumState == Stimuli.LOGIC_LOW)
 //				 {
 //					scheduleNodeUpdate(primHead, aOut, '=',
-//						new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				 } else
 //				 {
 //					scheduleNodeUpdate(primHead, aOut, '=',
-//						new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				 }
 //			}
 //
 //			if (msb.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 //			{
 //				scheduleNodeUpdate(primHead, fOut, '=',
-//					new Integer(fIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//					Integer.valueOf(fIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //			} else
 //			{
 //				if (msb.nodePtr.sumState == Stimuli.LOGIC_LOW)
 //				{
 //					scheduleNodeUpdate(primHead, fOut, '=',
-//						new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				} else
 //				{
 //					scheduleNodeUpdate(primHead, fOut, '=',
-//						new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				}
 //			}
 //		}
@@ -685,7 +685,7 @@ public class UserCom
 //			if (ck.nodePtr.sumState == Stimuli.LOGIC_LOW)
 //			{
 //				scheduleNodeUpdate(primHead, out, '=',
-//					new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//					Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				return;
 //			}
 //
@@ -700,17 +700,17 @@ public class UserCom
 //				if (sum != 0)
 //				{
 //					scheduleNodeUpdate(primHead, out, '=',
-//						new Integer(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs + 5.0e-9);
+//						Integer.valueOf(Stimuli.LOGIC_HIGH), Stimuli.GATE_STRENGTH, als.timeAbs + 5.0e-9);
 //				} else
 //				{
 //					scheduleNodeUpdate(primHead, out, '=',
-//						new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 5.0e-9);
+//						Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 5.0e-9);
 //				}
 //				return;
 //			}
 //
 //			scheduleNodeUpdate(primHead, out, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 5.0e-9);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 5.0e-9);
 //		}
 //	}
 //
@@ -735,19 +735,19 @@ public class UserCom
 //				if (loadOSR.nodePtr.sumState == Stimuli.LOGIC_LOW)
 //				{
 //					scheduleNodeUpdate(primHead, pMid, '=',
-//						new Integer(sumIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(sumIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //					scheduleNodeUpdate(primHead, osrMid, '=',
-//						new Integer(osrIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(osrIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				}
 //				if (loadOSR.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 //				{
 //					scheduleNodeUpdate(primHead, osrMid, '=',
-//						new Integer(sumIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(sumIn.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				}
 //				if (sync.nodePtr.sumState == Stimuli.LOGIC_HIGH)
 //				{
 //					scheduleNodeUpdate(primHead, pMid, '=',
-//						new Integer(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(Stimuli.LOGIC_LOW), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				}
 //				return;
 //			}
@@ -757,21 +757,21 @@ public class UserCom
 //				if (loadOSR.nodePtr.sumState == Stimuli.LOGIC_LOW)
 //				{
 //					scheduleNodeUpdate(primHead, osrOut, '=',
-//						new Integer(osrMid.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(osrMid.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //					scheduleNodeUpdate(primHead, pOut, '=',
-//						new Integer(pMid.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//						Integer.valueOf(pMid.nodePtr.sumState), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //				}
 //				return;
 //			}
 //
 //			scheduleNodeUpdate(primHead, osrMid, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //			scheduleNodeUpdate(primHead, osrOut, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //			scheduleNodeUpdate(primHead, pMid, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //			scheduleNodeUpdate(primHead, pOut, '=',
-//				new Integer(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
+//				Integer.valueOf(Stimuli.LOGIC_X), Stimuli.GATE_STRENGTH, als.timeAbs + 3.0e-9);
 //		}
 //	}
 //
@@ -803,7 +803,7 @@ public class UserCom
 //			}
 //
 //			scheduleNodeUpdate(primHead, argPtr, '=',
-//				new Integer(state), Stimuli.VDD_STRENGTH, als.timeAbs);
+//				Integer.valueOf(state), Stimuli.VDD_STRENGTH, als.timeAbs);
 //		}
 //	}
 }

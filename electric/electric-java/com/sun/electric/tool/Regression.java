@@ -147,26 +147,26 @@ public class Regression {
         }
     }
 
-    private static void printErrorStream(Process process) {
-        try {
-//            process.getOutputStream().close();
-            InputStream errStream = new BufferedInputStream(process.getErrorStream());
-            System.out.println("<StdErr>");
-            for (;;) {
-                if (errStream.available() == 0) {
-                    break;
-                }
-                int c = errStream.read();
-                if (c < 0) {
-                    break;
-                }
-                System.out.print((char) c);
-            }
-            System.out.println("</StdErr>");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    private static void printErrorStream(Process process) {
+//        try {
+////            process.getOutputStream().close();
+//            InputStream errStream = new BufferedInputStream(process.getErrorStream());
+//            System.out.println("<StdErr>");
+//            for (;;) {
+//                if (errStream.available() == 0) {
+//                    break;
+//                }
+//                int c = errStream.read();
+//                if (c < 0) {
+//                    break;
+//                }
+//                System.out.print((char) c);
+//            }
+//            System.out.println("</StdErr>");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private static class InitJob extends Job {
 
@@ -177,11 +177,11 @@ public class Regression {
         public boolean doIt() throws JobException {
             database.setToolSettings((Setting.RootGroup) ToolSettings.getToolSettings(""));
             assert database.getGeneric() == null;
-            Generic generic = Generic.newInstance(database.getIdManager());
+            Generic generic = Generic.newInst(database.getIdManager());
             database.addTech(generic);
             for (TechFactory techFactory : TechFactory.getKnownTechs().values()) {
                 Map<TechFactory.Param, Object> paramValues = Collections.emptyMap();
-                Technology tech = techFactory.newInstance(generic, paramValues);
+                Technology tech = techFactory.newInst(generic, paramValues);
                 if (tech != null) {
                     database.addTech(tech);
                 }

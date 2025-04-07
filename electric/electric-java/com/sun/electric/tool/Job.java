@@ -588,6 +588,8 @@ public abstract class Job implements Serializable {
 			return getProgress() == null ? "done" : getProgress();
 		case CLIENT_DONE:
 			return "cdone";
+		default:
+			break;
 		}
 		if (!started)
 			return "waiting";

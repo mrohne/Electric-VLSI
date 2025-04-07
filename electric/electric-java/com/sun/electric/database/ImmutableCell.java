@@ -55,7 +55,7 @@ public class ImmutableCell extends ImmutableElectricObject {
     final Variable[] params;
 
     /**
-     * The private constructor of ImmutableCell. Use the factory "newInstance" instead.
+     * The private constructor of ImmutableCell. Use the factory "newInst" instead.
      * @param cellId id of this ImmutableCell.
      * @param groupName group name of this ImmutableCell.
      * @param creationDate the date this ImmutableCell was created.
@@ -82,7 +82,7 @@ public class ImmutableCell extends ImmutableElectricObject {
      * @return new ImmutableCell object.
      * @throws NullPointerException if cellId or libId is null.
      */
-    public static ImmutableCell newInstance(CellId cellId, long creationDate) {
+    public static ImmutableCell newInst(CellId cellId, long creationDate) {
         if (cellId == null) {
             throw new NullPointerException("cellId");
         }

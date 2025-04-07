@@ -61,7 +61,7 @@ public class GEM extends Technology {
     public static final Variable.Key EVENT_4 = Variable.newKey("GEM_event4");
     private Layer E_lay, GA_lay, TA_lay, CA_lay, PA_lay, NA_lay, FA_lay;
     private ArcProto generalArc, temporalArc, causalArc, prerequisiteArc, nondeterministicArc, nondeterministicForkArc;
-    private PrimitiveNode e_node;
+//    private PrimitiveNode e_node;
 
     // -------------------- private and protected methods ------------------------
     public GEM(Generic generic, TechFactory techFactory) {
@@ -76,37 +76,37 @@ public class GEM extends Technology {
         //**************************************** LAYERS ****************************************
 
         /** E layer */
-        E_lay = Layer.newInstance(this, "Element",
+        E_lay = Layer.newInst(this, "Element",
                 new EGraphics(false, false, null, 0, 255, 0, 0, 0.8, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
         /** GA layer */
-        GA_lay = Layer.newInstance(this, "General-arc",
+        GA_lay = Layer.newInst(this, "General-arc",
                 new EGraphics(false, false, null, 0, 0, 0, 255, 0.8, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
         /** TA layer */
-        TA_lay = Layer.newInstance(this, "Temporal-arc",
+        TA_lay = Layer.newInst(this, "Temporal-arc",
                 new EGraphics(false, false, null, 0, 0, 255, 0, 0.8, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
         /** CA layer */
-        CA_lay = Layer.newInstance(this, "Causal-arc",
+        CA_lay = Layer.newInst(this, "Causal-arc",
                 new EGraphics(false, false, null, 0, 0, 0, 0, 0.8, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
         /** PA layer */
-        PA_lay = Layer.newInstance(this, "Prereq-arc",
+        PA_lay = Layer.newInst(this, "Prereq-arc",
                 new EGraphics(false, false, null, 0, 255, 190, 6, 0.8, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
         /** NA layer */
-        NA_lay = Layer.newInstance(this, "Nondet-arc",
+        NA_lay = Layer.newInst(this, "Nondet-arc",
                 new EGraphics(false, false, null, 0, 255, 255, 0, 0.8, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
         /** FA layer */
-        FA_lay = Layer.newInstance(this, "Fork-arc",
+        FA_lay = Layer.newInst(this, "Fork-arc",
                 new EGraphics(false, false, null, 0, 186, 0, 255, 0.8, true,
                 new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 
@@ -229,7 +229,7 @@ public class GEM extends Technology {
         //******************** NODES ********************
 
         /** General-Pin */
-        PrimitiveNode gp_node = PrimitiveNode.newInstance("General-Pin", this, 1, 1,
+        PrimitiveNode gp_node = PrimitiveNode.newInst("General-Pin", this, 1, 1,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(GA_lay, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, disc_1)
                 });
@@ -241,7 +241,7 @@ public class GEM extends Technology {
         gp_node.setArcsShrink();
 
         /** Temporal-Pin */
-        PrimitiveNode tp_node = PrimitiveNode.newInstance("Temporal-Pin", this, 1, 1,
+        PrimitiveNode tp_node = PrimitiveNode.newInst("Temporal-Pin", this, 1, 1,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(TA_lay, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, disc_1)
                 });
@@ -253,7 +253,7 @@ public class GEM extends Technology {
         tp_node.setArcsShrink();
 
         /** Cause-Pin */
-        PrimitiveNode cp_node = PrimitiveNode.newInstance("Cause-Pin", this, 1, 1,
+        PrimitiveNode cp_node = PrimitiveNode.newInst("Cause-Pin", this, 1, 1,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(CA_lay, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, disc_1)
                 });
@@ -265,7 +265,7 @@ public class GEM extends Technology {
         cp_node.setArcsShrink();
 
         /** Prereq-Pin */
-        PrimitiveNode pp_node = PrimitiveNode.newInstance("Prereq-Pin", this, 1, 1,
+        PrimitiveNode pp_node = PrimitiveNode.newInst("Prereq-Pin", this, 1, 1,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(PA_lay, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, disc_1)
                 });
@@ -277,7 +277,7 @@ public class GEM extends Technology {
         pp_node.setArcsShrink();
 
         /** Nondet-Pin */
-        PrimitiveNode np_node = PrimitiveNode.newInstance("Nondet-Pin", this, 1, 1,
+        PrimitiveNode np_node = PrimitiveNode.newInst("Nondet-Pin", this, 1, 1,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(NA_lay, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, disc_1)
                 });
@@ -289,7 +289,7 @@ public class GEM extends Technology {
         np_node.setArcsShrink();
 
         /** Fork-Pin */
-        PrimitiveNode fp_node = PrimitiveNode.newInstance("Fork-Pin", this, 1, 1,
+        PrimitiveNode fp_node = PrimitiveNode.newInst("Fork-Pin", this, 1, 1,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(FA_lay, 0, Poly.Type.DISC, Technology.NodeLayer.POINTS, disc_1)
                 });
@@ -301,10 +301,10 @@ public class GEM extends Technology {
         fp_node.setArcsShrink();
 
         /** Element */
-        e_node = new ENode();
+        /* e_node = */ new ENode();
 
         /** Group */
-        PrimitiveNode g_node = PrimitiveNode.newInstance("Group", this, 10, 10,
+        PrimitiveNode g_node = PrimitiveNode.newInst("Group", this, 10, 10,
                 new Technology.NodeLayer[]{
                     new Technology.NodeLayer(E_lay, 0, Poly.Type.CLOSED, Technology.NodeLayer.BOX, new Technology.TechPoint[]{
                         new Technology.TechPoint(EdgeH.l(-5), EdgeV.b(-5)),
@@ -338,13 +338,13 @@ public class GEM extends Technology {
                             new Technology.TechPoint(EdgeH.r(4), EdgeV.c(0)),})
                     });
             addPrimitivePorts(
-                    PrimitivePort.newInstance(this, new ArcProto[]{generalArc, temporalArc, causalArc, prerequisiteArc, nondeterministicArc, nondeterministicForkArc}, "port1", 0, 180, 0, PortCharacteristic.UNKNOWN,
+                    PrimitivePort.newInst(this, new ArcProto[]{generalArc, temporalArc, causalArc, prerequisiteArc, nondeterministicArc, nondeterministicForkArc}, "port1", 0, 180, 0, PortCharacteristic.UNKNOWN,
                     EdgeH.l(-2), EdgeV.c(0.5), EdgeH.l(-2), EdgeV.c(0.5)),
-                    PrimitivePort.newInstance(this, new ArcProto[]{generalArc, temporalArc, causalArc, prerequisiteArc, nondeterministicArc, nondeterministicForkArc}, "port2", 0, 180, 0, PortCharacteristic.UNKNOWN,
+                    PrimitivePort.newInst(this, new ArcProto[]{generalArc, temporalArc, causalArc, prerequisiteArc, nondeterministicArc, nondeterministicForkArc}, "port2", 0, 180, 0, PortCharacteristic.UNKNOWN,
                     EdgeH.l(-2), EdgeV.c(-0.5), EdgeH.l(-2), EdgeV.c(-0.5)),
-                    PrimitivePort.newInstance(this, new ArcProto[]{generalArc, temporalArc, causalArc, prerequisiteArc, nondeterministicArc, nondeterministicForkArc}, "port3", 0, 180, 0, PortCharacteristic.UNKNOWN,
+                    PrimitivePort.newInst(this, new ArcProto[]{generalArc, temporalArc, causalArc, prerequisiteArc, nondeterministicArc, nondeterministicForkArc}, "port3", 0, 180, 0, PortCharacteristic.UNKNOWN,
                     EdgeH.l(-2), EdgeV.c(-1.5), EdgeH.l(-2), EdgeV.c(-1.5)),
-                    PrimitivePort.newInstance(this, new ArcProto[]{generalArc, temporalArc, causalArc, prerequisiteArc, nondeterministicArc, nondeterministicForkArc}, "port4", 0, 180, 0, PortCharacteristic.UNKNOWN,
+                    PrimitivePort.newInst(this, new ArcProto[]{generalArc, temporalArc, causalArc, prerequisiteArc, nondeterministicArc, nondeterministicForkArc}, "port4", 0, 180, 0, PortCharacteristic.UNKNOWN,
                     EdgeH.l(-2), EdgeV.c(-2.5), EdgeH.l(-2), EdgeV.c(-2.5)));
             setFunction(PrimitiveNode.Function.UNKNOWN);
         }

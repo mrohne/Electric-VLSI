@@ -179,7 +179,7 @@ class SeaOfGatesCellBuilder {
             int flags = 0;
             int techBits = 0;
             TextDescriptor protoTd = ep.getInstanceTextDescriptor();
-            ImmutableNodeInst n = ImmutableNodeInst.newInstance(nodeId, resultCellId, name, nameTd,
+            ImmutableNodeInst n = ImmutableNodeInst.newInst(nodeId, resultCellId, name, nameTd,
                 orient, anchor, size, flags, techBits, protoTd);
             maxSuffix.add(n);
             assert !curNodes.get(nodeId);
@@ -237,7 +237,7 @@ class SeaOfGatesCellBuilder {
         Orientation contactTemplateOrientation = Orientation.IDENT;
         if (FINDEXISTINGCELLS && contactPlacementAction != SoGContactsStrategy.SOGCONTACTSFORCESUBCELLS)
         {
-            ImmutableNodeInst n = ImmutableNodeInst.newInstance(0, pNp.getId(), nodeName, TextDescriptor.EMPTY, Orientation.IDENT,
+            ImmutableNodeInst n = ImmutableNodeInst.newInst(0, pNp.getId(), nodeName, TextDescriptor.EMPTY, Orientation.IDENT,
                 EPoint.ORIGIN, size, 0, techBits, TextDescriptor.EMPTY);
             MyShapeBuilder conShape = new MyShapeBuilder();
             pNp.genShape(conShape, n);
@@ -287,8 +287,8 @@ class SeaOfGatesCellBuilder {
             while (curCellBackups.size() <= contactCellId.cellIndex) {
                 curCellBackups.add(null);
             }
-            ImmutableCell c = ImmutableCell.newInstance(contactCellId, System.currentTimeMillis()).withTechId(oldCell.techId);
-            contactCellBackup = CellBackup.newInstance(c, oldTechPool);
+            ImmutableCell c = ImmutableCell.newInst(contactCellId, System.currentTimeMillis()).withTechId(oldCell.techId);
+            contactCellBackup = CellBackup.newInst(c, oldTechPool);
             curCellBackups.set(contactCellId.cellIndex, contactCellBackup);
         }
 
@@ -299,7 +299,7 @@ class SeaOfGatesCellBuilder {
         int flags = 0;
         TextDescriptor protoTd = ep.getInstanceTextDescriptor();
         ImmutableNodeInst n =
-            ImmutableNodeInst.newInstance(nodeId, pNp.getId(), nodeName, nameTd, Orientation.IDENT,
+            ImmutableNodeInst.newInst(nodeId, pNp.getId(), nodeName, nameTd, Orientation.IDENT,
                 anchor, size, flags, techBits, protoTd);
 
         // Create ImmuatbleExport
@@ -308,7 +308,7 @@ class SeaOfGatesCellBuilder {
         TextDescriptor portTd = ep.getExportTextDescriptor();
         boolean alwaysDrawn = false;
         boolean bodyOnly = false;
-        ImmutableExport e = ImmutableExport.newInstance(exportId, Name.findName(portName), portTd,
+        ImmutableExport e = ImmutableExport.newInst(exportId, Name.findName(portName), portTd,
             nodeId, pNp.getPort(0).getId(), alwaysDrawn, bodyOnly, PortCharacteristic.UNKNOWN);
 
         // Insert node instance into new nodes array
@@ -457,7 +457,7 @@ class SeaOfGatesCellBuilder {
                 nodeId = resultShapeBuilder.getNextNodeId();
                 name = resultShapeBuilder.getNextName();
             }
-            ImmutableNodeInst n = ImmutableNodeInst.newInstance(nodeId, protoId, name, nameTd,
+            ImmutableNodeInst n = ImmutableNodeInst.newInst(nodeId, protoId, name, nameTd,
                 orient, anchor, size, flags, techBits, protoTd);
             if (resultShapeBuilder != null) {
                 if (protoId != pnId) {
@@ -508,7 +508,7 @@ class SeaOfGatesCellBuilder {
             int angle = ImmutableArcInst.DEFAULTANGLE;
             int flags = ra.getFlags(ep);
 
-            ImmutableArcInst a = ImmutableArcInst.newInstance(arcId, protoId, name, nameTd,
+            ImmutableArcInst a = ImmutableArcInst.newInst(arcId, protoId, name, nameTd,
                 tailNodeId, tailProtoId, tailLocation,
                 headNodeId, headProtoId, headLocation,
                 gridExtendOverMin, angle, flags);
@@ -556,7 +556,7 @@ class SeaOfGatesCellBuilder {
             int angle = ImmutableArcInst.DEFAULTANGLE;
             int flags = unroutedFlags;
 
-            ImmutableArcInst a = ImmutableArcInst.newInstance(arcId, protoId, name, nameTd,
+            ImmutableArcInst a = ImmutableArcInst.newInst(arcId, protoId, name, nameTd,
                     tailNodeId, tailProtoId, tailLocation,
                     headNodeId, headProtoId, headLocation,
                     gridExtendOverMin, angle, flags);
@@ -581,9 +581,9 @@ class SeaOfGatesCellBuilder {
             setup(oldTechPool);
             this.cellId = cellId;
             Date creationDate = new Date();
-            ImmutableCell resultCell = ImmutableCell.newInstance(cellId, creationDate.getTime()).withTechId(oldCellBackup.cellRevision.d.techId);
-            cellBackup = CellBackup.newInstance(resultCell, oldTechPool);
-//            nodes.add(ImmutableNodeInst.newInstance(0, Generic.tech().cellCenterNode.getId(),
+            ImmutableCell resultCell = ImmutableCell.newInst(cellId, creationDate.getTime()).withTechId(oldCellBackup.cellRevision.d.techId);
+            cellBackup = CellBackup.newInst(resultCell, oldTechPool);
+//            nodes.add(ImmutableNodeInst.newInst(0, Generic.tech().cellCenterNode.getId(),
 //                Name.findName("art@0"), nameTd,
 //                Orientation.IDENT, EPoint.ORIGIN, EPoint.ORIGIN,
 //                0, 0, protoTd));
@@ -625,7 +625,7 @@ class SeaOfGatesCellBuilder {
             Name name = getNextName();
             EPoint anchor = EPoint.fromFixp((fixpLX + fixpHX) >> 1, (fixpLY + fixpHY) >> 1);
             EPoint size = EPoint.fromFixp(fixpHX - fixpLX, fixpHY - fixpLY);
-            nodes.add(ImmutableNodeInst.newInstance(nodeId, protoId,
+            nodes.add(ImmutableNodeInst.newInst(nodeId, protoId,
                 name, nameTd,
                 Orientation.IDENT, anchor, size,
                 0, 0, protoTd));
@@ -643,7 +643,7 @@ class SeaOfGatesCellBuilder {
             long fixpHY = coords[3];
             EPoint anchor = EPoint.fromFixp((fixpLX + fixpHX) >> 1, (fixpLY + fixpHY) >> 1);
             EPoint size = EPoint.fromFixp(fixpHX - fixpLX, fixpHY - fixpLY);
-            nodes.add(ImmutableNodeInst.newInstance(nodeId, protoId,
+            nodes.add(ImmutableNodeInst.newInst(nodeId, protoId,
                 name, nameTd,
                 Orientation.IDENT, anchor, size,
                 0, 0, protoTd));

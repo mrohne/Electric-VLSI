@@ -51,8 +51,8 @@ public class SoGWireQualityMetric extends WireQualityMetric
 		try {
 			result = startLogging(batch.netName);
 
-			result.wireLength = new Double(0);
-			result.vias = new Integer(0);
+			result.wireLength = Double.valueOf(0);
+			result.vias = Integer.valueOf(0);
 			double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE;
 			double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE;
 

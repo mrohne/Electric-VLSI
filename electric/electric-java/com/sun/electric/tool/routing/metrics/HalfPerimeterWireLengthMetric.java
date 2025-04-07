@@ -40,7 +40,7 @@ import com.sun.electric.database.topology.NodeInst;
  */
 public class HalfPerimeterWireLengthMetric extends RoutingMetric<Double> {
 
-	private static Logger logger = LoggerFactory.getLogger(HalfPerimeterWireLengthMetric.class);
+//	private static Logger logger = LoggerFactory.getLogger(HalfPerimeterWireLengthMetric.class);
 
 	@Override
 	public Double calculate(Cell cell) {

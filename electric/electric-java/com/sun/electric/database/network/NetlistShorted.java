@@ -42,7 +42,7 @@ public class NetlistShorted extends Netlist {
     private int[] thisNetHead;
     private int[] baseNetNext;
     private BitSet isUsernamed = new BitSet();
-    private BitSet isExported = new BitSet();
+//    private BitSet isExported = new BitSet();
     private String[] firstNames;
 
     NetlistShorted(Netlist baseNetlist, Netlist.ShortResistors shortResistors, int[] netMap) {

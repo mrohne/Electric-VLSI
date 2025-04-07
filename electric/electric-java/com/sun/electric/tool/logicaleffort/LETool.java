@@ -123,7 +123,7 @@ public class LETool extends Tool {
         // info should be the node on which there is the variable with the getDrive() call
         Object info = EvalJavaBsh.evalJavaBsh.getCurrentInfo();
         if (!(info instanceof Nodable)) {
-            if (defaultValue != Double.MIN_VALUE) return new Double(defaultValue);
+            if (defaultValue != Double.MIN_VALUE) return Double.valueOf(defaultValue);
             throw new VarContext.EvalException("getdrive(): Not enough hierarchy");
         }
         VarContext context = EvalJavaBsh.evalJavaBsh.getCurrentContext();
@@ -141,7 +141,7 @@ public class LETool extends Tool {
                 Nodable no = Netlist.getNodableFor((NodeInst)ni, i);
                 Variable var = getLEDRIVE(ni, context.push(no));
                 Object size = null;
-                if (defaultValue != Double.MIN_VALUE) size = new Double(defaultValue);
+                if (defaultValue != Double.MIN_VALUE) size = Double.valueOf(defaultValue);
 
                 if (var != null) size = var.getObject();
                 if (varName != null && (size instanceof String)) {
@@ -166,7 +166,7 @@ public class LETool extends Tool {
             }
             if (var == null && defaultValue != Double.MIN_VALUE) {
                 // return default value
-                return new Double(defaultValue);
+                return Double.valueOf(defaultValue);
             }
             if (var == null)
                 throw new VarContext.EvalException("getdrive(): no size");
@@ -386,7 +386,7 @@ public class LETool extends Tool {
             if ((at+1) < name.length()) {
                 String num = name.substring(at+1, name.length());
                 try {
-                    Integer i = new Integer(num);
+                    Integer i = Integer.valueOf(num);
                     name = name.substring(0, at) + (i.intValue()+1);
                 } catch (NumberFormatException e) {}
             }
@@ -400,7 +400,7 @@ public class LETool extends Tool {
         Matcher mat = celecDefaultNamePattern.matcher(celectricDefaultName);
         if (mat.matches()) {
             try {
-                Integer i = new Integer(mat.group(2));
+                Integer i = Integer.valueOf(mat.group(2));
                 int ii = i.intValue() - 1;
                 if (ii >= 0) {
                     celectricDefaultName = mat.group(1) + "@" + ii;

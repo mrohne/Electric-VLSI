@@ -35,12 +35,12 @@ import com.sun.electric.tool.Job;
 public class Subcircuit extends Part {
 	/** presume that no ports are interchangeable */
 	public static class SubcircuitPinType implements PinType {
-		private int typeCode;
-		private int portIndex;
+//		private int typeCode;
+//		private int portIndex;
 		private String description;
 		public SubcircuitPinType(int typeCode, int portIndex, String description) {
-			this.typeCode = typeCode;
-			this.portIndex = portIndex;
+//			this.typeCode = typeCode;
+//			this.portIndex = portIndex;
 			this.description = description;
 		}
 		public String description() {return description;}
@@ -60,7 +60,7 @@ public class Subcircuit extends Part {
 			Wire w = pins[i];
 			int coeff = pinCoeffs[i];
 			Integer coeffSum = wireToCoeffs.get(w);
-			if (coeffSum==null)  coeffSum = new Integer(0);
+			if (coeffSum==null)  coeffSum = Integer.valueOf(0);
 			coeffSum += coeff;
 			wireToCoeffs.put(w, coeffSum);
 		}
@@ -94,7 +94,7 @@ public class Subcircuit extends Part {
 		hc += getClass().hashCode();
 		// include subcircuit ID
 		hc += subcircuitInfo.getID();
-		return new Integer(hc);
+		return Integer.valueOf(hc);
 	}
 	@Override
 	public String typeString() {return subcircuitInfo.getName();}

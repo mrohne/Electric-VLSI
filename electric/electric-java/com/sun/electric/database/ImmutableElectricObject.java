@@ -43,7 +43,7 @@ public abstract class ImmutableElectricObject {
 
     /**
      * The package-private constructor of ImmutableElectricObject.
-     * Use the factory "newInstance" instead.
+     * Use the factory "newInst" instead.
      * @param vars array of Variables sorted by their keys.
      * @param flags flags of this IimmutableElectricObject.
      */
@@ -172,7 +172,6 @@ public abstract class ImmutableElectricObject {
      * or default Variable value.
      * @throws NullPointerException if key or type is null
      */
-    @SuppressWarnings("unchecked")
     public <T> T getVarValue(Variable.Key key, Class type) {
         Variable var = getVar(key);
         if (var != null) {

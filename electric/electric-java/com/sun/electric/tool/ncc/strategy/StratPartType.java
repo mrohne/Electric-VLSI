@@ -56,7 +56,7 @@ public class StratPartType extends Strategy {
 			EquivRecord r = it.next();
 			int value = r.getValue();
 			String reason = "part type is "+
-			                typeCodeToTypeName.get(new Integer(value));
+			                typeCodeToTypeName.get(Integer.valueOf(value));
 			globals.status2(reason);
 			r.setPartitionReason(reason);
 		}

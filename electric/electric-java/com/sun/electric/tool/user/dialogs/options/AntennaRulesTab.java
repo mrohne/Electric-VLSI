@@ -151,7 +151,7 @@ public class AntennaRulesTab extends PreferencePanel
 		ArcProto ap = tech.findArcProto(arcName);
 		if (ap == null) return;
 		double ratio = TextUtils.atof(antMaxRatio.getText());
-        antennaOptions.antennaRatio.put(ap.getId(), new Double(ratio));
+        antennaOptions.antennaRatio.put(ap.getId(), Double.valueOf(ratio));
 
 		int lineNo = antennaArcList.getSelectedIndex();
 		antennaArcListModel.setElementAt(ap.getName() + " (" + ratio + ")", lineNo);

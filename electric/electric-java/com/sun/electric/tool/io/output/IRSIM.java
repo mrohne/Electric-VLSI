@@ -194,7 +194,7 @@ public class IRSIM extends Output implements ParasiticGenerator
             		double wid = dim.getDoubleWidth();
             		if (len == 0) len = 2;
             		if (wid == 0) wid = 2;
-            		dim = new TransistorSize(new Double(wid), new Double(len), dim.getActiveLength(), null, true);
+            		dim = new TransistorSize(Double.valueOf(wid), Double.valueOf(len), dim.getActiveLength(), null, true);
                     reportWarning("Warning, cannot evaluate size of transistor " + ni +
                     	" in cell " + info.getCell() + ", using default sizes");
             	} else dim = null;

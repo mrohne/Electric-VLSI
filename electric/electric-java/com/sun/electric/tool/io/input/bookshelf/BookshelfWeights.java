@@ -97,6 +97,7 @@ public class BookshelfWeights implements BookshelfInputParser<Void> {
 					bn.setWeight(weight);
 			}
 		}
+		rin.close();
 
 		return null;
 	}

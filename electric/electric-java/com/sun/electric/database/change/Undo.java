@@ -55,21 +55,21 @@ public class Undo {
             newSnapshotId = newSnapshot.snapshotId;
         }
 
-        public int getStartingHighlights() {
-            return startingHighlights;
-        }
-
-        public int getPreUndoHighlights() {
-            return preUndoHighlights;
-        }
-
-        /**
-         * Method to return the Tool associated with this ChangeBatch.
-         * @return the Tool associated with this ChangeBatch.
-         */
-        public Tool getTool() {
-            return tool;
-        }
+//        public int getStartingHighlights() {
+//            return startingHighlights;
+//        }
+//
+//        public int getPreUndoHighlights() {
+//            return preUndoHighlights;
+//        }
+//
+//        /**
+//         * Method to return the Tool associated with this ChangeBatch.
+//         * @return the Tool associated with this ChangeBatch.
+//         */
+//        public Tool getTool() {
+//            return tool;
+//        }
 
         private void describe(String title) {
             String activityFromTool = activity;

@@ -23,11 +23,10 @@
 
 package com.sun.electric.plugins.j3d;
 
-import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
-
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Vector3d;
-import javax.media.j3d.Transform3D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.utils.behaviors.mouse.MouseRotate;
+import org.jogamp.vecmath.Matrix4d;
+import org.jogamp.vecmath.Vector3d;
 
 /**
  * Extending original rotation class to allow rotation not from original behavior

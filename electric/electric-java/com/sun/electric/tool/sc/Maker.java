@@ -73,33 +73,33 @@ public class Maker
 		/** maximum X position */			double			maxX;
 		/** minimum Y position */			double			minY;
 		/** maximum Y position */			double			maxY;
-		/** processing bits */				int				flags;
-		/** last row */						MakerRow		last;
+//		/** processing bits */				int				flags;
+//		/** last row */						MakerRow		last;
 		/** next row */						MakerRow		next;
 	};
 
 	private static class MakerInst
 	{
 		/** reference place */				Place.NBPlace	place;
-		/** reference row */				MakerRow		row;
+//		/** reference row */				MakerRow		row;
 		/** X position */					double			xPos;
 		/** Y position */					double			yPos;
 		/** size in X */					double			xSize;
 		/** size in Y */					double			ySize;
-		/** processing flags */				int				flags;
+//		/** processing flags */				int				flags;
 		/** leaf instance */				NodeInst		instance;
 		/** next in row */					MakerInst		next;
 	};
 
 	private static class MakerChannel
 	{
-		/** number of channel */			int				number;
+//		/** number of channel */			int				number;
 		/** list of tracks */				MakerTrack		tracks;
-		/** number of tracks */				int				numTracks;
+//		/** number of tracks */				int				numTracks;
 		/** minimum Y position */			double			minY;
 		/** Y size */						double			ySize;
-		/** processing bits */				int				flags;
-		/** last channel */					MakerChannel	last;
+//		/** processing bits */				int				flags;
+//		/** last channel */					MakerChannel	last;
 		/** next channel */					MakerChannel	next;
 	};
 
@@ -109,7 +109,7 @@ public class Maker
 		/** nodes in track */				MakerNode		nodes;
 		/** reference track */				Route.RouteTrack track;
 		/** Y position */					double			yPos;
-		/** processing bits */				int				flags;
+//		/** processing bits */				int				flags;
 		/** previous track */				MakerTrack		last;
 		/** next track */					MakerTrack		next;
 	};
@@ -139,7 +139,7 @@ public class Maker
 		/** list of power ports */			MakerPowerPort ports;
 		/** vertical position of row */		double			yPos;
 		/** next in row list */				MakerPower		next;
-		/** last in row list */				MakerPower		last;
+//		/** last in row list */				MakerPower		last;
 	};
 
 	private static class MakerPowerPort
@@ -229,13 +229,13 @@ public class Maker
 		{
 			// create Maker Channel structute
 			MakerChannel mChan = new MakerChannel();
-			mChan.number = chan.number;
+//			mChan.number = chan.number;
 			mChan.tracks = null;
-			mChan.numTracks = 0;
+//			mChan.numTracks = 0;
 			mChan.ySize = 0;
-			mChan.flags = 0;
+//			mChan.flags = 0;
 			mChan.next = null;
-			mChan.last = lastMChan;
+//			mChan.last = lastMChan;
 			if (lastMChan != null)
 			{
 				lastMChan.next = mChan;
@@ -254,7 +254,7 @@ public class Maker
 				mTrack.number = track.number;
 				mTrack.nodes = null;
 				mTrack.track = track;
-				mTrack.flags = 0;
+//				mTrack.flags = 0;
 				mTrack.next = null;
 				mTrack.last = lastMTrack;
 				if (lastMTrack != null)
@@ -265,7 +265,7 @@ public class Maker
 					mChan.tracks = mTrack;
 				}
 				lastMTrack = mTrack;
-				mChan.numTracks++;
+//				mChan.numTracks++;
 				if (mTrack.number == 0)
 				{
 					yPos += rowToTrack;
@@ -329,9 +329,9 @@ public class Maker
 			mRow.maxX = -Double.MAX_VALUE;
 			mRow.minY = Double.MAX_VALUE;
 			mRow.maxY = -Double.MAX_VALUE;
-			mRow.flags = 0;
+//			mRow.flags = 0;
 			mRow.next = null;
-			mRow.last = lastMRow;
+//			mRow.last = lastMRow;
 			if (lastMRow != null)
 			{
 				lastMRow.next = mRow;
@@ -362,7 +362,7 @@ public class Maker
 					place.cell.type != GetNetlist.LATERALFEED) continue;
 				MakerInst mInst = new MakerInst();
 				mInst.place = place;
-				mInst.row = mRow;
+//				mInst.row = mRow;
 				mInst.xPos = place.xPos;
 				mInst.yPos = yPos;
 				mInst.xSize = place.cell.size;
@@ -404,7 +404,7 @@ public class Maker
 								lastPList = nextPList;
 							}
 							pList.next = nextPList;
-							pList.last = lastPList;
+//							pList.last = lastPList;
 							if (lastPList != null)
 							{
 								lastPList.next = pList;
@@ -412,10 +412,10 @@ public class Maker
 							{
 								data.power = pList;
 							}
-							if (nextPList != null)
-							{
-								nextPList.last = pList;
-							}
+//							if (nextPList != null)
+//							{
+//								nextPList.last = pList;
+//							}
 						}
 						MakerPowerPort lastPort = null;
 						MakerPowerPort nextPort;
@@ -473,7 +473,7 @@ public class Maker
 								lastPList = nextPList;
 							}
 							pList.next = nextPList;
-							pList.last = lastPList;
+//							pList.last = lastPList;
 							if (lastPList != null)
 							{
 								lastPList.next = pList;
@@ -481,10 +481,10 @@ public class Maker
 							{
 								data.ground = pList;
 							}
-							if (nextPList != null)
-							{
-								nextPList.last = pList;
-							}
+//							if (nextPList != null)
+//							{
+//								nextPList.last = pList;
+//							}
 						}
 						MakerPowerPort lastPort = null;
 						MakerPowerPort nextPort;
@@ -520,7 +520,7 @@ public class Maker
 					mInst.ySize = 0;
 				}
 				mInst.instance = null;
-				mInst.flags = 0;
+//				mInst.flags = 0;
 				place.cell.tp = mInst;
 				mInst.next = null;
 				if (lastMInst != null)
@@ -1094,7 +1094,7 @@ public class Maker
 			case GetNetlist.PWRPORT:   pc = PortCharacteristic.PWR;    break;
 			default:                   pc = PortCharacteristic.GND;    break;
 		}
-		Export xPort = Export.newInstance(bCell, pi, name, ep, pc);
+		Export xPort = Export.newInst(bCell, pi, name, ep, pc);
 		return xPort;
 	}
 

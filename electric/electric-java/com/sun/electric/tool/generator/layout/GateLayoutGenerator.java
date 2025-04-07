@@ -86,7 +86,7 @@ public class GateLayoutGenerator {
                 Class<?> cmos90GeneratorClass = Class.forName("com.sun.electric.plugins.tsmc.gates90nm.CMOS90Generator");
                 Class<?> [] parameterTypes = new Class[] {String.class, Double.class, StdCellParams.class};
                 Method makeGateMethod = cmos90GeneratorClass.getDeclaredMethod("makeGate", parameterTypes);
-                c = (Cell)makeGateMethod.invoke(null, new Object[] {type, new Double(Xstrength), stdCell});
+                c = (Cell)makeGateMethod.invoke(null, new Object[] {type, Double.valueOf(Xstrength), stdCell});
              } catch (Exception e)
             {
                  System.out.println("ERROR invoking the CMOS90 gate generator");

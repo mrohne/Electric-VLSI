@@ -313,7 +313,7 @@ public class CellChangeJobs
 		{
             EditingPreferences ep = getEditingPreferences();
 			// create the graph cell
-			graphCell = Cell.newInstance(Library.getCurrent(), "CellStructure");
+			graphCell = Cell.newInst(Library.getCurrent(), "CellStructure");
 			fieldVariableChanged("graphCell");
 			if (graphCell == null) return false;
 			if (graphCell.getNumVersions() > 1)
@@ -490,7 +490,7 @@ public class CellChangeJobs
 
 			// write the header message
 			double xsc = maxWidth * xScale / 2;
-			NodeInst titleNi = NodeInst.newInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(xsc, yScale), 0, 0, graphCell);
+			NodeInst titleNi = NodeInst.newInst(Generic.tech().invisiblePinNode, ep, new Point2D.Double(xsc, yScale), 0, 0, graphCell);
 			if (titleNi == null) return false;
 			String msg;
 			if (top != null) msg = "Structure below " + top; else
@@ -505,11 +505,11 @@ public class CellChangeJobs
 				if (cgn.depth == -1) continue;
 
 				double x = cgn.x;   double y = cgn.y;
-				cgn.pin = NodeInst.newInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(x, y), 0, 0, graphCell);
+				cgn.pin = NodeInst.newInst(Generic.tech().invisiblePinNode, ep, new Point2D.Double(x, y), 0, 0, graphCell);
 				if (cgn.pin == null) return false;
-				cgn.topPin = NodeInst.newInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(x, y+TEXTHEIGHT/2), 0, 0, graphCell);
+				cgn.topPin = NodeInst.newInst(Generic.tech().invisiblePinNode, ep, new Point2D.Double(x, y+TEXTHEIGHT/2), 0, 0, graphCell);
 				if (cgn.topPin == null) return false;
-				cgn.botPin = NodeInst.newInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(x, y-TEXTHEIGHT/2), 0, 0, graphCell);
+				cgn.botPin = NodeInst.newInst(Generic.tech().invisiblePinNode, ep, new Point2D.Double(x, y-TEXTHEIGHT/2), 0, 0, graphCell);
 				if (cgn.botPin == null) return false;
 				PortInst pinPi = cgn.pin.getOnlyPortInst();
 				PortInst toppinPi = cgn.botPin.getOnlyPortInst();
@@ -542,7 +542,7 @@ public class CellChangeJobs
 				ai.setHardSelect(true);
 
 				// set an invisible color on the arc
-				ai.newVar(Artwork.ART_COLOR, new Integer(0), ep);
+				ai.newVar(Artwork.ART_COLOR, Integer.valueOf(0), ep);
 			}
 
 			// build wires between the hierarchical levels
@@ -593,7 +593,7 @@ public class CellChangeJobs
 						// set an appropriate color on the arc (red for jumps of more than 1 level of depth)
 						int color = EGraphics.BLUE;
 						if (trueCgn.y - trueSubCgn.y > yScale+yOffset+yOffset) color = EGraphics.RED;
-						ai.newVar(Artwork.ART_COLOR, new Integer(color), ep);
+						ai.newVar(Artwork.ART_COLOR, Integer.valueOf(color), ep);
 					}
 				}
 			}
@@ -678,7 +678,7 @@ public class CellChangeJobs
 		{
             EditingPreferences ep = getEditingPreferences();
 			// create the graph cell
-			graphCell = Cell.newInstance(Library.getCurrent(), "LibraryStructure");
+			graphCell = Cell.newInst(Library.getCurrent(), "LibraryStructure");
 			fieldVariableChanged("graphCell");
 			if (graphCell == null) return false;
 			if (graphCell.getNumVersions() > 1)
@@ -769,7 +769,7 @@ public class CellChangeJobs
 			}
 
 			// write the header message
-			NodeInst titleNi = NodeInst.newInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(0, radius*1.5), 0, 0, graphCell);
+			NodeInst titleNi = NodeInst.newInst(Generic.tech().invisiblePinNode, ep, new Point2D.Double(0, radius*1.5), 0, 0, graphCell);
 			if (titleNi == null) return false;
 			TextDescriptor td = ep.getNodeTextDescriptor().withRelSize(6);
 			titleNi.newVar(Artwork.ART_MESSAGE, "Structure of library dependencies", td);
@@ -812,7 +812,7 @@ public class CellChangeJobs
 				GraphNode cgn = graphNodes.get(lib);
 
 				double x = cgn.x;   double y = cgn.y;
-				cgn.pin = NodeInst.newInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(x, y), 0, 0, graphCell);
+				cgn.pin = NodeInst.newInst(Generic.tech().invisiblePinNode, ep, new Point2D.Double(x, y), 0, 0, graphCell);
 				if (cgn.pin == null) return false;
 
 				// write the cell name in the node
@@ -861,7 +861,7 @@ public class CellChangeJobs
 				if (ga.doubleHeaded) color = EGraphics.LRED;
 				if (trueCgn.topLibrary) color = EGraphics.BLUE; else
 					if (trueSubCgn.leafLibrary) color = EGraphics.GREEN;
-				ai.newVar(Artwork.ART_COLOR, new Integer(color), ep);
+				ai.newVar(Artwork.ART_COLOR, Integer.valueOf(color), ep);
 				String msg = trueCgn.name + "-USES-" + trueSubCgn.name;
 				if (ga.doubleHeaded) msg = trueCgn.name + "-CO-DEPENDS-ON-" + trueSubCgn.name;
 				ai.setName(msg, ep);
@@ -936,7 +936,7 @@ public class CellChangeJobs
 				{
 					Export pp = it.next();
 					PortInst pi = newNi.findPortInstFromEquivalentProto(pp.getOriginalPort().getPortProto());
-					Export newPp = Export.newInstance(cell, pi, pp.getName(), ep, pp.getCharacteristic());
+					Export newPp = Export.newInst(cell, pi, pp.getName(), ep, pp.getCharacteristic());
 					if (newPp != null)
 					{
 						newPp.copyTextDescriptorFrom(pp, Export.EXPORT_NAME);
