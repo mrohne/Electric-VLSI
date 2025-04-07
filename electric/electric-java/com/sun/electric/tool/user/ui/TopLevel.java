@@ -136,8 +136,6 @@ public class TopLevel extends JFrame
  		} else
 		{
 			setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            //setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//            addWindowFocusListener(EDialog.dialogFocusHandler);
 		}
 		addWindowFocusListener(onTopWindowAdapter);
 
@@ -238,29 +236,6 @@ public class TopLevel extends JFrame
 	 */
 	public static void InitializeWindows()
 	{
-		// in MDI, create the top frame now
-//		if (isMDIMode())
-//		{
-//			String loc = cacheWindowLoc.getString();
-//			Rectangle bound = parseBound(loc);
-//			if (bound == null)
-//				bound = new Rectangle(scrnSize);
-//			if (MDIINITIALRESIZE) bound.width--;
-//
-//			// make the desktop
-//			desktop = new JDesktopPane();
-//            try{
-//            	topLevel = new TopLevel("Electric", bound, null, null);
-//            } catch (Exception e)
-//            {
-//                e.printStackTrace();
-//            }
-//			topLevel.getContentPane().add(desktop, BorderLayout.CENTER);
-//            topLevel.setVisible(true);
-//		}
-//
-//		// initialize the messagesWindow window
-//        messagesWindow = new MessagesWindow();
         if (isMDIMode())
             topLevel.createStructure(null);
         WindowFrame.createEditWindow(null);
@@ -318,42 +293,6 @@ public class TopLevel extends JFrame
             TopLevel.mode = osMode;
         else
             TopLevel.mode = mode;
-        //TopLevel.mode = Mode.MDI;
-
-        // set current working directory
-//        String setting = User.getInitialWorkingDirectorySetting();
-//        if (setting.equals(User.INITIALWORKINGDIRSETTING_BASEDONOS))
-//        {
-//            // default is last used dir
-//            if (ClientOS.isOSLinux()) {
-//                // switch to current dir
-//                User.setWorkingDirectory(System.getProperty("user.dir"));
-//            }
-//        }
-//        else if (setting.equals(User.INITIALWORKINGDIRSETTING_USECURRENTDIR))
-//            User.setWorkingDirectory(System.getProperty("user.dir"));
-        // else
-            // default is to use last used dir
-
-		// in MDI, create the top frame now
-//		if (isMDIMode())
-//		{
-//			String loc = cacheWindowLoc.getString();
-//			Rectangle bound = parseBound(loc);
-//			if (bound == null)
-//				bound = new Rectangle(scrnSize);
-//
-//			// make the desktop
-//			desktop = new MyDesktop();
-//            try{
-//			topLevel = new TopLevel("Electric", bound, null, null);
-//            } catch (Exception e)
-//            {
-//                e.printStackTrace();
-//            }
-//			topLevel.getContentPane().add(desktop, BorderLayout.CENTER);
-//            topLevel.setVisible(true);
-//		}
 	}
 
 	private static Rectangle parseBound(String loc)
@@ -564,13 +503,6 @@ public class TopLevel extends JFrame
 		return wf.getFrame();
 	}
 
-//	/**
-//	 * Method to set the WindowFrame associated with this top-level window.
-//	 * This only makes sense for SDI applications where a WindowFrame is inside of a TopLevel.
-//	 * @param wf the WindowFrame to associatd with this.
-//	 */
-//	public void setWindowFrame(WindowFrame wf) { this.wf = wf; }
-
     /**
      * Method called when done with this Frame.  Both the menuBar
      * and toolBar have persistent state in static hash tables to maintain
@@ -585,7 +517,6 @@ public class TopLevel extends JFrame
      */
     public void finished()
     {
-        //System.out.println(this.getClass()+" being disposed of");
         // clean up menubar
         setJMenuBar(null);
 
@@ -597,7 +528,6 @@ public class TopLevel extends JFrame
         // clean up toolbar
         Container container = getContentPane();
         if (container != null) container.remove(toolBar);
-//        getContentPane().remove(toolBar);
         toolBar.finished(); toolBar = null;
 
         // clean up scroll bar

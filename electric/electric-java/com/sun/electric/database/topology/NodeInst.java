@@ -258,6 +258,7 @@ public class NodeInst extends Geometric implements Nodable, Comparable<NodeInst>
      * @return the newly created NodeInst, or null on error.
      * @deprecated but kept around for Python and BSH access
      */
+    @Deprecated
     public static NodeInst makeInstance(NodeProto protoType, Point2D center, double width, double height,
             Cell parent, Orientation orient, String name) {
         return makeInstance(protoType, EditingPreferences.getInstance(), center, width, height, parent, orient, name, 0);
