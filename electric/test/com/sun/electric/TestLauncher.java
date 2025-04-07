@@ -45,7 +45,7 @@ public class TestLauncher {
     @Ignore
     @Test
     public void testGetSpringConfig() throws Exception {
-        Class<?> clazz = Class.forName("com.sun.electric.Launcher");
-        Launcher launcher = (Launcher) clazz.newInstance();
+        Class<?> clazz = Class.forName("com.sun.electric.Electric");
+        Electric launcher = (Electric) clazz.newInstance();
     } 
 }

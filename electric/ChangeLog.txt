@@ -2,7 +2,11 @@
 
 NOTE: Please place changes under the version that will be released next.
 
-************************* Version 9.08-e: ******************************
+************************* Version 9.08: ******************************
+
+IMP: (4/6/2025, SMR) Converted 3D from old 1.5.2 to newer Jogl 1.7.0, removed animation of Cage cell
+
+IMP: (3/21/2025, SMR) Added latest Josephson technology.
 
 IMP: (1/29/2025, SMR) Reimplemented Macintosh interface.
 
