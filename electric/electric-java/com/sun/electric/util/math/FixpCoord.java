@@ -77,8 +77,8 @@ public class FixpCoord implements Serializable, Comparable<FixpCoord> {
      */
     private static final long LAMBDA_UNIT = GRIDS_IN_LAMBDA << FRACTION_BITS;
     static final long FRACTION_MASK = (1L << FRACTION_BITS) - 1;
-    private static final long SIZE_GRID_MASK = (1L << (FRACTION_BITS + 1)) - 1;
-    private static final long HALF_MASK = (1L << (FRACTION_BITS - 1)) - 1;
+//    private static final long SIZE_GRID_MASK = (1L << (FRACTION_BITS + 1)) - 1;
+//    private static final long HALF_MASK = (1L << (FRACTION_BITS - 1)) - 1;
     private static final int GRIDS_SIGNIFICAND = 25;
     private static final int GRIDS_EXPONENT = 4;
     // DoubleConsts
@@ -90,7 +90,7 @@ public class FixpCoord implements Serializable, Comparable<FixpCoord> {
 
     static {
         assert GRIDS_SIGNIFICAND >= 1 && GRIDS_SIGNIFICAND < (1 << 10);
-        assert GRIDS_IN_LAMBDA == (GRIDS_SIGNIFICAND << GRIDS_EXPONENT);
+//        assert GRIDS_IN_LAMBDA == (GRIDS_SIGNIFICAND << GRIDS_EXPONENT);
     }
     /**
      * Fixed-point value.

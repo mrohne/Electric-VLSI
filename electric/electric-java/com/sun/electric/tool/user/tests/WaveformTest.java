@@ -54,6 +54,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -450,11 +451,12 @@ public class WaveformTest extends AbstractGUITest
 		String outputPath = trueRootPath + "output/";
 		String expectedPath = trueRootPath + "data/expected/";
 		String osPrefix = ClientOS.getOSPrefix();
+		String javaPrefix = null;
 		if (osPrefix.equals("Win"))
 		{
-			double version = ClientOS.getOSVersion();
-			if (version == 7) osPrefix += "7"; else
-				if (version > 7) osPrefix += "8";
+			String jVer = System.getProperty("java.version");
+			int vNum = TextUtils.atoi(jVer);
+			if (vNum >= 21) javaPrefix = "J21";
 		}
 
 		boolean passed = true;
@@ -492,6 +494,12 @@ public class WaveformTest extends AbstractGUITest
 
 				// check the images
 				String expectedImageFileName = expectedPath + testPanelName + osPrefix + ".png";
+				if (javaPrefix != null)
+				{
+					String expectedImageFileNameWithJava = expectedPath + testPanelName + osPrefix + javaPrefix + ".png";
+					if (new File(expectedImageFileNameWithJava).exists())
+						expectedImageFileName = expectedImageFileNameWithJava;
+				}
 				same = compareImages(p + 1, imageFileName, expectedImageFileName);
 				if (!same)
 				{

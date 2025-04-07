@@ -982,37 +982,37 @@ public class TextUtils {
         /** Describes zetta scale (1 sextillion, 10 to the 21st). Must match case. */
         public static final UnitScale ZETTA = new UnitScale("Zetta", -7, "Z",   false, new BigInteger("1000000000000000000000"));
         /** Describes exa scale (1 quintillion, 10 to the 18th). */
-        public static final UnitScale EXA   = new UnitScale("Exa",   -6, "E",   true,  new Long("1000000000000000000"));
+        public static final UnitScale EXA   = new UnitScale("Exa",   -6, "E",   true,  1000000000000000000L);
         /** Describes peta scale (1 quadrillion, 10 to the 15th). Must match case. */
-        public static final UnitScale PETA  = new UnitScale("Peta",  -5, "P",   false, new Long("1000000000000000"));
+        public static final UnitScale PETA  = new UnitScale("Peta",  -5, "P",   false, 1000000000000000L);
         /** Describes tera scale (1 trillion, 10 to the 12th). */
-        public static final UnitScale TERA  = new UnitScale("Tera",  -4, "T",   true,  new Long("1000000000000"));
+        public static final UnitScale TERA  = new UnitScale("Tera",  -4, "T",   true,  1000000000000L);
         /** Describes giga scale (1 billion, 10 to the 9th). */
-        public static final UnitScale GIGA  = new UnitScale("Giga",  -3, "G",   true,  new Integer(1000000000));
+        public static final UnitScale GIGA  = new UnitScale("Giga",  -3, "G",   true,  1000000000);
         /** Describes mega scale (1 million, 10 to the 6th). */
-        public static final UnitScale MEGA  = new UnitScale("Mega",  -2, "MEG", true,  new Integer(1000000));
+        public static final UnitScale MEGA  = new UnitScale("Mega",  -2, "MEG", true,  1000000);
         /** Describes mega scale (1 million, 10 to the 6th). Must match case. */
-        public static final UnitScale MEGA2 = new UnitScale("Mega",  -2, "M",   false, new Integer(1000000));
+        public static final UnitScale MEGA2 = new UnitScale("Mega",  -2, "M",   false, 1000000);
         /** Describes kilo scale (1 thousand, 10 to the 3rd). */
-        public static final UnitScale KILO  = new UnitScale("Kilo",  -1, "k",   true,  new Integer(1000));
+        public static final UnitScale KILO  = new UnitScale("Kilo",  -1, "k",   true,  1000);
         /** Describes unit scale (1). */
-        public static final UnitScale NONE  = new UnitScale("",       0, "",    true,  new Integer(1));
+        public static final UnitScale NONE  = new UnitScale("",       0, "",    true,  1);
         /** Describes milli scale (1 thousandth, 10 to the -3rd). Must match case. */
-        public static final UnitScale MILLI = new UnitScale("Milli",  1, "m",   false, new Double(0.001));
+        public static final UnitScale MILLI = new UnitScale("Milli",  1, "m",   false, 0.001);
         /** Describes micro scale (1 millionth, 10 to the -6th). */
-        public static final UnitScale MICRO = new UnitScale("Micro",  2, "u",   true,  new Double(0.000001));
+        public static final UnitScale MICRO = new UnitScale("Micro",  2, "u",   true,  0.000001);
         /** Describes nano scale (1 billionth, 10 to the -9th). */
-        public static final UnitScale NANO  = new UnitScale("Nano",   3, "n",   true,  new Double(0.000000001));
+        public static final UnitScale NANO  = new UnitScale("Nano",   3, "n",   true,  0.000000001);
         /** Describes pico scale (1 trillionth, 10 to the -12th). Must match case. */
-        public static final UnitScale PICO  = new UnitScale("Pico",   4, "p",   false, new Double(0.000000000001));
+        public static final UnitScale PICO  = new UnitScale("Pico",   4, "p",   false, 0.000000000001);
         /** Describes femto scale (1 quadrillionth, 10 to the -15th). */
-        public static final UnitScale FEMTO = new UnitScale("Femto",  5, "f",   true,  new Double(0.000000000000001));
+        public static final UnitScale FEMTO = new UnitScale("Femto",  5, "f",   true,  0.000000000000001);
         /** Describes atto scale (1 quintillionth, 10 to the -18th). */
-        public static final UnitScale ATTO  = new UnitScale("Atto",   6, "a",   true,  new Double(0.000000000000000001));
+        public static final UnitScale ATTO  = new UnitScale("Atto",   6, "a",   true,  0.000000000000000001);
         /** Describes zepto scale (1 sextillionth, 10 to the -21st). Must match case. */
-        public static final UnitScale ZEPTO = new UnitScale("Zepto",  7, "z",   false, new Double(0.000000000000000000001));
+        public static final UnitScale ZEPTO = new UnitScale("Zepto",  7, "z",   false, 0.000000000000000000001);
 //      /** Describes yocto scale (1 septillionth, 10 to the -24th). */
-//      public static final UnitScale YOCTO = new UnitScale("Yocto",  8, "y",   true,  new Double(0.000000000000000000000001));
+//      public static final UnitScale YOCTO = new UnitScale("Yocto",  8, "y",   true,  0.000000000000000000000001);
         private final static UnitScale[] allUnits = {
         	ZETTA, EXA, PETA, TERA, GIGA, MEGA, KILO, NONE, MILLI, MICRO, NANO, PICO, FEMTO, ATTO, ZEPTO
         };
@@ -1082,12 +1082,12 @@ public class TextUtils {
             }
 
             if ((n instanceof Integer) && (m instanceof Integer)) {
-                return new Integer(n.intValue() * m.intValue());
+                return n.intValue() * m.intValue();
             }
             if ((n instanceof Long) && (m instanceof Integer)) {
-                return new Long(n.longValue() * m.longValue());
+                return n.longValue() * m.longValue();
             }
-            return new Double(n.doubleValue() * m.doubleValue());
+            return n.doubleValue() * m.doubleValue();
         }
         return n;
     }
@@ -1106,14 +1106,14 @@ public class TextUtils {
     private static Number parseNumber(String s) throws NumberFormatException {
         Number n = null;
         try {
-            n = new Integer(s);
+            n = Integer.valueOf(s);
         } catch (NumberFormatException e) {
             // elib format does not know what a Long is
             //try {
             //	n = new Long(s);
             //} catch (NumberFormatException ee) {
             try {
-                n = new Double(s);
+                n = Double.valueOf(s);
             } catch (NumberFormatException eee) {
             }
             //}
@@ -1297,6 +1297,30 @@ public class TextUtils {
         } catch (UnsupportedEncodingException e) {
         }
         return fileName;
+    }
+
+    /**
+     * Method to convert a String URL to a URL object.
+     * @param s the URL path.
+     * @return the URL (null on error).
+     */
+    public static URL getURLFromString(String s)
+    {
+    	try
+    	{
+    		URI uri = new URI(s);
+    		return uri.toURL();
+    	} catch (Exception e)
+    	{
+    		System.out.println("Error accessing: " + s + ": " + e.getLocalizedMessage());
+    	}
+    	return null;
+    }
+
+    public static long getThreadID(Thread t)
+    {
+//    	return t.threadId();	// use this on Java 21 and later
+    	return t.getId();
     }
 
     /**

@@ -174,7 +174,6 @@ public class ArrayIterator<E> implements Iterator<E>
      *
      * @see #EMPTY_ITERATOR
      */
-    @SuppressWarnings("unchecked")
     public static <E> Iterator<E> emptyIterator()
     {
         return (Iterator<E>)EMPTY_ITERATOR;

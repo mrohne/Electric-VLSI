@@ -69,7 +69,7 @@ public class Example implements Serializable
 			int funct = Manipulate.getOptionOnNode(ni);
 			if (funct != Info.LAYERPATCH && funct != Info.PORTOBJ && funct != Info.HIGHLIGHTOBJ)
 			{
-				nodeExamples.put(ni, new Integer(0));
+				nodeExamples.put(ni, Integer.valueOf(0));
 			}
 		}
 

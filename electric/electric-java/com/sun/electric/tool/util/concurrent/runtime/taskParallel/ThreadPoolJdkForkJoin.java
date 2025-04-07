@@ -22,6 +22,8 @@
 package com.sun.electric.tool.util.concurrent.runtime.taskParallel;
 
 import com.sun.electric.tool.util.concurrent.patterns.PTask;
+import com.sun.electric.util.TextUtils;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -112,7 +114,7 @@ public class ThreadPoolJdkForkJoin extends IThreadPool {
 
         @Override
         public boolean exec() {
-            this.task.setThreadID((int) Thread.currentThread().getId());
+            this.task.setThreadID((int) TextUtils.getThreadID(Thread.currentThread()));
             this.task.before();
             this.task.execute();
             this.task.after();

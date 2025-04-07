@@ -24,7 +24,6 @@ package com.sun.electric.tool.util.concurrent.utils;
 /**
  * Exception: If a bounded datastructure is full this exception will be thrown
  */
-@SuppressWarnings("serial")
 public class FullException extends Exception {
 
 }

@@ -175,7 +175,7 @@ public class TechEditWizardData
 
     private static class PaletteGroup
     {
-        String name;
+//        String name;
         List<Xml.ArcProto> arcs;
         List<Xml.MenuNodeInst> pins;
         List<Xml.MenuNodeInst> elements; // contact or transistor
@@ -1760,7 +1760,7 @@ public class TechEditWizardData
         EPoint topLeft = EPoint.fromLambda(ppLeft, ppBottom + height);
         EPoint size =  EPoint.fromLambda(width, height);
 
-        double getDefWidth = width, getDefHeight = height;
+//        double getDefWidth = width, getDefHeight = height;
         if (function.isPin() && isArcsShrink) {
 //            assert getNumPorts() == 1;
 //            assert nodeSizeRule == null;
@@ -1795,7 +1795,7 @@ public class TechEditWizardData
 //        }
 //        n.defaultWidth.addLambda(DBMath.round(getDefWidth)); // - 2*minFullSize.getLambdaX());
 //        n.defaultHeight.addLambda(DBMath.round(getDefHeight)); // - 2*minFullSize.getLambdaY());
-        ERectangle baseRectangle = ERectangle.fromGrid(topLeft.getGridX(), topLeft.getGridY(),
+        /* ERectangle baseRectangle = */ ERectangle.fromGrid(topLeft.getGridX(), topLeft.getGridY(),
             size.getGridX(), size.getGridY());
 /*        n.nodeBase = baseRectangle;*/
 
@@ -1803,7 +1803,7 @@ public class TechEditWizardData
 //        List<Technology.NodeLayer> electricalNodeLayers = nodeLayers;
 //        if (getElectricalLayers() != null)
 //            electricalNodeLayers = Arrays.asList(getElectricalLayers());
-        boolean isSerp = false; //getSpecialType() == PrimitiveNode.SERPTRANS;
+//        boolean isSerp = false; //getSpecialType() == PrimitiveNode.SERPTRANS;
         if (nodeLayers != null)
             ng.nodeLayers.addAll(nodeLayers);
 //        int m = 0;
@@ -3238,10 +3238,10 @@ public class TechEditWizardData
         //
         // Poly
         EGraphics graph = new EGraphics(false, false, null, 1, 0, 0, 0, 1, true, nullPattern);
-        Xml.Layer polyLayer = makeXmlLayer(t.layers, layerMap, poly_layer.name, Layer.Function.POLY1, 0, graph,
+        /* Xml.Layer polyLayer = */ makeXmlLayer(t.layers, layerMap, poly_layer.name, Layer.Function.POLY1, 0, graph,
             poly_width, true, true);
         // PolyGate
-        Xml.Layer polyGateLayer = makeXmlLayer(t.layers, layerMap, poly_layer.name+"Gate", Layer.Function.GATE, 0, graph,
+        /* Xml.Layer polyGateLayer = */ makeXmlLayer(t.layers, layerMap, poly_layer.name+"Gate", Layer.Function.GATE, 0, graph,
             poly_width, true, false); // false for the port otherwise it won't find any type
 
         if (isComplexCase())
@@ -3257,19 +3257,19 @@ public class TechEditWizardData
         graph = new EGraphics(false, false, null, 0, contact_colour.getRed(), contact_colour.getGreen(),
             contact_colour.getBlue(), 0.5, true, nullPattern);
         // PolyCon
-        Xml.Layer polyConLayer = makeXmlLayer(t.layers, layerMap, "Poly-Cut", Layer.Function.CONTACT1,
+        /* Xml.Layer polyConLayer = */ makeXmlLayer(t.layers, layerMap, "Poly-Cut", Layer.Function.CONTACT1,
             Layer.Function.CONPOLY, graph, contact_size, true, false);
         // DiffCon
-        Xml.Layer diffConLayer = makeXmlLayer(t.layers, layerMap, diff_layer.name+"-Cut", Layer.Function.CONTACT1,
+        /* Xml.Layer diffConLayer = */ makeXmlLayer(t.layers, layerMap, diff_layer.name+"-Cut", Layer.Function.CONTACT1,
             Layer.Function.CONDIFF, graph, contact_size, true, false);
 
         // P-Diff and N-Diff
         graph = new EGraphics(false, false, null, 2, 0, 0, 0, 1, true, nullPattern);
         // N-Diff
-        Xml.Layer diffNLayer = makeXmlLayer(t.layers, layerMap, "N-"+ diff_layer.name, Layer.Function.DIFFN, 0, graph,
+        /* Xml.Layer diffNLayer = */ makeXmlLayer(t.layers, layerMap, "N-"+ diff_layer.name, Layer.Function.DIFFN, 0, graph,
             diff_width, true, true, "N-"+ diff_layer.name, "N-Well", "S-N-Well");
         // P-Diff                                                                                                    dd
-        Xml.Layer diffPLayer = makeXmlLayer(t.layers, layerMap, "P-"+ diff_layer.name, Layer.Function.DIFFP, 0, graph,
+        /* Xml.Layer diffPLayer = */ makeXmlLayer(t.layers, layerMap, "P-"+ diff_layer.name, Layer.Function.DIFFP, 0, graph,
             diff_width, true, true, "P-"+ diff_layer.name, "P-Well", "S-P-Well");
 
                 // NPlus and PPlus
@@ -3345,23 +3345,23 @@ public class TechEditWizardData
         // NPlus
         graph = new EGraphics(true, true, null, 0, nplus_colour.getRed(), nplus_colour.getGreen(),
             nplus_colour.getBlue(), 1, true, patternSlash);
-        Xml.Layer nplusLayer = makeXmlLayer(t.layers, layerMap, nplus_layer.name, Layer.Function.IMPLANTN, 0, graph,
+        /* Xml.Layer nplusLayer = */ makeXmlLayer(t.layers, layerMap, nplus_layer.name, Layer.Function.IMPLANTN, 0, graph,
             nplus_width, true, false);
         // PPlus
         graph = new EGraphics(true, true, null, 0, pplus_colour.getRed(), pplus_colour.getGreen(),
             pplus_colour.getBlue(), 1, true, patternDots);
-        Xml.Layer pplusLayer = makeXmlLayer(t.layers, layerMap, pplus_layer.name, Layer.Function.IMPLANTP, 0, graph,
+        /* Xml.Layer pplusLayer = */ makeXmlLayer(t.layers, layerMap, pplus_layer.name, Layer.Function.IMPLANTP, 0, graph,
             pplus_width, true, false);
 
         // N-Well
         graph = new EGraphics(true, true, null, 0, nwell_colour.getRed(), nwell_colour.getGreen(),
             nwell_colour.getBlue(), 1, true, patternDotsShift);
-        Xml.Layer nwellLayer = makeXmlLayer(t.layers, layerMap, nwell_layer.name, Layer.Function.WELLN, 0, graph,
+        /* Xml.Layer nwellLayer = */ makeXmlLayer(t.layers, layerMap, nwell_layer.name, Layer.Function.WELLN, 0, graph,
             nwell_width, true, false);
         // P-Well
         graph = new EGraphics(true, true, null, 0, nwell_colour.getRed(), nwell_colour.getGreen(),
             nwell_colour.getBlue(), 1, true, patternBackSlash);
-        Xml.Layer pwellLayer = makeXmlLayer(t.layers, layerMap, "P-Well", Layer.Function.WELLP, 0, graph,
+        /* Xml.Layer pwellLayer = */ makeXmlLayer(t.layers, layerMap, "P-Well", Layer.Function.WELLP, 0, graph,
             nwell_width, true, false);
     }
 
@@ -4567,8 +4567,8 @@ public class TechEditWizardData
                 double h1y = scaledValue(cutLayer.valueY.value /2 + aLayer.valueY.value);
                 double h2x = scaledValue(cutLayer.valueX.value /2 + bLayer.valueX.value);
                 double h2y = scaledValue(cutLayer.valueY.value /2 + bLayer.valueY.value);
-                double longX = scaledValue(Math.abs(aLayer.valueX.value - bLayer.valueX.value));
-                double longY = scaledValue(Math.abs(aLayer.valueY.value - bLayer.valueY.value));
+//                double longX = scaledValue(Math.abs(aLayer.valueX.value - bLayer.valueX.value));
+//                double longY = scaledValue(Math.abs(aLayer.valueY.value - bLayer.valueY.value));
                 portNames.clear();
                 // only when it is zero or positive. Negative means no layer arc
                 if (bLayer.valueX.value >= 0)

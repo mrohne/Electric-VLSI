@@ -36,7 +36,7 @@ import java.util.Random;
  */
 public class MultiThreadedRandomizer {
 
-	private int numOfCores;
+//	private int numOfCores;
 	private ThreadLocal<Random> randomizer;
 
 	/**
@@ -45,7 +45,7 @@ public class MultiThreadedRandomizer {
 	 * @param numOfCores
 	 */
 	public MultiThreadedRandomizer(int numOfCores) {
-		this.numOfCores = numOfCores;
+//		this.numOfCores = numOfCores;
 		randomizer = new ThreadLocal<Random>();
 	}
 

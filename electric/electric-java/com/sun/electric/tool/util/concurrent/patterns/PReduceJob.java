@@ -67,7 +67,6 @@ public class PReduceJob<T, K extends BlockedRange<K>> extends PForJob<K> {
 		 * 
 		 * @see com.sun.electric.tool.util.concurrent.patterns.PTask#after()
 		 */
-		@SuppressWarnings("unchecked")
 		@Override
 		public void after() {
 

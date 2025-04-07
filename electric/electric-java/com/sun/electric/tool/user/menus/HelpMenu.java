@@ -27,11 +27,14 @@ import static com.sun.electric.tool.user.menus.EMenuItem.SEPARATOR;
 import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.hierarchy.Library;
 import com.sun.electric.tool.io.FileType;
+import com.sun.electric.tool.user.ActivityLogger;
+import com.sun.electric.tool.user.Resources;
 import com.sun.electric.tool.user.dialogs.About;
 import com.sun.electric.tool.user.help.ManualViewer;
 import com.sun.electric.tool.user.ui.TopLevel;
 import com.sun.electric.util.ClientOS;
 
+import java.lang.reflect.Method;
 import java.net.URL;
 
 /**
@@ -63,9 +66,9 @@ public class HelpMenu {
                 new EMenuItem("_Load Library") { public void run() {
                     loadSamplesLibrary("floatingGates", "topCell"); }},
                 new EMenuItem("_3D View of Cage Cell") { public void run() {
-                    ManualViewer.open3DSample("floatingGates" ,"topCell", "3D ShowCase"); }},
-                new EMenuItem("_Animate Cage Cell") { public void run() {
-                    ManualViewer.animate3DSample("demoCage.j3d"); }}) : null,
+                    ManualViewer.open3DSample("floatingGates" ,"topCell", "3D ShowCase"); }}) : null,
+//                new EMenuItem("_Animate Cage Cell") { public void run() {
+//                    animate3DSample("demoCage.j3d"); }}
 
             new EMenuItem("_Load Sample Cells Library") { public void run() {
                 loadSamplesLibrary("samples", "tech-MOSISCMOS"); }}
@@ -105,5 +108,34 @@ public class HelpMenu {
 		else
 			System.out.println("Library '" + libName + "' in Electric's jarfile");
 	}
+
+//	/**
+//	 * Method to animate the 3D view of current layout cell
+//	 * @param demoName name of j3d file containing the demo
+//	 */
+//	private static void animate3DSample(String demoName)
+//	{
+//		String fileName = "helphtml/" + demoName;
+//		URL url = ManualViewer.class.getResource(fileName);
+//		if (url == null)
+//		{
+//			System.out.println("Can't open 3D demo file '" + fileName + "'");
+//			return;
+//		}
+//		Class<?> plugin3D = Resources.get3DClass("ui.J3DDemoDialog");
+//		if (plugin3D != null)
+//		{
+//			// Adding 3D/Demo menu
+//			try {
+//				Method createMethod = plugin3D.getDeclaredMethod("create3DDemoDialog",
+//					new Class[] {java.awt.Frame.class, URL.class});
+//				createMethod.invoke(plugin3D, new Object[] {TopLevel.getCurrentJFrame(), url});
+//			} catch (Exception e)
+//			{
+//				System.out.println("Can't open 3D demo dialog: " + e.getMessage());
+//				ActivityLogger.logException(e);
+//			}
+//		}
+//	}
     
 }

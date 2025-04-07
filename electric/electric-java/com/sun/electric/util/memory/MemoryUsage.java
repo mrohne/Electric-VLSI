@@ -81,7 +81,7 @@ public class MemoryUsage {
 		{
 			System.gc();
 			Thread.sleep(100);
-			System.runFinalization();
+//			System.runFinalization();
 			Thread.sleep(100);
 		} catch (InterruptedException ex)
 		{

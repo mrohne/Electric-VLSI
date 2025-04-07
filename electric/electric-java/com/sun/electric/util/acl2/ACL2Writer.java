@@ -361,35 +361,35 @@ public class ACL2Writer
         return endIdx;
     }
 
-    private int encodeConsesOld(ACL2Object x) throws IOException
-    {
-        if (x instanceof ACL2Cons)
-        {
-            ACL2Cons cons = (ACL2Cons)x;
-            Integer idx = seenCons.get(cons);
-            if (idx == null)
-            {
-                int carIndex = encodeConses(cons.car);
-                int cdrIndex = encodeConses(cons.cdr);
-                boolean normed = cons.isNormed();
-                int v2CarIndex = (carIndex << 1) | (normed ? 1 : 0);
-                idx = freeIndex++;
-                seenCons.put(cons, idx);
-                encodeNat(v2CarIndex);
-                encodeNat(cdrIndex);
-            }
-            return idx;
-        } else if (x instanceof ACL2Symbol)
-        {
-            return seenSym.get((ACL2Symbol)x);
-        } else if (x instanceof ACL2String)
-        {
-            return seenStr.get((ACL2String)x);
-        } else
-        {
-            return seenEql.get(x);
-        }
-    }
+//    private int encodeConsesOld(ACL2Object x) throws IOException
+//    {
+//        if (x instanceof ACL2Cons)
+//        {
+//            ACL2Cons cons = (ACL2Cons)x;
+//            Integer idx = seenCons.get(cons);
+//            if (idx == null)
+//            {
+//                int carIndex = encodeConses(cons.car);
+//                int cdrIndex = encodeConses(cons.cdr);
+//                boolean normed = cons.isNormed();
+//                int v2CarIndex = (carIndex << 1) | (normed ? 1 : 0);
+//                idx = freeIndex++;
+//                seenCons.put(cons, idx);
+//                encodeNat(v2CarIndex);
+//                encodeNat(cdrIndex);
+//            }
+//            return idx;
+//        } else if (x instanceof ACL2Symbol)
+//        {
+//            return seenSym.get((ACL2Symbol)x);
+//        } else if (x instanceof ACL2String)
+//        {
+//            return seenStr.get((ACL2String)x);
+//        } else
+//        {
+//            return seenEql.get(x);
+//        }
+//    }
 
     private void encodeFals() throws IOException
     {

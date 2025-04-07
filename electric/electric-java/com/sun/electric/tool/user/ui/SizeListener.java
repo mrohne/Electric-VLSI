@@ -799,7 +799,7 @@ public class SizeListener implements WindowFrame.ElectricEventListener
         @Override
 		public boolean doIt() throws JobException
 		{
-            EditingPreferences ep = getEditingPreferences();
+            /* EditingPreferences ep = */ getEditingPreferences();
 			// make sure scaling the node is allowed
 			if (CircuitChangeJobs.cantEdit(stretchNode.getParent(), null, true, false, true) != 0) return false;
 

@@ -195,7 +195,7 @@ public class GenerationTest extends AbstractTest
 
 			// running the job
 			fileURL = TextUtils.makeURLToFile(trueRootPath + "output/" + rootName + ".jelib");
-			Library lib = Library.newInstance(rootName, fileURL);
+			Library lib = Library.newInst(rootName, fileURL);
 			StitchFillJob job = new StitchFillJob(cell, lib, true);
 			List<Cell> list = job.getGeneratedCells();
 			foundCells = list.size();
@@ -253,7 +253,7 @@ public class GenerationTest extends AbstractTest
 			setFoundry(Technology.getMocmosTechnology());
 
 			// Generate PLA
-			Library lib = Library.newInstance("CMOSPLA1Result", null);
+			Library lib = Library.newInst("CMOSPLA1Result", null);
 			String libDir = trueRootPath + "data/libs/";
 			PLA.generate(lib, "pla", libDir + "/cmos-pla-and-table", libDir + "/cmos-pla-or-table", true, true, true);
 
@@ -379,7 +379,7 @@ public class GenerationTest extends AbstractTest
 			setFoundry(Technology.getMocmosTechnology());
 
 			// generate ROM
-			Library lib = Library.newInstance("rom", null);
+			Library lib = Library.newInst("rom", null);
 			EditingPreferences ep = new EditingPreferences(true, lib.getTechPool());
 			String libDir = trueRootPath + "data/libs/";
 			ROMGenerator.generateROM(lib, libDir + "rom.txt", ep);
@@ -572,7 +572,7 @@ public class GenerationTest extends AbstractTest
 
 			EditingPreferences ep = new EditingPreferences(true, TechPool.getThreadTechPool());
 			LayoutLib.openLibForRead(libName, ep, true);
-			Library scratchLib = Library.newInstance("GateGenScratch", TextUtils.makeURLToFile(outputDir + "GateGenScratch.jelib"));
+			Library scratchLib = Library.newInst("GateGenScratch", TextUtils.makeURLToFile(outputDir + "GateGenScratch.jelib"));
 
 			// Check that technology is properly set
 			Technology tech = Technology.getMocmosTechnology();

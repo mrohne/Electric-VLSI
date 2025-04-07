@@ -30,6 +30,7 @@ import com.sun.electric.tool.util.concurrent.patterns.PJob;
 import com.sun.electric.tool.util.concurrent.patterns.PTask;
 import com.sun.electric.tool.util.concurrent.runtime.MultiThreadedRandomizer;
 import com.sun.electric.tool.util.concurrent.utils.ConcurrentCollectionFactory;
+import com.sun.electric.util.TextUtils;
 
 /**
  * This data structure is a wrapper for work stealing. Each worker has a own
@@ -124,7 +125,7 @@ public class WorkStealingStructure<T> extends IStructure<T> implements IWorkStea
 	}
 
 	protected Long getThreadId() {
-		return Thread.currentThread().getId();
+		return TextUtils.getThreadID(Thread.currentThread());
 	}
 
 	/*

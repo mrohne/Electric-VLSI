@@ -91,7 +91,7 @@ public class WindowMenu {
         /****************************** THE WINDOW MENU ******************************/
 
         // bindings for numpad keys.  Need extra one because over VNC, they get sent as shift+KP_*
-        int ctrlshift = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | InputEvent.SHIFT_MASK;
+        int ctrlshift = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx() | InputEvent.SHIFT_DOWN_MASK;
         KeyStroke [] numpad4 = new KeyStroke [] { EMenuItem.shortcut('4'), EMenuItem.shortcut(KeyEvent.VK_NUMPAD4),
                 KeyStroke.getKeyStroke(KeyEvent.VK_KP_LEFT, ctrlshift)};
         KeyStroke [] numpad6 = new KeyStroke [] { EMenuItem.shortcut('6'), EMenuItem.shortcut(KeyEvent.VK_NUMPAD6),
@@ -114,10 +114,10 @@ public class WindowMenu {
         // Adding from 1 -> getMaxTransparentLayer(). At the end, the 0 one.
         for (int i = 1; i < EGraphics.getMaxTransparentLayer()+1; i++)
         {
-        	int modifier = InputEvent.SHIFT_MASK;
+        	int modifier = InputEvent.SHIFT_DOWN_MASK;
         	final int level = i;
         	if (i > 9)
-        		modifier = InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK;
+        		modifier = InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK;
         	int keycode = -1;
         	switch (i)
         	{
@@ -141,7 +141,7 @@ public class WindowMenu {
         	visibleLayersList[i-1] = new EMenuItem(InvisibleLayerConfiguration.getOnly().getMenuName(level), KeyStroke.getKeyStroke(keycode, modifier))
     		{ public void run() { setLayerVisible(level); }};
         }
-        visibleLayersList[EGraphics.getMaxTransparentLayer()] = new EMenuItem(InvisibleLayerConfiguration.getOnly().getMenuName(0), KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.SHIFT_MASK))
+        visibleLayersList[EGraphics.getMaxTransparentLayer()] = new EMenuItem(InvisibleLayerConfiguration.getOnly().getMenuName(0), KeyStroke.getKeyStroke(KeyEvent.VK_0, InputEvent.SHIFT_DOWN_MASK))
     	{ public void run() { setLayerVisible(0); }};
 	    visibleLayersMenu = new EMenu("Visible La_yers", visibleLayersList);
 

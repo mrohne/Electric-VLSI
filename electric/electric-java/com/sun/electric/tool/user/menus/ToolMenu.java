@@ -1061,7 +1061,7 @@ public class ToolMenu {
 
 				// update wire length
 				NodeInst ni = map.get(schNet);
-				ni.updateVar(LENetlister.ATTR_L, new Double(length), ep);
+				ni.updateVar(LENetlister.ATTR_L, Double.valueOf(length), ep);
 				wiresUpdated++;
 				System.out.println("Updated wire model " + ni.getName() + " on layout network "
 						+ proxy.toString() + " to: " + length + " lambda");
@@ -1220,7 +1220,7 @@ public class ToolMenu {
             EditingPreferences ep = getEditingPreferences();
 			TextDescriptor td = ep.getAnnotationTextDescriptor()
 					.withDispPart(TextDescriptor.DispPos.NAMEVALUE).withOff(-1.5, -1);
-			ex.newVar(LENetlister.ATTR_le, new Double(1.0), td);
+			ex.newVar(LENetlister.ATTR_le, Double.valueOf(1.0), td);
 			return true;
 		}
 	}
@@ -1822,7 +1822,7 @@ public class ToolMenu {
 	 * driven; it simply defers the possibility of an error to a higher level.
 	 */
 	private static void showUndrivenNetworks() {
-		final ErrorLogger errorLogger = ErrorLogger.newInstance("Undriven networks");
+		final ErrorLogger errorLogger = ErrorLogger.newInst("Undriven networks");
 
 		EditWindow wnd = EditWindow.needCurrent();
 		if (wnd == null)
@@ -2158,7 +2158,7 @@ public class ToolMenu {
             EditingPreferences ep = getEditingPreferences();
 			TextDescriptor td = ep.getNodeTextDescriptor()
 					.withDispPart(TextDescriptor.DispPos.NAMEVALUE).withOff(-1.5, -1);
-			ni.newVar(SimulationTool.M_FACTOR_KEY, new Double(1.0), td);
+			ni.newVar(SimulationTool.M_FACTOR_KEY, Double.valueOf(1.0), td);
 			return true;
 		}
 	}

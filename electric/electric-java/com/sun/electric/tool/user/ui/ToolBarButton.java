@@ -68,7 +68,7 @@ public class ToolBarButton extends AbstractButton implements Accessible, ActionL
      * @see #getUIClassID
      * @see #readObject
      */
-    private static final String uiClassIDdefault = "ButtonUI";
+//    private static final String uiClassIDdefault = "ButtonUI";
     /**
      * @see #getUIClassID
      * @see #readObject
@@ -100,7 +100,7 @@ public class ToolBarButton extends AbstractButton implements Accessible, ActionL
      * @param icon default Icon for the button
      * @return the new ToolBarButton
      */
-    public static ToolBarButton newInstance(String text, Icon icon) {
+    public static ToolBarButton newInst(String text, Icon icon) {
         // new button
         ToolBarButton b = new ToolBarButton(text, icon);
  //       b.addActionListener(MenuBar.repeatLastCommandListener);

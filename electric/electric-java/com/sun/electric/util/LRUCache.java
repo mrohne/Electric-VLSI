@@ -28,11 +28,11 @@ import java.util.*;
 /** A simple cache with an LRU (Least-Recently-Used) eviction policy; extend this class and override its sole abstract method. */
 public abstract class LRUCache<K,V> {
 
-    private final int cacheSize;
+//    private final int cacheSize;
     private final LinkedHashMap<K,V> map;
 
     public LRUCache(final int cacheSize) {
-        this.cacheSize = cacheSize;
+//        this.cacheSize = cacheSize;
         this.map = new LinkedHashMap<K,V>(cacheSize, 0.75f, true) {
             @Override protected boolean removeEldestEntry (Map.Entry<K,V> eldest) {
                 return size() > cacheSize;

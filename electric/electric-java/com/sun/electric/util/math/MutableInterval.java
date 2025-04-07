@@ -23,6 +23,7 @@
 package com.sun.electric.util.math;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * Mutable class for representation of intervals X = [a, b].
@@ -1434,13 +1435,13 @@ public class MutableInterval
 			int drop = 0;
 			if (s.length() != d) {
 				drop = s.length() - d;
-				bx = bx.setScale(bx.scale() - drop, isSup ? BigDecimal.ROUND_CEILING : BigDecimal.ROUND_FLOOR);
+				bx = bx.setScale(bx.scale() - drop, isSup ? RoundingMode.CEILING : RoundingMode.FLOOR);
 			}
 			s = bx.unscaledValue().abs().toString();
 			if (s.length() > d) {
 				assert s.length() == d + 1 && s.charAt(s.length() - 1) == '0';
 				drop++;
-				bx = bx.setScale(bx.scale() - 1, BigDecimal.ROUND_UNNECESSARY);
+				bx = bx.setScale(bx.scale() - 1, RoundingMode.UNNECESSARY);
 				s = bx.unscaledValue().abs().toString();
 			}
 		

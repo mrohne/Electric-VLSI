@@ -242,14 +242,14 @@ public class TechnologyTest extends AbstractTest
 			if (!checkXml(trueRootPath, testName, xmlTech, additionalAttributes)) return false;
 
 			IdManager idManager = new IdManager();
-			Generic generic = Generic.newInstance(idManager);
+			Generic generic = Generic.newInst(idManager);
 
-			Technology tech0 = techFactory.newInstance(generic, paramValues);
+			Technology tech0 = techFactory.newInst(generic, paramValues);
 			if (!checkSettings(trueRootPath, techName, tech0)) return false;
 			if (!checkDump(trueRootPath, testName, tech0, projSettings)) return false;
 			if (!checkXml(trueRootPath, testName, tech0)) return false;
 
-			Technology tech1 = techFactory.newInstance(generic);
+			Technology tech1 = techFactory.newInst(generic);
 			Technology tech2 = tech1.withTechParams(paramValues);
 			if (!checkSettings(trueRootPath, techName, tech1)) return false;
 			if (!checkSettings(trueRootPath, techName, tech2)) return false;

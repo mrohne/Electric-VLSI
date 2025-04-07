@@ -250,7 +250,7 @@ public class TransparentRaster implements ERaster {
                     assert srcBaseIndex == srcY * src.intsPerRow + (minSrcX >> 5);
                     assert destBaseIndex == (srcY + dy) * intsPerRow + (minDestX >> 5);
                     int s = srcLayerBitMap[srcBaseIndex];
-                    int b0 = srcLayerBitMap[srcBaseIndex++];
+//                    int b0 = srcLayerBitMap[srcBaseIndex++];
                     int v0 = (s << leftShift) & minDestMask;
                     if (v0 != 0) {
                         layerBitMap[destBaseIndex] |= v0;

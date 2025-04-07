@@ -43,9 +43,9 @@ import com.sun.electric.tool.user.dialogs.PreferencesFrame;
 import com.sun.electric.tool.user.menus.FileMenu;
 import com.sun.electric.tool.user.menus.WindowMenu;
 import com.sun.electric.tool.user.waveform.WaveformWindow;
-
 import com.sun.electric.util.ClientOS;
 import com.sun.electric.util.math.FixpTransform;
+
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -70,9 +70,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
-
 import java.util.Set;
+
 import javax.swing.InputMap;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -91,7 +90,7 @@ import javax.swing.tree.MutableTreeNode;
 /**
  * This class defines an edit window, with a cell explorer on the left side.
  */
-public class WindowFrame extends Observable
+public class WindowFrame /*extends Observable */
 {
 	/** offset between newly created windows */			private static final int WINDOW_OFFSET = 0;		// was 150
 
@@ -315,13 +314,13 @@ public class WindowFrame extends Observable
 	 */
 	public static void show3DHighlight()
 	{
-        for(Iterator<WindowFrame> it = getWindows(); it.hasNext(); )
-		{
-			WindowFrame wf = it.next();
-            wf.setChanged();
-            wf.notifyObservers(wf.getContent());
-            wf.clearChanged();
-        }
+//        for(Iterator<WindowFrame> it = getWindows(); it.hasNext(); )
+//		{
+//			WindowFrame wf = it.next();
+//            wf.setChanged();
+//            wf.notifyObservers(wf.getContent());
+//            wf.clearChanged();
+//        }
 	}
 
 	/**
@@ -329,9 +328,9 @@ public class WindowFrame extends Observable
 	 */
 	public void set3DLayerVisibility(LayerVisibility lv)
 	{
-        setChanged();
-        notifyObservers(lv);
-        clearChanged();
+//        setChanged();
+//        notifyObservers(lv);
+//        clearChanged();
 	}
 
     /*****************************************************************************
@@ -420,7 +419,7 @@ public class WindowFrame extends Observable
 		// Only Mac version will align tabs on the left. The text orientation is vertical by default on Mac
         if (ClientOS.isOSMac())
 			sideBar.setTabPlacement(JTabbedPane.LEFT);
-		paletteTab = PaletteFrame.newInstance(this);
+		paletteTab = PaletteFrame.newInst(this);
 		layersTab = new LayerTab(this);
 		loadComponentMenuForTechnology();
 

@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 // ************************************* INDIVIDUAL TRACES *************************************
 
@@ -119,7 +120,7 @@ public class WaveSignal
 				sigPanel.updateUI();
 				return;
 			}
-			if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+			if (SwingUtilities.isRightMouseButton(e))
 			{
 				if (!signal.highlighted)
 				{
@@ -323,7 +324,7 @@ public class WaveSignal
 			return;
 		}
 
-		if ((evt.getModifiers()&MouseEvent.SHIFT_MASK) == 0)
+		if ((evt.getModifiers()&MouseEvent.SHIFT_DOWN_MASK) == 0)
 		{
 			// standard click: add this as the only trace
 			ws.wavePanel.clearHighlightedSignals();

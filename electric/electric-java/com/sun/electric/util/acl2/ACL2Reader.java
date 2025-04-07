@@ -82,10 +82,10 @@ public class ACL2Reader
     private String readStr(DataInputStream in) throws IOException
     {
         int len = readInt(in).intValueExact();
-        boolean normd = false;
+//        boolean normd = false;
         if (magic >= MAGIC_V3)
         {
-            normd = (len & 1) != 0;
+//            normd = (len & 1) != 0;
             len >>>= 1;
         }
         return readString(in, len);
@@ -239,7 +239,7 @@ public class ACL2Reader
                     {
                         break;
                     }
-                    int fal1 = readInt(in).intValueExact();
+                    /* int fal1 = */ readInt(in).intValueExact();
 //                System.out.println(" " + fal0 + " " + fal1);
                 }
             }

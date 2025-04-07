@@ -412,7 +412,7 @@ public class LibToTech
             techUrl = TextUtils.makeURLToFile(fileName);
         }
         TechFactory techFactory = TechFactory.fromXml(techUrl, t);
-        Technology tech = techFactory.newInstance(Generic.tech());
+        Technology tech = techFactory.newInst(Generic.tech());
         if (tech == null) System.out.println("ERROR creating new technology"); else
         {
 	        lib.getDatabase().addTech(tech);

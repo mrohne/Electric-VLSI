@@ -108,9 +108,9 @@ public class ArcInfo extends Info
 		loadTableEntry(arcTextTable, ARCFIXANG, Boolean.valueOf(fixAng));
 		loadTableEntry(arcTextTable, ARCWIPESPINS, Boolean.valueOf(wipes));
 		loadTableEntry(arcTextTable, ARCNOEXTEND, Boolean.valueOf(noExtend));
-		loadTableEntry(arcTextTable, ARCINC, new Integer(angInc));
-		loadTableEntry(arcTextTable, ARCANTENNARATIO, new Double(antennaRatio));
-		loadTableEntry(arcTextTable, ARCWIDTHOFFSET, new Double(widthOffset));
+		loadTableEntry(arcTextTable, ARCINC, Integer.valueOf(angInc));
+		loadTableEntry(arcTextTable, ARCANTENNARATIO, Double.valueOf(antennaRatio));
+		loadTableEntry(arcTextTable, ARCWIDTHOFFSET, Double.valueOf(widthOffset));
 
 		// now create those text objects
 		createSpecialText(np, arcTextTable, ep);

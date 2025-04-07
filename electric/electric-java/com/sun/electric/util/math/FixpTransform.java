@@ -712,49 +712,49 @@ public class FixpTransform extends AffineTransform {
         return super.equals(obj);
     }
 
-    private static boolean isFixp(AffineTransform Tx) {
-        if (Tx instanceof FixpTransform) {
-            return ((FixpTransform) Tx).orient != null;
-        }
-        return getOrient(Tx) != null
-                && FixpCoord.fixpToLambda(getFixpX(Tx)) == Tx.getTranslateX()
-                && FixpCoord.fixpToLambda(getFixpY(Tx)) == Tx.getTranslateY();
-    }
+//    private static boolean isFixp(AffineTransform Tx) {
+//        if (Tx instanceof FixpTransform) {
+//            return ((FixpTransform) Tx).orient != null;
+//        }
+//        return getOrient(Tx) != null
+//                && FixpCoord.fixpToLambda(getFixpX(Tx)) == Tx.getTranslateX()
+//                && FixpCoord.fixpToLambda(getFixpY(Tx)) == Tx.getTranslateY();
+//    }
 
-    private static long getFixpX(AffineTransform Tx) {
-        if (Tx instanceof FixpTransform) {
-            return ((FixpTransform) Tx).fixpX;
-        }
-        return FixpCoord.lambdaToFixp(Tx.getTranslateX());
-    }
+//    private static long getFixpX(AffineTransform Tx) {
+//        if (Tx instanceof FixpTransform) {
+//            return ((FixpTransform) Tx).fixpX;
+//        }
+//        return FixpCoord.lambdaToFixp(Tx.getTranslateX());
+//    }
 
-    private static long getFixpY(AffineTransform Tx) {
-        if (Tx instanceof FixpTransform) {
-            return ((FixpTransform) Tx).fixpY;
-        }
-        return FixpCoord.lambdaToFixp(Tx.getTranslateY());
-    }
+//    private static long getFixpY(AffineTransform Tx) {
+//        if (Tx instanceof FixpTransform) {
+//            return ((FixpTransform) Tx).fixpY;
+//        }
+//        return FixpCoord.lambdaToFixp(Tx.getTranslateY());
+//    }
 
-    private static Orientation getOrient(AffineTransform Tx) {
-        if (Tx instanceof FixpTransform) {
-            return ((FixpTransform) Tx).orient;
-        }
-        double m00 = Tx.getScaleX();
-        double m01 = Tx.getShearX();
-        double m10 = Tx.getShearY();
-        double m11 = Tx.getScaleY();
-        Orientation or = null;
-        if (Math.abs(m00) == 1.0 && Math.abs(m11) == 1.0 && m01 == 0.0 && m10 == 0.0) {
-            or = m00 > 0 ? (m11 > 0 ? Orientation.IDENT : Orientation.Y) : (m11 > 0 ? Orientation.X : Orientation.RR);
-        } else if (Math.abs(m01) == 1.0 && Math.abs(m10) == 1.0 && m00 == 0.0 && m11 == 0.0) {
-            or = m01 > 0 ? (m10 > 0 ? Orientation.YRRR : Orientation.RRR) : (m10 > 0 ? Orientation.R : Orientation.YR);
-        } else {
-            return null;
-        }
-        assert m00 == or.m00;
-        assert m01 == or.m01;
-        assert m10 == or.m10;
-        assert m11 == or.m11;
-        return or;
-    }
+//    private static Orientation getOrient(AffineTransform Tx) {
+//        if (Tx instanceof FixpTransform) {
+//            return ((FixpTransform) Tx).orient;
+//        }
+//        double m00 = Tx.getScaleX();
+//        double m01 = Tx.getShearX();
+//        double m10 = Tx.getShearY();
+//        double m11 = Tx.getScaleY();
+//        Orientation or = null;
+//        if (Math.abs(m00) == 1.0 && Math.abs(m11) == 1.0 && m01 == 0.0 && m10 == 0.0) {
+//            or = m00 > 0 ? (m11 > 0 ? Orientation.IDENT : Orientation.Y) : (m11 > 0 ? Orientation.X : Orientation.RR);
+//        } else if (Math.abs(m01) == 1.0 && Math.abs(m10) == 1.0 && m00 == 0.0 && m11 == 0.0) {
+//            or = m01 > 0 ? (m10 > 0 ? Orientation.YRRR : Orientation.RRR) : (m10 > 0 ? Orientation.R : Orientation.YR);
+//        } else {
+//            return null;
+//        }
+//        assert m00 == or.m00;
+//        assert m01 == or.m01;
+//        assert m10 == or.m10;
+//        assert m11 == or.m11;
+//        return or;
+//    }
 }

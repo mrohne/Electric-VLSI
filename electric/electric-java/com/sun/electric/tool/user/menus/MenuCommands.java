@@ -103,7 +103,6 @@ public final class MenuCommands {
 		if (Job.getDebug())
 		{
 			list.add(TestMenu.makeMenu());
-			list.add(DeveloperMenu.makeMenu());
 		}
 		list.add(PublicDebugMenu.makeMenu());
 

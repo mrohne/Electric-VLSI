@@ -345,7 +345,7 @@ public class Info
 						"Spice template: " + (table[i].value == null ? "" : table[i].value), ep);
 					break;
 			}
-			table[i].ni.newVar(OPTION_KEY, new Integer(table[i].funct), ep);
+			table[i].ni.newVar(OPTION_KEY, Integer.valueOf(table[i].funct), ep);
 		}
 	}
 

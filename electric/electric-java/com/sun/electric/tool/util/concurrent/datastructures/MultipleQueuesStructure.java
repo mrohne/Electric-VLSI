@@ -27,6 +27,7 @@ import java.util.Map;
 import com.sun.electric.tool.util.concurrent.patterns.PJob;
 import com.sun.electric.tool.util.concurrent.runtime.MultiThreadedRandomizer;
 import com.sun.electric.tool.util.concurrent.utils.ConcurrentCollectionFactory;
+import com.sun.electric.util.TextUtils;
 
 /**
  * @author Felix Schmidt
@@ -128,7 +129,7 @@ public class MultipleQueuesStructure<T> extends IStructure<T> implements IWorkSt
 	}
 
 	protected Long getThreadId() {
-		return Thread.currentThread().getId();
+		return TextUtils.getThreadID(Thread.currentThread());
 	}
 
 	/*

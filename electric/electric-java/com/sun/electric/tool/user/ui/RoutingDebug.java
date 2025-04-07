@@ -1192,7 +1192,7 @@ public class RoutingDebug
 					if (!Character.isDigit(part.charAt(part.length()-1)))
 						part = part.substring(0, part.length()-1);
 					double val = TextUtils.atof(part);
-					coords.add(new Double(val));
+					coords.add(Double.valueOf(val));
 				}
 
 				boolean hor = true;

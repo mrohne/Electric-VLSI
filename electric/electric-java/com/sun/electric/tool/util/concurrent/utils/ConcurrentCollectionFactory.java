@@ -64,7 +64,6 @@ public class ConcurrentCollectionFactory {
 		return new HashSet<T>();
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> List<T> createConcurrentList() {
 		return (List<T>) Collections.synchronizedList(createArrayList());
 	}
@@ -77,7 +76,6 @@ public class ConcurrentCollectionFactory {
 		return new ConcurrentHashMap<T, V>();
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> Set<T> createConcurrentHashSet() {
 		return (Set<T>) Collections.synchronizedSet(ConcurrentCollectionFactory.createHashSet());
 	}

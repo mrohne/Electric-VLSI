@@ -51,7 +51,6 @@ public class LockFreeSkipList<T> extends IStructure<T> {
 	 * 
 	 * @see com.sun.electric.tool.util.IStructure#add(java.lang.Object)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void add(T item) {
 		int topLevel = randomLevel();
@@ -163,7 +162,6 @@ public class LockFreeSkipList<T> extends IStructure<T> {
 		 * 
 		 * @param key
 		 */
-		@SuppressWarnings("unchecked")
 		public Node(int key) {
 			this.value = null;
 			this.key = key;
@@ -179,7 +177,6 @@ public class LockFreeSkipList<T> extends IStructure<T> {
 		 * @param x
 		 * @param height
 		 */
-		@SuppressWarnings("unchecked")
 		public Node(T x, int height) {
 			value = x;
 			key = x.hashCode();

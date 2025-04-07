@@ -542,7 +542,7 @@ public class TechPalette extends JPanel implements MouseListener, MouseMotionLis
 			{
 				JPopupMenu specialMenu = new JPopupMenu("Miscellaneous");
 				menuItem = new JMenuItem("Cell Instance...");
-				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { CellMenu.cellBrowserCommand(CellBrowser.DoAction.newInstance); } });
+				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { CellMenu.cellBrowserCommand(CellBrowser.DoAction.newInst); } });
 				specialMenu.add(menuItem);
 
 				specialMenu.addSeparator();
@@ -651,7 +651,7 @@ public class TechPalette extends JPanel implements MouseListener, MouseMotionLis
 			{
 				// place a technology-edit highlight box
 				NodeInst ni = NodeInst.makeDummyInstance(Artwork.tech().boxNode, ep);
-				ni.newVar(Info.OPTION_KEY, new Integer(Info.HIGHLIGHTOBJ), ep);
+				ni.newVar(Info.OPTION_KEY, Integer.valueOf(Info.HIGHLIGHTOBJ), ep);
 				PaletteFrame.placeInstance(ni, panel, false);
 			} if (msg.equals(Technology.SPECIALMENUPORT))
 			{
@@ -727,7 +727,7 @@ public class TechPalette extends JPanel implements MouseListener, MouseMotionLis
 					if (np.getFunction() != PrimitiveNode.Function.NODE) continue;
 					Technology.NodeLayer layer = np.getNodeLayers()[0];
 					Layer la = layer.getLayer();
-					Layer.Function lf = la.getFunction();
+//					Layer.Function lf = la.getFunction();
 //					if (lf.isContact()) continue;
 					map.put(la, np);
 //					popupPures.add(np);
@@ -776,39 +776,39 @@ public class TechPalette extends JPanel implements MouseListener, MouseMotionLis
 		/**
 		 * Comparator class for sorting pure-layer-nodes by their importance.
 		 */
-		public static class LayersByImportance implements Comparator<NodeProto>
-		{
-			/**
-			 * Method to sort pure-layer-nodes by their importance.
-			 */
-			public int compare(NodeProto np1, NodeProto np2)
-			{
-				Technology.NodeLayer layer1 = ((PrimitiveNode)np1).getNodeLayers()[0];
-				Technology.NodeLayer layer2 = ((PrimitiveNode)np2).getNodeLayers()[0];
-				int imp1 = getCode(layer1.getLayer());
-				int imp2 = getCode(layer2.getLayer());
-				if (imp1 == 3 && imp2 == 3)
-				{
-					String en1 = Layer.Function.getExtraName(layer1.getLayer().getFunctionExtras());
-					String en2 = Layer.Function.getExtraName(layer2.getLayer().getFunctionExtras());
-					return en1.compareTo(en2);
-				}
-				return imp1 - imp2;
-			}
-
-			private int getCode(Layer layer)
-			{
-				Layer.Function lf = layer.getFunction();
-				if (lf.isWell()) return 1;
-				if (lf.isImplant())
-				{
-					if (layer.getFunctionExtras() == 0) return 2;
-					return 3;
-				}
-				if (lf == Layer.Function.ART) return 4;
-				return 5;
-			}
-		}
+//		public static class LayersByImportance implements Comparator<NodeProto>
+//		{
+//			/**
+//			 * Method to sort pure-layer-nodes by their importance.
+//			 */
+//			public int compare(NodeProto np1, NodeProto np2)
+//			{
+//				Technology.NodeLayer layer1 = ((PrimitiveNode)np1).getNodeLayers()[0];
+//				Technology.NodeLayer layer2 = ((PrimitiveNode)np2).getNodeLayers()[0];
+//				int imp1 = getCode(layer1.getLayer());
+//				int imp2 = getCode(layer2.getLayer());
+//				if (imp1 == 3 && imp2 == 3)
+//				{
+//					String en1 = Layer.Function.getExtraName(layer1.getLayer().getFunctionExtras());
+//					String en2 = Layer.Function.getExtraName(layer2.getLayer().getFunctionExtras());
+//					return en1.compareTo(en2);
+//				}
+//				return imp1 - imp2;
+//			}
+//
+//			private int getCode(Layer layer)
+//			{
+//				Layer.Function lf = layer.getFunction();
+//				if (lf.isWell()) return 1;
+//				if (lf.isImplant())
+//				{
+//					if (layer.getFunctionExtras() == 0) return 2;
+//					return 3;
+//				}
+//				if (lf == Layer.Function.ART) return 4;
+//				return 5;
+//			}
+//		}
 
 		/**
     	 * Method called when the ESCAPE key is pressed.

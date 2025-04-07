@@ -412,8 +412,8 @@ class AlphaBlender {
     //********************************************************************
     private class AlphaBlendGroup {
 
-        int groupShift;
-        int groupMask;
+//        int groupShift;
+//        int groupMask;
         int[] redMap;
         int[] greenMap;
         int[] blueMap;
@@ -421,8 +421,8 @@ class AlphaBlender {
         int[][] bits;
 
         AlphaBlendGroup(int[][] bits, List<AbstractDrawing.LayerColor> cols, int offset, int len, boolean fillBackround) {
-            groupShift = offset;
-            groupMask = (1 << len) - 1;
+//            groupShift = offset;
+//            groupMask = (1 << len) - 1;
             int mapLen = 1 << len;
             redMap = new int[mapLen];
             greenMap = new int[mapLen];

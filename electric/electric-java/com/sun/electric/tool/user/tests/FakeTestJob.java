@@ -56,7 +56,7 @@ public class FakeTestJob extends Job
 
 	public FakeTestJob(List<AbstractTest> list)
 	{
-		this(list, 0, 0, 0, User.getRegressionPath(), ErrorLogger.newInstance(list.get(0).getClass().getName() + " Tests"));
+		this(list, 0, 0, 0, User.getRegressionPath(), ErrorLogger.newInst(list.get(0).getClass().getName() + " Tests"));
 	}
 
 	private FakeTestJob(List<AbstractTest> list, int nextTest, int numPassed, int numFailed, String regressionPath, ErrorLogger errorLogs)

@@ -1754,7 +1754,7 @@ public class Panel extends JPanel
 		JComponent comp = set.iterator().next();
 		WaveSignal ws = waveSignals.get(comp);
 
-		if ((evt.getModifiers()&MouseEvent.SHIFT_MASK) == 0)
+		if ((evt.getModifiers()&MouseEvent.SHIFT_DOWN_MASK) == 0)
 		{
 			// standard click: add this as the only trace
 			for(Iterator<Panel> it = waveWindow.getPanels(); it.hasNext(); )
@@ -2068,7 +2068,7 @@ public class Panel extends JPanel
 				List<WaveSelection> selectedObjects = wp.findSignalsInArea(convertXDataToScreen(dragStartXD),
 					convertXDataToScreen(dragEndXD), convertYDataToScreen(dragStartYD), convertYDataToScreen(dragEndYD));
 
-				if ((evt.getModifiers()&MouseEvent.SHIFT_MASK) == 0)
+				if ((evt.getModifiersEx()&MouseEvent.SHIFT_DOWN_MASK) == 0)
 				{
 					// standard click: add this as the only trace
 					clearHighlightedSignals();
@@ -2339,7 +2339,7 @@ public class Panel extends JPanel
 		{
 			Panel wp = it.next();
 			if (!waveWindow.isXAxisLocked() && wp != this) continue;
-			if ((evt.getModifiers()&MouseEvent.SHIFT_MASK) == 0 || ClickZoomWireListener.isRightMouse(evt))
+			if ((evt.getModifiersEx()&MouseEvent.SHIFT_DOWN_MASK) == 0 || ClickZoomWireListener.isRightMouse(evt))
 			{
 				// standard click: zoom in
 				if (wp.getMinXAxis() > wp.getMaxXAxis()) wp.setXAxisRange(highXValue, lowXValue); else

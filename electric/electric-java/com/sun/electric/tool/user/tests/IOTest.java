@@ -111,7 +111,7 @@ public class IOTest extends AbstractTest
 			for(Iterator<Library> it = Library.getLibraries(); it.hasNext(); )
 			{
 				Library lib = it.next();
-				numCheckErrors += lib.checkAndRepair(false, ErrorLogger.newInstance("Check Libraries"), ep);
+				numCheckErrors += lib.checkAndRepair(false, ErrorLogger.newInst("Check Libraries"), ep);
 			}
 
 			passed = (expectedNumInputLogs == numInputLogs && expectedNumNetworkLogs == numNetworkLogs &&

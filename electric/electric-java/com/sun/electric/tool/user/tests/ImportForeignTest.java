@@ -375,7 +375,7 @@ public class ImportForeignTest extends AbstractTest
 			{
 				String outputFileName = inputDir + (subLoc == null ? "" : subLoc + "/") + testName + ".jelib";
 				URL outputFileURL = TextUtils.makeURLToFile(outputFileName);
-				iniLib = Library.newInstance(testName, outputFileURL);
+				iniLib = Library.newInst(testName, outputFileURL);
 			}
 			TechPool techPool = TechPool.getThreadTechPool();
 			EditingPreferences ep = new EditingPreferences(true, techPool);

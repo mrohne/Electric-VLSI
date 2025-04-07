@@ -185,21 +185,21 @@ public class LayerCoverageToolTest extends AbstractTest
 			NodeProto m4NodeProto = Cell.findNodeProto(technology+":Metal-4-Node");
 
 			// create the test library
-			Library mainLib = Library.newInstance(libName, null);
+			Library mainLib = Library.newInst(libName, null);
 
 			// create a layout cell in the library
 			Cell m1Cell = Cell.makeInstance(ep, mainLib, technology+"Metal1Test{lay}");
-			NodeInst.newInstance(m1NodeProto, ep, new Point2D.Double(0, 0), m1NodeProto.getDefWidth(ep), m1NodeProto.getDefHeight(ep), m1Cell);
+			NodeInst.newInst(m1NodeProto, ep, new Point2D.Double(0, 0), m1NodeProto.getDefWidth(ep), m1NodeProto.getDefHeight(ep), m1Cell);
 
 			// Two metals
 			Cell myCell = Cell.makeInstance(ep, mainLib, technology+"M1M2Test{lay}");
-			NodeInst.newInstance(m1NodeProto, ep, new Point2D.Double(-m1NodeProto.getDefWidth(ep)/2, -m1NodeProto.getDefHeight(ep)/2),
+			NodeInst.newInst(m1NodeProto, ep, new Point2D.Double(-m1NodeProto.getDefWidth(ep)/2, -m1NodeProto.getDefHeight(ep)/2),
 				m1NodeProto.getDefWidth(ep), m1NodeProto.getDefHeight(ep), myCell);
-			NodeInst.newInstance(m2NodeProto, ep, new Point2D.Double(-m2NodeProto.getDefWidth(ep)/2, m2NodeProto.getDefHeight(ep)/2),
+			NodeInst.newInst(m2NodeProto, ep, new Point2D.Double(-m2NodeProto.getDefWidth(ep)/2, m2NodeProto.getDefHeight(ep)/2),
 				m2NodeProto.getDefWidth(ep), m2NodeProto.getDefHeight(ep), myCell);
-			NodeInst.newInstance(m3NodeProto, ep, new Point2D.Double(m3NodeProto.getDefWidth(ep)/2, -m3NodeProto.getDefHeight(ep)/2),
+			NodeInst.newInst(m3NodeProto, ep, new Point2D.Double(m3NodeProto.getDefWidth(ep)/2, -m3NodeProto.getDefHeight(ep)/2),
 				m3NodeProto.getDefWidth(ep), m3NodeProto.getDefHeight(ep), myCell);
-			NodeInst.newInstance(m4NodeProto, ep, new Point2D.Double(m4NodeProto.getDefWidth(ep)/2, m4NodeProto.getDefHeight(ep)/2),
+			NodeInst.newInst(m4NodeProto, ep, new Point2D.Double(m4NodeProto.getDefWidth(ep)/2, m4NodeProto.getDefHeight(ep)/2),
 				m4NodeProto.getDefWidth(ep), m4NodeProto.getDefHeight(ep), myCell);
 
 			// now up the hierarchy
@@ -212,7 +212,7 @@ public class LayerCoverageToolTest extends AbstractTest
 				for (int i = 0; i < 4; i++)
 				{
 					Orientation orient = Orientation.fromJava(i*900, flipX, false);
-					NodeInst instanceNode = NodeInst.newInstance(myCell, ep, new Point2D.Double(i*myWidth, iX*myHeight), myWidth, myHeight, higherCell, orient, null);
+					NodeInst instanceNode = NodeInst.newInst(myCell, ep, new Point2D.Double(i*myWidth, iX*myHeight), myWidth, myHeight, higherCell, orient, null);
 					database.addToNodes(nodesToExpand, instanceNode);
 				}
 			}
@@ -365,15 +365,15 @@ public class LayerCoverageToolTest extends AbstractTest
 			ObjectQTree oqt = new ObjectQTree(expanded);
 
 			Rectangle2D bounds1 = new Rectangle2D.Double(10, 8, 0, 0); // along middle X = 10, outside search box
-			oqt.add(new Integer(1), bounds1);
+			oqt.add(Integer.valueOf(1), bounds1);
 			Rectangle2D bounds2 = new Rectangle2D.Double(10, 10, 0, 0); // along middle X = 10
-			oqt.add(new Integer(2), bounds2);
+			oqt.add(Integer.valueOf(2), bounds2);
 			Rectangle2D bounds3 = new Rectangle2D.Double(10, 12, 0, 0); // along middle X = 10
-			oqt.add(new Integer(3), bounds3);
+			oqt.add(Integer.valueOf(3), bounds3);
 			Rectangle2D bounds4 = new Rectangle2D.Double(10.5, 11, 0, 0); // in top-left quadrant
-			oqt.add(new Integer(4), bounds4);
+			oqt.add(Integer.valueOf(4), bounds4);
 			Rectangle2D bounds5 = new Rectangle2D.Double(14, 10.6, 0, 0); // in bottom-left quadrant, outside search box
-			oqt.add(new Integer(5), bounds5);
+			oqt.add(Integer.valueOf(5), bounds5);
 
 			Rectangle2D searchBounds = new Rectangle2D.Double(9.5, 10, 2, 4);
 			Set set = oqt.find(searchBounds);

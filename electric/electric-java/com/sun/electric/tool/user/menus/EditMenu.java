@@ -133,7 +133,7 @@ import javax.swing.KeyStroke;
 public class EditMenu {
 
     static EMenu makeMenu() {
-    	int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    	int ctrl = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
     	int ctrlShift = ctrl | InputEvent.SHIFT_DOWN_MASK;
 
     	/****************************** THE EDIT MENU ******************************/

@@ -42,7 +42,6 @@ public class CircularArray<T> extends IStructure<T> {
 	 * @param logCapacity
 	 *            capacity of the initial array
 	 */
-	@SuppressWarnings("unchecked")
 	public CircularArray(int logCapacity) {
 		this.logCapacity = logCapacity;
 		this.currentElements = (T[]) new Object[1 << logCapacity];

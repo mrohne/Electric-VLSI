@@ -148,17 +148,17 @@ public class MakeFakeCircuitry extends Job
 		ArcProto p1Proto = ArcProto.findArcProto(technology+":"+polyName);
 
 		// create the test library
-		Library mainLib = Library.newInstance(library, null);
+		Library mainLib = Library.newInst(library, null);
 
 		// create a layout cell in the library
 		Cell myCell = Cell.makeInstance(ep, mainLib, technology+"test{lay}");
-		NodeInst metal12Via = NodeInst.newInstance(m1m2Proto, ep, new Point2D.Double(-20.0, 20.0), m1m2Proto.getDefWidth(ep), m1m2Proto.getDefHeight(ep), myCell);
-		NodeInst contactNode = NodeInst.newInstance(m1PolyConProto, ep, new Point2D.Double(20.0, 20.0), m1PolyConProto.getDefWidth(ep), m1PolyConProto.getDefHeight(ep), myCell);
-		NodeInst metal2Pin = NodeInst.newInstance(m2PinProto, ep, new Point2D.Double(-20.0, 10.0), m2PinProto.getDefWidth(ep), m2PinProto.getDefHeight(ep), myCell);
-		NodeInst poly1PinA = NodeInst.newInstance(p1PinProto, ep, new Point2D.Double(20.0, -20.0), p1PinProto.getDefWidth(ep), p1PinProto.getDefHeight(ep), myCell);
-		NodeInst poly1PinB = NodeInst.newInstance(p1PinProto, ep, new Point2D.Double(20.0, -10.0), p1PinProto.getDefWidth(ep), p1PinProto.getDefHeight(ep), myCell);
-		NodeInst transistor = NodeInst.newInstance(pTransProto, ep, new Point2D.Double(0.0, -20.0), pTransProto.getDefWidth(ep), pTransProto.getDefHeight(ep), myCell, Orientation.fromAngle(traRot), null);
-		NodeInst rotTrans = NodeInst.newInstance(nTransProto, ep, new Point2D.Double(0.0, 10.0), nTransProto.getDefWidth(ep), nTransProto.getDefHeight(ep), myCell, Orientation.fromAngle(rotTraRot), "rotated");
+		NodeInst metal12Via = NodeInst.newInst(m1m2Proto, ep, new Point2D.Double(-20.0, 20.0), m1m2Proto.getDefWidth(ep), m1m2Proto.getDefHeight(ep), myCell);
+		NodeInst contactNode = NodeInst.newInst(m1PolyConProto, ep, new Point2D.Double(20.0, 20.0), m1PolyConProto.getDefWidth(ep), m1PolyConProto.getDefHeight(ep), myCell);
+		NodeInst metal2Pin = NodeInst.newInst(m2PinProto, ep, new Point2D.Double(-20.0, 10.0), m2PinProto.getDefWidth(ep), m2PinProto.getDefHeight(ep), myCell);
+		NodeInst poly1PinA = NodeInst.newInst(p1PinProto, ep, new Point2D.Double(20.0, -20.0), p1PinProto.getDefWidth(ep), p1PinProto.getDefHeight(ep), myCell);
+		NodeInst poly1PinB = NodeInst.newInst(p1PinProto, ep, new Point2D.Double(20.0, -10.0), p1PinProto.getDefWidth(ep), p1PinProto.getDefHeight(ep), myCell);
+		NodeInst transistor = NodeInst.newInst(pTransProto, ep, new Point2D.Double(0.0, -20.0), pTransProto.getDefWidth(ep), pTransProto.getDefHeight(ep), myCell, Orientation.fromAngle(traRot), null);
+		NodeInst rotTrans = NodeInst.newInst(nTransProto, ep, new Point2D.Double(0.0, 10.0), nTransProto.getDefWidth(ep), nTransProto.getDefHeight(ep), myCell, Orientation.fromAngle(rotTraRot), "rotated");
 		if (metal12Via == null || contactNode == null || metal2Pin == null || poly1PinA == null ||
 			poly1PinB == null || transistor == null || rotTrans == null) return myCell;
 
@@ -191,8 +191,8 @@ public class MakeFakeCircuitry extends Job
 		if (polyArc4 == null) return myCell;
 
 		// export the two pins
-		Export.newInstance(myCell, m1m2Port, "in", ep, PortCharacteristic.IN);
-		Export.newInstance(myCell, p1PortA, "out", ep, PortCharacteristic.OUT);
+		Export.newInst(myCell, m1m2Port, "in", ep, PortCharacteristic.IN);
+		Export.newInst(myCell, p1PortA, "out", ep, PortCharacteristic.OUT);
 		System.out.println("Created " + myCell);
 
 		// now up the hierarchy
@@ -205,9 +205,9 @@ public class MakeFakeCircuitry extends Job
 			for (int i = 0; i < 4; i++)
 			{
 				Orientation orient = Orientation.fromJava(i*900, flipX, false);
-				NodeInst instanceNode = NodeInst.newInstance(myCell, ep, new Point2D.Double(i*100, iX*200), myWidth, myHeight, higherCell, orient, null);
+				NodeInst instanceNode = NodeInst.newInst(myCell, ep, new Point2D.Double(i*100, iX*200), myWidth, myHeight, higherCell, orient, null);
 				database.addToNodes(nodesToExpand, instanceNode);
-				NodeInst instanceUNode = NodeInst.newInstance(myCell, ep, new Point2D.Double(i*100, iX*200 + 100), myWidth, myHeight, higherCell, orient, null);
+				NodeInst instanceUNode = NodeInst.newInst(myCell, ep, new Point2D.Double(i*100, iX*200 + 100), myWidth, myHeight, higherCell, orient, null);
 				if (iX == 0 && i == 0)
 				{
 					PortInst instance1Port = instanceNode.findPortInst("in");
@@ -233,9 +233,9 @@ public class MakeFakeCircuitry extends Job
 					Orientation orient = Orientation.fromJava(angle, flipX, flipY);
 					int x = i*100;
 					int y = iX*100 + iY*200;
-					NodeInst ni = NodeInst.newInstance(myCell, ep, new Point2D.Double(x, y), myWidth, myHeight, rotTestCell, orient, null);
+					NodeInst ni = NodeInst.newInst(myCell, ep, new Point2D.Double(x, y), myWidth, myHeight, rotTestCell, orient, null);
 					database.addToNodes(nodesToExpand, ni);
-					NodeInst nodeLabel = NodeInst.newInstance(invisiblePinProto, ep, new Point2D.Double(x, y - 35), 0, 0, rotTestCell);
+					NodeInst nodeLabel = NodeInst.newInst(invisiblePinProto, ep, new Point2D.Double(x, y - 35), 0, 0, rotTestCell);
 					String message = "Rotated " + (orient == Orientation.IDENT ? "0" : orient.toString());
 					nodeLabel.newVar(Artwork.ART_MESSAGE, message,td);
 				}
@@ -251,7 +251,7 @@ public class MakeFakeCircuitry extends Job
 			for(int x=0; x<arraySize; x++)
 			{
 				String theName = "arr["+ x + "][" + y + "]";
-				NodeInst instanceNode = NodeInst.newInstance(myCell, ep, new Point2D.Double(x*(myWidth+2), y*(myHeight+2)),
+				NodeInst instanceNode = NodeInst.newInst(myCell, ep, new Point2D.Double(x*(myWidth+2), y*(myHeight+2)),
 					myWidth, myHeight, bigCell, Orientation.IDENT, theName);
 				instanceNode.setOff(NodeInst.NODE_NAME, 0, 8);
 				if ((x%2) == (y%2)) database.addToNodes(nodesToExpand, instanceNode);

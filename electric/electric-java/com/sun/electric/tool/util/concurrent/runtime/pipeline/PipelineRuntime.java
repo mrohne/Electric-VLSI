@@ -54,7 +54,6 @@ public class PipelineRuntime<PipeIn, PipeOut> {
 	}
 
 	// TODO handle different types, checks at runtime
-	@SuppressWarnings("unchecked")
 	public <Input, Output> void addStage(StageImpl<Input, Output> impl, int numOfWorkers) {
 		Stage<Input, Output> stage = new Stage<Input, Output>(numOfWorkers);
 		for (int i = 0; i < numOfWorkers; i++) {
@@ -104,7 +103,6 @@ public class PipelineRuntime<PipeIn, PipeOut> {
 			this.workers = ConcurrentCollectionFactory.createLinkedList();
 		}
 
-		@SuppressWarnings("unchecked")
 		public void send(Object item) {
 			inputQueue.add((Input) item);
 		}

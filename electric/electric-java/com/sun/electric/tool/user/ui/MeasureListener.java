@@ -339,11 +339,11 @@ public class MeasureListener implements WindowFrame.ElectricEventListener
 		{
 			if (!evt.isMetaDown())
 			{
-				if ((evt.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK) return true;
+				if (SwingUtilities.isLeftMouseButton(evt)) return true;
 			}
 		} else
 		{
-			if ((evt.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK) return true;
+			if (SwingUtilities.isLeftMouseButton(evt)) return true;
 		}
 		return false;
 	}

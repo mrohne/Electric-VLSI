@@ -101,7 +101,7 @@ public class CellMenu {
 			new EMenuItem("_Edit Cell...") { public void run() {
 				cellBrowserCommand(CellBrowser.DoAction.editCell); }},
 			new EMenuItem("_Place Cell Instance...", KeyStroke.getKeyStroke('N', 0)) { public void run() {
-				cellBrowserCommand(CellBrowser.DoAction.newInstance); }},
+				cellBrowserCommand(CellBrowser.DoAction.newInst); }},
 			new EMenuItem("_Rename Cell...") { public void run() {
 				cellBrowserCommand(CellBrowser.DoAction.renameCell); }},
 			new EMenuItem("Duplic_ate Cell...") { public void run() {
@@ -149,7 +149,7 @@ public class CellMenu {
 				SEPARATOR,
 				new EMenuItem("Down Hierarchy In _Place", KeyStroke.getKeyStroke('D', 0)) { public void run() {
 					downHierInPlaceCommand(); }},
-				new EMenuItem("Down Hierarchy In Place To Object", KeyStroke.getKeyStroke('D', KeyEvent.SHIFT_MASK)) { public void run() {
+				new EMenuItem("Down Hierarchy In Place To Object", KeyStroke.getKeyStroke('D', KeyEvent.SHIFT_DOWN_MASK)) { public void run() {
 					downHierInPlaceToObject(); }}),
 
 			new EMenu("_Up Hierarchy",
@@ -315,7 +315,7 @@ public class CellMenu {
 			}
 			boolean wasMulti = cell.isMultiPage();
 			cell.setMultiPage(true);
-			cell.newVar(Cell.MULTIPAGE_COUNT_KEY, new Integer(numPages), ep); // autoboxing
+			cell.newVar(Cell.MULTIPAGE_COUNT_KEY, Integer.valueOf(numPages), ep); // autoboxing
 			if (!wasMulti) System.out.println("Cell " + cell.describe(true) + " is now a multi-page schematic");
 			return true;
 		}
@@ -364,7 +364,7 @@ public class CellMenu {
 			{
 				CircuitChangeJobs.spreadCircuitry(cell, null, 'u', -Cell.FrameDescription.MULTIPAGESEPARATION, 0, 0, lY, hY);
 			}
-			cell.newVar(Cell.MULTIPAGE_COUNT_KEY, new Integer((numPages-1)), ep); // autoboxing
+			cell.newVar(Cell.MULTIPAGE_COUNT_KEY, Integer.valueOf((numPages-1)), ep); // autoboxing
 			fieldVariableChanged("numPages");
 			return true;
 		}

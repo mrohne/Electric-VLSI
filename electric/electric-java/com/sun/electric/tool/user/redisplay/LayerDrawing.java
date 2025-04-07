@@ -203,10 +203,10 @@ class LayerDrawing extends AbstractLayerDrawing {
     public static final int MAXIMUMTEXTSIZE = 200;
     // statistics stuff
     private static final boolean TAKE_STATS = false;
-    private static int tinyCells, tinyPrims, totalCells, renderedCells, totalPrims, tinyArcs, linedArcs, totalArcs;
+    private static int tinyCells, tinyPrims, totalCells, /* renderedCells, */ totalPrims, tinyArcs, linedArcs, totalArcs;
     private static int offscreensCreated, offscreenPixelsCreated, offscreensUsed, offscreenPixelsUsed, cellsRendered;
     private static Set<ExpandedCellKey> offscreensUsedSet = new HashSet<ExpandedCellKey>();
-    private static int boxCount, boxDisplayCount, lineCount, polygonCount, crossCount, circleCount, discCount, arcCount;
+    private static int boxCount, /* boxDisplayCount, */ lineCount, polygonCount, crossCount, circleCount, discCount, arcCount;
     private static final boolean ENHANCE_EMPTY_PATTERNS = true;
     private static final boolean USE_HIGHLIGHT_RASTER = false;
     private static final Logger logger = LoggerFactory.getLogger(LayerDrawing.class);
@@ -262,8 +262,8 @@ class LayerDrawing extends AbstractLayerDrawing {
     private String defaultFont;
     /** the VarContext of the EditWindow */
     private VarContext varContext;
-    /** 0: color display, 1: color printing, 2: B&W printing */
-    private static final int nowPrinting = 0;
+    /** true: display, false: printing */
+    private static final boolean nowDisplay = true;
     /** true if the last display was a full-instantiate */
     private boolean lastFullInstantiate = false;
     /** A set of subcells being in-place edited. */
@@ -357,8 +357,8 @@ class LayerDrawing extends AbstractLayerDrawing {
     private static class DrawingData {
 
         private final LayerDrawing offscreen;
-        private final WindowFrame.DisplayAttributes da;
-        private final Dimension sz;
+//        private final WindowFrame.DisplayAttributes da;
+//        private final Dimension sz;
         private final int width;
         private final int height;
         private final int numIntsPerRow;
@@ -374,8 +374,8 @@ class LayerDrawing extends AbstractLayerDrawing {
 
         DrawingData(WindowFrame.DisplayAttributes da, LayerDrawing offscreen) {
             this.offscreen = offscreen;
-            this.da = da;
-            sz = offscreen.sz;
+//            this.da = da;
+//            sz = offscreen.sz;
             width = offscreen.sz.width;
             height = offscreen.sz.height;
             numIntsPerRow = offscreen.numIntsPerRow;
@@ -397,23 +397,23 @@ class LayerDrawing extends AbstractLayerDrawing {
             offscreen.renderTextList.clear();
         }
 
-        private DrawingData(DrawingData dd, TransparentRaster highlightRaster) {
-            assert (USE_HIGHLIGHT_RASTER || highlightRaster == null);
-            offscreen = dd.offscreen;
-            da = dd.da;
-            sz = dd.sz;
-            width = dd.width;
-            height = dd.height;
-            numIntsPerRow = dd.numIntsPerRow;
-            patternedDisplay = dd.patternedDisplay;
-            layerRasters = dd.layerRasters;
-            instanceRaster = dd.instanceRaster;
-            gridRaster = dd.gridRaster;
-            this.highlightRaster = highlightRaster;
-            greekText = dd.greekText;
-            crossText = dd.crossText;
-            renderText = dd.renderText;
-        }
+//        private DrawingData(DrawingData dd, TransparentRaster highlightRaster) {
+//            assert (USE_HIGHLIGHT_RASTER || highlightRaster == null);
+//            offscreen = dd.offscreen;
+//            da = dd.da;
+//            sz = dd.sz;
+//            width = dd.width;
+//            height = dd.height;
+//            numIntsPerRow = dd.numIntsPerRow;
+//            patternedDisplay = dd.patternedDisplay;
+//            layerRasters = dd.layerRasters;
+//            instanceRaster = dd.instanceRaster;
+//            gridRaster = dd.gridRaster;
+//            this.highlightRaster = highlightRaster;
+//            greekText = dd.greekText;
+//            crossText = dd.crossText;
+//            renderText = dd.renderText;
+//        }
 
         private void recycleRasters() {
             for (TransparentRaster raster : layerRasters.values()) {
@@ -795,7 +795,7 @@ class LayerDrawing extends AbstractLayerDrawing {
         }
 
         int getTheColor(EGraphics desc, boolean dimmed) {
-            if (nowPrinting == 2) {
+            if (!nowDisplay) {
                 return 0;
             }
             int col = desc.getRGB();
@@ -1405,11 +1405,6 @@ class LayerDrawing extends AbstractLayerDrawing {
     }
 
     /**
-     * Method to set the printing mode used for all drawing.
-     * @param mode the printing mode:  0=color display (default), 1=color printing, 2=B&W printing.
-     */
-//    public void setPrintingMode(int mode) { nowPrinting = mode; }
-    /**
      * Method for obtaining the size of the offscreen bitmap.
      * @return the size of the offscreen bitmap.
      */
@@ -1441,10 +1436,10 @@ class LayerDrawing extends AbstractLayerDrawing {
 //			Runtime.getRuntime().gc();
             timer.start();
             initialUsed = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-            tinyCells = tinyPrims = totalCells = renderedCells = totalPrims = tinyArcs = linedArcs = totalArcs = 0;
+            tinyCells = tinyPrims = totalCells = /* renderedCells = */ totalPrims = tinyArcs = linedArcs = totalArcs = 0;
             offscreensCreated = offscreenPixelsCreated = offscreensUsed = offscreenPixelsUsed = cellsRendered = 0;
             offscreensUsedSet.clear();
-            boxCount = boxDisplayCount = lineCount = polygonCount = crossCount = circleCount = discCount = arcCount = 0;
+            boxCount = /* boxDisplayCount = */ lineCount = polygonCount = crossCount = circleCount = discCount = arcCount = 0;
         }
 
         if (fullInstantiate != lastFullInstantiate) {
@@ -1849,7 +1844,7 @@ class LayerDrawing extends AbstractLayerDrawing {
             logger.trace(sb.toString());
         }
         boolean topLevel = level == 0;
-        renderedCells++;
+//        renderedCells++;
 
         VectorCache.VectorCell vc = VectorCache.theCache.drawCell(cell.getId(), orient, context, scale, topLevel);
 
@@ -2232,7 +2227,7 @@ class LayerDrawing extends AbstractLayerDrawing {
             graphics = gp.getGraphics(layer);
         }
         if (ENHANCE_EMPTY_PATTERNS) {
-            boolean isPatterned = nowPrinting != 0 ? graphics.isPatternedOnPrinter() : graphics.isPatternedOnDisplay();
+            boolean isPatterned = nowDisplay ? graphics.isPatternedOnDisplay() : graphics.isPatternedOnPrinter();
             if (isPatterned && graphics.isEmptyPattern()) {
                 EGraphics.Outline o = graphics.getOutlined();
                 if (o == EGraphics.Outline.NOPAT) {
@@ -2258,7 +2253,7 @@ class LayerDrawing extends AbstractLayerDrawing {
                 if (graphics == null && layer != null) {
                     graphics = gp.getGraphics(layer);
                 }
-                if (nowPrinting != 0 ? graphics.isPatternedOnPrinter() : graphics.isPatternedOnDisplay()) {
+                if (nowDisplay ? graphics.isPatternedOnDisplay() : graphics.isPatternedOnPrinter()) {
                     pattern = graphics.getReversedPattern();
                 }
                 if (pattern != null) {

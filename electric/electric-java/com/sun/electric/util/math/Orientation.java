@@ -316,7 +316,7 @@ public class Orientation implements Serializable {
             index += 3600 * 2;
         }
 
-        Integer key = new Integer(index + jAngle);
+        Integer key = Integer.valueOf(index + jAngle);
         Orientation orient;
         synchronized (map) {
             orient = map.get(key);
@@ -324,7 +324,7 @@ public class Orientation implements Serializable {
                 orient = new Orientation(jAngle, jMirrorX, jMirrorY, null);
                 map.put(key, orient);
                 if (orient.inverse != orient) {
-                    key = new Integer(index + 3600 - jAngle);
+                    key = Integer.valueOf(index + 3600 - jAngle);
                     map.put(key, orient.inverse);
                 }
             }

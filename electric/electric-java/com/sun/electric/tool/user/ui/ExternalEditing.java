@@ -238,7 +238,7 @@ public class ExternalEditing
 			}
 			try
 			{
-				Process p = Runtime.getRuntime().exec(commandString);
+				Process p = Runtime.getRuntime().exec(commandString.split(" "));
 				try
 				{
 					p.waitFor();

@@ -467,12 +467,12 @@ public class Manipulate
             EditingPreferences ep = getEditingPreferences();
 			if (isHighlight)
 			{
-				newNi.newVar(Info.OPTION_KEY, new Integer(Info.HIGHLIGHTOBJ), ep);
+				newNi.newVar(Info.OPTION_KEY, Integer.valueOf(Info.HIGHLIGHTOBJ), ep);
 				return true;
 			}
 
 			// set layer information
-			newNi.newVar(Info.OPTION_KEY, new Integer(Info.LAYERPATCH), ep);
+			newNi.newVar(Info.OPTION_KEY, Integer.valueOf(Info.LAYERPATCH), ep);
 
 			// postprocessing on the nodes
 			if (newNi.getProto() == Generic.tech().portNode)
@@ -1678,7 +1678,7 @@ public class Manipulate
 			} else if (ni.getProto() == Artwork.tech().filledBoxNode)
 			{
 				Short [] col = new Short[16];
-				for(int i=0; i<16; i++) col[i] = new Short((short)color);
+				for(int i=0; i<16; i++) col[i] = Short.valueOf((short)color);
 				ni.newVar(Artwork.ART_PATTERN, col, ep);
 			}
 			return true;
@@ -1934,14 +1934,14 @@ public class Manipulate
 			ni.newVar(Info.CONNECTION_KEY, newConnects, ep);
 
 			int newAngle = TextUtils.atoi(fieldValues[allArcs.size()]);
-			ni.newVar(Info.PORTANGLE_KEY, new Integer(newAngle), ep);
+			ni.newVar(Info.PORTANGLE_KEY, Integer.valueOf(newAngle), ep);
 			int newRange = TextUtils.atoi(fieldValues[allArcs.size()+1]);
-			ni.newVar(Info.PORTRANGE_KEY, new Integer(newRange), ep);
+			ni.newVar(Info.PORTRANGE_KEY, Integer.valueOf(newRange), ep);
 			String newMeaning = fieldValues[allArcs.size()+2];
 			int meaning = 0;
 			if (newMeaning.equals("Gate")) meaning = 1; else
 				if (newMeaning.equals("Gated")) meaning = 2;
-			ni.newVar(Info.PORTMEANING_KEY, new Integer(meaning), ep);
+			ni.newVar(Info.PORTMEANING_KEY, Integer.valueOf(meaning), ep);
 			return true;
 		}
 	}
@@ -2264,17 +2264,17 @@ public class Manipulate
 	{
 		if (desc.getTransparentLayer() > 0)
 		{
-			ni.newVar(Artwork.ART_COLOR, new Integer(EGraphics.makeIndex(desc.getTransparentLayer())), ep);
+			ni.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.makeIndex(desc.getTransparentLayer())), ep);
 		} else
 		{
-			ni.newVar(Artwork.ART_COLOR, new Integer(EGraphics.makeIndex(desc.getColor())), ep);
+			ni.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.makeIndex(desc.getColor())), ep);
 		}
 		if (desc.isPatternedOnDisplay())
 		{
 			int [] raster = desc.getPattern();
 			Integer [] pattern = new Integer[17];
-			for(int i=0; i<16; i++) pattern[i] = new Integer(raster[i]);
-			pattern[16] = new Integer(desc.getOutlined().getIndex());
+			for(int i=0; i<16; i++) pattern[i] = Integer.valueOf(raster[i]);
+			pattern[16] = Integer.valueOf(desc.getOutlined().getIndex());
 			ni.newVar(Artwork.ART_PATTERN, pattern, ep);
 		} else
 		{

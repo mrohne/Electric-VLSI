@@ -3219,7 +3219,7 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 				break;
 			}
 		}
-		netValues.put(net, new Integer(state));
+		netValues.put(net, Integer.valueOf(state));
 	}
 
 	/**
@@ -3495,7 +3495,7 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 			if (dumpSignals.get(i) == sig && dumpSweeps.get(i).intValue() == s) return;
 		}
 		dumpSignals.add(sig);
-		dumpSweeps.add(new Integer(s));
+		dumpSweeps.add(Integer.valueOf(s));
 		waveforms.add(sig);
 	}
 
@@ -4071,8 +4071,8 @@ public class WaveformWindow implements WindowContent, PropertyChangeListener
 					panelRight = Math.max(panelRight, maxX);
 				}
 			}
-			panelLefts.put(wp, new Double(panelLeft));
-			panelRights.put(wp, new Double(panelRight));
+			panelLefts.put(wp, Double.valueOf(panelLeft));
+			panelRights.put(wp, Double.valueOf(panelRight));
 			if (leftEdge == rightEdge)
 			{
 				leftEdge  = panelLeft;

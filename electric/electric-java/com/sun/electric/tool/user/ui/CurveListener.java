@@ -293,7 +293,7 @@ public class CurveListener implements WindowFrame.ElectricEventListener
 					curveAI.delVar(ImmutableArcInst.ARC_RADIUS);
 			} else
 			{
-				curveAI.newVar(ImmutableArcInst.ARC_RADIUS, new Double(DBMath.gridToLambda(gridCurvature)), ep);
+				curveAI.newVar(ImmutableArcInst.ARC_RADIUS, Double.valueOf(DBMath.gridToLambda(gridCurvature)), ep);
 			}
 			curveAI.modify(0, 0, 0, 0);
 			return true;

@@ -103,7 +103,6 @@ public class PWhileJob<T> extends PJob {
 		 * 
 		 * @see com.sun.electric.tool.util.concurrent.patterns.PTask#execute()
 		 */
-		@SuppressWarnings("unchecked")
 		@Override
 		public void execute() {
 			T item = null;

@@ -63,15 +63,15 @@ import com.sun.electric.tool.user.ncc.ComparisonsTree.TreeNode;
 class ComparisonsPane extends JSplitPane implements ActionListener {
     
     /* what is currently displayed */
-    private static final int EMPTY = 0;
-    private static final int COMP_SUMMARY = 1;
-    private static final int EXPORTS = 2;
-    private static final int PARTS_WIRES = 3;
-    private static final int SIZES = 4;
-    private static final int EXPORT_ASSERTS = 5;
-    private static final int EXPORT_NET_CONF = 6;
-    private static final int EXPORT_CHR_CONF = 7;
-    private static final int UNRECOG_PART = 8;
+//    private static final int EMPTY = 0;
+//    private static final int COMP_SUMMARY = 1;
+//    private static final int EXPORTS = 2;
+//    private static final int PARTS_WIRES = 3;
+//    private static final int SIZES = 4;
+//    private static final int EXPORT_ASSERTS = 5;
+//    private static final int EXPORT_NET_CONF = 6;
+//    private static final int EXPORT_CHR_CONF = 7;
+//    private static final int UNRECOG_PART = 8;
     
     /** max number of concurrent equiv. classes */ 
     private static final int MAX_CONCUR_EQ_RECS = 5;
@@ -85,7 +85,7 @@ class ComparisonsPane extends JSplitPane implements ActionListener {
     private JLabel treeLabel = new JLabel(treeTitle);
     private ComparisonsTree tree;
     private JScrollPane treeScrollPane;
-    private int dispOnRight = EMPTY;
+//    private int dispOnRight = EMPTY;
     
     private static Border border = BorderFactory.createEmptyBorder();
     
@@ -168,7 +168,7 @@ class ComparisonsPane extends JSplitPane implements ActionListener {
         
         // display summary of the first comparison
         int divPos = getDividerLocation();
-        dispOnRight = COMP_SUMMARY;
+//        dispOnRight = COMP_SUMMARY;
         displayComparisonSummary(0);
         setDividerLocation(divPos);
 
@@ -215,7 +215,7 @@ class ComparisonsPane extends JSplitPane implements ActionListener {
         }
         setRightComponent(rightSplPanes[0]);
         setDividerLocation(divPos);
-        dispOnRight = EMPTY;
+//        dispOnRight = EMPTY;
     }
     
     /**
@@ -350,31 +350,31 @@ class ComparisonsPane extends JSplitPane implements ActionListener {
             int exType = exNode.type;
             switch (exType) {
                 case TreeNode.COMP_TITLE: 
-                    dispOnRight = COMP_SUMMARY;
+//                    dispOnRight = COMP_SUMMARY;
                     displayComparisonSummary(exNode.compNdx);
                     break;                    
                 case TreeNode.EXPORTS:
-                    dispOnRight = EXPORTS;
+//                    dispOnRight = EXPORTS;
                     setRightComponent(getExportsPane(exNode.compNdx));
                     break;
                 case TreeNode.SIZES:
-                    dispOnRight = SIZES;
+//                    dispOnRight = SIZES;
                     setRightComponent(getSizesPane(exNode.compNdx));
                     break;
                 case TreeNode.EXPORT_ASSERTS:
-                    dispOnRight = EXPORT_ASSERTS;
+//                    dispOnRight = EXPORT_ASSERTS;
                     setRightComponent(getExportAssertionPane(exNode.compNdx));
                     break;
                 case TreeNode.EXPORT_NET_CONF:
-                    dispOnRight = EXPORT_NET_CONF;
+//                    dispOnRight = EXPORT_NET_CONF;
                     setRightComponent(getExportNetConflictPane(exNode.compNdx));
                     break;  
                 case TreeNode.EXPORT_CHR_CONF:
-                    dispOnRight = EXPORT_CHR_CONF;
+//                    dispOnRight = EXPORT_CHR_CONF;
                     setRightComponent(getExportChrConflictPane(exNode.compNdx));
                     break;
                 case TreeNode.UNRECOG_PART:
-                    dispOnRight = UNRECOG_PART;
+//                    dispOnRight = UNRECOG_PART;
                     setRightComponent(getUnrecognizedPartsPane(exNode.compNdx));
                     break;                                        
             }
@@ -386,7 +386,7 @@ class ComparisonsPane extends JSplitPane implements ActionListener {
         }
         
         // the right pane will display one or more equiv. classes
-        dispOnRight = PARTS_WIRES;
+//        dispOnRight = PARTS_WIRES;
         
         // get equiv. classes to be displayed
         curEqRecNodesToDisplay.clear();

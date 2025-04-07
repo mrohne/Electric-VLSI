@@ -61,8 +61,8 @@ public class ErrorLoggerTree {
     /** Path to error tree */           private static final TreePath errorPath = (new TreePath(ExplorerTreeModel.rootNode)).pathByAddingChild(errorTree);
     /** Current Logger */               static DefaultMutableTreeNode currentLogger;
 
-    private static final ErrorLogger networkErrorLogger = ErrorLogger.newInstance("Network Errors");
-//    private static final ErrorLogger drcErrorLogger = ErrorLogger.newInstance("DRC (incremental)");
+    private static final ErrorLogger networkErrorLogger = ErrorLogger.newInst("Network Errors");
+//    private static final ErrorLogger drcErrorLogger = ErrorLogger.newInst("DRC (incremental)");
     private static DefaultMutableTreeNode networkTree;
     private static DefaultMutableTreeNode drcTree;
 
@@ -326,7 +326,7 @@ public class ErrorLoggerTree {
             DefaultMutableTreeNode groupNode = loggerNode;
             if (logger.getSortKeyToGroupNames() != null)
             {
-                groupNode = sortKeyMap.get(new Integer(el.getSortKey()));
+                groupNode = sortKeyMap.get(Integer.valueOf(el.getSortKey()));
                 if (groupNode == null) // not found, put in loggerNode
                    groupNode = loggerNode;
             }

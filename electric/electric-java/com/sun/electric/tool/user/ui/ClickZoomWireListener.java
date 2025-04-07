@@ -78,6 +78,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 /**
  * Handles Selection, Zooming, and Wiring.
@@ -236,12 +237,10 @@ public class ClickZoomWireListener
     private boolean isLeftMouse(MouseEvent evt) {
         if (isMac) {
             if (!evt.isMetaDown()) {
-                if ((evt.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK)
-                    return true;
+            	if (SwingUtilities.isLeftMouseButton(evt)) return true;
             }
         } else {
-            if ((evt.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK)
-                return true;
+        	if (SwingUtilities.isLeftMouseButton(evt)) return true;
         }
         return false;
     }
@@ -250,17 +249,14 @@ public class ClickZoomWireListener
      * See if event is a right mouse click.  Platform independent.
      * One-button macintosh: Command + click == right mouse click.
      */
-    public static boolean isRightMouse(InputEvent evt) {
+    public static boolean isRightMouse(MouseEvent evt) {
         if (isMac) {
             if (evt.isMetaDown()) {
-                if ((evt.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK)
-                    return true;
+            	if (SwingUtilities.isLeftMouseButton(evt)) return true;
             }
-            if ((evt.getModifiers() & MouseEvent.BUTTON3_MASK) == MouseEvent.BUTTON3_MASK)
-                return true;
+        	if (SwingUtilities.isRightMouseButton(evt)) return true;
         } else {
-            if ((evt.getModifiers() & MouseEvent.BUTTON3_MASK) == MouseEvent.BUTTON3_MASK)
-                return true;
+        	if (SwingUtilities.isRightMouseButton(evt)) return true;
         }
         return false;
     }
@@ -268,9 +264,8 @@ public class ClickZoomWireListener
     /**
      * See if event is a middle mouse click.  Platform independent.
      */
-    public static boolean isMiddleMouse(InputEvent evt) {
-        if ((evt.getModifiers() & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK)
-            return true;
+    public static boolean isMiddleMouse(MouseEvent evt) {
+    	if (SwingUtilities.isMiddleMouseButton(evt)) return true;
         return false;
     }
 

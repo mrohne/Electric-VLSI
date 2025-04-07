@@ -69,7 +69,7 @@ public class LibraryPalette extends JPanel implements DatabaseChangeListener, Mo
 
     /**
      * The palette panel. This constructor is never used, use the Factory Method
-     * newInstance instead.
+     * newInst instead.
      */
     public LibraryPalette(Dimension preferredSize) {
         library = null;

@@ -47,7 +47,7 @@ public class NccMsgsFrame {
 
     // data variables
     /** list of NccComparisonResult */ private List<NccGuiInfo> mismatches;
-    /** NCC options                 */ private NccOptions nccOptions;
+//    /** NCC options                 */ private NccOptions nccOptions;
 
     public NccMsgsFrame() {
         Dimension scrnSize = TopLevel.getScreenSize();
@@ -102,7 +102,7 @@ public class NccMsgsFrame {
      */
     public void setMismatches(List<NccGuiInfo> misms, NccOptions options) {
         mismatches = misms;
-        nccOptions = options;
+//        nccOptions = options;
     }
 
     /**

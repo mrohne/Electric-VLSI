@@ -133,7 +133,7 @@ public class ExtractionTest extends AbstractTest
 		}
 
 		// setup extraction parameters
-		ErrorLogger errorLogger = ErrorLogger.newInstance("Node Extraction Test on cell " + cell.getName());
+		ErrorLogger errorLogger = ErrorLogger.newInst("Node Extraction Test on cell " + cell.getName());
 		boolean recursive = false;
 		double smallestPolygonSize = 0;
 		int activeHandling = 0;

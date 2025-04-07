@@ -69,7 +69,12 @@ import com.sun.electric.tool.project.LibraryDialog;
 import com.sun.electric.tool.project.UpdateJob;
 import com.sun.electric.tool.simulation.SimulationTool;
 import com.sun.electric.tool.simulation.SimulationTool.SpiceEngine;
-import com.sun.electric.tool.user.*;
+import com.sun.electric.tool.user.ActivityLogger;
+import com.sun.electric.tool.user.CircuitChangeJobs;
+import com.sun.electric.tool.user.CircuitChanges;
+import com.sun.electric.tool.user.Clipboard;
+import com.sun.electric.tool.user.User;
+import com.sun.electric.tool.user.UserInterfaceMain;
 import com.sun.electric.tool.user.dialogs.ChangeCurrentLib;
 import com.sun.electric.tool.user.dialogs.OpenFile;
 import com.sun.electric.tool.user.dialogs.OptionReconcile;
@@ -390,7 +395,7 @@ public class FileMenu {
 
         public boolean doIt() throws JobException
         {
-            lib = Library.newInstance(newLibName, null);
+            lib = Library.newInst(newLibName, null);
             if (lib == null) return false;
             fieldVariableChanged("lib");
             System.out.println("New "+lib+" created");
@@ -1611,14 +1616,15 @@ public class FileMenu {
         PrinterJob pj = PrinterJob.getPrinterJob();
         pj.setJobName(wf.getTitle());
 
-	    PrintService [] printers = new PrintService[0];
-	    try
-	    {
-		    SecurityManager secman = System.getSecurityManager();
-	    	secman.checkPrintJobAccess();
-//	    	printers = PrinterJob.lookupPrintServices();
-	    	printers = PrintServiceLookup.lookupPrintServices(null, null);
-	    } catch(Exception e) {}
+        PrintService[] printers = PrintServiceLookup.lookupPrintServices(null, null);
+//	    PrintService [] printers = new PrintService[0];
+//	    try
+//	    {
+//		    SecurityManager secman = System.getSecurityManager();
+//	    	secman.checkPrintJobAccess();
+////	    	printers = PrinterJob.lookupPrintServices();
+//	    	printers = PrintServiceLookup.lookupPrintServices(null, null);
+//	    } catch(Exception e) {}
 
         // see if a default printer should be mentioned
         String pName = IOTool.getPrinterName();

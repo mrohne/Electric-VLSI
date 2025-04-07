@@ -119,7 +119,7 @@ public class DRCTest extends AbstractTest
 
 	private static Cell builTechLibrary(Technology tech, String foundryName, EditingPreferences ep)
 	{
-		Library lib = Library.newInstance(tech.getTechName()+"-"+foundryName, null);
+		Library lib = Library.newInst(tech.getTechName()+"-"+foundryName, null);
 
 		List<Cell> cellList = new ArrayList<Cell>();
 
@@ -197,7 +197,7 @@ public class DRCTest extends AbstractTest
 				NodeInst.makeInstance(pnp, ep, EPoint.snap(pos[e]), newXSize, newYSize, nNp);
 			}
 		}
-		Cell gallery = Cell.newInstance(lib, "gallery{lay}");
+		Cell gallery = Cell.newInst(lib, "gallery{lay}");
 		NodeInst ni = null;
 		double y = 0;
 		for (Cell c : cellList)
@@ -285,7 +285,7 @@ public class DRCTest extends AbstractTest
 	public Boolean Schematic1()
 	{
 		createMessageOutput();
-		if (basicDRCSchematicTest(getRegressionPath()+"/data/qThree", "qThreeTop", "qThreeTop.jelib", 1050, 2)) return Boolean.TRUE;
+		if (basicDRCSchematicTest(getRegressionPath()+"/data/qThree", "qThreeTop", "qThreeTop.jelib", 1052, 2)) return Boolean.TRUE;
 		return Boolean.FALSE;
 	}
 

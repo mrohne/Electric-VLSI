@@ -71,8 +71,8 @@ public class Range {
 	public static Range intersect(Range r1, Range r2) {
 		Range result = null;
 		
-		Range tmpLower = (r1.start < r2.start) ? r1 : r2;
-		Range tmpUpper = (r1.start < r2.start) ? r2 : r1;
+//		Range tmpLower = (r1.start < r2.start) ? r1 : r2;
+//		Range tmpUpper = (r1.start < r2.start) ? r2 : r1;
 		
 		
 		

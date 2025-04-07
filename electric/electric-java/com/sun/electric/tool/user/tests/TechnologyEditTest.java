@@ -242,11 +242,11 @@ public class TechnologyEditTest extends AbstractTest
 			doTest(layer1.getDXFLayer(), layer2.getDXFLayer(), mGood, layerName, "DXF-layer", tech1Name, tech2Name);
 
 			// make sure the parasitic information matches
-			doTest(new Double(layer1.getResistance()), new Double(layer2.getResistance()), mGood,
+			doTest(Double.valueOf(layer1.getResistance()), Double.valueOf(layer2.getResistance()), mGood,
 				layerName, "resistance", tech1Name, tech2Name);
-			doTest(new Double(layer1.getCapacitance()), new Double(layer2.getCapacitance()), mGood,
+			doTest(Double.valueOf(layer1.getCapacitance()), Double.valueOf(layer2.getCapacitance()), mGood,
 				layerName, "capacitance", tech1Name, tech2Name);
-			doTest(new Double(layer1.getEdgeCapacitance()), new Double(layer2.getEdgeCapacitance()), mGood,
+			doTest(Double.valueOf(layer1.getEdgeCapacitance()), Double.valueOf(layer2.getEdgeCapacitance()), mGood,
 				layerName, "edge-capacitance", tech1Name, tech2Name);
 
 			// make sure the graphics matches
@@ -256,11 +256,11 @@ public class TechnologyEditTest extends AbstractTest
 				layerName, "color", tech1Name, tech2Name);
 			doTest(Boolean.valueOf(gra1.getForeground()), Boolean.valueOf(gra2.getForeground()), mGood,
 				layerName, "foreground", tech1Name, tech2Name);
-			doTest(new Double(gra1.getOpacity()), new Double(gra2.getOpacity()), mGood,
+			doTest(Double.valueOf(gra1.getOpacity()), Double.valueOf(gra2.getOpacity()), mGood,
 				layerName, "opacity", tech1Name, tech2Name);
 			doTest(gra1.getOutlined(), gra2.getOutlined(), mGood,
 				layerName, "outline", tech1Name, tech2Name);
-			doTest(new Integer(gra1.getTransparentLayer()), new Integer(gra2.getTransparentLayer()), mGood,
+			doTest(Integer.valueOf(gra1.getTransparentLayer()), Integer.valueOf(gra2.getTransparentLayer()), mGood,
 				layerName, "transparency", tech1Name, tech2Name);
 			boolean patSame = true;
 			for(int j=0; j<16; j++) if (gra1.getPattern()[j] != gra2.getPattern()[j]) patSame = false;
@@ -335,9 +335,9 @@ public class TechnologyEditTest extends AbstractTest
 				arcName, "wipable", tech1Name, tech2Name);
 			doTest(Boolean.valueOf(ap1.getFactoryDefaultInst().isTailExtended()), Boolean.valueOf(ap2.getFactoryDefaultInst().isTailExtended()), mGood,
 				arcName, "extended", tech1Name, tech2Name);
-			doTest(new Integer(ap1.getFactoryAngleIncrement()), new Integer(ap2.getFactoryAngleIncrement()), mGood,
+			doTest(Integer.valueOf(ap1.getFactoryAngleIncrement()), Integer.valueOf(ap2.getFactoryAngleIncrement()), mGood,
 				arcName, "angle-increment", tech1Name, tech2Name);
-			doTest(new Double(ap1.getFactoryAntennaRatio()), new Double(ap2.getFactoryAntennaRatio()), mGood,
+			doTest(Double.valueOf(ap1.getFactoryAntennaRatio()), Double.valueOf(ap2.getFactoryAntennaRatio()), mGood,
 				arcName, "angle-increment", tech1Name, tech2Name);
 
 			// make sure the layers match
@@ -380,7 +380,7 @@ public class TechnologyEditTest extends AbstractTest
 				String arcLayerName = arcName + " layer " + ap1.getLayer(ai1).getName();
 				doTest(ap1.getLayerStyle(ai1), ap2.getLayerStyle(ai2), mGood,
 					arcLayerName, "layer-style", tech1Name, tech2Name);
-				doTest(new Double(ap1.getLayerExtend(ai1).getLambda()), new Double(ap2.getLayerExtend(ai2).getLambda()), mGood,
+				doTest(Double.valueOf(ap1.getLayerExtend(ai1).getLambda()), Double.valueOf(ap2.getLayerExtend(ai2).getLambda()), mGood,
 					arcLayerName, "layer-extension", tech1Name, tech2Name);
 			}
 		}
@@ -448,25 +448,25 @@ public class TechnologyEditTest extends AbstractTest
 			if (isSerpentine) {
 				if (!ignoreTransistorFactors.contains(np1.getName()))
 				{
-					doTest(new Double(np1.getSpecialValues()[0]), new Double(np2.getSpecialValues()[0]), mGood,
+					doTest(Double.valueOf(np1.getSpecialValues()[0]), Double.valueOf(np2.getSpecialValues()[0]), mGood,
 						nodeName, "serpentine layer count", tech1Name, tech2Name);
 				}
-				doTest(new Double(np1.getSpecialValues()[1]), new Double(np2.getSpecialValues()[1]), mGood,
+				doTest(Double.valueOf(np1.getSpecialValues()[1]), Double.valueOf(np2.getSpecialValues()[1]), mGood,
 					nodeName, "serpentine active port inset from end of serpentine path", tech1Name, tech2Name);
-				doTest(new Double(np1.getSpecialValues()[2]), new Double(np2.getSpecialValues()[2]), mGood,
+				doTest(Double.valueOf(np1.getSpecialValues()[2]), Double.valueOf(np2.getSpecialValues()[2]), mGood,
 					nodeName, "serpentine active port inset from poly edge", tech1Name, tech2Name);
-				doTest(new Double(np1.getSpecialValues()[3]), new Double(np2.getSpecialValues()[3]), mGood,
+				doTest(Double.valueOf(np1.getSpecialValues()[3]), Double.valueOf(np2.getSpecialValues()[3]), mGood,
 					nodeName, "serpentine poly width", tech1Name, tech2Name);
-				doTest(new Double(np1.getSpecialValues()[4]), new Double(np2.getSpecialValues()[4]), mGood,
+				doTest(Double.valueOf(np1.getSpecialValues()[4]), Double.valueOf(np2.getSpecialValues()[4]), mGood,
 					nodeName, "serpentine poly port inset from poly edge", tech1Name, tech2Name);
-				doTest(new Double(np1.getSpecialValues()[5]), new Double(np2.getSpecialValues()[5]), mGood,
+				doTest(Double.valueOf(np1.getSpecialValues()[5]), Double.valueOf(np2.getSpecialValues()[5]), mGood,
 					nodeName, "serpentine poly port instet from active edge", tech1Name, tech2Name);
 			}
 			SizeOffset so1 = np1.getProtoSizeOffset();
 			SizeOffset so2 = np2.getProtoSizeOffset();
-			doTest(new Double(np1.getDefWidth(ep)-so1.getLowXOffset()-so1.getHighXOffset()), new Double(np2.getDefWidth(ep)-so2.getLowXOffset()-so2.getHighXOffset()), mGood,
+			doTest(Double.valueOf(np1.getDefWidth(ep)-so1.getLowXOffset()-so1.getHighXOffset()), Double.valueOf(np2.getDefWidth(ep)-so2.getLowXOffset()-so2.getHighXOffset()), mGood,
 				nodeName, "default-width", tech1Name, tech2Name);
-			doTest(new Double(np1.getDefHeight(ep)-so1.getLowYOffset()-so1.getHighYOffset()), new Double(np2.getDefHeight(ep)-so2.getLowYOffset()-so2.getHighYOffset()), mGood,
+			doTest(Double.valueOf(np1.getDefHeight(ep)-so1.getLowYOffset()-so1.getHighYOffset()), Double.valueOf(np2.getDefHeight(ep)-so2.getLowYOffset()-so2.getHighYOffset()), mGood,
 				nodeName, "default-height", tech1Name, tech2Name);
 			double sizeX1 = np1.getDefSize(ep).getLambdaX();
 			double sizeY1 = np1.getDefSize(ep).getLambdaY();
@@ -477,13 +477,13 @@ public class TechnologyEditTest extends AbstractTest
 			{
 				if (!ignoreNodeSize.contains(np1.getName()) && !ignoreTransistorFactors.contains(np1.getName()))
 				{
-					doTest(new Double(so1.getLowXOffset()), new Double(so2.getLowXOffset()), mGood,
+					doTest(Double.valueOf(so1.getLowXOffset()), Double.valueOf(so2.getLowXOffset()), mGood,
 						nodeName, "low-X-offset", tech1Name, tech2Name);
-					doTest(new Double(so1.getHighXOffset()), new Double(so2.getHighXOffset()), mGood,
+					doTest(Double.valueOf(so1.getHighXOffset()), Double.valueOf(so2.getHighXOffset()), mGood,
 						nodeName, "high-X-offset", tech1Name, tech2Name);
-					doTest(new Double(so1.getLowYOffset()), new Double(so2.getLowYOffset()), mGood,
+					doTest(Double.valueOf(so1.getLowYOffset()), Double.valueOf(so2.getLowYOffset()), mGood,
 						nodeName, "low-Y-offset", tech1Name, tech2Name);
-					doTest(new Double(so1.getHighYOffset()), new Double(so2.getHighYOffset()), mGood,
+					doTest(Double.valueOf(so1.getHighYOffset()), Double.valueOf(so2.getHighYOffset()), mGood,
 						nodeName, "high-Y-offset", tech1Name, tech2Name);
 				}
 			}
@@ -532,7 +532,7 @@ public class TechnologyEditTest extends AbstractTest
 					nodeLayerName, "layer-style", tech1Name, tech2Name);
 				if (!ignoreTransistorFactors.contains(np1.getName()))
 				{
-					doTest(new Integer(nlays1[ni1].getPortNum()), new Integer(nlays2[ni2].getPortNum()), mGood,
+					doTest(Integer.valueOf(nlays1[ni1].getPortNum()), Integer.valueOf(nlays2[ni2].getPortNum()), mGood,
 						nodeLayerName, "port-num", tech1Name, tech2Name);
 				}
 				int r1 = nlays1[ni1].getRepresentation();
@@ -543,24 +543,24 @@ public class TechnologyEditTest extends AbstractTest
 				{
 					EdgeV botEdge1 = nlays1[ni1].getBottomEdge();
 					EdgeV botEdge2 = nlays2[ni2].getBottomEdge();
-					doTest(new Double(botEdge1.getMultiplier() * sizeY1 + botEdge1.getAdder().getLambda()),
-						new Double(botEdge2.getMultiplier() * sizeY2 + botEdge2.getAdder().getLambda()), mGood,
+					doTest(Double.valueOf(botEdge1.getMultiplier() * sizeY1 + botEdge1.getAdder().getLambda()),
+						Double.valueOf(botEdge2.getMultiplier() * sizeY2 + botEdge2.getAdder().getLambda()), mGood,
 						nodeLayerName, "bottom-edge", tech1Name, tech2Name);
 					EdgeV topEdge1 = nlays1[ni1].getTopEdge();
 					EdgeV topEdge2 = nlays2[ni2].getTopEdge();
-					doTest(new Double(topEdge1.getMultiplier() * sizeY1 + topEdge1.getAdder().getLambda()),
-						new Double(topEdge2.getMultiplier() * sizeY2 + topEdge2.getAdder().getLambda()), mGood,
+					doTest(Double.valueOf(topEdge1.getMultiplier() * sizeY1 + topEdge1.getAdder().getLambda()),
+						Double.valueOf(topEdge2.getMultiplier() * sizeY2 + topEdge2.getAdder().getLambda()), mGood,
 						nodeLayerName, "top-edge", tech1Name, tech2Name);
 
 					EdgeH lftEdge1 = nlays1[ni1].getLeftEdge();
 					EdgeH lftEdge2 = nlays2[ni2].getLeftEdge();
-					doTest(new Double(lftEdge1.getMultiplier() * sizeX1 + lftEdge1.getAdder().getLambda()),
-						new Double(lftEdge2.getMultiplier() * sizeX2 + lftEdge2.getAdder().getLambda()), mGood,
+					doTest(Double.valueOf(lftEdge1.getMultiplier() * sizeX1 + lftEdge1.getAdder().getLambda()),
+						Double.valueOf(lftEdge2.getMultiplier() * sizeX2 + lftEdge2.getAdder().getLambda()), mGood,
 						nodeLayerName, "left-edge", tech1Name, tech2Name);
 					EdgeH rgtEdge1 = nlays1[ni1].getRightEdge();
 					EdgeH rgtEdge2 = nlays2[ni2].getRightEdge();
-					doTest(new Double(rgtEdge1.getMultiplier() * sizeX1 + rgtEdge1.getAdder().getLambda()),
-						new Double(rgtEdge2.getMultiplier() * sizeX2 + rgtEdge2.getAdder().getLambda()), mGood,
+					doTest(Double.valueOf(rgtEdge1.getMultiplier() * sizeX1 + rgtEdge1.getAdder().getLambda()),
+						Double.valueOf(rgtEdge2.getMultiplier() * sizeX2 + rgtEdge2.getAdder().getLambda()), mGood,
 						nodeLayerName, "right-edge", tech1Name, tech2Name);
 				} else
 				{
@@ -642,24 +642,24 @@ public class TechnologyEditTest extends AbstractTest
 				{
 					EdgeV botEdge1 = pp1.getBottom();
 					EdgeV botEdge2 = pp2.getBottom();
-					doTest(new Double(botEdge1.getMultiplier() * sizeY1 + botEdge1.getAdder().getLambda()),
-						new Double(botEdge2.getMultiplier() * sizeY2 + botEdge2.getAdder().getLambda()), mGood,
+					doTest(Double.valueOf(botEdge1.getMultiplier() * sizeY1 + botEdge1.getAdder().getLambda()),
+						Double.valueOf(botEdge2.getMultiplier() * sizeY2 + botEdge2.getAdder().getLambda()), mGood,
 						nodePortName, "bottom-edge", tech1Name, tech2Name);
 					EdgeV topEdge1 = pp1.getTop();
 					EdgeV topEdge2 = pp2.getTop();
-					doTest(new Double(topEdge1.getMultiplier() * sizeY1 + topEdge1.getAdder().getLambda()),
-						new Double(topEdge2.getMultiplier() * sizeY2 + topEdge2.getAdder().getLambda()), mGood,
+					doTest(Double.valueOf(topEdge1.getMultiplier() * sizeY1 + topEdge1.getAdder().getLambda()),
+						Double.valueOf(topEdge2.getMultiplier() * sizeY2 + topEdge2.getAdder().getLambda()), mGood,
 						nodePortName, "top-edge", tech1Name, tech2Name);
 
 					EdgeH lftEdge1 = pp1.getLeft();
 					EdgeH lftEdge2 = pp2.getLeft();
-					doTest(new Double(lftEdge1.getMultiplier() * sizeX1 + lftEdge1.getAdder().getLambda()),
-						new Double(lftEdge2.getMultiplier() * sizeX2 + lftEdge2.getAdder().getLambda()), mGood,
+					doTest(Double.valueOf(lftEdge1.getMultiplier() * sizeX1 + lftEdge1.getAdder().getLambda()),
+						Double.valueOf(lftEdge2.getMultiplier() * sizeX2 + lftEdge2.getAdder().getLambda()), mGood,
 						nodePortName, "left-edge", tech1Name, tech2Name);
 					EdgeH rgtEdge1 = pp1.getRight();
 					EdgeH rgtEdge2 = pp2.getRight();
-					doTest(new Double(rgtEdge1.getMultiplier() * sizeX1 + rgtEdge1.getAdder().getLambda()),
-						new Double(rgtEdge2.getMultiplier() * sizeX2 + rgtEdge2.getAdder().getLambda()), mGood,
+					doTest(Double.valueOf(rgtEdge1.getMultiplier() * sizeX1 + rgtEdge1.getAdder().getLambda()),
+						Double.valueOf(rgtEdge2.getMultiplier() * sizeX2 + rgtEdge2.getAdder().getLambda()), mGood,
 						nodePortName, "right-edge", tech1Name, tech2Name);
 				} else
 				{
@@ -674,12 +674,12 @@ public class TechnologyEditTest extends AbstractTest
 				}
 				if (!ignoreTransistorFactors.contains(np1.getName()))
 				{
-					doTest(new Integer(pp1.getTopology()), new Integer(pp2.getTopology()), mGood,
+					doTest(Integer.valueOf(pp1.getTopology()), Integer.valueOf(pp2.getTopology()), mGood,
 						nodePortName, "topology", tech1Name, tech2Name);
 				}
-				doTest(new Integer(pp1.getAngle()), new Integer(pp2.getAngle()), mGood,
+				doTest(Integer.valueOf(pp1.getAngle()), Integer.valueOf(pp2.getAngle()), mGood,
 					nodePortName, "angle", tech1Name, tech2Name);
-				doTest(new Integer(pp1.getAngleRange()), new Integer(pp2.getAngleRange()), mGood,
+				doTest(Integer.valueOf(pp1.getAngleRange()), Integer.valueOf(pp2.getAngleRange()), mGood,
 					nodePortName, "angle", tech1Name, tech2Name);
 
 				// compare connectivity

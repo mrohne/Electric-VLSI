@@ -80,7 +80,7 @@ public class ElapseTimer implements Serializable
 	}
 	
 	public Long toLong() {
-	    return new Long(this.end - this.start);
+	    return Long.valueOf(this.end - this.start);
 	}
 
 	public void print(String preText) {

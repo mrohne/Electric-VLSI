@@ -150,7 +150,7 @@ public class KeyStrokePair {
      */
     public static String keyStrokeToString(KeyStroke key) {
         if (key == null) return "";
-        String mods = KeyEvent.getKeyModifiersText(key.getModifiers());
+        String mods = KeyEvent.getModifiersExText(key.getModifiers());
         String id = getStringFromKeyStroke(key);
         // change key to lower case, unless the shift modifier was pressed
         //if ((key.getModifiers() & InputEvent.SHIFT_DOWN_MASK) == 0) id = id.toLowerCase();
@@ -218,7 +218,7 @@ public class KeyStrokePair {
             str = str.replaceAll("command", "");
             str = str.trim();
             KeyStroke key = KeyStroke.getKeyStroke(str);
-            int command_mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+            int command_mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
             if (key != null) {
                 key = KeyStroke.getKeyStroke(key.getKeyCode(), key.getModifiers() | command_mask);
                 return key;

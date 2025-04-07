@@ -128,7 +128,7 @@ public class TextWindow implements WindowContent
         if (cell != null)
         {
 	        fontName = cell.getVarValue(Cell.TEXT_CELL_FONT_NAME, String.class, fontName);
-	        fontSize = cell.getVarValue(Cell.TEXT_CELL_FONT_SIZE, Integer.class, new Integer(fontSize)).intValue();
+	        fontSize = cell.getVarValue(Cell.TEXT_CELL_FONT_SIZE, Integer.class, Integer.valueOf(fontSize)).intValue();
         }
 
         textArea.setFont(new Font(fontName, 0, fontSize));

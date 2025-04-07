@@ -21,6 +21,8 @@
  */
 package com.sun.electric.tool.util.concurrent.datastructures;
 
+import com.sun.electric.util.TextUtils;
+
 
 /**
  * 
@@ -53,7 +55,7 @@ public class BDEQueueWrapper<T> extends IStructure<T> {
 
 	@Override
 	public T remove() {
-		long curThread = Thread.currentThread().getId();
+		long curThread = TextUtils.getThreadID(Thread.currentThread());
 		if (curThread == owner) {
 			return queue.remove();
 		} else {

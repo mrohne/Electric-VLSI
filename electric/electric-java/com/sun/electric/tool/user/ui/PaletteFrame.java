@@ -78,7 +78,7 @@ public class PaletteFrame implements MouseListener
 	 * Method to create a new window on the screen that displays the component menu.
 	 * @return the PaletteFrame that shows the component menu.
 	 */
-	public static PaletteFrame newInstance(WindowFrame ww)
+	public static PaletteFrame newInst(WindowFrame ww)
 	{
 		PaletteFrame palette = new PaletteFrame();
 		palette.topPanel = new JPanel();

@@ -342,10 +342,12 @@ public abstract class AbstractTest implements Serializable
 
 	static void trimLibToCell(String inLibFile, String outLibFile, String cellName)
 	{
+		LineNumberReader lineReader;
+		PrintWriter printWriter;
 		try
 		{
-			LineNumberReader lineReader = new LineNumberReader(new FileReader(inLibFile));
-			PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(outLibFile)));
+			lineReader = new LineNumberReader(new FileReader(inLibFile));
+			printWriter = new PrintWriter(new BufferedWriter(new FileWriter(outLibFile)));
 			boolean inCell = false;
 			for(;;)
 			{
@@ -380,10 +382,12 @@ public abstract class AbstractTest implements Serializable
 	 */
 	public static void removeLines(String inLibFile, String outLibFile, String key)
 	{
+		LineNumberReader lineReader;
+		PrintWriter printWriter;
 		try
 		{
-			LineNumberReader lineReader = new LineNumberReader(new FileReader(inLibFile));
-			PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(outLibFile)));
+			lineReader = new LineNumberReader(new FileReader(inLibFile));
+			printWriter = new PrintWriter(new BufferedWriter(new FileWriter(outLibFile)));
 			for(;;)
 			{
 				String buf = lineReader.readLine();
@@ -411,10 +415,12 @@ public abstract class AbstractTest implements Serializable
 	 */
 	public static void removeLines(String inLibFile, String outLibFile, char [] lineKeys)
 	{
+		LineNumberReader lineReader;
+		PrintWriter printWriter;
 		try
 		{
-			LineNumberReader lineReader = new LineNumberReader(new FileReader(inLibFile));
-			PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(outLibFile)));
+			lineReader = new LineNumberReader(new FileReader(inLibFile));
+			printWriter = new PrintWriter(new BufferedWriter(new FileWriter(outLibFile)));
 			for(;;)
 			{
 				String buf = lineReader.readLine();

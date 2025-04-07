@@ -44,7 +44,6 @@ public class ImmutableArrayList<E> extends ArrayList<E>
      * @param c the collection whose elements are to be placed into this list.
      * @throws NullPointerException if the specified collection is null.
      */
-    @SuppressWarnings("unchecked")
     public static <T> ImmutableArrayList<T> of(Collection<? extends T> c)
     {
         if (c.isEmpty())
@@ -62,7 +61,6 @@ public class ImmutableArrayList<E> extends ArrayList<E>
      * @param elems the array whose elements are to be placed into this list.
      * @throws NullPointerException if the specified array is null.
      */
-    @SuppressWarnings("unchecked")
     public static <T> ImmutableArrayList<T> of(T... elems)
     {
         if (elems.length == 0)

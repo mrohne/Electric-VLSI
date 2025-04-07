@@ -155,7 +155,7 @@ public class GenMath {
         while (parse.hasMoreTokens()) {
             String value = parse.nextToken();
             try {
-                valuesFound.add(new Double(Double.parseDouble(value)));
+                valuesFound.add(Double.parseDouble(value));
             } catch (Exception e) {
                 e.printStackTrace();
             }

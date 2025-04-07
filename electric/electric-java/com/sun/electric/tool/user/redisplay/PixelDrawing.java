@@ -218,7 +218,7 @@ public class PixelDrawing {
 
 	// statistics stuff
 	private static final boolean TAKE_STATS = false;
-	private static int tinyCells, tinyPrims, totalCells, renderedCells, totalPrims, tinyArcs, linedArcs, totalArcs;
+	private static int tinyCells, tinyPrims, totalCells, /* renderedCells, */ totalPrims, tinyArcs, linedArcs, totalArcs;
 	private static int offscreensCreated, offscreenPixelsCreated, offscreensUsed, offscreenPixelsUsed, cellsRendered;
 
 	private static final boolean DEBUGRENDERTIMING = false;
@@ -538,7 +538,7 @@ public class PixelDrawing {
 		if (TAKE_STATS) {
 			timer.start();
 			initialUsed = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-			tinyCells = tinyPrims = totalCells = renderedCells = totalPrims = tinyArcs = linedArcs = totalArcs = 0;
+			tinyCells = tinyPrims = totalCells = /* renderedCells = */ totalPrims = tinyArcs = linedArcs = totalArcs = 0;
 			offscreensCreated = offscreenPixelsCreated = offscreensUsed = offscreenPixelsUsed = cellsRendered = 0;
 		}
 
@@ -1191,7 +1191,7 @@ public class PixelDrawing {
 	 */
 	private void drawCell(Cell cell, Rectangle2D drawLimitBounds, boolean fullInstantiate, Orientation orient,
 			FixpTransform prevTrans, Cell topCell) {
-		renderedCells++;
+//		renderedCells++;
 
 		// draw all arcs
 		for (Iterator<ArcInst> arcs = cell.getArcs(); arcs.hasNext();) {

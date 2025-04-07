@@ -197,10 +197,10 @@ public class JobsTest extends AbstractTest
 		String libName = "hangRef";
 		Library lib = Library.findLibrary(libName);
 		if (lib == null)
-			lib = Library.newInstance(libName, null);
-		Cell refCell = Cell.newInstance(lib, "referenced{ic}");
+			lib = Library.newInst(libName, null);
+		Cell refCell = Cell.newInst(lib, "referenced{ic}");
 		CellId refCellId = refCell.getId();
-		Cell cell = Cell.newInstance(lib, "hangRef{sch}");
+		Cell cell = Cell.newInst(lib, "hangRef{sch}");
 		cell.newVar("ATTR_FOO", refCellId, ep);
 		refCell.kill();
 		return Boolean.TRUE;

@@ -217,7 +217,7 @@ public class TechConversionResult implements Serializable
 			if (offendingSamp != null)
 			{
 				Integer prev = offendingSample.get(offendingSamp);
-				if (prev == null) prev = new Integer(1); else prev = new Integer(prev.intValue()+1);
+				if (prev == null) prev = Integer.valueOf(1); else prev = Integer.valueOf(prev.intValue()+1);
 				offendingSample.put(offendingSamp, prev);
 			}
 		}

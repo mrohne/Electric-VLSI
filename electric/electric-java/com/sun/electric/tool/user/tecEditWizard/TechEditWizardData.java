@@ -162,12 +162,12 @@ public class TechEditWizardData
 
     private static class PolygonLayerNode extends LayerNode
     {
-        List<EPoint> pList;
+//        List<EPoint> pList;
 
         PolygonLayerNode(String l, List<EPoint> list)
         {
             super(l);
-            pList = list;
+//            pList = list;
         }
     }
 
@@ -2401,8 +2401,8 @@ public class TechEditWizardData
 //            EPoint.fromLambda(0.5*nodeSizeRule.getWidth(), 0.5*nodeSizeRule.getHeight()) :
 //            EPoint.fromLambda(0.5*getDefWidth(), 0.5*getDefHeight());
 //         EPoint minFullSize = EPoint.fromLambda(0.5*width, 0.5*height);
-        EPoint topLeft = EPoint.fromLambda(ppLeft, ppBottom + height);
-        EPoint size =  EPoint.fromLambda(width, height);
+//        EPoint topLeft = EPoint.fromLambda(ppLeft, ppBottom + height);
+//        EPoint size =  EPoint.fromLambda(width, height);
 
 //        double getDefWidth = width, getDefHeight = height;
         if (function.isPin() && isArcsShrink) {
@@ -3973,10 +3973,10 @@ public class TechEditWizardData
         //
         // Poly
         EGraphics graph = new EGraphics(false, false, null, 1, 0, 0, 0, 1, true, nullPattern);
-        Xml.Layer polyLayer = makeXmlLayer(t.layers, layerMap, poly_layer.name, Layer.Function.POLY1, 0, graph,
+        /* Xml.Layer polyLayer = */ makeXmlLayer(t.layers, layerMap, poly_layer.name, Layer.Function.POLY1, 0, graph,
             poly_width, true, true);
         // PolyGate
-        Xml.Layer polyGateLayer = makeXmlLayer(t.layers, layerMap, poly_layer.name+"Gate", Layer.Function.GATE, 0, graph,
+        /* Xml.Layer polyGateLayer = */ makeXmlLayer(t.layers, layerMap, poly_layer.name+"Gate", Layer.Function.GATE, 0, graph,
             poly_width, true, false); // false for the port otherwise it won't find any type
 
         if (withExtraDummyLayers())
@@ -3992,19 +3992,19 @@ public class TechEditWizardData
         graph = new EGraphics(false, false, null, 0, contact_colour.getRed(), contact_colour.getGreen(),
             contact_colour.getBlue(), 0.5, true, nullPattern);
         // PolyCon
-        Xml.Layer polyConLayer = makeXmlLayer(t.layers, layerMap, "Poly-Cut", Layer.Function.CONTACT1,
+        /* Xml.Layer polyConLayer = */ makeXmlLayer(t.layers, layerMap, "Poly-Cut", Layer.Function.CONTACT1,
             Layer.Function.CONPOLY, graph, contact_size, true, false);
         // DiffCon
-        Xml.Layer diffConLayer = makeXmlLayer(t.layers, layerMap, diff_layer.name+"-Cut", Layer.Function.CONTACT1,
+        /* Xml.Layer diffConLayer = */ makeXmlLayer(t.layers, layerMap, diff_layer.name+"-Cut", Layer.Function.CONTACT1,
             Layer.Function.CONDIFF, graph, contact_size, true, false);
 
         // P-Diff and N-Diff
         graph = new EGraphics(false, false, null, 2, 0, 0, 0, 1, true, nullPattern);
         // N-Diff
-        Xml.Layer diffNLayer = makeXmlLayer(t.layers, layerMap, "N-"+ diff_layer.name, Layer.Function.DIFFN, 0, graph,
+        /* Xml.Layer diffNLayer = */ makeXmlLayer(t.layers, layerMap, "N-"+ diff_layer.name, Layer.Function.DIFFN, 0, graph,
             diff_width, true, true, "N-"+ diff_layer.name, "N-Well", "S-N-Well");
         // P-Diff                                                                                                    dd
-        Xml.Layer diffPLayer = makeXmlLayer(t.layers, layerMap, "P-"+ diff_layer.name, Layer.Function.DIFFP, 0, graph,
+        /* Xml.Layer diffPLayer = */ makeXmlLayer(t.layers, layerMap, "P-"+ diff_layer.name, Layer.Function.DIFFP, 0, graph,
             diff_width, true, true, "P-"+ diff_layer.name, "P-Well", "S-P-Well");
 
                 // NPlus and PPlus
@@ -4080,23 +4080,23 @@ public class TechEditWizardData
         // NPlus
         graph = new EGraphics(true, true, null, 0, nplus_colour.getRed(), nplus_colour.getGreen(),
             nplus_colour.getBlue(), 1, true, patternSlash);
-        Xml.Layer nplusLayer = makeXmlLayer(t.layers, layerMap, nplus_layer.name, Layer.Function.IMPLANTN, 0, graph,
+        /* Xml.Layer nplusLayer = */ makeXmlLayer(t.layers, layerMap, nplus_layer.name, Layer.Function.IMPLANTN, 0, graph,
             nplus_width, true, false);
         // PPlus
         graph = new EGraphics(true, true, null, 0, pplus_colour.getRed(), pplus_colour.getGreen(),
             pplus_colour.getBlue(), 1, true, patternDots);
-        Xml.Layer pplusLayer = makeXmlLayer(t.layers, layerMap, pplus_layer.name, Layer.Function.IMPLANTP, 0, graph,
+        /* Xml.Layer pplusLayer = */ makeXmlLayer(t.layers, layerMap, pplus_layer.name, Layer.Function.IMPLANTP, 0, graph,
             pplus_width, true, false);
 
         // N-Well
         graph = new EGraphics(true, true, null, 0, nwell_colour.getRed(), nwell_colour.getGreen(),
             nwell_colour.getBlue(), 1, true, patternDotsShift);
-        Xml.Layer nwellLayer = makeXmlLayer(t.layers, layerMap, nwell_layer.name, Layer.Function.WELLN, 0, graph,
+        /* Xml.Layer nwellLayer = */ makeXmlLayer(t.layers, layerMap, nwell_layer.name, Layer.Function.WELLN, 0, graph,
             nwell_width, true, false);
         // P-Well
         graph = new EGraphics(true, true, null, 0, nwell_colour.getRed(), nwell_colour.getGreen(),
             nwell_colour.getBlue(), 1, true, patternBackSlash);
-        Xml.Layer pwellLayer = makeXmlLayer(t.layers, layerMap, "P-Well", Layer.Function.WELLP, 0, graph,
+        /* Xml.Layer pwellLayer = */ makeXmlLayer(t.layers, layerMap, "P-Well", Layer.Function.WELLP, 0, graph,
             nwell_width, true, false);
     }
 
@@ -5367,7 +5367,7 @@ public class TechEditWizardData
 //                List <Xml.NodeLayer> list = new ArrayList<Xml.NodeLayer>(c.layers.size());
                 Xml.NodeLayer[] array = new Xml.NodeLayer[c.layers.size()];
                 portNames.clear();
-                boolean foundIrregular = false;
+//                boolean foundIrregular = false;
                 
                 for (int i = 0; i < c.layers.size()-1; i++)
                 {
@@ -5383,7 +5383,7 @@ public class TechEditWizardData
                     	NotCenterRectLayerNode nc = (NotCenterRectLayerNode)aL;
                     	xr = nc.valueXR;
                     	yt = nc.valueYT;
-                    	foundIrregular = true;
+//                    	foundIrregular = true;
                     }
                     
                     double h1xl = scaledValue(cutLayer.valueX.value /2 + xl);

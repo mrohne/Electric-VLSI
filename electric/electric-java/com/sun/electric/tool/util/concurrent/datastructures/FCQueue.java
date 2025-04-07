@@ -68,7 +68,6 @@ public class FCQueue<T> extends IStructure<T> {
 
 	volatile CombiningNode<T> comb_list_head;
 	// For compareAndSet on the _req_list_head
-	@SuppressWarnings("unchecked")
 	final private static AtomicReferenceFieldUpdater<FCQueue, CombiningNode> comb_list_head_updater = AtomicReferenceFieldUpdater
 			.newUpdater(FCQueue.class, CombiningNode.class, "comb_list_head");
 
@@ -80,7 +79,6 @@ public class FCQueue<T> extends IStructure<T> {
 
 	volatile QueueFatNode<T> queue_head, queue_tail;
 
-	@SuppressWarnings("unchecked")
 	public FCQueue() {
 		combined_pushed_items = (T[]) new Object[MAX_THREADS];
 		fc_lock = new AtomicInteger(0);
@@ -94,7 +92,6 @@ public class FCQueue<T> extends IStructure<T> {
 	final int COMBINING_NODE_TIMEOUT_CHECK_FREQUENCY = 100;
 	final int MAX_COMBINING_ROUNDS = 32;
 
-	@SuppressWarnings("unchecked")
 	void doFlatCombining(CombiningNode<T> combiner_thread_node) {
 		int combining_rounds = 0;
 		int num_pushed_items = 0;

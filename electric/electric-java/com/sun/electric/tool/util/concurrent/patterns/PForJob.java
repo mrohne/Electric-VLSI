@@ -94,7 +94,6 @@ public class PForJob<T extends BlockedRange<T>> extends PJob {
 		 * This is the executor method of SplitIntoTasks. New for tasks will be
 		 * created while a new range is available
 		 */
-		@SuppressWarnings("unchecked")
 		@Override
 		public void execute() {
 			List<T> tmpRange;

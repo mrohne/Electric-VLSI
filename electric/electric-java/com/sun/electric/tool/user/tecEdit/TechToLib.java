@@ -113,7 +113,7 @@ public class TechToLib
 	private static class LibFromTechJob extends Job
 	{
 		private Technology tech;
-        private String libraryName;
+//        private String libraryName;
         private boolean doItNow;
         private Library lib;
         private GraphicsPreferences gp = UserInterfaceMain.getGraphicsPreferences();
@@ -127,7 +127,7 @@ public class TechToLib
                 startJob();
 		}
 
-        public String getLibraryName() { return libraryName; }
+//        public String getLibraryName() { return libraryName; }
 
         @Override
 		public boolean doIt()
@@ -139,7 +139,7 @@ public class TechToLib
 			// switch to the library and show a cell
             if (!doItNow)
             fieldVariableChanged("libraryName");
-            libraryName = lib.getName();
+//            libraryName = lib.getName();
 			return true;
 		}
 
@@ -155,7 +155,7 @@ public class TechToLib
 	 */
 	public static Library makeLibFromTech(Technology tech, EditingPreferences ep, GraphicsPreferences gp)
 	{
-		Library lib = Library.newInstance(tech.getTechName(), null);
+		Library lib = Library.newInst(tech.getTechName(), null);
 		if (lib == null)
 		{
 			System.out.println("Cannot create library " + tech.getTechName());
@@ -164,7 +164,7 @@ public class TechToLib
 		System.out.println("Created library " + tech.getTechName() + "...");
 
 		// create the miscellaneous info cell (called "factors")
-		Cell fNp = Cell.newInstance(lib, "factors");
+		Cell fNp = Cell.newInst(lib, "factors");
 		if (fNp == null) return null;
 		fNp.setInTechnologyLibrary();
 
@@ -172,7 +172,7 @@ public class TechToLib
 		int layerTotal = 0;
 		for(Iterator<Layer> it = tech.getLayers(); it.hasNext(); )
 		{
-			Layer layer = it.next();
+			/* Layer layer = */ it.next();
 			layerTotal++;
 		}
 
@@ -249,7 +249,7 @@ public class TechToLib
 				System.out.println("Warning: already a cell '" + fName + "'.  Creating a new version");
 			}
 
-			Cell lNp = Cell.newInstance(lib, fName);
+			Cell lNp = Cell.newInst(lib, fName);
 			if (lNp == null) return null;
 			lNp.setTechnology(Artwork.tech());
 			lNp.setInTechnologyLibrary();
@@ -355,13 +355,13 @@ public class TechToLib
 					Manipulate.setPatch(ni, arcDesc, ep);
 					Cell layerCell = layerCells.get(arcLayer);
 					if (layerCell != null) ni.newVar(Info.LAYER_KEY, layerCell.getId(), ep);
-					ni.newVar(Info.OPTION_KEY, new Integer(Info.LAYERPATCH), ep);
+					ni.newVar(Info.OPTION_KEY, Integer.valueOf(Info.LAYERPATCH), ep);
 				}
 			}
 			NodeInst ni = NodeInst.makeInstance(Artwork.tech().boxNode, ep, new Point2D.Double(-20 - xOff, -5), wid*5, wid, aNp);
 			if (ni == null) return null;
-			ni.newVar(Artwork.ART_COLOR, new Integer(EGraphics.WHITE), ep);
-			ni.newVar(Info.OPTION_KEY, new Integer(Info.HIGHLIGHTOBJ), ep);
+			ni.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.WHITE), ep);
+			ni.newVar(Info.OPTION_KEY, Integer.valueOf(Info.HIGHLIGHTOBJ), ep);
 
 			// compact it accordingly
 			ArcInfo.compactCell(aNp);
@@ -374,7 +374,7 @@ public class TechToLib
 		System.out.println("Creating the nodes...");
 		List<String> nodeSequence = new ArrayList<String>();
 		List<NodeInfo> nList = new ArrayList<NodeInfo>();
-        Cell dummyCell = Cell.newInstance(lib, "dummyCell{lay}");
+        Cell dummyCell = Cell.newInst(lib, "dummyCell{lay}");
 
         List<PrimitiveNode> nodesToWrite = new ArrayList<PrimitiveNode>();
 		for(Iterator<PrimitiveNode> it = tech.getNodes(); it.hasNext(); )
@@ -507,8 +507,8 @@ public class TechToLib
 							System.out.println("Warning: already a cell '" + fName + "'.  Creating a new version");
 						}
 
-						// use "newInstance" instead of "makeInstance" so that cell center is not placed
-						nNp = Cell.newInstance(lib, fName);
+						// use "newInst" instead of "makeInstance" so that cell center is not placed
+						nNp = Cell.newInst(lib, fName);
 						if (nNp == null) return null;
 
 						nNp.setTechnology(Artwork.tech());
@@ -530,7 +530,7 @@ public class TechToLib
 						Manipulate.setPatch(ni, desc, ep);
 						Cell layerCell = layerCells.get(nodeLayer);
 						if (layerCell != null) ni.newVar(Info.LAYER_KEY, layerCell.getId(), ep);
-						ni.newVar(Info.OPTION_KEY, new Integer(Info.LAYERPATCH), ep);
+						ni.newVar(Info.OPTION_KEY, Integer.valueOf(Info.LAYERPATCH), ep);
 
 //	 					// set minimum polygon factor on smallest example
 //	 					if (e != 0) continue;
@@ -552,8 +552,8 @@ public class TechToLib
 					pos[e].getY() + (so.getLowYOffset() - so.getHighYOffset())/2);
 				NodeInst ni = NodeInst.makeInstance(Artwork.tech().boxNode, ep, loc, xsc[e], ysc[e], nNp);
 				if (ni == null) return null;
-				ni.newVar(Artwork.ART_COLOR, new Integer(EGraphics.makeIndex(Color.WHITE)), ep);
-				ni.newVar(Info.OPTION_KEY, new Integer(Info.HIGHLIGHTOBJ), ep);
+				ni.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.makeIndex(Color.WHITE)), ep);
+				ni.newVar(Info.OPTION_KEY, Integer.valueOf(Info.HIGHLIGHTOBJ), ep);
 
 				// create a grab node (only in main example)
 //				if (e == 0)
@@ -587,15 +587,15 @@ public class TechToLib
 //						width, height, nNp);
 //					if (pNi == null) return null;
 //					portNodes.put(pp, pNi);
-//					pNi.newVar(Info.OPTION_KEY, new Integer(Info.LAYERPATCH));
+//					pNi.newVar(Info.OPTION_KEY, Integer.valueOf(Info.LAYERPATCH));
 //					pNi.newDisplayVar(Info.PORTNAME_KEY, pp.getName());
 //
 //					// on the first sample, also show angle and connection
 //					if (e != 0) continue;
 //					if (pp.getAngle() != 0 || pp.getAngleRange() != 180)
 //					{
-//						pNi.newVar(Info.PORTANGLE_KEY, new Integer(pp.getAngle()));
-//						pNi.newVar(Info.PORTRANGE_KEY, new Integer(pp.getAngleRange()));
+//						pNi.newVar(Info.PORTANGLE_KEY, Integer.valueOf(pp.getAngle()));
+//						pNi.newVar(Info.PORTRANGE_KEY, Integer.valueOf(pp.getAngleRange()));
 //					}
 //
 //					// add in the "local" port connections (from this tech)
@@ -637,7 +637,7 @@ public class TechToLib
 //					// add in gate/gated factor for transistors
 //					if (pnp.getFunction().isTransistor())
 //					{
-//						pNi.newVar(Info.PORTMEANING_KEY, new Integer(meaning));
+//						pNi.newVar(Info.PORTMEANING_KEY, Integer.valueOf(meaning));
 //					}
 //
 //					// connect the connected ports
@@ -702,7 +702,7 @@ public class TechToLib
 							Manipulate.setPatch(ni, desc, ep);
 							Cell layerCell = layerCells.get(nodeLayer);
 							if (layerCell != null) ni.newVar(Info.LAYER_KEY, layerCell.getId(), ep);
-							ni.newVar(Info.OPTION_KEY, new Integer(Info.LAYERPATCH), ep);
+							ni.newVar(Info.OPTION_KEY, Integer.valueOf(Info.LAYERPATCH), ep);
 						}
 					}
 					if (centerNI != null)
@@ -720,8 +720,8 @@ public class TechToLib
 					yS = altPNp.getDefHeight(ep) - so.getLowYOffset() - so.getHighYOffset();
 					NodeInst ni = NodeInst.makeInstance(Artwork.tech().boxNode, ep, loc, xS, yS, nNp);
 					if (ni == null) return null;
-					ni.newVar(Artwork.ART_COLOR, new Integer(EGraphics.makeIndex(Color.WHITE)), ep);
-					ni.newVar(Info.OPTION_KEY, new Integer(Info.HIGHLIGHTOBJ), ep);
+					ni.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.makeIndex(Color.WHITE)), ep);
+					ni.newVar(Info.OPTION_KEY, Integer.valueOf(Info.HIGHLIGHTOBJ), ep);
 
 					// also draw ports
 					if (addPortsToPrimitive(pnp, oNi, tech, arcCells, aList, nNp, ep)) return null;
@@ -875,14 +875,14 @@ public class TechToLib
 				width, height, nNp);
 			if (pNi == null) return true;
 			portNodes.put(pp, pNi);
-			pNi.newVar(Info.OPTION_KEY, new Integer(Info.LAYERPATCH), ep);
+			pNi.newVar(Info.OPTION_KEY, Integer.valueOf(Info.LAYERPATCH), ep);
 			pNi.newDisplayVar(Info.PORTNAME_KEY, pp.getName(), ep);
 
 			// on the first sample, also show angle and connection
 			if (pp.getAngle() != 0 || pp.getAngleRange() != 180)
 			{
-				pNi.newVar(Info.PORTANGLE_KEY, new Integer(pp.getAngle()), ep);
-				pNi.newVar(Info.PORTRANGE_KEY, new Integer(pp.getAngleRange()), ep);
+				pNi.newVar(Info.PORTANGLE_KEY, Integer.valueOf(pp.getAngle()), ep);
+				pNi.newVar(Info.PORTRANGE_KEY, Integer.valueOf(pp.getAngleRange()), ep);
 			}
 
 			// add in the "local" port connections (from this tech)
@@ -919,7 +919,7 @@ public class TechToLib
 			// add in gate/gated factor for transistors
 			if (pnp.getFunction().isTransistor())
 			{
-				pNi.newVar(Info.PORTMEANING_KEY, new Integer(meaning), ep);
+				pNi.newVar(Info.PORTMEANING_KEY, Integer.valueOf(meaning), ep);
 			}
 
 			// connect the connected ports

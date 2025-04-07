@@ -49,8 +49,6 @@ public class TestMenu
 		items.add(new CleanTestMenuItem());
 		items.add(EMenuItem.SEPARATOR);
 
-//		if (CommonSignalAnalysisTest.hasCSA())
-//			items.add(testSubMenu("Common Signal Analysis", CommonSignalAnalysisTest.getTests(), CommonSignalAnalysisTest.getOutputDirectory()));
 		items.add(testSubMenu("Compaction", CompactionTest.getTests(), CompactionTest.getOutputDirectory()));
    		items.add(testSubMenu("DRC", DRCTest.getTests(), DRCTest.getOutputDirectory()));
   		items.add(testSubMenu("ERC", ERCTest.getTests(), ERCTest.getOutputDirectory()));
@@ -69,8 +67,6 @@ public class TestMenu
 		items.add(testSubMenu("Scripting", ScriptingTest.getTests(), ScriptingTest.getOutputDirectory()));
 		items.add(testSubMenu("Technology", TechnologyTest.getTests(), TechnologyTest.getOutputDirectory()));
 		items.add(testSubMenu("Technology Edit", TechnologyEditTest.getTests(), TechnologyEditTest.getOutputDirectory()));
-//		if (TimingAnalysisTest.hasOyster())
-//			items.add(testSubMenu("Timing Analysis", TimingAnalysisTest.getTests(), TimingAnalysisTest.getOutputDirectory()));
 		if (ClientOS.isOSWindows())
 			items.add(testSubMenu("Waveform Window", WaveformTest.getTests(), WaveformTest.getOutputDirectory()));
 		return new EMenu("Test", items);
