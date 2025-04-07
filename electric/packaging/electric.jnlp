@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0" codebase="http://java.net/projects/electric/downloads/download/" version="9.03" href="WebStartFiles/electricAnt.jnlp">
+<jnlp spec="1.0" codebase="http://java.net/projects/electric/downloads/download/" version="9.08" href="WebStartFiles/electricAnt.jnlp">
   <information>
     <title>Electric VLSI CAD System</title>
     <vendor>Static Free Software</vendor>
@@ -12,5 +12,5 @@
   <resources>
       <j2se version="1.5" />
   </resources>
-  <application-desc main-class="com.sun.electric.Launcher" />
+  <application-desc main-class="com.sun.electric.Electric" />
 </jnlp>

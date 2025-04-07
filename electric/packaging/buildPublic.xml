@@ -42,7 +42,7 @@
 		<property name="ElectricJavaLoc"    value="${user.dir}" />
 
 		<!-- the location of various JAR files -->
-		<property name="org"                value="${packaging}/org" />
+		<property name="org" value="${packaging}/org" />
 
 		<!-- does the build directory already exist? -->
 		<condition property="buildDirExists">
@@ -65,14 +65,14 @@
 
 	<target name="compile" description="Compile Electric">
 		<javac debug="true" includeantruntime="false" destdir="${antBuild}" srcdir="${ElectricJavaLoc}"
-			   fork="true" memoryMaximumSize="1024m" source="1.8" target="1.8">
+			   fork="true" memoryMaximumSize="1024m" release="17">
 			<classpath>
 				<pathelement location="${packaging}" />
 			</classpath>
 		</javac>
 		<copy todir="${antBuild}/com">
 			<fileset dir="${ElectricJavaLoc}/com"
-                         includes="**/*.jelib,**/*.prm,**/*.xml,**/*.dtd,**/*.xsd,**/*.gif,**/*.html,**/*.png,**/toc.txt,**/*.wav,**/*.dat" />
+                     includes="**/*.jelib,**/*.prm,**/*.xml,**/*.dtd,**/*.xsd,**/*.gif,**/*.html,**/*.png,**/toc.txt,**/*.wav,**/*.dat" />
 		</copy>
 	</target>
 
