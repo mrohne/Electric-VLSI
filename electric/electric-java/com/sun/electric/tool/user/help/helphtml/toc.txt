@@ -186,7 +186,9 @@ Technologies
  Special Technologies
   The Artwork Technology                      =chap07-06-01
   The FPGA Technology                         =chap07-06-02
-  The Generic Technology                      =chap07-06-03
+  The Photonics Technology                    =chap07-06-03
+  The Generic Technology                      =chap07-06-04
+  The Josephson Technology                    =chap07-06-05
 
 Creating New Technologies
  Technology Editing                           =chap08-01

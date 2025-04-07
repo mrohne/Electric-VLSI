@@ -14,16 +14,16 @@ has the word "Binary" in its name).
 Either of these files can run Electric, but the one with source code is larger because it also has
 all of the Java code.
 <P>
-Electric requires OpenJDK, Apache Harmony, or Oracle Java version 9.
+Electric requires OpenJDK, Apache Harmony, or Oracle Java version 17.
 It is developed with Oracle Java, so if you run into problems with
-other versions, try installing Java 9 or later from Oracle.
+other versions, try installing Java 17 or later from Oracle.
 <P>
 Running Electric varies with the different platforms.
 Most systems also allow you to double-click on the JAR file.
 If double-clicking doesn't work, try running it from the command-line by typing either:<BR>
 &nbsp;&nbsp;&nbsp;&nbsp;<FONT SIZE="-1"><CODE>java -jar electric-<i>version</i>.jar [libraries]</CODE></FONT><BR>
 or:<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;<FONT SIZE="-1"><CODE>java -classpath electric-<i>version</i>.jar com.sun.electric.Launcher [libraries]</CODE></FONT>
+&nbsp;&nbsp;&nbsp;&nbsp;<FONT SIZE="-1"><CODE>java -classpath electric-<i>version</i>.jar com.sun.electric.Electric [libraries]</CODE></FONT>
 
 <P>
 There are a number of options that can be given at the end of the command line:
@@ -69,14 +69,9 @@ If Electric runs out of memory, you can request more.
 To do this, use the General Preferences (in menu <B>File / Preferences...</B>, "General" section, "General" tab).
 The "Memory" section has two memory limit fields, for <I>Maximum memory</I> and <I>Maximum permanent space</I>.
 Changes to these values take effect when you next run Electric.
-Note that any request to expand Electric beyond the default Java sizes will cause Electric to re-launch itself
-at startup so that the JVM has access to more memory. To prevent relaunching of Electric, set the memory fields
-back to zero.
-<P>
-The Maximum memory size is the most important because increasing it will offer much more circuitry capacity.
-Note that 32-bit JVMs can only grow so far.
-On 32-bit Windows systems you should not set it above 1500 (1.5 Gigabytes).
-On 32-bit Linux or Macintosh system, you should not set it above 3600 (3.6 Gigabytes).
+Note that any request to expand Electric too far could cause Electric to fail to start in the future.
+If this happens, find your system preferences and remove the setting
+(see <A HREF="chap06-03.html#chap06-03">Section 6-3</A>).
 <P>
 Permanent space is an additional section of memory that may need to be increased.
 For very large chips, a value of 200 or more may enhance performance.

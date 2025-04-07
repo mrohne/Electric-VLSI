@@ -39,8 +39,6 @@ and Electric comes with an Ant script called "build.xml".
 Once the source code is extracted, you can rebuild Electric simply by typing "ant".
 Before you do that, there are some considerations:
 <ul>
-<li>If you are not on a Macintosh, you must obtain the Apple Java Extensions and place it
-in the directory (next to the "build.xml" file).</li>
 <li>The build script only builds what is on your disk.
 If you want to include the Static Free Software extensions, you must
 download it and extract it before building.</li>
@@ -63,22 +61,12 @@ Give the project a name, for example, "Electric."</LI>
 There are no required libraries, but many optional ones
 (see <A HREF="chap01-05.html#chap01-05">Section 1-5</A> on plug-ins).
 Use the "Add External JARs" button to add any extra libraries.</LI>
-<LI><B>Handle Macintosh variations.</B>
-If you are building on a Macintosh, no changes are needed.
-If you are not building on a Macintosh, you must decide whether or not you want the code that you produce to
-also run on a Macintosh.
-If you do not care about being able to run on a Macintosh, remove the source code module
-"com.sun.electric.tool.user.MacOSXInterface.java" (which probably has a red "X" next to it indicating that there
-are errors in the file).
-If you want the final code to be able to run on all platforms,
-download the stub package "AppleJavaExtensions.jar"
-and add this as an external JAR file.</LI>
 <LI><B>Run Electric.</B> Use the <B>Run...</B> command (under the <B>Run</B> menu)
 to create a run configuration.
 Under the "Main" tab of the run-configuration dialog,
 give the configuration a name (for example, "Electric"),
 set the Project to match the one that you have created,
-and set the "Main class" to be "com.sun.electric.Launcher".
+and set the "Main class" to be "com.sun.electric.Electric".
 Under the "Arguments" section of the dialog,
 it is a good idea to increase Electric's memory size by entering "-mx1000m" under "VM arguments".</LI>
 </UL>
