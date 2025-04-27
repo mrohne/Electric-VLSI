@@ -249,7 +249,11 @@ Inside of the &lt;layer&gt; element are these subelements:
     <B>&lt;pattern&gt;</B> the stipple pattern to use (if requested on either the screen or printed page).
 </LI>
 <LI>
-    <B>&lt;outlined&gt;</B> true to outline the layer (sensible only for patterned layers).
+    <B>&lt;outlined&gt;</B> rule for outlining the layer  (sensible only for patterned layers).
+	NOPAT for no outline,
+	PAT_S for solid outline,
+	PAT_T1 for thick-solid outline,
+	PAT_T2 for thicker-solid outline.
 </LI>
 <LI>
     <B>&lt;opacity&gt;</B> intensity of this layer (from 0 to 1).

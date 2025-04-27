@@ -175,7 +175,7 @@ public abstract class TechFactory {
         r(m, "mocmos-cn", "technology/technologies/mocmos-cn.xml", false);
         r(m, "nmos", "technology/technologies/nmos.xml", false);
         p(m, "photonics", "com.sun.electric.technology.technologies.photonics.Photonics", false);
-//        r(m, "skywater130", "technology/technologies/skywater130.xml", false);
+        r(m, "skywater130", "technology/technologies/skywater130.xml", false);
         r(m, "tft", "technology/technologies/tft.xml", false);
 
         // restricted technologies unavailable to the public

@@ -54,6 +54,9 @@
 		<property name="jogamp"             value="${packaging}/Java3D 1.7.0/jogamp-fat.jar" />
 		<property name="jmf"                value="${packaging}/jmf.jar" />
 
+		<!-- the location of extra technology files -->
+		<property name="skywater"          value="${packaging}/skywater130.xml" />
+
 		<!-- get the Electric version -->
 		<loadfile srcFile="${ElectricJavaLoc}/com/sun/electric/database/text/Version.java" property="version">
 			<filterchain>
@@ -92,6 +95,7 @@
 	</target>
 
 	<target name="copyExternalJARs" description="Copy Jar files">
+		<copy file="${skywater}" tofile="${antBuild}/com/sun/electric/technology/technologies/skywater130.xml"/>
 		<unjar src="${beanshell}" dest="${antBuild}">
 			<patternset> <include name="bsh/"/> </patternset>
 		</unjar>
