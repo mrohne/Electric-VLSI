@@ -568,7 +568,7 @@ public class GDSTab extends PreferencePanel
     {
         java.awt.GridBagConstraints gridBagConstraints;
 
-//        jPanel1 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
         preferences = new javax.swing.JPanel();
         Import = new javax.swing.JPanel();
         gdsInputMergesBoxes = new javax.swing.JCheckBox();
@@ -723,7 +723,7 @@ public class GDSTab extends PreferencePanel
         gdsDumpText.setText("Dump readable data while reading");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
@@ -1207,7 +1207,7 @@ public class GDSTab extends PreferencePanel
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-//    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel layerPanel;
     private javax.swing.JPanel outputPanel;
     private javax.swing.JPanel preferences;

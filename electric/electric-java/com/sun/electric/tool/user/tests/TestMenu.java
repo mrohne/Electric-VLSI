@@ -49,24 +49,28 @@ public class TestMenu
 		items.add(new CleanTestMenuItem());
 		items.add(EMenuItem.SEPARATOR);
 
+//		if (CommonSignalAnalysisTest.hasCSA())
+//			items.add(testSubMenu("Common Signal Analysis", CommonSignalAnalysisTest.getTests(), CommonSignalAnalysisTest.getOutputDirectory()));
 		items.add(testSubMenu("Compaction", CompactionTest.getTests(), CompactionTest.getOutputDirectory()));
    		items.add(testSubMenu("DRC", DRCTest.getTests(), DRCTest.getOutputDirectory()));
   		items.add(testSubMenu("ERC", ERCTest.getTests(), ERCTest.getOutputDirectory()));
 		items.add(testSubMenu("Export", ExportForeignTest.getTests(), ExportForeignTest.getOutputDirectory()));
 		items.add(testSubMenu("Extraction", ExtractionTest.getTests(), ExtractionTest.getOutputDirectory()));
-		items.add(testSubMenu("Generation", GenerationTest.getTests(), GenerationTest.getOutputDirectory()));
+//		items.add(testSubMenu("Generation", GenerationTest.getTests(), GenerationTest.getOutputDirectory()));
 		items.add(testSubMenu("I-O", IOTest.getTests(), IOTest.getOutputDirectory()));
 		items.add(testSubMenu("Import", ImportForeignTest.getTests(), ImportForeignTest.getOutputDirectory()));
 		items.add(testSubMenu("Jobs", JobsTest.getTests(), JobsTest.getOutputDirectory()));
 		items.add(testSubMenu("Layer Coverage", LayerCoverageToolTest.getTests(), LayerCoverageToolTest.getOutputDirectory()));
 		items.add(testSubMenu("Logical Effort", LogicalEffortTest.getTests(), LogicalEffortTest.getOutputDirectory()));
 		items.add(testSubMenu("NCC", NCCTest.getTests(), NCCTest.getOutputDirectory()));
-		items.add(testSubMenu("Placement", PlacementTest.getTests(), PlacementTest.getOutputDirectory()));
+//		items.add(testSubMenu("Placement", PlacementTest.getTests(), PlacementTest.getOutputDirectory()));
 		items.add(testSubMenu("Preferences", PrefTest.getTests(), PrefTest.getOutputDirectory()));
 		items.add(testSubMenu("Routing", RoutingTest.getTests(), RoutingTest.getOutputDirectory()));
 		items.add(testSubMenu("Scripting", ScriptingTest.getTests(), ScriptingTest.getOutputDirectory()));
 		items.add(testSubMenu("Technology", TechnologyTest.getTests(), TechnologyTest.getOutputDirectory()));
 		items.add(testSubMenu("Technology Edit", TechnologyEditTest.getTests(), TechnologyEditTest.getOutputDirectory()));
+//		if (TimingAnalysisTest.hasOyster())
+//			items.add(testSubMenu("Timing Analysis", TimingAnalysisTest.getTests(), TimingAnalysisTest.getOutputDirectory()));
 		if (ClientOS.isOSWindows())
 			items.add(testSubMenu("Waveform Window", WaveformTest.getTests(), WaveformTest.getOutputDirectory()));
 		return new EMenu("Test", items);

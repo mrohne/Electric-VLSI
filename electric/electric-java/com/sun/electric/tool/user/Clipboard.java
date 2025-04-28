@@ -1091,7 +1091,7 @@ public class Clipboard //implements ClipboardOwner
 				point = EPoint.fromLambda(dst.getX()+dX, dst.getY()+dY);
 				orient = orient.concatenate(inPlaceOrient);
 			}
-			NodeInst newNi = NodeInst.newInst(makeProto, ep, point, width, height,
+			NodeInst newNi = NodeInst.newInstance(makeProto, ep, point, width, height,
 				toCell, orient, name, ni.getTechSpecific());
 			if (newNi == null)
 			{
@@ -1228,7 +1228,7 @@ public class Clipboard //implements ClipboardOwner
 			double xP = var.getTextDescriptor().getXOff();
 			double yP = var.getTextDescriptor().getYOff();
 			if (toCell.getVar(varKey) != null) numDuplicates++;
-            Variable newVar = Variable.newInst(varKey, var.getObject(), var.getTextDescriptor().withOff(xP+dX, yP+dY));
+            Variable newVar = Variable.newInstance(varKey, var.getObject(), var.getTextDescriptor().withOff(xP+dX, yP+dY));
             if (var.getTextDescriptor().isParam())
             {
             	if (toCell.getCellGroup() != null)
@@ -1305,7 +1305,7 @@ public class Clipboard //implements ClipboardOwner
 
 		if (!destNode.isCellInstance() && !srcNode.isCellInstance()) {
 			if (srcNode.getProto().getTechnology() == destNode.getProto().getTechnology()) {
-//				Technology tech = srcNode.getProto().getTechnology();
+				Technology tech = srcNode.getProto().getTechnology();
 				destNode.setPrimitiveFunction(srcNode.getFunction());
 			}
 		}
@@ -1522,7 +1522,7 @@ public class Clipboard //implements ClipboardOwner
 
 			// get starting point from current mouse location
 			Point2D mouse = ClickZoomWireListener.theOne.getLastMouse();
-			Point2D mouseDB = wnd.screenToDatabase((int)mouse.getX(), (int)mouse.getY());
+			Point2D mouseDB = wnd.screenToDatabase((long)mouse.getX(), (long)mouse.getY());
 			if (dup)
 			{
 				pasteBounds.setRect(pasteBounds.getMinX()+mouseDB.getX()-pasteBounds.getCenterX(),

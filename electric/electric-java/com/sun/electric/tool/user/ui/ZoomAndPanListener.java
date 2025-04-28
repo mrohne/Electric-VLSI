@@ -49,10 +49,10 @@ public class ZoomAndPanListener implements WindowFrame.ElectricEventListener
 		mode = ToolBar.getCursorMode();
 		if (mode == ToolBar.CursorMode.ZOOM)
 		{
-			if ((evt.getModifiersEx()&MouseEvent.CTRL_DOWN_MASK) != 0) mode = ToolBar.CursorMode.PAN;
+			if ((evt.getModifiers()&MouseEvent.CTRL_MASK) != 0) mode = ToolBar.CursorMode.PAN;
 		} else if (mode == ToolBar.CursorMode.PAN)
 		{
-			if ((evt.getModifiersEx()&MouseEvent.CTRL_DOWN_MASK) != 0) mode = ToolBar.CursorMode.ZOOM;
+			if ((evt.getModifiers()&MouseEvent.CTRL_MASK) != 0) mode = ToolBar.CursorMode.ZOOM;
 		}
         if (mode == ToolBar.CursorMode.ZOOM && (evt.getSource() instanceof EditWindow)) {
             EditWindow wnd = (EditWindow)evt.getSource();
@@ -79,7 +79,7 @@ public class ZoomAndPanListener implements WindowFrame.ElectricEventListener
 	{
 		if (ToolBar.getCursorMode() == ToolBar.CursorMode.ZOOM)
 		{
-			if ((evt.getModifiersEx()&MouseEvent.SHIFT_DOWN_MASK) != 0)
+			if ((evt.getModifiers()&MouseEvent.SHIFT_MASK) != 0)
 			{
 				TopLevel.setCurrentCursor(ToolBar.zoomOutCursor);
 			} else
@@ -141,13 +141,13 @@ public class ZoomAndPanListener implements WindowFrame.ElectricEventListener
 		{
 			EditWindow wnd = (EditWindow)evt.getSource();
              if (wnd == null) return;
-             Point2D start = wnd.screenToDatabase((int)wnd.getStartDrag().getX(), (int)wnd.getStartDrag().getY());
-             Point2D end = wnd.screenToDatabase((int)wnd.getEndDrag().getX(), (int)wnd.getEndDrag().getY());
+             Point2D start = wnd.screenToDatabase((long)wnd.getStartDrag().getX(), (long)wnd.getStartDrag().getY());
+             Point2D end = wnd.screenToDatabase((long)wnd.getEndDrag().getX(), (long)wnd.getEndDrag().getY());
              double minSelX = Math.min(start.getX(), end.getX());
              double maxSelX = Math.max(start.getX(), end.getX());
              double minSelY = Math.min(start.getY(), end.getY());
              double maxSelY = Math.max(start.getY(), end.getY());
-			if ((evt.getModifiersEx()&MouseEvent.SHIFT_DOWN_MASK) != 0)
+			if ((evt.getModifiers()&MouseEvent.SHIFT_MASK) != 0)
 			{
 				wnd.setScale(wnd.getScale() * 0.5);
 				Point2D offset = new Point2D.Double((minSelX+maxSelX)/2, (minSelY+maxSelY)/2);

@@ -71,7 +71,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * Class for logging errors.
  * Holds a log of errors:
- * <p>ErrorLogger errorLogger = ErrorLogger.newInst(String s): get new logger for s
+ * <p>ErrorLogger errorLogger = ErrorLogger.newInstance(String s): get new logger for s
  * <p>MessageLog errorLog = errorLogger.logError(string msg, cell c, int k):
  * Create a new log with message 'msg', for cell 'c', with sortKey 'k'.
  * <p>Various methods for adding highlights to errorLog:
@@ -383,15 +383,15 @@ public class ErrorLogger implements Serializable
      * Create a new ErrorLogger instance.
      * @return a new ErrorLogger for logging errors
      */
-    public static ErrorLogger newInst(String system) {
-        return newInst(system, false);
+    public static ErrorLogger newInstance(String system) {
+        return newInstance(system, false);
     }
 
     /**
      * Create a new ErrorLogger instance.
      * @return a new ErrorLogger for logging errors
      */
-    public static ErrorLogger newInst(String system, boolean persistent)
+    public static ErrorLogger newInstance(String system, boolean persistent)
     {
         ErrorLogger logger = new ErrorLogger();
         logger.limitExceeded = false;
@@ -562,7 +562,7 @@ public class ErrorLogger implements Serializable
     public synchronized void logError(String message, Geometric geom, Cell cell, VarContext context, int sortKey)
     {
     	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
-        h.add(ErrorHighlight.newInst(context, geom));
+        h.add(ErrorHighlight.newInstance(context, geom));
     	logAnError(message, cell, sortKey, h);
     }
 
@@ -576,7 +576,7 @@ public class ErrorLogger implements Serializable
     {
         Cell cell = pp.getParent();
     	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
-        h.add(new ErrorHighExport(null, pp));
+        h.add(ErrorHighlight.newInstance(pp));
     	logAnError(message, cell, sortKey, h);
     }
 
@@ -590,7 +590,7 @@ public class ErrorLogger implements Serializable
     public synchronized void logError(String message, EPoint pt, Cell cell, int sortKey)
     {
     	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
-        h.add(new ErrorHighPoint(cell, pt));
+        h.add(ErrorHighlight.newInstance(cell, pt));
     	logAnError(message, cell, sortKey, h);
     }
 
@@ -609,7 +609,7 @@ public class ErrorLogger implements Serializable
         {
             int prev = i-1;
             if (i == 0) prev = points.length-1;
-            h.add(ErrorHighlight.newInst(cell, points[prev], points[i]));
+            h.add(ErrorHighlight.newInstance(cell, points[prev], points[i]));
         }
     	logAnError(message, cell, sortKey, h);
     }
@@ -647,19 +647,19 @@ public class ErrorLogger implements Serializable
             {
                 if (obj instanceof Geometric)
                 {
-                     h.add(ErrorHighlight.newInst(null, (Geometric)obj));
+                     h.add(ErrorHighlight.newInstance(null, (Geometric)obj));
                 }
                 else if (obj instanceof ImmutableNodeInst)
                 {
-                    h.add(ErrorHighlight.newInst(cell.getId(), (ImmutableNodeInst)obj));
+                    h.add(ErrorHighlight.newInstance(cell.getId(), (ImmutableNodeInst)obj));
                 }
                 else if (obj instanceof Export)
                 {
-                    h.add(new ErrorHighExport(null, (Export)obj));
+                    h.add(ErrorHighlight.newInstance((Export)obj));
                 }
                 else if (obj instanceof EPoint)
                 {
-                    h.add(new ErrorHighPoint(cell, (EPoint)obj));
+                    h.add(ErrorHighlight.newInstance(cell, (EPoint)obj));
                 }
                 else if (obj instanceof Rectangle2D)
                 {
@@ -671,13 +671,13 @@ public class ErrorLogger implements Serializable
                 	EPoint p3 = EPoint.fromLambda(rect.getMaxX(), rect.getMaxY());
                 	EPoint p4 = EPoint.fromLambda(rect.getMaxX(), rect.getY());
                 	//  p1-p2
-                	l.add(new ErrorHighLine(cell, p1, p2, true));
+                	l.add(ErrorHighlight.newInstance(cell, p1, p2));
                 	//  p2-p3
-                	l.add(new ErrorHighLine(cell, p2, p3, true));
+                	l.add(ErrorHighlight.newInstance(cell, p2, p3));
                 	//  p3-p4
-                	l.add(new ErrorHighLine(cell, p3, p4, true));
+                	l.add(ErrorHighlight.newInstance(cell, p3, p4));
                 	//  p4-p1
-                	l.add(new ErrorHighLine(cell, p4, p1, true));
+                	l.add(ErrorHighlight.newInstance(cell, p4, p1));
                 	h.add(new ErrorHighPoly(cell, null, l));
                 }
                 else if (obj instanceof PolyBase)
@@ -690,8 +690,9 @@ public class ErrorLogger implements Serializable
                     {
                         int prev = i-1;
                         if (i == 0) prev = points.length-1;
-                        l.add(new ErrorHighLine(cell, EPoint.fromLambda(points[prev].getX(), points[prev].getY()),
-                        		EPoint.fromLambda(points[i].getX(), points[i].getY()), true));
+                        l.add(ErrorHighlight.newInstance(cell, 
+												EPoint.fromLambda(points[prev].getX(), points[prev].getY()),
+												EPoint.fromLambda(points[i].getX(), points[i].getY())));
                     }
                     h.add(new ErrorHighPoly(cell, null, l));
                 }
@@ -704,7 +705,7 @@ public class ErrorLogger implements Serializable
     		for(int i=0; i<lineList.size(); i += 2)
     		{
     			if (i < lineList.size() - 1)
-    				h.add(new ErrorHighLine(cell, lineList.get(i), lineList.get(i+1), true));
+    				h.add(ErrorHighlight.newInstance(cell, lineList.get(i), lineList.get(i+1)));
     			else
     				System.out.println("Out of range for lineList. Check this list with i=" + i + " size=" + lineList.size() 
     						+ " elements associated to message '" + message + "'.");
@@ -731,7 +732,7 @@ public class ErrorLogger implements Serializable
     	if (geomList != null && !matches)
     	{
     		for(Geometric geom : geomList)
-                h.add(ErrorHighlight.newInst(null, geom));
+                h.add(ErrorHighlight.newInstance(null, geom));
     	}
     	if (polyList != null)
     	{
@@ -745,8 +746,9 @@ public class ErrorLogger implements Serializable
     	        {
     	            int prev = i-1;
     	            if (i == 0) prev = points.length-1;
-    	            list.add(new ErrorHighLine(cell, EPoint.fromLambda(points[prev].getX(), points[prev].getY()),
-    	            		EPoint.fromLambda(points[i].getX(), points[i].getY()), true));
+    	            list.add(ErrorHighlight.newInstance(cell, 
+														EPoint.fromLambda(points[prev].getX(), points[prev].getY()),
+														EPoint.fromLambda(points[i].getX(), points[i].getY())));
                 }
                 h.add(new ErrorHighPoly(cell, null, list));
             }
@@ -818,7 +820,7 @@ public class ErrorLogger implements Serializable
     public synchronized void logWarning(String message, Geometric geom, Cell cell, VarContext context, int sortKey)
     {
     	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
-        h.add(ErrorHighlight.newInst(context, geom));
+        h.add(ErrorHighlight.newInstance(context, geom));
     	logAWarning(message, cell, sortKey, h);
     }
 
@@ -833,7 +835,27 @@ public class ErrorLogger implements Serializable
     public synchronized void logWarning(String message, Export pp, Cell cell, VarContext context, int sortKey)
     {
     	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
-        h.add(new ErrorHighExport(context, pp));
+        h.add(ErrorHighlight.newInstance(pp));
+    	logAWarning(message, cell, sortKey, h);
+    }
+
+    /**
+     * Factory method to log a warning message.
+     * @param message the string to display.
+     * @param poly the polygon to display
+     * @param cell the cell in which this message applies.
+     * @param sortKey the sorting order of this message.
+     */
+    public synchronized void logWarning(String message, PolyBase poly, Cell cell, int sortKey)
+    {
+    	List<ErrorHighlight> h = new ArrayList<ErrorHighlight>();
+        Point2D [] points = poly.getPoints();
+        for(int i=0; i<points.length; i++)
+        {
+            int prev = i-1;
+            if (i == 0) prev = points.length-1;
+            h.add(ErrorHighlight.newInstance(cell, points[prev], points[i]));
+        }
     	logAWarning(message, cell, sortKey, h);
     }
 
@@ -964,77 +986,77 @@ public class ErrorLogger implements Serializable
          try
          {
             buffWriter = new PrintStream(new FileOutputStream(filePath));
-
-            // ErrorHighArc.class is treaded with same header as  ErrorHighNode
-            Class<?>[] errorTypes = {ErrorHighLine.class, ErrorHighPoint.class, ErrorHighPoly.class, ErrorHighNode.class, ErrorLogger.class};
-
-            // Creating header
-            buffWriter.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            buffWriter.println();
-            buffWriter.println("<!DOCTYPE ErrorLogger");
-            buffWriter.println(" [");
-
-            for (int i = 0; i < errorTypes.length; i++)
-            {
-                Class<?> c = errorTypes[i];
-                try {
-                    String indent = " ";
-                    java.lang.reflect.Method set = c.getMethod("writeXmlHeader", new Class[] {String.class, PrintStream.class});
-                    set.invoke(c, new Object[] {indent, buffWriter});
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            buffWriter.println(" ]>");
-            buffWriter.println();
-            String className = this.getClass().getSimpleName();
-            buffWriter.println("<" + className + " errorSystem=\"" + errorSystem + "\">");
-
-            if (sortKeysToGroupNames != null)
-            {
-                // The keys must be sorted to keep same order as in the original ErrorLogger
-                Set<Integer> set = sortKeysToGroupNames.keySet();
-                List<Integer> sortedInt = new ArrayList<Integer>(set.size());
-                sortedInt.addAll(set); // adding to a list to sort them
-                Collections.sort(sortedInt);
-                for (Integer i : sortedInt)
-                {
-                    String groupName = sortKeysToGroupNames.get(i);
-                    buffWriter.println("    <GroupLog message=\"" + correctXmlString(groupName) + "\">");
-                    // Errors
-                    for (MessageLog log : allErrors) {
-                        if (log.getSortKey() == i.intValue())
-                            log.writeXmlDescription(buffWriter);
-                    }
-                    // Warnings
-                    for (WarningLog log : allWarnings) {
-                        if (log.getSortKey() == i.intValue())
-                            log.writeXmlDescription(buffWriter);
-                    }
-                    buffWriter.println("    </GroupLog>");
-                }
-            }
-            else // plain style
-            {
-                // Errors
-                for (MessageLog log : allErrors) {
-                    log.writeXmlDescription(buffWriter);
-                }
-                // Warnings
-                for (WarningLog log : allWarnings) {
-                    log.writeXmlDescription(buffWriter);
-                }
-            }
-            buffWriter.println("</" + className + ">");
-            buffWriter.close();
-            System.out.println(filePath + " written");
          } catch (Exception e)
          {
              e.printStackTrace();
              System.out.println("Error opening " + filePath);
              return; // error opening the file
          }
+
+        // ErrorHighArc.class is treaded with same header as  ErrorHighNode
+        Class<?>[] errorTypes = {ErrorHighLine.class, ErrorHighPoint.class, ErrorHighPoly.class, ErrorHighNode.class, ErrorLogger.class};
+
+        // Creating header
+        buffWriter.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        buffWriter.println();
+        buffWriter.println("<!DOCTYPE ErrorLogger");
+        buffWriter.println(" [");
+
+        for (int i = 0; i < errorTypes.length; i++)
+        {
+            Class<?> c = errorTypes[i];
+            try {
+                String indent = " ";
+                java.lang.reflect.Method set = c.getMethod("writeXmlHeader", new Class[] {String.class, PrintStream.class});
+                set.invoke(c, new Object[] {indent, buffWriter});
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        buffWriter.println(" ]>");
+        buffWriter.println();
+        String className = this.getClass().getSimpleName();
+        buffWriter.println("<" + className + " errorSystem=\"" + errorSystem + "\">");
+
+        if (sortKeysToGroupNames != null)
+        {
+            // The keys must be sorted to keep same order as in the original ErrorLogger
+            Set<Integer> set = sortKeysToGroupNames.keySet();
+            List<Integer> sortedInt = new ArrayList<Integer>(set.size());
+            sortedInt.addAll(set); // adding to a list to sort them
+            Collections.sort(sortedInt);
+            for (Integer i : sortedInt)
+            {
+                String groupName = sortKeysToGroupNames.get(i);
+                buffWriter.println("    <GroupLog message=\"" + correctXmlString(groupName) + "\">");
+                // Errors
+                for (MessageLog log : allErrors) {
+                    if (log.getSortKey() == i.intValue())
+                        log.writeXmlDescription(buffWriter);
+                }
+                // Warnings
+                for (WarningLog log : allWarnings) {
+                    if (log.getSortKey() == i.intValue())
+                        log.writeXmlDescription(buffWriter);
+                }
+                buffWriter.println("    </GroupLog>");
+            }
+        }
+        else // plain style
+        {
+            // Errors
+            for (MessageLog log : allErrors) {
+                log.writeXmlDescription(buffWriter);
+            }
+            // Warnings
+            for (WarningLog log : allWarnings) {
+                log.writeXmlDescription(buffWriter);
+            }
+        }
+        buffWriter.println("</" + className + ">");
+        buffWriter.close();
+        System.out.println(filePath + " written");
     }
 
     /**
@@ -1048,7 +1070,7 @@ public class ErrorLogger implements Serializable
         if (sortKeysToGroupNames == null) {
             sortKeysToGroupNames = new HashMap<Integer,String>();
         }
-        sortKeysToGroupNames.put(Integer.valueOf(sortKey), groupName);
+        sortKeysToGroupNames.put(new Integer(sortKey), groupName);
     }
 
     /**
@@ -1062,7 +1084,7 @@ public class ErrorLogger implements Serializable
         if (sortKeysToGroupNames == null) {
             sortKeysToGroupNames = new HashMap<Integer,String>();
         }
-        return sortKeysToGroupNames.get(Integer.valueOf(sortKey));
+        return sortKeysToGroupNames.get(new Integer(sortKey));
     }
 
     /**
@@ -1287,7 +1309,7 @@ public class ErrorLogger implements Serializable
                     if (attributes.getQName(i).equals("errorSystem"))
                     {
                         // Ignore the rest of the attribute and generate the logger
-                        logger = ErrorLogger.newInst(attributes.getValue(i));
+                        logger = ErrorLogger.newInstance(attributes.getValue(i));
                         return;
                     }
                     else if (attributes.getQName(i).startsWith("message"))
