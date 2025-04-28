@@ -54,20 +54,20 @@ public class UnloadPolys {
         Arc next;
         int[] y = new int[2];
         Arc[] b = new Arc[2], t = new Arc[2];
-        List<PolyBase.PolyBaseTreeImpl> sons;
+        List<PolyBase.PolyBaseTree> sons;
         Polys pol;
 
-        private void addSon(PolyBase.PolyBaseTreeImpl son) {
+        private void addSon(PolyBase.PolyBaseTree son) {
             if (sons == null)
-                sons = new ArrayList<PolyBase.PolyBaseTreeImpl>();
+                sons = new ArrayList<PolyBase.PolyBaseTree>();
             sons.add(son);
         }
 
-        private void addSons(List<PolyBase.PolyBaseTreeImpl> newSons) {
+        private void addSons(List<PolyBase.PolyBaseTree> newSons) {
             if (newSons == null || newSons.isEmpty())
                 return;
             if (sons == null)
-                sons = new ArrayList<PolyBase.PolyBaseTreeImpl>();
+                sons = new ArrayList<PolyBase.PolyBaseTree>();
             sons.addAll(newSons);
         }
     }
@@ -223,10 +223,10 @@ public class UnloadPolys {
                 if (al == ar) {
                     assert al == top;
                     top.pol.x = x;
-                    PolyBase.PolyBaseTreeImpl t = outTree(top.pol);
+                    PolyBase.PolyBaseTree t = outTree(top.pol);
                     if (top.sons != null) {
                         for (PolyBase.PolyBaseTree s: top.sons)
-                            t.addSonLowLevel(s);
+                            t.addTree(s);
                     }
 //                    out(top.pol,v);
                     dispArc(top);
@@ -236,7 +236,7 @@ public class UnloadPolys {
                     top.pol = CAT(top.pol, v, ar.pol);
                     REPLACE(ar,top,v);
                     arn = aln.t[nv];
-                    List<PolyBase.PolyBaseTreeImpl> sons = ar.sons;
+                    List<PolyBase.PolyBaseTree> sons = ar.sons;
                     dispArc(ar);
                     POP();
                     top.addSons(sons);
@@ -244,7 +244,7 @@ public class UnloadPolys {
                     top.pol = CAT(top.pol, nv, al.pol);
                     REPLACE(al, top, nv);
                     aln = arn.b[v];
-                    List<PolyBase.PolyBaseTreeImpl> sons = al.sons;
+                    List<PolyBase.PolyBaseTree> sons = al.sons;
                     dispArc(al);
                     POP();
                     top.addSons(sons);
@@ -252,7 +252,7 @@ public class UnloadPolys {
                     al.pol = CAT(al.pol, v, ar.pol);
                     REPLACE(ar, al, v);
                     arn = aln.t[nv];
-                    List<PolyBase.PolyBaseTreeImpl> sons = ar.sons;
+                    List<PolyBase.PolyBaseTree> sons = ar.sons;
                     dispArc(ar);
                     al.addSons(sons);
                     PUSH(al);
@@ -345,7 +345,7 @@ public class UnloadPolys {
 //        System.out.println();
 //    }
 
-    PolyBase.PolyBaseTreeImpl outTree(Polys pl) {
+    PolyBase.PolyBaseTree outTree(Polys pl) {
         Polys pg = pl;
         int n = 0;
     	do {
@@ -371,7 +371,7 @@ public class UnloadPolys {
             assert k == pts.length;
         }
         PolyBase p = new PolyBase(pts);
-        return new PolyBase.PolyBaseTreeImpl(p);
+        return new PolyBase.PolyBaseTree(p);
     }
 
 //    private String prPoint(int x, int y) {

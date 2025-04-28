@@ -59,12 +59,16 @@ import java.util.Stack;
  * The Poly also contains a Layer and some connectivity information.
  */
 public class PolyBase implements Shape, PolyNodeMerge {
-
-    private static final boolean ALLOWTINYPOLYGONS = false;
+	private static final boolean DEBUGMERGE = false;
+	private static final boolean DEBUGCOINCIDENT = false;
+	private static final boolean DEBUGCOLLINEAR = false;
+	private static final boolean DEBUGMANHATTAN = false;
+    private static final boolean ALLOWTINYPOLYGONS = true;
     /** the style (outline, text, lines, etc.) */
     private Poly.Type style;
     /** the points */
     protected Point points[];
+	protected Line2D lines[];
     /** the layer (used for graphics) */
     private Layer layer;
     /** the bounds of the points */
@@ -210,6 +214,19 @@ public class PolyBase implements Shape, PolyNodeMerge {
     }
 
     /**
+     * The constructor creates a new Poly that clones an existing Poly
+     * @param rect the Rectangle2D of the rectangle.
+     */
+    public PolyBase(PolyBase poly) {
+        List<Point> list = new ArrayList<Point>();
+		for (Point point : poly.points) list.add(from(point));
+		this.style  = poly.style;
+		this.points = list.toArray(new Point[list.size()]);
+		this.layer  = poly.layer;
+		this.pp     = poly.pp;
+    }
+
+    /**
      * Method to create an array of Points that describes a Rectangle.
      * @param lX the low X coordinate of the rectangle.
      * @param hX the high X coordinate of the rectangle.
@@ -246,8 +263,10 @@ public class PolyBase implements Shape, PolyNodeMerge {
      * Method to help initialize this Poly.
      */
     private void initialize(Point[] points) {
+		for (Point p : points) assert(p != null);
         this.style = Poly.Type.CLOSED;
         this.points = points;
+		this.lines = null;
         this.layer = null;
         this.bounds = null;
         this.pp = null;
@@ -297,6 +316,16 @@ public class PolyBase implements Shape, PolyNodeMerge {
     public Point[] getPoints() {
         return points;
     }
+
+	public Line2D[] getLines() {
+		if (lines != null) return lines;
+		List<Line2D> pLs = new ArrayList<Line2D>();
+		PolyPathIterator pIt = getEdgeIterator();
+		while (!pIt.isDone()) getLinesFromEdge(pIt, pLs);
+		lines = pLs.toArray(new Line2D.Double[pLs.size()]);
+		return lines;
+	}
+
 
     /**
      * Method to return the layer associated with this Poly.
@@ -387,30 +416,33 @@ public class PolyBase implements Shape, PolyNodeMerge {
             if (style != Poly.Type.FILLED && style != Poly.Type.CLOSED && style != Poly.Type.TEXTBOX && style != Poly.Type.CROSSED) {
                 return null;
             }
-        } else if (points.length == 5) {
+			// make sure the polygon is rectangular and orthogonal
+			if (isHorizontalBox(points[0], points[1], points[2], points[3])) {
+				bitRectangle = 1;
+				return getBounds2D();
+			}
+			if (isVerticalBox(points[0], points[1], points[2], points[3])) {
+				bitRectangle = 1;
+				return getBounds2D();
+			}
+        } else if (points.length >= 5) {
+			// only polygons can be boxes
             if (style != Poly.Type.FILLED && style != Poly.Type.CLOSED
                     && style != Poly.Type.OPENED && style != Poly.Type.OPENEDT1
                     && style != Poly.Type.OPENEDT2 && style != Poly.Type.OPENEDT3) {
                 return null;
             }
-            if (points[0].getFixpX() != points[4].getFixpX() || points[0].getFixpY() != points[4].getFixpY()) {
-                return null;
-            }
-        } else {
+			// check if computed area is equal to bounding box
+			double testArea = GenMath.getArea(getBounds2D());
+			double realArea = GenMath.getAreaOfPoints(points);
+			if (DBMath.areEquals(testArea, realArea)) {
+				bitRectangle = 1;
+				return getBounds2D();
+			}
+		} else {
             return null;
         }
 
-        // make sure the polygon is rectangular and orthogonal
-        if (points[0].getFixpX() == points[1].getFixpX() && points[2].getFixpX() == points[3].getFixpX()
-                && points[0].getFixpY() == points[3].getFixpY() && points[1].getFixpY() == points[2].getFixpY()) {
-            bitRectangle = 1;
-            return getBounds2D();
-        }
-        if (points[0].getFixpX() == points[3].getFixpX() && points[1].getFixpX() == points[2].getFixpX()
-                && points[0].getFixpY() == points[1].getFixpY() && points[2].getFixpY() == points[3].getFixpY()) {
-            bitRectangle = 1;
-            return getBounds2D();
-        }
         return null;
     }
 
@@ -563,52 +595,6 @@ public class PolyBase implements Shape, PolyNodeMerge {
      * @param pt the point in question.
      * @return true if the point is inside of this Poly.
      */
-//    private boolean isInsideGenericPolygonOriginal(Point2D pt)
-//    {
-//        // general polygon containment by summing angles to vertices
-//        double ang = 0;
-//        Point2D lastPoint = points[points.length-1];
-//        //if (pt.equals(lastPoint)) return true;
-//        if (DBMath.areEquals(pt, lastPoint))
-//        {
-//            return true;
-//        }
-//        Rectangle2D box = getBounds2D();
-//
-//        // The point is outside the bounding box of the polygon
-//        if (!DBMath.pointInsideRect(pt, box))
-//            return false;
-//
-//        int lastp = DBMath.figureAngle(pt, lastPoint);
-//        for (Point2D thisPoint : points)
-//        {
-//            //if (pt.equals(thisPoint)) return true;
-//            if (DBMath.areEquals(pt, thisPoint))
-//            {
-//                return true;
-//            }
-//            // Checking if point is along polygon edge
-//            if (DBMath.isOnLine(thisPoint, lastPoint, pt))
-//            {
-//                return true;
-//            }
-//            int thisp = DBMath.figureAngle(pt, thisPoint);
-//            int tang = lastp - thisp;
-//            if (tang < -1800)
-//                tang += 3600;
-//            if (tang > 1800)
-//                tang -= 3600;
-//            ang += tang;
-//            lastp = thisp;
-//            lastPoint = thisPoint;
-//        }
-//        ang = Math.abs(ang);
-//        //boolean completeCircle = ang == 0 || ang == 3600;
-//        boolean oldCalculation = (!(ang <= points.length));
-//        return (oldCalculation);
-//        //if (Math.abs(ang) <= points.length) return false;
-//        //return true;
-//    }
     public boolean isInside(Point2D pt) {
         if (style == Poly.Type.FILLED || style == Poly.Type.CLOSED || style == Poly.Type.CROSSED || style.isText()) {
             // If point is not in 2D bounding box -> is outside anyway
@@ -633,9 +619,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
                 return false;
             }
 
-//            boolean method = isInsideGenericPolygonOriginal(pt);
             boolean method = isPointInsideCutAlgorithm(pt);
-//            boolean method = isPointInsideArea(pt);  // very slow. 3 times slower in 1 example
             return method;
         }
 
@@ -648,9 +632,6 @@ public class PolyBase implements Shape, PolyNodeMerge {
 
         if (style == Poly.Type.OPENED || style == Poly.Type.OPENEDT1 || style == Poly.Type.OPENEDT2
                 || style == Poly.Type.OPENEDT3 || style == Poly.Type.VECTORS) {
-            // first look for trivial inclusion by being a vertex
-            //for(int i=0; i<points.length; i++)
-            //	if (pt.equals(points[i])) return true;
             for (Point2D point : points) {
                 if (DBMath.areEquals(pt, point)) {
                     return true;
@@ -752,7 +733,6 @@ public class PolyBase implements Shape, PolyNodeMerge {
             if (!DBMath.pointInRect(p, bounds)) {
                 return false;
             }
-            //if (!bounds.contains(points[i])) return false;
         }
         return true;
     }
@@ -1089,6 +1069,19 @@ public class PolyBase implements Shape, PolyNodeMerge {
      */
     public double polyDistance(double x, double y) {
         return polyDistance(new Rectangle2D.Double(x, y, 0, 0));
+    }
+
+    /**
+     * Method to report the distance of a point to this Poly.
+     * @param Point2D coordinate of a point
+     * @return the distance of the point to the Poly.
+     * The method returns a negative amount if the point is a direct hit on or inside
+     * the polygon (the more negative, the closer to the center).
+     */
+    public double polyDistance(Point2D pt) {
+		Point2D cl = closestPoint(pt);
+		if (isInside(pt)) return -pt.distance(cl);
+		else return pt.distance(cl);
     }
 
     /**
@@ -1682,7 +1675,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
         Area otherArea = new Area(polyOther);
         myArea.intersect(otherArea);
 
-        List<PolyBase> polys = getPointsInArea(myArea, layer, true, false);
+        List<PolyBase> polys = getPointsInArea(myArea, layer, false, true);
         if (polys == null) {
             return null;
         }
@@ -1828,25 +1821,47 @@ public class PolyBase implements Shape, PolyNodeMerge {
         if (det != 0) {
             return null;
         }
-        double minX1 = Math.min(line1.getX1(), line1.getX2());
-        double minX2 = Math.min(line2.getX1(), line2.getX2());
+		double X11 = line1.getX1();
+		double X12 = line1.getX2();
+		double X21 = line2.getX1();
+		double X22 = line2.getX2();
+		double Y11 = line1.getY1();
+		double Y12 = line1.getY2();
+		double Y21 = line2.getY1();
+		double Y22 = line2.getY2();
+
+        double minX1 = Math.min(X11, X12);
+        double minX2 = Math.min(X21, X22);
         double minX = Math.max(minX1, minX2);
 
-        double minY1 = Math.min(line1.getY1(), line1.getY2());
-        double minY2 = Math.min(line2.getY1(), line2.getY2());
+        double minY1 = Math.min(Y11, Y12);
+        double minY2 = Math.min(Y21, Y22);
         double minY = Math.max(minY1, minY2);
 
-        double maxX1 = Math.max(line1.getX1(), line1.getX2());
-        double maxX2 = Math.max(line2.getX1(), line2.getX2());
+        double maxX1 = Math.max(X11, X12);
+        double maxX2 = Math.max(X21, X22);
         double maxX = Math.min(maxX1, maxX2);
 
-        double maxY1 = Math.max(line1.getY1(), line1.getY2());
-        double maxY2 = Math.max(line2.getY1(), line2.getY2());
+        double maxY1 = Math.max(Y11, Y12);
+        double maxY2 = Math.max(Y21, Y22);
         double maxY = Math.min(maxY1, maxY2);
 
-        Point2D p1 = new Point2D.Double(minX, minY);
-        Point2D p2 = new Point2D.Double(maxX, maxY);
-        return new Line2D.Double(p1, p2);
+		/**
+		 * The above (original) code works independently on the two axes, essentially:
+		 * 1. convert the lines to rectangles
+		 * 2. clip them to each other
+		 * 3. return (arbitrarily) the I-quadrant diagonal
+		 * This is clearly not the intention, this diagonal might not even be parallel to the lines
+		 * Below we select the diagonal that is in the same quadrant as line1
+		 */
+		double begX = (X11 < X12) ? minX : maxX;
+		double begY = (Y11 < Y12) ? minY : maxY;
+		double endX = (X11 < X12) ? maxX : minX;
+		double endY = (Y11 < Y12) ? maxY : minY;
+
+		Point2D p1 = new Point2D.Double(begX, begY);
+		Point2D p2 = new Point2D.Double(endX, endY);
+		return new Line2D.Double(p1, p2);
     }
 
     /**
@@ -2038,8 +2053,12 @@ public class PolyBase implements Shape, PolyNodeMerge {
                 double area = GenMath.getArea(bounds);
                 return Math.abs(area);
             }
-
             return GenMath.getAreaOfPoints(points);
+        }
+        if (style == Poly.Type.CIRCLE || style == Poly.Type.THICKCIRCLE || style == Poly.Type.DISC) {
+            Rectangle2D bounds = getBounds2D();
+			double area = GenMath.getArea(bounds);
+			return Math.abs(area)*Math.PI/4;
         }
         return 0;
     }
@@ -2160,18 +2179,7 @@ public class PolyBase implements Shape, PolyNodeMerge {
             point.setLocation(DBMath.round(point.getX()), DBMath.round(point.getY()));
         }
     }
-    /**
-     * Method to retrieve all loops that are part of this PolyBase,
-     * sorted by area.
-     * @return the List of loops.
-     */
-//    public List<PolyBase> getSortedLoops()
-//    {
-//        Collection<PolyBase> set = getPointsInArea(new Area(this), layer, true, false, null);
-//        List<PolyBase> list = new ArrayList<PolyBase>(set);
-//        Collections.sort(list, AREA_COMPARATOR);
-//        return (list);
-//    }
+
     /**
      * Class to compare PolyBase objects
      */
@@ -2200,6 +2208,18 @@ public class PolyBase implements Shape, PolyNodeMerge {
     };
 
     /**
+	 * Static method to get PolyBaseTree roots associated with an Area.
+     * @param area Java2D structure containing the geometrical information
+     * @param layer the Layer to examine.
+     * @return List of PolyBaseTree elements.
+	 */
+    public static List<PolyBaseTree> getPolyTrees(Area area, Layer layer) {
+        List<PolyBase> list = getLoopsFromArea(area, layer);
+        List<PolyBaseTree> roots = getTreesFromLoops(list);
+        return roots;
+    }
+
+    /**
      * Static method to get PolyBase elements associated with an Area.
      * @param area Java2D structure containing the geometrical information
      * @param layer the Layer to examine.
@@ -2208,178 +2228,168 @@ public class PolyBase implements Shape, PolyNodeMerge {
      * @return List of PolyBase elements.
      */
     public static List<PolyBase> getPointsInArea(Area area, Layer layer, boolean simple, boolean includeLastPoint) {
-        if (area == null) {
-            return null;
-        }
-        boolean isSingular = area.isSingular();
-
-        // Complex algorithm to detect loops
-        if (!isSingular) {
-            return (getPointsFromComplex(area, layer));
-        }
-
-        double[] coords = new double[6];
-        List<Point> pointList = new ArrayList<Point>();
-        Point lastMoveTo = null;
-        List<PolyBase> toDelete = new ArrayList<PolyBase>();
-        List<PolyBase> polyList = new ArrayList<PolyBase>();
-
-        // Gilda: best practice note: System.arraycopy
-        for (PathIterator pIt = area.getPathIterator(null); !pIt.isDone();) {
-            int type = pIt.currentSegment(coords);
-            if (type == PathIterator.SEG_CLOSE) {
-                if (includeLastPoint && lastMoveTo != null) {
-                    pointList.add(lastMoveTo);
-                }
-                PolyBase poly = new PolyBase(pointList.toArray(new Point[pointList.size()]));
-//                Point2D[] points = new Point2D[pointList.size()];
-//                int i = 0;
-//                for (Point2D p : pointList) {
-//                    points[i++] = p;
-//                }
-//                PolyBase poly = new PolyBase(points);
-                poly.setLayer(layer);
-                poly.setStyle(Poly.Type.FILLED);
-                lastMoveTo = null;
-                toDelete.clear();
-                if (!simple && !isSingular) {
-                    for (PolyBase pn : polyList) {
-                        if (pn.contains(pointList.get(0))
-                                || poly.contains(pn.getPoints()[0])) {
-                            poly = new PolyBase(pn.getPoints().clone()); // poly is lost ??
-//                            points = pn.getPoints();
-//                            for (i = 0; i < points.length; i++) {
-//                                pointList.add(points[i]);
-//                            }
-//                            Point2D[] newPoints = new Point2D[pointList.size()];
-//                            System.arraycopy(pointList.toArray(), 0, newPoints, 0, pointList.size());
-//                            poly = new PolyBase(newPoints);
-                            toDelete.add(pn);
-                        }
-                    }
-                }
-                if (poly != null) {
-                    polyList.add(poly);
-                }
-                polyList.removeAll(toDelete);
-                pointList.clear();
-            } else if (type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_LINETO) {
-                Point pt = fromLambda(coords[0], coords[1]);
-                pointList.add(pt);
-                if (type == PathIterator.SEG_MOVETO) {
-                    lastMoveTo = pt;
-                }
-            }
-            pIt.next();
-        }
-        return polyList;
+		// Get simple loops - sorted by size
+        List<PolyBase> loops = getLoopsFromArea(area, layer);
+		// Arrange in tree structures
+        List<PolyBaseTree> roots = getTreesFromLoops(loops);
+        // Get loops from all tree roots.
+        List<PolyBase> list = new ArrayList<PolyBase>();
+		for (PolyBaseTree root : roots) {
+			if (simple) {
+				list.add(root.poly);
+			} else {
+				// An island in a lake on an island in a lake... 
+				Stack<PolyBaseTree> stack = new Stack<PolyBaseTree>();
+				root.getLoops(0, stack);
+				for (PolyBaseTree tree : stack) {
+					list.add(tree.getPoly());
+				}
+			}
+		}
+        return list;
     }
+
+	// Extended sanity check for points
+	public static boolean isCoincident(Point p1, Point p2) {
+		if (p1 == null || p2 == null) return false;
+		return p1.equals(p2);
+			
+	}
+	public static boolean isCollinear(Point p0, Point p1, Point p2) {
+		if (p0 == null || p1 == null || p2 == null) return false;
+		double area =
+			(p0.getX()-p1.getX())*(p0.getY()-p2.getY())-
+			(p0.getY()-p1.getY())*(p0.getX()-p2.getX());
+		return area == 0;
+	}
+	public static boolean isNonManhattan(Point p0, Point p1) {
+		if (p0 == null || p1 == null) return false;
+		if (p0.getX() == p1.getX()) return false;
+		if (p0.getY() == p1.getY()) return false;
+		return true;
+	}
+	public static boolean isHorizontalBox(Point p0, Point p1, Point p2, Point p3) {
+		if (p0 == null || p1 == null || p2 == null || p3 == null) return false;
+		return
+			p0.getX() == p1.getX() && p2.getX() == p3.getX() &&
+			p0.getY() == p3.getY() && p2.getY() == p1.getY();
+	}
+	public static boolean isVerticalBox(Point p0, Point p1, Point p2, Point p3) {
+		if (p0 == null || p1 == null || p2 == null || p3 == null) return false;
+		return
+			p0.getX() == p3.getX() && p2.getX() == p1.getX() &&
+			p0.getY() == p1.getY() && p2.getY() == p3.getY();
+	}
+
+	// Make a hole in area
+	public static Point[] subtractPoints(Point[] loop, Point[] hole) {
+		// Both must be non-degenerate
+		assert(loop.length >= 1);
+		assert(hole.length >= 1);
+		// Will need lengths
+		int nl = loop.length;
+		int nh = hole.length;
+		// Search for point on hole closest to loop
+		int l0 = 0;
+		int h0 = 0;
+		double d0 = Double.MAX_VALUE;
+		for (int l1 = 0; l1 < nl; l1++) {
+			double d1 = loop[l1].distance(hole[h0]);
+			if (DBMath.isLessThan(d1, d0)) {
+				l0 = l1;
+				d0 = d1;
+			}
+		}
+		for (int h1 = 0; h1 < nh; h1++) {
+			double d1 = loop[l0].distance(hole[h1]);
+			if (DBMath.isLessThan(d1, d0)) {
+				h0 = h1;
+				d0 = d1;
+			}
+		}
+		for (int l1 = 0; l1 < nl; l1++) {
+			double d1 = loop[l1].distance(hole[h0]);
+			if (DBMath.isLessThan(d1, d0)) {
+				l0 = l1;
+				d0 = d1;
+			}
+		}
+		// Reserve space for points, closing loops if required
+		int np = nl + nh;
+		if (loop[l0] != loop[(l0+nl-1)%nl]) np += 1;
+		if (hole[h0] != hole[(h0+nh-1)%nh]) np += 1;
+		Point[] hoop = new Point[np];
+		// Traverse loop and hole in clockwise direction
+		int ip = 0;
+		for (int l1 = 0; l1 < nl; l1++) hoop[ip++] = from(loop[(l0+l1)%nl]);
+		if (loop[l0] != loop[(l0+nl-1)%nl]) hoop[ip++] = from(loop[l0]);
+		for (int h1 = 0; h1 < nh; h1++) hoop[ip++] = from(hole[(h0+h1)%nh]);
+		if (hole[h0] != hole[(h0+nh-1)%nh]) hoop[ip++] = from(hole[h0]);
+		return hoop;
+	}
+				
 
     // Creating a tree for finding the loops
-    public static interface PolyBaseTree {
-
-        public Iterable<PolyBaseTree> getSons();
-
-        public PolyBase getPoly();
-    }
-
-    public static class PolyBaseTreeImpl implements PolyBaseTree {
-
-        List<PolyBaseTree> sons;
+    public static class PolyBaseTree {
         PolyBase poly;
+        List<PolyBaseTree> sons;
 
-        public PolyBaseTreeImpl(PolyBase p) {
-            if (p == null) {
-                throw new NullPointerException();
-            }
-            poly = p;
-//            sons = new ArrayList<PolyBaseTree>();
+        public PolyBaseTree(PolyBase poly) {
+            if (poly == null) throw new NullPointerException();
+            this.poly = poly;
+			this.sons = new ArrayList<PolyBaseTree>();
         }
 
-        @Override
         public Iterable<PolyBaseTree> getSons() {
-            if (sons != null) {
-                return sons;
-            }
-            return Collections.emptyList();
+			return sons;
         }
 
-        @Override
+		public PolyBase getLoop() {
+			return poly;
+		}
+
+		public List<PolyBase> getHoles() {
+			List<PolyBase> holes = new ArrayList<PolyBase>();
+			for (PolyBaseTree son : sons) {
+				holes.add(son.poly);
+			}
+			return holes;
+		}
+
         public PolyBase getPoly() {
-            return poly;
+			Point [] area = poly.getPoints();
+			for (PolyBaseTree son : sons) {
+				Point [] hole = son.poly.getPoints();
+				area = subtractPoints(area, hole);
+			}
+			PolyBase poly = new PolyBase(area);
+			poly.setLayer(poly.getLayer());
+			return poly;
         }
-
-        void getLoops(int level, Stack<PolyBase> stack) {
-            // Starting of a new polygon
+		
+        public void getLoops(int level, Stack<PolyBaseTree> list) {
             if (level % 2 == 0) {
-                stack.push(poly);
-            } else {
-                PolyBase top = stack.pop();
-                Point[] points = new Point[top.getPoints().length + poly.getPoints().length + 2];
-                System.arraycopy(top.getPoints(), 0, points, 0, top.getPoints().length);
-                // Adding the first point at the end to close the first loop
-                points[top.getPoints().length] = (Point) top.getPoints()[0].clone();
-                System.arraycopy(poly.getPoints(), 0, points, top.getPoints().length + 1, poly.getPoints().length);
-                points[points.length - 1] = (Point) poly.getPoints()[0].clone();
-                PolyBase p = new PolyBase(points);
-                p.setLayer(poly.getLayerOrPseudoLayer()); // they are supposed to belong to the same layer
-                stack.push(p);
+				// Starting of a new polygon
+                list.push(this);
             }
-            level++;
-            if (sons != null) {
-                for (PolyBaseTree t : sons) {
-                    ((PolyBaseTreeImpl) t).getLoops(level, stack);
-                }
-            }
+			for (PolyBaseTree son : sons) {
+				// Handle next level polygons
+				son.getLoops(level + 1, list);
+			}
         }
-
-        boolean add(PolyBaseTreeImpl t) {
-            if (!poly.contains(t.poly.getPoints()[0])) {
-                // Belong to another root
-                return false;
+		
+        public boolean addTree(PolyBaseTree tree) {
+     		if (poly.intersects(tree.poly)) System.out.println("*** INTERSECTING LOOPS "+poly.getLayer()+" "+tree.poly.getBounds2D());
+			if (tree.poly.getPoints().length == 0) return false;
+			if (!poly.contains(tree.poly.getPoints()[0])) return false;
+			for (PolyBaseTree son : sons) {
+				if (son.poly.intersects(tree.poly)) System.out.println("*** INTERSECTING HOLES "+son.poly.getLayer()+" "+son.poly.getBounds2D());
+				if (son.poly.contains(tree.poly.getPoints()[0])) return son.addTree(tree);
+				if (tree.poly.contains(son.poly.getPoints()[0])) System.out.println("*** INCONSISTENT HOLES "+son.poly.getLayer()+" "+son.poly.getBounds2D());
             }
-
-            if (sons == null || sons.size() == 0) {
-                double a = poly.getArea();
-                double b = t.poly.getArea();
-                addSonLowLevel(t);
-                if (a < b) {
-                    assert (false);
-                    System.out.println("Should this happen");
-                    PolyBase c = t.poly;
-                    t.poly = poly;
-                    poly = c;
-                }
-            } else {
-                for (PolyBaseTree b : sons) {
-                    PolyBaseTreeImpl bi = (PolyBaseTreeImpl) b;
-                    PolyBase pn = bi.poly;
-                    if (pn.contains(t.poly.getPoints()[0])) {
-                        return (bi.add(t));
-                    } // test very expensive.
-                    else if (Job.getDebug() && t.poly.contains(pn.getPoints()[0])) {
-                        assert (false);
-                        System.out.println("Bad happen");
-                    }
-                }
-                sons.add(t);
-            }
+			sons.add(tree);
             return true;
         }
-
-        public void addSonLowLevel(PolyBaseTree son) {
-            if (sons == null) {
-                sons = new ArrayList<PolyBaseTree>();
-            }
-            sons.add(son);
-        }
-    }
-
-    // This assumes the algorithm starts with external loop
-    public static List<PolyBaseTree> getPolyTrees(Area area, Layer layer) {
-        List<PolyBase> list = getLoopsFromArea(area, layer);
-        List<PolyBaseTree> roots = getTreesFromLoops(list);
-        return roots;
     }
 
     // Get trees from loops
@@ -2388,90 +2398,227 @@ public class PolyBase implements Shape, PolyNodeMerge {
         // areas are sorted from min to max
         // Build the hierarchy with loops
         for (int i = list.size() - 1; i > -1; i--) {
-            PolyBaseTreeImpl t = new PolyBaseTreeImpl(list.get(i));
-
+            PolyBaseTree tree = new PolyBaseTree(list.get(i));
             // Check all possible roots
             boolean added = false;
-            for (PolyBaseTree r : roots) {
-                if (((PolyBaseTreeImpl) r).add(t)) {
+            for (PolyBaseTree root : roots) {
+                if (root.addTree(tree)) {
                     added = true;
                     break;
                 }
             }
-            if (!added) {
-                roots.add(t);
-            }
+            if (!added) roots.add(tree);
         }
         return roots;
     }
 
-    // Get Loops
-    public static List<PolyBase> getLoopsFromArea(Area area, Layer layer) {
-        if (area == null) {
-            return null;
-        }
+    // Get Points
+    public static PolyBase getPointsFromPoly(PolyBase poly) {
+		Area area = new Area(poly);
+		Layer layer = poly.getLayer();
+		return getPointsFromArea(area, layer);
+	}
+    public static PolyBase getPointsFromArea(Area area, Layer layer) {
+        List<Point> pointList = new ArrayList<Point>();
+		PathIterator pIt = area.getPathIterator(null);
+        while (!pIt.isDone()) {
+			int loop = pointList.size();
+			int type = getPointsFromPath(pIt, pointList);
+			switch (type) {
+			case PathIterator.SEG_CLOSE:
+				if (loop < pointList.size()) {
+					Point head = pointList.get(loop);
+					Point tail = pointList.get(pointList.size()-1);
+					if (!head.equals(tail)) pointList.add(from(head));
+				}
+				break;
+			case PathIterator.SEG_MOVETO:
+			default:
+				System.out.println("PolyBase.getPointsFromArea(" + area + ", " + layer + "): " + 
+								   " unexpected PathIterator type " + type);
+			}
+		}
+		PolyBase poly = new PolyBase(pointList.toArray(new Point[pointList.size()]));
+		poly.setLayer(layer);
+		poly.setStyle(Poly.Type.FILLED);
+        return poly;
+    }
 
-        double[] coords = new double[6];
+    // Get Loops
+    public static List<PolyBase> getLoopsFromPoly(PolyBase poly) {
+		Area area = new Area(poly);
+		Layer layer = poly.getLayer();
+		return getLoopsFromArea(area, layer);
+	}
+    public static List<PolyBase> getLoopsFromArea(Area area, Layer layer) {
         List<Point> pointList = new ArrayList<Point>();
         List<PolyBase> list = new ArrayList<PolyBase>();
 
-        for (PathIterator pIt = area.getPathIterator(null); !pIt.isDone();) {
-            int type = pIt.currentSegment(coords);
-            if (type == PathIterator.SEG_CLOSE) {
-                // ignore zero-size polygons
-                boolean hasArea;
-                if (ALLOWTINYPOLYGONS) {
-                    hasArea = true;
-                } else {
-                    hasArea = false;
-                    for (int i = 1; i < pointList.size(); i++) {
-                        if (pointList.get(i - 1).distance(pointList.get(i)) > .00001) {
-                            hasArea = true;
-                            break;
-                        }
-                    }
-                }
-                if (hasArea) {
-                    PolyBase poly = new PolyBase(pointList.toArray(new Point[pointList.size()]));
-//                    Point2D[] points = new Point2D[pointList.size()];
-//                    System.arraycopy(pointList.toArray(), 0, points, 0, pointList.size());
-//                    PolyBase poly = new PolyBase(points);
-                    poly.setLayer(layer);
-                    poly.setStyle(Poly.Type.FILLED);
-                    list.add(poly);
-                }
-
+		PathIterator pIt = area.getPathIterator(null);		
+        while (!pIt.isDone()) {
+			int loop = pointList.size();
+            int type = getPointsFromPath(pIt, pointList);
+			switch (type) {
+			case PathIterator.SEG_CLOSE:
+				if (loop < pointList.size()) {
+					Point head = pointList.get(loop);
+					Point tail = pointList.get(pointList.size()-1);
+					if (!head.equals(tail)) pointList.add(from(head));
+				}
+				Point[] points = pointList.toArray(new Point[pointList.size()]);
                 pointList.clear();
-            } else if (type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_LINETO) {
-                Point pt = fromLambda(coords[0], coords[1]);
-                pointList.add(pt);
-            }
-            pIt.next();
+                if (!ALLOWTINYPOLYGONS && !DBMath.isGreaterThan(DBMath.getAreaOfPoints(points), 0)) break;
+				PolyBase poly = new PolyBase(points);
+				poly.setLayer(layer);
+				poly.setStyle(Poly.Type.FILLED);
+				list.add(poly);
+				break;
+			case PathIterator.SEG_MOVETO:
+			default:
+				System.out.println("PolyBase.getLoopsFromArea(" + area + ", " + layer + ",...): " + 
+								   " unexpected PathIterator type " + type);
+			}
         }
 
         Collections.sort(list, AREA_COMPARATOR);
         return list;
     }
 
-    // This assumes the algorithm starts with external loop
-    private static List<PolyBase> getPointsFromComplex(Area area, Layer layer) {
-        List<PolyBase> list = getLoopsFromArea(area, layer);
-        List<PolyBaseTree> roots = getTreesFromLoops(list);
-
-        list.clear();
-        // get loops from all tree roots. Even loops start a new poly
-        for (PolyBaseTree r : roots) {
-            int count = 0;
-            Stack<PolyBase> s = new Stack<PolyBase>();
-            ((PolyBaseTreeImpl) r).getLoops(count, s);
-            list.addAll(s);
+	// Check if point is on path
+	public static boolean isPointOnPath(PathIterator pIt, Point2D aPt) {
+		int type = -1;
+		Point [] pt = new Point[3];
+		double [] coords = new double[6];
+        while (!pIt.isDone()) {
+			type = pIt.currentSegment(coords);
+			pt[0] = pt[1];
+			pt[1] = fromLambda(coords[0], coords[1]);
+			pIt.next();
+			switch (type) {
+			case PathIterator.SEG_CLOSE:
+				pt[1] = pt[2];
+				if (DBMath.isOnLine(pt[0], pt[1], aPt)) return true;
+				break;
+			case PathIterator.SEG_MOVETO:
+				pt[2] = pt[1];
+				break;
+			case PathIterator.SEG_LINETO:
+				if (DBMath.isOnLine(pt[0], pt[1], aPt)) return true;
+				break;
+			default:
+				if (DBMath.isOnLine(pt[0], pt[1], aPt)) return true;
+				break;
+			}
         }
-        return list;
+		return false;
+    }
+	
+	// Get lines on a single loop
+    public static int getLinesFromEdge(PolyPathIterator pIt, List<Line2D> pLs) {
+		int nm = 4;
+		int type = -1;
+		Point [] pt = new Point[4];
+		Point [] coords = new Point[3];
+        while (!pIt.isDone()) {
+			type = pIt.currentSegment(coords);
+			pt[2] = coords[1];
+			pIt.next();
+			switch (type) {
+			case PathIterator.SEG_CLOSE:
+				pt[2] = pt[3];
+				pIt.next();
+				if (pt[1] != null && pt[2] != null) pLs.add(new Line2D.Double(pt[1], pt[2]));
+				return type;
+			case PathIterator.SEG_MOVETO:
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				pt[3] = pt[2];
+				break;
+			case PathIterator.SEG_LINETO:
+				if (isCoincident(pt[2], pt[3])) return PathIterator.SEG_CLOSE;
+				if (pt[1] != null && pt[2] != null) pLs.add(new Line2D.Double(pt[1], pt[2]));
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				break;
+			default:
+				if (DEBUGMERGE) System.out.println("PolyBase.getPointsFromPath(" + pIt + ", " + pLs + "): unknown PathIterator type " + type);
+				if (pt[1] != null && pt[2] != null) pLs.add(new Line2D.Double(pt[1], pt[2]));
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				break;
+			}
+        }
+		return type;
+    }
+
+    // Get points on a single loop
+    public static int getPointsFromPath(PathIterator pIt, List<Point> pLs) {
+		int nm = 4;
+		int type = -1;
+		Point [] pt = new Point[4];
+		double [] coords = new double[6];
+        while (!pIt.isDone()) {
+			type = pIt.currentSegment(coords);
+			pt[2] = fromLambda(coords[0], coords[1]);
+			pIt.next();
+			switch (type) {
+			case PathIterator.SEG_CLOSE:
+				pt[2] = pt[3];
+				if (DEBUGMERGE && pt[3] == null)
+					System.out.println("PolyBase.getPointsFromPath: SEG_CLOSE path not open at " + pt[0] + " " + pt[1] + " "+ pt[2]);
+				if (DEBUGMERGE && pLs.size() <= 2)
+					System.out.println("PolyBase.getPointsFromPath: degenerate path " + pt[0] + " " + pt[1] + " " + pt[2]);
+				if (DEBUGCOINCIDENT && isCoincident(pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: coincicent points " + pt[1] + " " + pt[2]);
+				if (DEBUGCOLLINEAR && isCollinear(pt[0], pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: collinear points " + pt[0] + " " + pt[1] + " " + pt[2]);
+				if (DEBUGMANHATTAN && isNonManhattan(pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: non-Manhattan segment " + pt[1] + " " + pt[2]);
+				if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				return type;
+			case PathIterator.SEG_MOVETO:
+				if (DEBUGMERGE && pt[3] != null)
+					System.out.println("PolyBase.getPointsFromPath: SEG_MOVETO path already open at " + pt[0] + " " + pt[1] + " "+ pt[2]);
+				if (pt[2] != null) pLs.add(pt[2]);
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				pt[3] = pt[2];
+				break;
+			case PathIterator.SEG_LINETO:
+				if (DEBUGMERGE && pt[3] == null)
+					System.out.println("PolyBase.getPointsFromPath: SEG_LINETO path not open at " + pt[0] + " " + pt[1] + " " + pt[2]);
+				if (DEBUGMERGE && isCoincident(pt[2], pt[3]))
+					System.out.println("PolyBase.getPointsFromPath: SEG_LINETO intersects loop at " + pt[2] + " " + pt[2]);
+				if (DEBUGCOINCIDENT && isCoincident(pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: coincicent points " + pt[1] + " " + pt[2]);
+				if (DEBUGCOLLINEAR && isCollinear(pt[0], pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: collinear points " + pt[0] + " " + pt[1] + " " + pt[2]);
+				if (DEBUGMANHATTAN && isNonManhattan(pt[1], pt[2]) && nm-- > 0)
+					System.out.println("PolyBase.getPointsFromPath: non-Manhattan segment " + pt[1] + " " + pt[2]);
+				if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				if (pt[2] != null) pLs.add(pt[2]);
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				break;
+			default:
+				if (DEBUGMERGE) System.out.println("PolyBase.getPointsFromPath(" + pIt + ", " + pLs + "): unknown PathIterator type " + type);
+				if (isCoincident(pt[1], pt[2])) pLs.remove(pLs.size() - 1);
+				if (pt[2] != null) pLs.add(pt[2]);
+				pt[0] = pt[1];
+				pt[1] = pt[2];
+				break;
+			}
+        }
+		return type;
     }
 
     private class PolyPathIterator implements PathIterator {
 
         int idx = 0;
+		int sms = 3;
+		Point prev = null;
+		Point next = null;
+		Point last = null;
         AffineTransform trans;
 
         public PolyPathIterator(AffineTransform at) {
@@ -2480,45 +2627,62 @@ public class PolyBase implements Shape, PolyNodeMerge {
 
         @Override
         public int getWindingRule() {
-            return WIND_EVEN_ODD;
+            return WIND_NON_ZERO;
         }
 
         @Override
         public boolean isDone() {
-            return idx > points.length;
+			Point next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return true;
+			return false;
         }
 
         @Override
         public void next() {
-            idx++;
+			prev = next;
+			next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return;
+			if (last == null) last = next;
+			else if (last.equals(next)) last = null;
+			idx++;
         }
 
         @Override
         public int currentSegment(float[] coords) {
-            if (idx >= points.length) {
-                return SEG_CLOSE;
-            }
-            coords[0] = (float) points[idx].getX();
-            coords[1] = (float) points[idx].getY();
-            if (trans != null) {
-                trans.transform(coords, 0, coords, 0, 1);
-            }
-            return (idx == 0 ? SEG_MOVETO : SEG_LINETO);
+			next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return -1;
+			coords[0] = (float) next.getX();
+			coords[1] = (float) next.getY();
+			if (trans != null) trans.transform(coords, 0, coords, 0, 1);
+			if (last == null) return SEG_MOVETO;
+			else if (last.equals(next)) return SEG_CLOSE;
+			return SEG_LINETO;
         }
 
         @Override
         public int currentSegment(double[] coords) {
-            if (idx >= points.length) {
-                return SEG_CLOSE;
-            }
-            coords[0] = points[idx].getX();
-            coords[1] = points[idx].getY();
-            if (trans != null) {
-                trans.transform(coords, 0, coords, 0, 1);
-            }
-            return (idx == 0 ? SEG_MOVETO : SEG_LINETO);
+			next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return -1;
+			coords[0] = next.getX();
+			coords[1] = next.getY();
+			if (trans != null) trans.transform(coords, 0, coords, 0, 1);
+			if (last == null) return SEG_MOVETO;
+			else if (last.equals(next)) return SEG_CLOSE;
+			return SEG_LINETO;
         }
-    }
+
+		public int currentSegment(Point[] coords) {
+			next = (idx < points.length) ? points[idx] : last;
+			if (next == null) return -1;
+			coords[0] = prev;
+			coords[1] = next;
+			coords[2] = last;
+			if (trans != null) trans.transform(coords, 0, coords, 0, 1);
+			if (last == null) return SEG_MOVETO;
+			if (last.equals(next)) return SEG_CLOSE;
+			return SEG_LINETO;
+		}
+	}
 
     /**
      * Method to return a PathIterator for this Poly after a transformation.
@@ -2529,6 +2693,15 @@ public class PolyBase implements Shape, PolyNodeMerge {
     @Override
     public PathIterator getPathIterator(AffineTransform at) {
         return new PolyPathIterator(at);
+    }
+
+    /**
+     * Method to return an EdgeIterator for this Poly
+     * This method gives direct access to Point [] points
+      * @return the PolyPathIterator.
+     */
+    public PolyPathIterator getEdgeIterator() {
+        return new PolyPathIterator(null);
     }
 
     /**

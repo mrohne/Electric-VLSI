@@ -50,6 +50,7 @@ public class PolySweepMerge extends GeometryHandler
 //    public static final int TWO_FRONTIER_MODE = 2;
 
     //private int mode = ONE_FRONTIER_MODE;
+	private static final boolean ASSERTSANITY = false;
 
     /**
 	 * Method to create a new "merge" object.
@@ -402,7 +403,7 @@ public class PolySweepMerge extends GeometryHandler
 
         for (Area area : container.areas)
         {
-            list.addAll(PolyBase.getPointsInArea(area, (Layer)layer, simple, false));
+            list.addAll(PolyBase.getPointsInArea(area, (Layer)layer, simple, true));
         }
 
         return list;
@@ -440,30 +441,21 @@ public class PolySweepMerge extends GeometryHandler
     /***************************************************************************************************************/
     static class PolyEdge
     {
-        Point2D start;
-        Point2D end;
+        PolyBase.Point start;
+        PolyBase.Point end;
         int dir;
 
-        PolyEdge(Point2D s, Point2D e)
+        PolyEdge(PolyBase.Point s, PolyBase.Point e)
         {
             start = s;
             end = e;
             boolean alignX = DBMath.areEquals(s.getX(), e.getX());
             boolean alignY = DBMath.areEquals(s.getY(), e.getY());
-            if (alignX && alignY)
-            {
-                System.out.println("Degenerated edge in 1 point :" + start);
-//                assert (!alignX || !alignY); // can't be a point.
-            }
-            if (alignX)
-                dir = PolyBase.X;
-            else if (alignY)
-                dir = PolyBase.Y;
-            else
-            {
-                dir = PolyBase.XY;
-//                assert(false); // no ready for angled edges
-            }
+            if (alignX && alignY) System.out.println("Degenerated edge in 1 point:" + start + ", " + end);
+            if (alignX) dir = PolyBase.X;
+            else if (alignY) dir = PolyBase.Y;
+			else dir = PolyBase.XY;
+			if (ASSERTSANITY) assert (!alignX || !alignY); // can't be a point.
         }
     }
 
@@ -472,54 +464,45 @@ public class PolySweepMerge extends GeometryHandler
      * @param area
      * @return points to describe the polygon.
      */
-    private static Set<Point2D> getPoints(Area area)
+    private static Set<PolyBase.Point> getPoints(Area area)
     {
-        double [] coords = new double[6];
-        Set<Point2D> pointSet = JavaCompatiblity.JAVA8 ? new LinkedHashSet<Point2D>() : new HashSet<Point2D>();
-
-        for(PathIterator pIt = area.getPathIterator(null); !pIt.isDone(); )
-        {
-            int type = pIt.currentSegment(coords);
-            if (type == PathIterator.SEG_CLOSE)
-            {
-                ;
-            } else if (type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_LINETO)
-            {
-                Point2D pt = new Point2D.Double(coords[0], coords[1]);
-                pointSet.add(pt);
+        Set<PolyBase.Point> pointSet = new HashSet<PolyBase.Point>();
+        List<PolyBase.Point> pointList = new ArrayList<PolyBase.Point>();
+		PathIterator pIt = area.getPathIterator(null);		
+        while (!pIt.isDone()) {
+            int type = PolyBase.getPointsFromPath(pIt, pointList);
+			switch (type) {
+			case PathIterator.SEG_CLOSE:
+				for (int i = 0, n = pointList.size(); i < n; i++)
+					pointSet.add(pointList.get(i));
+				break;
+			case PathIterator.SEG_MOVETO:
+			default:
+				System.out.println("PolySweepMerge.getPoints(" + area + "): unknown PathIterator type " + type);
             }
-            pIt.next();
+			pointList.clear();
         }
-
         return pointSet;
     }
 
     private static List<PolyEdge> getEdges(Area area)
     {
-        double [] coords = new double[6];
-        List<Point2D> pointList = new ArrayList<Point2D>();
         List<PolyEdge> edgesList = new ArrayList<PolyEdge>();
-
-        for(PathIterator pIt = area.getPathIterator(null); !pIt.isDone(); )
-        {
-            int type = pIt.currentSegment(coords);
-            if (type == PathIterator.SEG_CLOSE)
-            {
-                int size = pointList.size();
-                for (int i = 0; i < size; i++)
-                {
-                    PolyEdge edge = new PolyEdge(pointList.get(i), pointList.get((i+1)%size));
-                    edgesList.add(edge);
-                }
-                pointList.clear();
-            } else if (type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_LINETO)
-            {
-                Point2D pt = new Point2D.Double(coords[0], coords[1]);
-                pointList.add(pt);
+		List<PolyBase.Point> pointList = new ArrayList<PolyBase.Point>();
+		PathIterator pIt = area.getPathIterator(null);		
+        while (!pIt.isDone()) {
+            int type = PolyBase.getPointsFromPath(pIt, pointList);
+			switch (type) {
+			case PathIterator.SEG_CLOSE:
+				for (int i = 0, n = pointList.size(); i < n; i++)
+					edgesList.add(new PolyEdge(pointList.get(i),pointList.get((i+1)%n)));
+				break;
+			case PathIterator.SEG_MOVETO:
+			default:
+				System.out.println("PolySweepMerge.getEdges(" + area + "): unknown PathIterator type " + type);
             }
-            pIt.next();
+			pointList.clear();
         }
-
         return edgesList;
     }
 
@@ -706,14 +689,14 @@ public class PolySweepMerge extends GeometryHandler
         {
             if (area.isRectangular())
                 return; // nothing to refine
-            Set<Point2D> pointsList = getPoints(area);
+            Set<PolyBase.Point> pointsList = getPoints(area);
             List<PolyEdge> edgesList = getEdges(area);
             Rectangle2D rect = area.getBounds2D();
             // search for best X or Y cut
             CutBucket cutX = new CutBucket(PolyBase.X, rect.getMinX(), rect.getMaxX(), edgesList);
             CutBucket cutY = new CutBucket(PolyBase.Y, rect.getMinY(), rect.getMaxY(), edgesList);
 
-            for (Point2D p : pointsList)
+            for (PolyBase.Point p : pointsList)
             {
                 // X cut
                 cutX.analyzePoint(p.getX());
@@ -750,7 +733,7 @@ public class PolySweepMerge extends GeometryHandler
             if (sons.isEmpty())  // it should be only 1!!
             {
                 List<PolyBase> l = PolyBase.getLoopsFromArea(area, null);
-                assert(l.size() == 1); // by design
+                if (l.size() != 1) System.out.println("PolySweepMerge.getSimplePolygons(...): list " + l + " has unexpected length " + l.size());
                 list.addAll(l);
             }
             else
