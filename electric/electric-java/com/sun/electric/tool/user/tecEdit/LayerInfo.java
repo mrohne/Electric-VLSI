@@ -155,10 +155,10 @@ public class LayerInfo extends Info
 				if ((stip[y] & (1 << (15-x))) == 0)
 				{
 					Short [] spattern = new Short[16];
-					for(int i=0; i<16; i++) spattern[i] = Short.valueOf((short)0);
+					for(int i=0; i<16; i++) spattern[i] = new Short((short)0);
 					ni.newVar(Artwork.ART_PATTERN, spattern, ep);
 				}
-				ni.newVar(OPTION_KEY, Integer.valueOf(LAYERPATTERN), ep);
+				ni.newVar(OPTION_KEY, new Integer(LAYERPATTERN), ep);
 			}
 			NodeInst ni = NodeInst.makeInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(-12, 3.5), 0, 0, np);
 			if (ni == null) return;
@@ -173,28 +173,28 @@ public class LayerInfo extends Info
 			NodeInst ni = NodeInst.makeInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(-12, -14), 0, 0, np);
 			if (ni == null) return;
 			ni.newDisplayVar(Artwork.ART_MESSAGE, "Clear Pattern", ep);
-			ni.newVar(OPTION_KEY, Integer.valueOf(LAYERPATCLEAR), ep);
+			ni.newVar(OPTION_KEY, new Integer(LAYERPATCLEAR), ep);
 		}
 		if (patInvertNode == null)
 		{
 			NodeInst ni = NodeInst.makeInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(-12, -16), 0, 0, np);
 			if (ni == null) return;
 			ni.newDisplayVar(Artwork.ART_MESSAGE, "Invert Pattern", ep);
-			ni.newVar(OPTION_KEY, Integer.valueOf(LAYERPATINVERT), ep);
+			ni.newVar(OPTION_KEY, new Integer(LAYERPATINVERT), ep);
 		}
 		if (patCopyNode == null)
 		{
 			NodeInst ni = NodeInst.makeInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(-12, -18), 0, 0, np);
 			if (ni == null) return;
 			ni.newDisplayVar(Artwork.ART_MESSAGE, "Copy Pattern", ep);
-			ni.newVar(OPTION_KEY, Integer.valueOf(LAYERPATCOPY), ep);
+			ni.newVar(OPTION_KEY, new Integer(LAYERPATCOPY), ep);
 		}
 		if (patPasteNode == null)
 		{
 			NodeInst ni = NodeInst.makeInstance(Generic.tech().invisiblePinNode, ep, new Point2D.Double(-12, -20), 0, 0, np);
 			if (ni == null) return;
 			ni.newDisplayVar(Artwork.ART_MESSAGE, "Paste Pattern", ep);
-			ni.newVar(OPTION_KEY, Integer.valueOf(LAYERPATPASTE), ep);
+			ni.newVar(OPTION_KEY, new Integer(LAYERPATPASTE), ep);
 		}
 
 		// load up the structure with the current values
@@ -204,16 +204,16 @@ public class LayerInfo extends Info
 		loadTableEntry(layerTextTable, LAYERSTYLE, desc);
 		loadTableEntry(layerTextTable, LAYERCIF, cif);
 		loadTableEntry(layerTextTable, LAYERGDS, gds);
-		loadTableEntry(layerTextTable, LAYERSPIRES, Double.valueOf(spiRes));
-		loadTableEntry(layerTextTable, LAYERSPICAP, Double.valueOf(spiCap));
-		loadTableEntry(layerTextTable, LAYERSPIECAP, Double.valueOf(spiECap));
-		loadTableEntry(layerTextTable, LAYERINDAREAFAC, Double.valueOf(inductanceAreaFactor));
-		loadTableEntry(layerTextTable, LAYERINDLENFAC, Double.valueOf(inductanceLengthFactor));
-		loadTableEntry(layerTextTable, LAYER3DHEIGHT, Double.valueOf(height3d));
-		loadTableEntry(layerTextTable, LAYER3DTHICK, Double.valueOf(thick3d));
+		loadTableEntry(layerTextTable, LAYERSPIRES, new Double(spiRes));
+		loadTableEntry(layerTextTable, LAYERSPICAP, new Double(spiCap));
+		loadTableEntry(layerTextTable, LAYERSPIECAP, new Double(spiECap));
+		loadTableEntry(layerTextTable, LAYERINDAREAFAC, new Double(inductanceAreaFactor));
+		loadTableEntry(layerTextTable, LAYERINDLENFAC, new Double(inductanceLengthFactor));
+		loadTableEntry(layerTextTable, LAYER3DHEIGHT, new Double(height3d));
+		loadTableEntry(layerTextTable, LAYER3DTHICK, new Double(thick3d));
 		loadTableEntry(layerTextTable, LAYER3DMODE, desc);
 		loadTableEntry(layerTextTable, LAYER3DFACTOR, desc);
-		loadTableEntry(layerTextTable, LAYERCOVERAGE, Double.valueOf(coverage));
+		loadTableEntry(layerTextTable, LAYERCOVERAGE, new Double(coverage));
 
 		for(int i=0; i<layerTextTable.length; i++)
 		{
@@ -399,9 +399,16 @@ public class LayerInfo extends Info
 			var = ni.getVar(Artwork.ART_PATTERN);
 			if (var != null)
 			{
-				Short [] pat = (Short [])var.getObject();
 				boolean nonZero = false;
-				for(int i=0; i<pat.length; i++) if (pat[i].shortValue() != 0) { nonZero = true;   break; }
+				Object obj = var.getObject();
+				if (obj instanceof Short[]) {
+					Short [] pat = (Short [])obj;
+					for(int i=0; i<pat.length; i++) if (pat[i].shortValue() != 0) { nonZero = true;   break; }
+				}
+				if (obj instanceof Integer[]) {
+					Integer [] pat = (Integer [])obj;
+					for(int i=0; i<pat.length; i++) if (pat[i].shortValue() != 0) { nonZero = true;   break; }
+				}
 				if (!nonZero) continue;
 			}
 			Rectangle2D niBounds = ni.getBounds();

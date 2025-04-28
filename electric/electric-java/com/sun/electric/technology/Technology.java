@@ -1148,7 +1148,7 @@ public class Technology implements Comparable<Technology>, Serializable {
         }
         HashMap<String, Layer> layers = new HashMap<String, Layer>();
         for (Xml.Layer l : t.layers) {
-            Layer layer = Layer.newInst(this, l.name, l.desc);
+            Layer layer = Layer.newInstance(this, l.name, l.desc);
             layers.put(l.name, layer);
             layer.setFunction(l.function, l.extraFunction);
             layer.setFactoryParasitics(l.resistance, l.capacitance, l.edgeCapacitance, l.inductanceAreaFactor, l.inductanceLengthFactor);
@@ -1294,11 +1294,11 @@ public class Technology implements Comparable<Technology>, Serializable {
     public static Environment makeInitialEnvironment() {
         Environment env = IdManager.stdIdManager.getInitialEnvironment();
         env = env.withToolSettings((Setting.RootGroup) ToolSettings.getToolSettings(""));
-        Generic generic = Generic.newInst(IdManager.stdIdManager);
+        Generic generic = Generic.newInstance(IdManager.stdIdManager);
         env = env.addTech(generic);
         for (TechFactory techFactory : TechFactory.getKnownTechs().values()) {
             Map<TechFactory.Param, Object> paramValues = paramValuesFromPreferences(techFactory);
-            Technology tech = techFactory.newInst(generic, paramValues);
+            Technology tech = techFactory.newInstance(generic, paramValues);
             if (tech != null) {
                 env = env.addTech(tech);
             }
@@ -1344,7 +1344,7 @@ public class Technology implements Comparable<Technology>, Serializable {
     public static void initPreinstalledTechnologies(EDatabase database, Map<String, Object> paramValuesByXmlPath) {
         database.setToolSettings((Setting.RootGroup) ToolSettings.getToolSettings(""));
         assert database.getGeneric() == null;
-        Generic generic = Generic.newInst(database.getIdManager());
+        Generic generic = Generic.newInstance(database.getIdManager());
         database.addTech(generic);
         for (TechFactory techFactory : TechFactory.getKnownTechs().values()) {
             Map<TechFactory.Param, Object> paramValues = new HashMap<TechFactory.Param, Object>();
@@ -1355,7 +1355,7 @@ public class Technology implements Comparable<Technology>, Serializable {
                 }
                 paramValues.put(techParam, paramValue);
             }
-            Technology tech = techFactory.newInst(generic, paramValues);
+            Technology tech = techFactory.newInstance(generic, paramValues);
             if (tech != null) {
                 database.addTech(tech);
             }
@@ -1537,7 +1537,7 @@ public class Technology implements Comparable<Technology>, Serializable {
         if (newParams.equals(this.paramValues)) {
             return this;
         }
-        return techFactory.newInst(generic, newParams);
+        return techFactory.newInstance(generic, newParams);
     }
 
     protected void setNotUsed(int numPolys) {
@@ -1701,7 +1701,7 @@ public class Technology implements Comparable<Technology>, Serializable {
         printlnSetting(out, settings, getWireRatioSetting());
         printlnSetting(out, settings, getDiffAlphaSetting());
 
-        printlnPref(out, 0, "ResolutionValueFor" + getTechName(), factoryResolution.getLambda());
+        printlnPref(out, 0, "ResolutionValueFor" + getTechName(), new Double(factoryResolution.getLambda()));
         Color[] transparentLayers = getFactoryTransparentLayerColors();
         for (int i = 0; i < transparentLayers.length; i++) {
             out.println("TRANSPARENT_" + (i + 1) + "=" + Integer.toHexString(transparentLayers[i].getRGB()));
@@ -2526,8 +2526,10 @@ public class Technology implements Comparable<Technology>, Serializable {
      * @param np the PrimitiveNode to be added to this Technology.
      */
     public void addNodeProto(PrimitiveNode np) {
-    	if (Job.getDebug() && findNodeProto(np.getName()) != null)
+    	if (findNodeProto(np.getName()) != null) {
     		System.out.println(np.getName() + " is already defined as primitive node");
+			return;
+		}
         assert findNodeProto(np.getName()) == null;
         np.setPrimNodeIndexInTech(nodeIndex++);
         nodes.put(np.getName(), np);
@@ -2559,7 +2561,7 @@ public class Technology implements Comparable<Technology>, Serializable {
 //        double length = ni.getXSize() - so.getLowXOffset() - so.getHighXOffset();
 //        double width = ni.getYSize() - so.getLowYOffset() - so.getHighYOffset();
 
-        PrimitiveNodeSize size = new PrimitiveNodeSize(width, length, false);
+        PrimitiveNodeSize size = new PrimitiveNodeSize(new Double(width), new Double(length), false);
         return size;
     }
 
@@ -2608,7 +2610,7 @@ public class Technology implements Comparable<Technology>, Serializable {
             //System.out.println("No calculating length for active regions yet");
         }
         double activeLen = getTransistorActiveLength(ni);
-        TransistorSize size = new TransistorSize(width, height, activeLen, null, true);
+        TransistorSize size = new TransistorSize(new Double(width), new Double(height), new Double(activeLen), null, true);
         return size;
     }
 
@@ -2804,7 +2806,7 @@ public class Technology implements Comparable<Technology>, Serializable {
         PrimitiveNode pn = (PrimitiveNode) ni.getProto();
         return pn.getBaseRectangle();
     }
-//    private static final Technology.NodeLayer[] nullPrimLayers = new Technology.NodeLayer[0];
+    private static final Technology.NodeLayer[] nullPrimLayers = new Technology.NodeLayer[0];
 
     /**
      * Returns the polygons that describe node "ni".
@@ -2929,9 +2931,9 @@ public class Technology implements Comparable<Technology>, Serializable {
         /**
          * Constructor to initialize for multiple cuts.
          */
-//        private MultiCutData(ImmutableNodeInst niD, NodeLayer cutLayer) {
-//            calculateInternalData(niD, cutLayer);
-//        }
+        private MultiCutData(ImmutableNodeInst niD, NodeLayer cutLayer) {
+            calculateInternalData(niD, cutLayer);
+        }
 
         /**
          * Constructor to initialize for multiple cuts.
@@ -3816,7 +3818,7 @@ public class Technology implements Comparable<Technology>, Serializable {
                 	if (list == null)
                 	{
                 		list = new ArrayList<Layer>();
-                		layerNames.put(Integer.valueOf(val), list);
+                		layerNames.put(new Integer(val), list);
                 	}
                 	list.add(layer);
             	}
@@ -4433,7 +4435,7 @@ public class Technology implements Comparable<Technology>, Serializable {
             ap.check();
         }
 
-        if (!isNonStandard() && isScaleRelevant() && Job.getDebug()) {
+        if (!isNonStandard() && isScaleRelevant()) {
             Map<Layer, ArcProto.Function> layToArcFunction = new HashMap<Layer, ArcProto.Function>();
             for (ArcProto ap : arcs.values()) {
                 for (int i = 0; i < ap.getNumArcLayers(); i++) {
