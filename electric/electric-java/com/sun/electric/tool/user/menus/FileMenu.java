@@ -228,6 +228,8 @@ public class FileMenu {
                     exportCommand(FileType.LEF, false); }},
                 new EMenuItem("DEF (Design Exchange Format)...") { public void run() {
                     exportCommand(FileType.DEF, false); }},
+                new EMenuItem("_VST (Structural VHDL Format)...") { public void run() {
+                    exportCommand(FileType.VST, false); }},
                 new EMenuItem("_L...") { public void run() {
                     exportCommand(FileType.L, false); }},
                 new EMenuItem("Boo_kshelf...") { public void run() {

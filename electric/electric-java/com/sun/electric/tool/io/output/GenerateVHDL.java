@@ -25,6 +25,7 @@ package com.sun.electric.tool.io.output;
 
 import com.sun.electric.database.hierarchy.Cell;
 import com.sun.electric.database.hierarchy.Export;
+import com.sun.electric.database.hierarchy.HierarchyEnumerator;
 import com.sun.electric.database.hierarchy.Nodable;
 import com.sun.electric.database.network.Global;
 import com.sun.electric.database.network.Netlist;
@@ -62,6 +63,7 @@ import java.util.prefs.Preferences;
 public class GenerateVHDL extends Topology
 {
 	/** special codes during VHDL generation */
+	/** unknown block */			private static final int BLOCKUNKNOWN = -1;
 	/** ordinary block */			private static final int BLOCKNORMAL   = 0;
 	/** a MOS transistor */			private static final int BLOCKMOSTRAN  = 1;
 	/** a buffer */					private static final int BLOCKBUFFER   = 2;
@@ -79,14 +81,13 @@ public class GenerateVHDL extends Topology
 	private static final String NORMALCONTINUATIONSTRING = "    ";
 	private static final String COMMENTCONTINUATIONSTRING = "-- ";
 
-    private final VHDLPreferences vp;
-
-    public static class VHDLPreferences extends PrefPackage {
+    private final VHDLPrefPackage pp;
+    public static class VHDLPrefPackage extends PrefPackage {
         private static final String KEY_VHDL = "SchematicVHDLStringFor";
 
         public Map<PrimitiveNode,String> vhdlNames = new HashMap<PrimitiveNode,String>();
 
-        public VHDLPreferences(boolean factory)
+        public VHDLPrefPackage(boolean factory)
         {
             super(factory);
 
@@ -125,8 +126,27 @@ public class GenerateVHDL extends Topology
         }
     }
 
+    private final VHDLPreferences vp;
+	public static class VHDLPreferences extends OutputPreferences
+    {
+        public VHDLPreferences(boolean factory) { super(factory); }
+
+        public Output doOutput(Cell cell, VarContext context, String filePath)
+        {
+    		GenerateVHDL out = new GenerateVHDL(this);
+            if (out.openTextOutputStream(filePath)) return out.finishWrite();
+            out.filePath = filePath;
+    		if (out.writeCell(cell, context)) return out.finishWrite();
+    		if (out.closeTextOutputStream()) return out.finishWrite();
+    		System.out.println(filePath + " written");
+            return out.finishWrite();
+        }
+    }
+
+
     private GenerateVHDL(VHDLPreferences vp) {
         this.vp = vp;
+        this.pp = new VHDLPrefPackage(false);
     }
 
 	/**
@@ -170,10 +190,19 @@ public class GenerateVHDL extends Topology
 	protected void done() {}
 
 	/**
+	 * Set of cells 
+	 */
+	private Set<String> entitiesWritten = new HashSet<String>();
+
+	/**
 	 * Method to write one level of hierarchy.
 	 */
 	protected void writeCellTopology(Cell cell, String cellName, CellNetInfo cni, VarContext context, Topology.MyCellInfo info)
 	{
+		// Check if cell is already written out
+		if (entitiesWritten.contains(cellName)) return;
+		else entitiesWritten.add(cellName);
+
 		// write the header
 		writeWidthLimited("\n");
 		setContinuationString(COMMENTCONTINUATIONSTRING);
@@ -182,9 +211,10 @@ public class GenerateVHDL extends Topology
 		Netlist nl = cni.getNetList();
 
 		// write the entity section
-		String properCellName = getSafeCellName(cell.getName());
-		writeWidthLimited("entity " + addString(properCellName, null) + " is port(" + addPortList(cni) + ");\n");
-		writeWidthLimited("  end " + addString(properCellName, null)  + ";\n");
+		String properCellName = getSafeCellName(cellName);
+		writeWidthLimited("entity " + addString(properCellName, null) + " is\n");
+		if (cni.getCellSignals().hasNext()) writeWidthLimited("  port(" + addPortList(cni) + ");\n");
+		writeWidthLimited("end " + addString(properCellName, null)  + ";\n");
 
 		// write the "architecture" line
 		writeWidthLimited("\n");
@@ -211,10 +241,23 @@ public class GenerateVHDL extends Topology
 		for(Iterator<Nodable> it = nl.getNodables(); it.hasNext(); )
 		{
 			Nodable no = it.next();
-			AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, vp);
-			String pt = ap.getPrimName();
+
+			// ignore component with no ports
+			if (no.getProto().getNumPorts() == 0) continue;
+
+			int special = BLOCKUNKNOWN;
+			String pt = no.getProto().getName();
+			if (no.isCellInstance()) {
+				special = BLOCKNORMAL;
+				pt = parameterizedName(no, context);
+			}
+			else {
+				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, pp);
+				special = ap.getSpecial();
+				pt = ap.getPrimName();
+			}
+			if (special == -1) continue;
 			if (pt == null) continue;
-			int special = ap.getSpecial();
 
 			// write only once per prototype
 			if (special == BLOCKINVERTER)
@@ -238,9 +281,6 @@ public class GenerateVHDL extends Topology
 				continue;
 			}
 
-			// ignore component with no ports
-			if (no.getProto().getNumPorts() == 0) continue;
-
 			pt = getSafeCellName(pt);
 			if (cellNamesWritten.contains(pt)) continue;
 			cellNamesWritten.add(pt);
@@ -254,10 +294,12 @@ public class GenerateVHDL extends Topology
 					System.out.println("ERROR: no subcell information for: " + parameterizedName);
 					continue;
 				}
-				writeWidthLimited("  component " + addString(pt, null) + " port(" + addPortList(subCni) + ");\n");
+				writeWidthLimited("  component " + addString(pt, null) + "\n");
+				if (subCni.getCellSignals().hasNext()) writeWidthLimited("    port(" + addPortList(subCni) + ");\n");
 			} else
 			{
-				writeWidthLimited("  component " + addString(pt, null) + " port(" + addPortListPrim(no, special) + ");\n");
+			    writeWidthLimited("  component " + addString(pt, null) + "\n");
+			    if (no.getProto().getNumPorts() > 0) writeWidthLimited("    port(" + addPortListPrim(no, special) + ");\n");
 			}
 			writeWidthLimited("    end component;\n");
 		}
@@ -346,15 +388,19 @@ public class GenerateVHDL extends Topology
 			// ignore component with no ports
 			if (no.getProto().getNumPorts() == 0) continue;
 
-			int special = BLOCKNORMAL;
+			int special = BLOCKUNKNOWN;
 			String pt = no.getProto().getName();
-			if (!no.isCellInstance())
-			{
-				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, vp);
-				pt = ap.getPrimName();
-				if (pt == null) continue;
-				special = ap.getSpecial();
+			if (no.isCellInstance()) {
+				special = BLOCKNORMAL;
+				pt = parameterizedName(no, context);
 			}
+			else {
+				AnalyzePrimitive ap = new AnalyzePrimitive(no, negatedHeads, negatedTails, pp);
+				special = ap.getSpecial();
+				pt = ap.getPrimName();
+			}
+			if (special == BLOCKUNKNOWN) continue;
+			if (pt == null) continue;
 
 			String instname = getSafeCellName(no.getName());
 			writeWidthLimited("  " + addString(instname, null));
@@ -531,10 +577,7 @@ public class GenerateVHDL extends Topology
 				PortProto pp = it.next();
 
 				// ignore the bias port of 4-port transistors
-				if (np == Schematics.tech().transistor4Node)
-				{
-					if (pp.getName().equals("b")) continue;
-				}
+				if (np == Schematics.tech().transistor4Node && pp.getName().equals("b")) continue;
 
 				// ignore the bias port of layout transistors
 				if (np.getFunction().isTransistor() && isBiasPort((PrimitivePort)pp)) continue;
@@ -713,6 +756,9 @@ public class GenerateVHDL extends Topology
 					if (!portName.equals("a") && !portName.equals("y")) continue;
 				}
 
+				// ignore the bias port of 4-port transistors
+				if (pnp == Schematics.tech().transistor4Node && pp.getName().equals("b")) continue;
+
 				// ignore the bias port of layout transistors
 				if (pnp.getFunction().isTransistor() && isBiasPort(pp)) continue;
 
@@ -846,8 +892,8 @@ public class GenerateVHDL extends Topology
 	 */
 	private static class AnalyzePrimitive
 	{
-		private String primName;
-		private int special;
+		private String primName = null;
+		private int special = BLOCKUNKNOWN;
 
 		/**
 		 * Method to get the name of this analyzed primitive node.
@@ -880,7 +926,7 @@ public class GenerateVHDL extends Topology
 		 * @param negatedHeads map of arcs with negated head ends.
 		 * @param negatedTails map of arcs with negated tail ends.
 		 */
-		private AnalyzePrimitive(Nodable no, Map<ArcInst,Integer> negatedHeads, Map<ArcInst,Integer> negatedTails, VHDLPreferences vp)
+		private AnalyzePrimitive(Nodable no, Map<ArcInst,Integer> negatedHeads, Map<ArcInst,Integer> negatedTails, VHDLPrefPackage vp)
 		{
 			// cell instances are easy
 			special = BLOCKNORMAL;
@@ -902,9 +948,9 @@ public class GenerateVHDL extends Topology
 				special = BLOCKMOSTRAN;
 			} else if (k.isPTypeTransistor())
 			{
-				primName = "PMOStran";
+				primName = "pMOStran";
 				Variable var = no.getVar(SimulationTool.WEAK_NODE_KEY);
-				if (var != null) primName = "PMOStranWeak";
+				if (var != null) primName = "pMOStranWeak";
 				special = BLOCKMOSTRAN;
 			} else if (k == PrimitiveNode.Function.TRANPN || k == PrimitiveNode.Function.TRA4NPN)
 			{
@@ -1126,9 +1172,9 @@ public class GenerateVHDL extends Topology
 	/****************************** SUBCLASSED METHODS FOR THE TOPOLOGY ANALYZER ******************************/
 
 	/**
-	 * Method to adjust a cell name to be safe for Verilog output.
+	 * Method to adjust a cell name to be safe for VHDL output.
 	 * @param name the cell name.
-	 * @return the name, adjusted for Verilog output.
+	 * @return the name, adjusted for VHDL output.
 	 */
 	protected String getSafeCellName(String name)
 	{
@@ -1246,4 +1292,53 @@ public class GenerateVHDL extends Topology
 		}
 		return sb.toString();
 	}
+
+    //------------------HierarchyEnumerator.Visitor Implementation----------------------
+    public class CellInfo extends Topology.MyCellInfo
+    {
+    }
+
+    public class Visitor extends Topology.Visitor
+    {
+        public Visitor(GenerateVHDL outGeom)
+        {
+			super(outGeom);
+        }
+
+		@Override
+		public boolean visitNodeInst(Nodable no, HierarchyEnumerator.CellInfo info)
+		{
+			// System.out.println("GenerateVHDL.Visitor.visitNodeInst: checking nodable " + no + " with proto " + no.getProto());
+			if (no.getProto().getNumPorts() == 0) return false;
+			return super.visitNodeInst(no, info);
+		}
+		
+		@Override
+		public boolean enterCell(HierarchyEnumerator.CellInfo info)
+		{
+			// System.out.println("GenerateVHDL.Visitor.enterCell for " + info.getCell());
+			return super.enterCell(info);
+		}
+		
+		@Override
+		public void exitCell(HierarchyEnumerator.CellInfo info)
+		{
+			// System.out.println("GenerateVHDL.Visitor.exitCell for " + info.getCell());
+			super.exitCell(info);
+		}
+		
+		@Override
+		public HierarchyEnumerator.CellInfo newCellInfo()
+		{
+			return new CellInfo();
+		}
+    }
+
+    @Override
+    public boolean writeCell(Cell cell, VarContext context)
+    {
+	writeCell(cell, context, new Visitor(this));
+	return false;
+    }
+
 }
