@@ -98,7 +98,7 @@ public class GDS extends Geometry
 	/** old key of Variable with GDS text text. */		public static final Variable.Key OLD_GDS_TEXT_KEY = Variable.newKey("GDS_text");
 
 	private static final int GDSVERSION        =      3;
-	private static final int ROUNDSEGMENTS     =    100;
+	private static final int ROUNDSEGMENTS     =     96;
 	private static final int BYTEMASK          =   0xFF;
 	private static final int DSIZE             =    512;		/* data block */
 	private static final int EXPORTPRESENTATION=      0;		/* centered (was 8 for bottom-left) */
@@ -283,7 +283,7 @@ public class GDS extends Geometry
 		{
 			String msg = "WARNING: GDS Export encountered problems because of small feature sizes and coarse accuracy settings.";
 			msg += " It is recommended that the 'Units/meter' GDS preference be increased by a factor of " + inaccurate;
-			Job.getUserInterface().showInformationMessage(msg, "Potential GDS Export Problem");
+			System.out.println("Potential GDS Export Problem: "+msg);
 		}
 	}
 
@@ -346,7 +346,7 @@ public class GDS extends Geometry
 				PolyBase poly = (PolyBase)obj;
 				int layerNum = currentLayerNumbers.getLayerNumber(GDSLayerType.DRAWING);
 				int layerType = currentLayerNumbers.getLayerType(GDSLayerType.DRAWING);
-				writePoly(poly, layerNum, layerType);
+				writePoly(cell, poly, layerNum, layerType);
 			}
 		}
 
@@ -559,7 +559,7 @@ public class GDS extends Geometry
 					{
 						int layerNum = currentLayerNumbers.getLayerNumber(GDSLayerType.DRAWING);
 						int layerType = currentLayerNumbers.getLayerType(GDSLayerType.DRAWING);
-						writePoly(poly, layerNum, layerType);
+						writePoly(cell, poly, layerNum, layerType);
 					}
 				}
 
@@ -584,7 +584,7 @@ public class GDS extends Geometry
 				{
 					int layerNum = currentLayerNumbers.getLayerNumber(GDSLayerType.DRAWING);
 					int layerType = currentLayerNumbers.getLayerType(GDSLayerType.DRAWING);
-					writePoly(poly, layerNum, layerType);
+					writePoly(cell, poly, layerNum, layerType);
 				}
 			}
 
@@ -966,7 +966,7 @@ public class GDS extends Geometry
 		return numbers.hasLayerType(GDSLayerType.DRAWING);
 	}
 
-	protected void writePoly(PolyBase poly, int layerNumber, int layerType)
+	protected void writePoly(Cell cell, PolyBase poly, int layerNumber, int layerType)
 	{
 		// ignore negative layer numbers
 		if (layerNumber < 0) return;
@@ -974,8 +974,11 @@ public class GDS extends Geometry
 		Point2D [] points = poly.getPoints();
 		if (poly.getStyle() == Poly.Type.DISC)
 		{
-			// Make a square of the size of the diameter
+			// Make an octagon of the size of the diameter
+			double cx = points[0].getX();
+			double cy = points[0].getY();
 			double r = points[0].distance(points[1]);
+			double a = r*DBMath.sin(225)/DBMath.cos(225);
 			if (r <= 0) return;
 
 			// write round geometry by approximating with lines
@@ -998,7 +1001,7 @@ public class GDS extends Geometry
 
 			// the old way: just write rectangle
 //			Poly newPoly = new Poly(points[0].getX(), points[0].getY(), r*2, r*2);
-			outputBoundary(newPoly, layerNumber, layerType);
+			outputBoundary(cell, newPoly, layerNumber, layerType);
 			return;
 		}
 
@@ -1009,23 +1012,24 @@ public class GDS extends Geometry
 			if (polyBounds.getWidth() == 0 || polyBounds.getHeight() == 0)
                 return;
 
-			outputBoundary(poly, layerNumber, layerType);
+			outputBoundary(cell, poly, layerNumber, layerType);
 			return;
 		}
 
 		// non-Manhattan or worse .. direct output
 		if (points.length == 1)
 		{
-			reportWarning("WARNING: Single point cannot be written in GDS-II");
+			String msg = "Warning: Single point cannot be written in GDS-II";
+			reportError(msg, poly, cell);
 			return;
 		}
 		if (points.length > 200)
 		{
-			reportWarning("WARNING: GDS-II Polygons may not have more than 200 points (this has " + points.length + ")");
-			return;
+			String msg = "Warning: GDS-II Polygons may not have more than 200 points (this has " + points.length + ")";
+			reportWarning(msg, poly, cell);
 		}
 		if (points.length == 2) outputPath(poly, layerNumber, layerType); else
-		outputBoundary(poly, layerNumber, layerType);
+		outputBoundary(cell, poly, layerNumber, layerType);
 	}
 
 	protected void writeNodable(Nodable no)
@@ -1078,7 +1082,7 @@ public class GDS extends Geometry
 		public void addNodeInst(NodeInst ni, FixpTransform trans)
 		{
 			PrimitiveNode prim = (PrimitiveNode)ni.getProto();
-			if (prim.isPin()) return; // skipping pin. Before it was done by detecting pseudo
+			if (prim.isPin() && ni.isWiped()) return; // skipping pin. Before it was done by detecting pseudo
 			Technology tech = prim.getTechnology();
 			Poly [] polys = tech.getShapeOfNode(ni);
 			Layer firstLayer = null;
@@ -1465,6 +1469,7 @@ public class GDS extends Geometry
 	{
 		List<Point> pts = new ArrayList<Point>();
 		Point2D [] points = poly.getPoints();
+		if (points == null || points.length == 0) return pts;
 		int lastX = scaleDBUnit(points[0].getX());
 		int lastY = scaleDBUnit(points[0].getY());
 		int firstX = lastX;
@@ -1491,7 +1496,7 @@ public class GDS extends Geometry
 	/**
 	 * Method to output the pairs of XY points to the file
 	 */
-	private void outputBoundary(PolyBase poly, int layerNumber, int layerType)
+	private void outputBoundary(Cell cell, PolyBase poly, int layerNumber, int layerType)
 	{
 		// remove redundant points
 		List<Point> reducedPoints = reducePolygon(poly);
@@ -1634,7 +1639,7 @@ public class GDS extends Geometry
 			{
 				double scaledScale = scaled * accurateScale;
 				long scaledUnit = (long)Math.round(scaledScale);
-				if (scaledUnit == scaledScale) break;
+				if (Math.abs(scaledUnit - scaledScale) <= 0.1) break;
 				accurateScale *= 10;
 			}
 			if (accurateScale > inaccurate) inaccurate = accurateScale;
