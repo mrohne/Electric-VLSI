@@ -57,6 +57,7 @@ import com.sun.electric.tool.Job;
 import com.sun.electric.tool.JobException;
 import com.sun.electric.tool.io.input.LibraryFiles;
 import com.sun.electric.tool.project.Project;
+import com.sun.electric.tool.user.Highlight;
 import com.sun.electric.tool.user.dialogs.EDialog;
 import com.sun.electric.tool.user.menus.MenuCommands;
 import com.sun.electric.tool.user.ui.EditWindow;
@@ -128,7 +129,7 @@ public class CircuitChanges
 		// if zero rotation, prompt for amount
 		if (amount == 0)
 		{
-			String val = JOptionPane.showInputDialog("Amount to rotate", Double.valueOf(lastRotationAmount));
+			String val = JOptionPane.showInputDialog("Amount to rotate", new Double(lastRotationAmount));
 			if (val == null) return;
 			double fAmount = TextUtils.atof(val);
 			if (fAmount == 0)
@@ -547,7 +548,7 @@ public class CircuitChanges
         if (highlights.size() == 1)
         {
         	Highlight high = highlights.get(0);
-        	if (high instanceof HighlightArea) highlightedArea = true;
+        	if (high.isHighlightArea()) highlightedArea = true;
         }
 
         if (highlightedArea)
@@ -1341,7 +1342,7 @@ public class CircuitChanges
 						area = GenMath.getAreaOfPoints(points);
 					}
 				}
-				pureAreas.put(ni, Double.valueOf(area));
+				pureAreas.put(ni, new Double(area));
 				root = RTNode.linkGeom(null, root, ni);
 			}
 

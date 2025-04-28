@@ -95,6 +95,7 @@ import com.sun.electric.tool.io.output.Spice;
 import com.sun.electric.tool.io.output.Verilog;
 import com.sun.electric.tool.lang.EvalJavaBsh;
 import com.sun.electric.tool.lang.EvalJython;
+import com.sun.electric.tool.lang.EvalABCL;
 import com.sun.electric.tool.logicaleffort.LENetlister;
 import com.sun.electric.tool.logicaleffort.LETool;
 import com.sun.electric.tool.ncc.AllSchemNamesToLay;
@@ -180,19 +181,24 @@ public class ToolMenu {
 	static EMenu makeMenu() {
 		/****************************** THE TOOLS MENU ******************************/
 
-		// mnemonic keys available: A CDEFGH  KLMNOPQR TUVWXYZ
-		languageMenu = new EMenu("Lang_uages",
-			new EMenuItem("Run Java _Bean Shell Script...") {
-				public void run() { javaBshScriptCommand(); }
-			},
-			EvalJython.hasJython() ? new EMenuItem("Run _Jython Script...") {
-				public void run() { jythonScriptCommand(); }
-			} : null,
-			new EMenuItem("Manage _Scripts...") {
-				public void run() { new LanguageScripts(); }
-			},
-			SEPARATOR);
-
+		// mnemonic keys available:   CDEFGHI KLMNOPQR TUVWXYZ
+		languageMenu = new EMenu("Lang_uages", new EMenuItem("Run Java _Bean Shell Script...") {
+			public void run() {
+				javaBshScriptCommand();
+			}
+		}, EvalJython.hasJython() ? new EMenuItem("Run _Jython Script...") {
+			public void run() {
+				jythonScriptCommand();
+			}
+		} : null, EvalABCL.hasABCL() ? new EMenuItem("Run _ABCL Script...") {
+			public void run() {
+				abclScriptCommand();
+			}
+		} : null, new EMenuItem("Manage _Scripts...") {
+			public void run() {
+				new LanguageScripts();
+			}
+		}, SEPARATOR);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() { setDynamicLanguageMenu(); }
 		});
@@ -1061,7 +1067,7 @@ public class ToolMenu {
 
 				// update wire length
 				NodeInst ni = map.get(schNet);
-				ni.updateVar(LENetlister.ATTR_L, Double.valueOf(length), ep);
+				ni.updateVar(LENetlister.ATTR_L, new Double(length), ep);
 				wiresUpdated++;
 				System.out.println("Updated wire model " + ni.getName() + " on layout network "
 						+ proxy.toString() + " to: " + length + " lambda");
@@ -1220,7 +1226,7 @@ public class ToolMenu {
             EditingPreferences ep = getEditingPreferences();
 			TextDescriptor td = ep.getAnnotationTextDescriptor()
 					.withDispPart(TextDescriptor.DispPos.NAMEVALUE).withOff(-1.5, -1);
-			ex.newVar(LENetlister.ATTR_le, Double.valueOf(1.0), td);
+			ex.newVar(LENetlister.ATTR_le, new Double(1.0), td);
 			return true;
 		}
 	}
@@ -1822,7 +1828,7 @@ public class ToolMenu {
 	 * driven; it simply defers the possibility of an error to a higher level.
 	 */
 	private static void showUndrivenNetworks() {
-		final ErrorLogger errorLogger = ErrorLogger.newInst("Undriven networks");
+		final ErrorLogger errorLogger = ErrorLogger.newInstance("Undriven networks");
 
 		EditWindow wnd = EditWindow.needCurrent();
 		if (wnd == null)
@@ -2158,7 +2164,7 @@ public class ToolMenu {
             EditingPreferences ep = getEditingPreferences();
 			TextDescriptor td = ep.getNodeTextDescriptor()
 					.withDispPart(TextDescriptor.DispPos.NAMEVALUE).withOff(-1.5, -1);
-			ni.newVar(SimulationTool.M_FACTOR_KEY, Double.valueOf(1.0), td);
+			ni.newVar(SimulationTool.M_FACTOR_KEY, new Double(1.0), td);
 			return true;
 		}
 	}
@@ -2330,6 +2336,23 @@ public class ToolMenu {
 		}
 	}
 
+    /**
+     * Method to invoke ABCL on a script file.
+     * Prompts for the file and executes it.
+     */
+    private static void abclScriptCommand()
+    {
+    	if (!EvalABCL.hasABCL()) {
+    		System.out.println("ABCL is not installed");
+    		return;
+    	}
+        String fileName = OpenFile.chooseInputFile(FileType.ABCL, null, null);
+		if (fileName != null) {
+			System.out.println("Executing commands in ABCL Script: " + fileName);
+			EvalABCL.runScriptNoJob("(LOAD #p\""+fileName+"\")");
+		}
+    }
+
 	/**
 	 * Method to change the Languages menu to include preassigned scripts.
 	 */
@@ -2349,9 +2372,14 @@ public class ToolMenu {
 				FileType type = FileType.JAVA;
 				if (menuName.toLowerCase().endsWith(".bsh")) {
 					menuName = menuName.substring(0, menuName.length() - 4);
+					type = FileType.JAVA;
 				} else if (menuName.toLowerCase().endsWith(".py") || menuName.toLowerCase().endsWith(".jy")) {
 					menuName = menuName.substring(0, menuName.length() - 3);
 					type = FileType.JYTHON;
+				}
+				else if (menuName.toLowerCase().endsWith(".lisp") || menuName.toLowerCase().endsWith(".abcl")) {
+					menuName = menuName.substring(0, menuName.length() - 5);
+					type = FileType.ABCL;
 				}
 				if (script.mnemonic != 0)
 					menuName = "_" + script.mnemonic + ": " + menuName;
@@ -2386,6 +2414,9 @@ public class ToolMenu {
 			} else if (type == FileType.JYTHON) {
 				System.out.println("Executing commands in Python Script: " + fileName);
 				EvalJython.runScript(fileName);
+			} else if (type == FileType.ABCL) {
+				System.out.println("Executing commands in ABCL Script: " + fileName);
+	        	EvalABCL.runScriptNoJob("(LOAD #p\""+fileName+"\")");
 			}
 		}
 	}
@@ -2961,6 +2992,10 @@ public class ToolMenu {
 		if (fileName == null)
 			return;
 		Technology tech = Technology.getCurrent();
+		if (tech.getXmlTech() == null) {
+			System.out.println("Cannot import DRC Deck for technology " + tech.getTechName());
+			return;
+		}
 		DRCTemplate.DRCXMLParser parser = DRCTemplate.importDRCDeck(TextUtils.makeURLToFile(fileName),
 				tech.getXmlTech(), true);
 		String message = "Deck file '" + fileName + "' loaded ";
