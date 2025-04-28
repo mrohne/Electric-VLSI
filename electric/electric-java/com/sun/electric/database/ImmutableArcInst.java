@@ -68,7 +68,7 @@ public class ImmutableArcInst extends ImmutableElectricObject {
      */
     public static class Flag {
 
-        final int mask;
+        public final int mask;
         final char jelibChar;
         final boolean jelibDefault;
 
