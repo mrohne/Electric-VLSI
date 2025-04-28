@@ -43,16 +43,16 @@
 		<key>ClassPath</key>
 		<string>$JAVAROOT/electric.jar</string>
 		<key>JVMVersion</key>
-		<string>1.5+</string>
+		<string>1.8</string>
 		<key>MainClass</key>
-		<string>com.sun.electric.Electric</string>
+		<string>com.sun.electric.Launcher</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
 			<string>true</string>
 		</dict>
 		<key>VMOptions</key>
-		<string>-Xms16m -Xmx1200m -Dcom.apple.mrj.application.apple.menu.about.name=Electric</string>
+		<string>-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Xms64m -Xmx2048m -Xss64m -Dcom.apple.mrj.application.apple.menu.about.name=Electric</string>
 	</dict>
 </dict>
 </plist>
