@@ -467,12 +467,12 @@ public class Manipulate
             EditingPreferences ep = getEditingPreferences();
 			if (isHighlight)
 			{
-				newNi.newVar(Info.OPTION_KEY, Integer.valueOf(Info.HIGHLIGHTOBJ), ep);
+				newNi.newVar(Info.OPTION_KEY, new Integer(Info.HIGHLIGHTOBJ), ep);
 				return true;
 			}
 
 			// set layer information
-			newNi.newVar(Info.OPTION_KEY, Integer.valueOf(Info.LAYERPATCH), ep);
+			newNi.newVar(Info.OPTION_KEY, new Integer(Info.LAYERPATCH), ep);
 
 			// postprocessing on the nodes
 			if (newNi.getProto() == Generic.tech().portNode)
@@ -1113,11 +1113,13 @@ public class Manipulate
 			case Info.ARCNOEXTEND:
 				return "The arc extension of " + cell;
 			case Info.ARCWIPESPINS:
-				return "Thie arc coverage of " + cell;
+				return "Whether " + cell + " is wipes pins";
 			case Info.ARCANTENNARATIO:
 				return "The maximum antenna ratio for " + cell;
 			case Info.ARCWIDTHOFFSET:
 				return "The ELIB width offset for " + cell;
+			case Info.ARCCURVABLE:
+				return "Whether " + cell + " is curvable";
 
 			case Info.NODEFUNCTION:
 				return "The function of " + cell;
@@ -1224,6 +1226,7 @@ public class Manipulate
 			case Info.ARCWIPESPINS:      modArcWipes(wnd, ni);               break;
 			case Info.ARCANTENNARATIO:   modArcAntennaRatio(wnd, ni);        break;
 			case Info.ARCWIDTHOFFSET:    modArcWidthOffset(wnd, ni);         break;
+			case Info.ARCCURVABLE:       modArcCurvable(wnd, ni);            break;
 
 			case Info.NODEFUNCTION:      modNodeFunction(wnd, ni);           break;
 			case Info.NODELOCKABLE:      modNodeLockability(wnd, ni);        break;
@@ -1648,7 +1651,12 @@ public class Manipulate
 		if (ni.getProto() != Artwork.tech().filledBoxNode) return 0;
 		Variable var = ni.getVar(Artwork.ART_PATTERN);
 		if (var == null) return 0xFFFF;
-		return ((Short[])var.getObject())[0].intValue();
+		Object obj = var.getObject();
+		if (obj instanceof Short[])
+			return ((Short[])var.getObject())[0].intValue();
+		else if (obj instanceof Integer[])
+			return ((Integer[])var.getObject())[0].intValue();
+		return 0xFFFF;
 	}
 
 	/**
@@ -1678,7 +1686,7 @@ public class Manipulate
 			} else if (ni.getProto() == Artwork.tech().filledBoxNode)
 			{
 				Short [] col = new Short[16];
-				for(int i=0; i<16; i++) col[i] = Short.valueOf((short)color);
+				for(int i=0; i<16; i++) col[i] = new Short((short)color);
 				ni.newVar(Artwork.ART_PATTERN, col, ep);
 			}
 			return true;
@@ -1934,14 +1942,14 @@ public class Manipulate
 			ni.newVar(Info.CONNECTION_KEY, newConnects, ep);
 
 			int newAngle = TextUtils.atoi(fieldValues[allArcs.size()]);
-			ni.newVar(Info.PORTANGLE_KEY, Integer.valueOf(newAngle), ep);
+			ni.newVar(Info.PORTANGLE_KEY, new Integer(newAngle), ep);
 			int newRange = TextUtils.atoi(fieldValues[allArcs.size()+1]);
-			ni.newVar(Info.PORTRANGE_KEY, Integer.valueOf(newRange), ep);
+			ni.newVar(Info.PORTRANGE_KEY, new Integer(newRange), ep);
 			String newMeaning = fieldValues[allArcs.size()+2];
 			int meaning = 0;
 			if (newMeaning.equals("Gate")) meaning = 1; else
 				if (newMeaning.equals("Gated")) meaning = 2;
-			ni.newVar(Info.PORTMEANING_KEY, Integer.valueOf(meaning), ep);
+			ni.newVar(Info.PORTMEANING_KEY, new Integer(meaning), ep);
 			return true;
 		}
 	}
@@ -1982,6 +1990,18 @@ public class Manipulate
 		if (finalChoice != initialChoice)
 		{
 			new SetTextJob(ni, "Wipes pins: " + (finalChoice ? "Yes" : "No"));
+		}
+	}
+
+	private static void modArcCurvable(EditWindow wnd, NodeInst ni)
+	{
+		String initialMsg = Info.getValueOnNode(ni);
+		boolean initialChoice = initialMsg.equalsIgnoreCase("yes");
+		boolean finalChoice = PromptAt.showPromptAt(wnd, ni, "Set Whether this Arc is Curvable",
+			"Can this arc be curved?", initialChoice);
+		if (finalChoice != initialChoice)
+		{
+			new SetTextJob(ni, "Curvable arc: " + (finalChoice ? "Yes" : "No"));
 		}
 	}
 
@@ -2264,17 +2284,17 @@ public class Manipulate
 	{
 		if (desc.getTransparentLayer() > 0)
 		{
-			ni.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.makeIndex(desc.getTransparentLayer())), ep);
+			ni.newVar(Artwork.ART_COLOR, new Integer(EGraphics.makeIndex(desc.getTransparentLayer())), ep);
 		} else
 		{
-			ni.newVar(Artwork.ART_COLOR, Integer.valueOf(EGraphics.makeIndex(desc.getColor())), ep);
+			ni.newVar(Artwork.ART_COLOR, new Integer(EGraphics.makeIndex(desc.getColor())), ep);
 		}
 		if (desc.isPatternedOnDisplay())
 		{
 			int [] raster = desc.getPattern();
 			Integer [] pattern = new Integer[17];
-			for(int i=0; i<16; i++) pattern[i] = Integer.valueOf(raster[i]);
-			pattern[16] = Integer.valueOf(desc.getOutlined().getIndex());
+			for(int i=0; i<16; i++) pattern[i] = new Integer(raster[i]);
+			pattern[16] = new Integer(desc.getOutlined().getIndex());
 			ni.newVar(Artwork.ART_PATTERN, pattern, ep);
 		} else
 		{

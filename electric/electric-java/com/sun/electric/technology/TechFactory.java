@@ -93,11 +93,11 @@ public abstract class TechFactory {
         return new FromXml(techName, true, url, xmlTech);
     }
 
-    public Technology newInst(Generic generic) {
-        return newInst(generic, Collections.<Param, Object>emptyMap());
+    public Technology newInstance(Generic generic) {
+        return newInstance(generic, Collections.<Param, Object>emptyMap());
     }
 
-    public Technology newInst(Generic generic, Map<Param, Object> paramValues) {
+    public Technology newInstance(Generic generic, Map<Param, Object> paramValues) {
         try {
             Map<Param, Object> fixedParamValues = new HashMap<Param, Object>();
             for (Param param : techParams) {
@@ -121,10 +121,10 @@ public abstract class TechFactory {
             return tech;
         } catch (ClassNotFoundException e) {
             TextUtils.recordMissingTechnology("Extra");
-        } catch (Exception e) {
-            System.out.println("ERROR while loading technology " + this.techName + ": " + ((e != null) ? e.getMessage() : "Assertion"));
-            if (Job.getDebug())
-            	ActivityLogger.logException(e);
+            ActivityLogger.logException(e);
+		} catch (Exception e) {
+            System.out.println("ERROR while loading technology " + this.techName + ": " + e + " says " + ((e != null) ? e.getMessage() : "Assertion"));
+            ActivityLogger.logException(e);
         }
         return null;
     }
@@ -166,7 +166,7 @@ public abstract class TechFactory {
         r(m, "cmos", "technology/technologies/cmos.xml", false);
         r(m, "efido", "technology/technologies/efido.xml", false);
         c(m, "gem", "com.sun.electric.technology.technologies.GEM");
-        r(m, "josephson", "technology/technologies/josephson.xml", false);
+//        r(m, "josephson", "technology/technologies/josephson.xml", false);
         r(m, "pcb", "technology/technologies/pcb.xml", false);
         r(m, "rcmos", "technology/technologies/rcmos.xml", false);
         p(m, "mocmos", "com.sun.electric.technology.technologies.MoCMOS", false);
@@ -175,12 +175,10 @@ public abstract class TechFactory {
         r(m, "mocmos-cn", "technology/technologies/mocmos-cn.xml", false);
         r(m, "nmos", "technology/technologies/nmos.xml", false);
         p(m, "photonics", "com.sun.electric.technology.technologies.photonics.Photonics", false);
-        r(m, "skywater130", "technology/technologies/skywater130.xml", false);
         r(m, "tft", "technology/technologies/tft.xml", false);
-
-        // restricted technologies unavailable to the public
         p(m, "tsmc180", "com.sun.electric.plugins.tsmc.TSMC180", true);
         p(m, "cmos90", "com.sun.electric.plugins.tsmc.CMOS90", true);
+//        r(m, "CLN40G", "plugins/tsmc/CLN40G.xml", true);
         r(m, "tsmcSun40GP", "plugins/tsmc/tsmcSun40GP.xml", true);
         r(m, "tsmcCLN40G", "plugins/tsmc/tsmcCLN40G.xml", true);
         return Collections.unmodifiableMap(m);
@@ -199,6 +197,7 @@ public abstract class TechFactory {
         this.techParams = Collections.unmodifiableList(new ArrayList<Param>(techParams));
     }
 
+    @SuppressWarnings("unchecked")
     private static void p(Map<String, TechFactory> m, String techName, String techClassName, boolean restricted) {
         TechFactory techFactory;
         List<Param> params;
@@ -244,8 +243,7 @@ public abstract class TechFactory {
             return getKnownTechs().get(techName);
         }
         boolean hasUrl = reader.readBoolean();
-        URL xmlUrl = null;
-        if (hasUrl) xmlUrl = TextUtils.getURLFromString(reader.readString());
+        URL xmlUrl = hasUrl ? new URL(reader.readString()) : null;
         byte[] serializedXml = reader.readBytes();
         try {
             ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(serializedXml));
@@ -277,8 +275,8 @@ public abstract class TechFactory {
         @Override
         public Xml.Technology getXml(final Map<Param, Object> params, Map<Object, Map<String, Object>> additionalAttributes) throws Exception {
             IdManager idManager = new IdManager();
-            Generic generic = Generic.newInst(idManager);
-            Technology tech = newInst(generic, params);
+            Generic generic = Generic.newInstance(idManager);
+            Technology tech = newInstance(generic, params);
             return tech.makeXml(additionalAttributes);
         }
 
